@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Gestion de blé</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
+		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\themes\explorer\theme.min.css"/> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
+		
+		<style>
+		
+		</style>
+		
+		<script type="text/javascript" src="resources\PagesJS\article\create_article.js"></script>
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100"> <!-- h-100 -->
+		
+		<div class="card">
+		
+			<!--
+			<h3 class="card-header  text-center"> <i class="far fa-bread-slice"></i>  Ajouter un article </h3>
+			<br>
+			-->
+			<form id="frm" th:action="@{/create_article}" method="post" autocomplete="off">
+				
+				<input type="hidden" id="article" th:value="${article}">
+						  
+				<div class="card-body" th:with="info = ${info_entreprise}">
+						  
+					<div th:if="${article}!=null">
+					
+						<input type="hidden" id="id_art" name="id_art" th:value="${article.id}">
+						<input type="hidden" id="code" th:value="${article.code}">
+						<input type="hidden" id="code_compt" th:value="${article.code_comptable}">
+						
+						<input type="hidden" id="id_cat_prod" th:value="${article.produit.sous_category_produit.category_produit.id}">
+						<input type="hidden" id="id_sous_cat_prod" th:value="${article.produit.sous_category_produit.id}">
+						<input type="hidden" id="id_prod" th:value="${article.produit.id}">
+						
+						<input type="hidden" id="id_emb_prod" th:value="${article.emballage_produit.id}">
+						<input type="hidden" id="id_pes_prod" th:value="${article.pesage_produit.id}">
+						<input type="hidden" id="vendu" th:value="${article.vendu}">
+						<input type="hidden" id="date_creation" th:value="${article.date_creation}">
+						<input type="hidden" id="id_unite_mesure_vente" th:value="${article.unite_mesure_vente.id}">
+						<input type="hidden" id="prices" th:value="${prices}">
+						<input type="hidden" id="id_magasin" th:value="${article.magasin.id}">
+					
+					</div>
+					
+							
+					<div class="row">
+					
+						<div class="col-md-3">
+						
+							<label> Category produit</label>
+							
+							<select class="form-control" id="cat_prod" name="cat_prod" required>
+							
+								<option th:each="cat_produit:${cat_produit}" th:value="${cat_produit.id}" th:text="${cat_produit.nom_category}" ></option>
+								
+							</select>
+							
+						</div>
+						
+						<div class="col-md-3">
+						
+							<label> Sous Category produit</label>
+							
+							<select class="form-control" id="sous_cat_prod" name="sous_cat_prod" required>
+								
+								
+							</select>
+							
+						</div>
+						
+						<div class="col-md-3">
+						
+							<label> Produit </label>
+							
+							<select class="form-control" id="prod" name="prod" required>
+								
+								
+							</select>
+							
+						</div>
+						
+					</div>
+					
+					<br>
+					
+					<div class="row">
+					
+						<div class="col-md-3">
+						
+							<label> Emballage produit</label>
+							
+							<select class="form-control" id="emb_prod" name="emb_prod" required>
+								
+								<option th:each="emballage:${emballage}" th:value="${emballage.id}" th:text="${emballage.nom_emballage}" ></option>
+								
+							</select>
+						
+						</div>
+						
+						<div class="col-md-3">
+						
+							<label> Pesage produit</label>
+							
+							<select class="form-control" id="pesage_prod" name="pesage_prod" required>
+								
+								<option th:each="pesage:${pesage}" th:value="${pesage.id}" th:text="${pesage.pesage}+' '+${pesage.unite_pesage}" ></option>
+								
+							</select>
+						
+						</div>
+						
+						<div class="col-md-3">
+						
+							<label> Pesage produit</label>
+							
+							<select class="form-control" id="magasin" name="magasin" required>
+								
+								<option th:each="mag:${magasin}" th:value="${mag.id}" th:text="${mag.name}" ></option>
+								
+							</select>
+						
+						</div>
+					
+					</div>
+					
+					<br>
+					
+					<div class="row">
+					
+						<!--  <div class="col-md-3" th:if="${article}!=null"> -->
+						
+						<div class="col-md-3" >
+						
+							<label> Code </label>
+							
+							<input type="text" id="code_art" name="code_art" class="form-control"  required>
+						
+						</div>
+						
+						<div class="col-md-3" >
+						
+							<label> Code Comptable</label>
+							
+							<input type="text" id="code_comptable" name="code_comptable" class="form-control"  required>
+						
+						</div>
+						
+						<div class="col-md-3">
+						 
+							<label> Unite de mesure (Vente)</label>
+							
+							<select class="form-control" id="unite_mesure_vente" name="unite_mesure_vente" required>
+								
+								<option th:each="u_m:${unite_mesure}" th:value="${u_m.id}" th:text="${u_m.nom_unite_mesure}" ></option>
+								
+							</select>
+					
+						</div>
+					
+					</div>
+					<hr>
+					<div class="row" th:if="${prices}==null">
+					
+						<div class="col-md-3">
+							
+							<label> Category client </label>
+							<hr>
+							
+							<input type="text" class="form-control" th:each="cat_client:${cat_client}" th:value="${cat_client.nom_category}" style="margin-bottom:5px" disabled>
+							<input type="hidden" name="cat_client" th:each="cat_client:${cat_client}" th:value="${cat_client.id}" >
+							
+						</div>
+						
+						<div class="col-md-3">
+						
+							<label> Prix</label>
+							<hr>
+							
+							<div class="input-group" th:each="cat_client:${cat_client}">
+							
+								<input  type="number" step="any" value="0" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+								
+								<div class="input-group-append">
+							    	<span class="input-group-text" style="margin-bottom:5px">DA</span>
+							  	</div>
+							
+							</div>
+							
+						</div>
+						
+						<div class="col-md-3">
+							
+							<label> Taux Tva </label>
+							<hr>
+							
+							<select th:each="cat_client:${cat_client}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" required>
+								
+								<option th:each="tva:${tva}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" ></option>
+								
+							</select>
+							
+						</div>
+					
+					</div>
+					
+					<div class="row" th:unless="${prices}==null">
+					
+						<div class="col-md-3">
+							
+							<label> Category client </label>
+							<hr>
+							
+							<input type="text" class="form-control" th:each="price:${prices}" th:value="${price.category_client.nom_category}" style="margin-bottom:5px" disabled>
+							<input type="hidden" name="cat_client" th:each="price:${prices}" th:value="${price.id}" >
+							
+						</div>
+						
+						<div class="col-md-3">
+						
+							<label> Prix</label>
+							<hr>
+							
+							<div class="input-group" th:each="price:${prices}">
+							
+								<input type="number" step="any" th:value="${price.prix}" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+								
+								<div class="input-group-append">
+								    <span class="input-group-text" style="margin-bottom:5px">DA</span>
+								</div>
+							
+							</div>
+							
+						</div>
+						
+						<div class="col-md-3">
+							
+							<label> Taux Tva </label>
+							<hr>
+							
+							<select th:each="price:${prices}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" required>
+								
+								<option th:each="tva:${tva}" th:if="${price.tva.id}==${tva.id}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" selected></option>
+								<option th:each="tva:${tva}" th:unless="${price.tva.id}==${tva.id}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" ></option>
+								
+							</select>
+							
+						</div>
+					
+					</div>
+					
+					<hr>
+					
+					<div class="d-flex justify-content-center">
+					
+						<input type="submit" class="btn btn-primary" value="Valider">
+					
+					</div>
+					
+				</div>
+			
+			</form>
+			
+		</div>
+		
+	</div>
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,193 @@
+package com.commercial.webController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+
+import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
+import com.commercial.entities.schema.user_menu.roles;
+import com.commercial.entities.schema.user_menu.users;
+import com.commercial.entities.schema.user_menu.repository.menuRepository;
+import com.commercial.entities.schema.user_menu.repository.rolesRepository;
+import com.commercial.entities.schema.user_menu.repository.roles_menuRepository;
+import com.commercial.entities.schema.user_menu.repository.sub_menuRepository;
+import com.commercial.entities.schema.user_menu.repository.userRepository;
+import com.commercial.functions.get_time_date;
+import com.commercial.functions.time_between;
+
+
+
+@Controller
+@SessionAttributes("user")
+
+public class WebController {
+	
+	@ModelAttribute("user")
+	   public users user() {
+	      return new users();
+	}
+	
+	
+	
+	@Autowired
+	private userRepository userrepository;
+	@Autowired
+	private roles_menuRepository roles_menurepository;
+	
+	@Autowired
+	private menuRepository menurepository;
+	
+	@Autowired
+	private client_registreCommerceRepository client_rcRepo;
+	
+	@RequestMapping(value="/")
+	
+	public String request_application(HttpServletRequest request,Model model){
+		
+		get_time_date gtd = new get_time_date();
+		
+		String ret = "welcome";
+		
+		//---------------------------- add user information ---------------------------
+		String user_name = request.getUserPrincipal().getName();
+		
+		users user  = userrepository.find_user_byusername(user_name); 
+		
+		model.addAttribute("user", user); //----------------- adding user object to session
+		
+		roles role = user.getRole();//roles_repository.getOne(user.getId_role().getId());
+		
+		long id_role = role.getId();
+		
+		String nom_role = role.getNom_role();
+		
+		//model.addAttribute("role",nom_role);
+		
+		//-----------------------------------------------------------------------------
+		
+		//------------------- Wich Interface to Redirect-------------------------------
+		
+		
+		if(!nom_role.contains("One Interface")) {
+			
+			//---------------------------- MENU information ---------------------------
+			List<Object[]> list_menu = roles_menurepository.get_menu_by_role(role);
+			/*
+			System.out.println("wow=="+submenu_repository.findAll().get(0).getId());
+			
+			System.out.println(">>>>>=="+list_menu);
+			
+			System.out.println("lm=="+list_menu.get(0).getId()+" // nm=="+list_menu.get(0).getNom_menu());
+			*/
+			
+			model.addAttribute("list_menu", list_menu);
+			
+			ArrayList<Object> ll = new ArrayList<>();
+			
+			for(int i=0;i<list_menu.size();i++) {
+				
+				Object[] m =  list_menu.get(i);
+				
+				System.out.println("id_menu == "+m[0]+" // "+m[1]);
+				
+				List<Object[]> list_submenu = roles_menurepository.get_submenu_by_user_role(role, menurepository.getOne((long) m[0]));
+				
+				ll.add(list_submenu);
+			}
+			
+			/*
+			for(int i=0; i<ll.size();i++) {
+				
+				Object[] obj =   ll.get(i);
+				
+				System.out.println("=============>>"+obj[0]+"/"+obj[1]+"/"+obj[2]+"/"+obj[3]+"/"+obj[4]);
+				
+			}
+			*/
+			model.addAttribute("list_submenu",ll);
+			
+			model.addAttribute("notification",client_rcRepo.get_number_notification(gtd.get_date()));
+			
+			//-----------------------------------------------------------------------------
+			
+		}
+		else {
+			
+			model.addAttribute("interface", StringUtils.substringBetween(nom_role, "(", ")"));
+			
+			ret = "one_interface";
+			
+		}
+		
+		//-----------------------------------------------------------------------------
+		
+		return ret;
+		
+	}
+	
+	//*******************************************************************************************************
+	
+	@RequestMapping(value="/notif")
+	public String notification(HttpServletRequest request,Model model){
+		
+		get_time_date gtd = new get_time_date();
+		
+		model.addAttribute("rc_client",client_rcRepo.get_list_notification(gtd.get_date()));
+		
+		return "notification";
+		
+	}
+	
+	//*******************************************************************************************************
+	
+	@RequestMapping(value="/test")
+	public String test(){
+		
+		return "one_interface";
+		
+	}
+	
+	@RequestMapping(value="/acceuil")
+	public String acceuil(){
+		
+		return "acceuil";
+		
+	}
+	
+	@RequestMapping(value="/logout")
+	public String logout(HttpServletRequest request,HttpServletResponse response){
+		
+		response.addCookie(new Cookie("JSESSIONID", "0000"));
+		
+		return "redirect:/login";
+		
+	}
+	
+	
+	@RequestMapping(value="/login")
+	public String login(){
+		
+		return "login";
+		
+	}
+	
+	@RequestMapping(value="/403")
+	public String error(){
+		
+		return "403";
+		
+	}
+	
+	
+}

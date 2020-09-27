@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript">
+		
+		$(document).ready(function() {
+			/*
+			var getUrlParameter = function getUrlParameter(sParam) {
+			    var sPageURL = window.location.search.substring(1),
+			        sURLVariables = sPageURL.split('&'),
+			        sParameterName,
+			        i;
+
+			    for (i = 0; i < sURLVariables.length; i++) {
+			        sParameterName = sURLVariables[i].split('=');
+
+			        if (sParameterName[0] === sParam) {
+			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+			        }
+			    }
+			};
+			
+			var ret = getUrlParameter('ret');
+			
+			if(ret!=null){
+				
+				$("#title").text("Information");
+				$("#icone").attr("class","far fa-info-circle");
+				
+				$("#text").text("Annulation effectuer avec succes ");
+				
+				$("#error").modal('show');
+					
+			}
+			
+			$('[data-toggle="tooltip"]').tooltip()
+			*/
+			var datatable_config = {
+					"language": {
+				            "url": "resources/Plugins/datatable/lang/French.json"
+				    },
+					"ordering": true,
+			    	"bPaginate": false,
+					"scrollY":"400px",
+					"scrollX": "auto",
+			        "deferRender": true,
+			        initComplete: function () {
+			            this.api().columns([0,1,3]).every( function () {
+			                var column = this;
+			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                        var val = $.fn.dataTable.util.escapeRegex(
+			                            $(this).val()
+			                        );
+			 
+			                        column
+			                            .search( val ? '^'+val+'$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option value="'+d+'">'+d+'</option>' )
+			                } );
+			            } );
+			        },
+					 drawCallback: function () {
+						
+					      var api = this.api();
+					      
+					      $( api.column( 4, {page:'current'} ).footer() ).html(
+					        api.column( 4, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					 },
+		    };
+		 		
+		 	var table = $('#table').DataTable(datatable_config);
+			
+		 	console.log("clt val= "+$("#clt").val());
+		 	
+		 	console.log("date= "+$("#debut").val());
+		 	
+		 	$("#afficher").click(function(){
+		 		
+		 		var select_clt = $("#clt").val();
+		 		
+		 		var start = $("#debut").val();
+		 		
+		 		var end = $("#fin").val();
+		 		
+		 		if(select_clt=="0"){
+		 			
+		 			$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").text("Veuillez selectionner un Client ");
+					$("#error").modal('show');
+		 			
+		 		}
+		 		else{
+		 			
+		 			if(start=="" && end==""){
+		 				
+		 				window.location.replace("/historic_clt?clt="+select_clt+"&start=0&end=0");
+		 				
+		 			}
+		 			if(start!="" && end!=""){
+		 				
+		 				window.location.replace("/historic_clt?clt="+select_clt+"&start="+start+"&end="+end);
+		 				
+		 			}
+					if(start=="" && end!=""){
+		 				
+						$("#title").text("Erreur !!!");
+						$("#icone").attr("class","far fa-exclamation-triangle");
+						$("#text").text("Veuillez selectionner un Intervalle ");
+						$("#error").modal('show');
+		 				
+		 			}
+					if(start!="" && end==""){
+		 				
+						$("#title").text("Erreur !!!");
+						$("#icone").attr("class","far fa-exclamation-triangle");
+						$("#text").text("Veuillez selectionner un Intervalle ");
+						$("#error").modal('show');
+		 				
+		 			}
+		 			
+		 		}
+		 		
+		 	});
+		 	
+			$(".info").click(function(){
+				
+				var id_op = $(this).attr("id_operation");
+				
+				var type_op = $(this).attr("type_operation");
+				
+				switch(type_op) {
+				  case "Facture":
+					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/info_fact?id_fact='+id_op+'"></iframe>');
+						
+						$("#title").text("Détail Facture");
+						
+						$("#icone").attr("class","far fa-file-invoice");
+				  break;
+				  case "Facture Avoire":
+					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/fact_avoir?id_fact='+id_op+'"></iframe>');
+						
+						$("#title").text("Détail Facture avoire");
+						
+						$("#icone").attr("class","far fa-file-invoice");
+				  break;
+				  case "Paiement":
+					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src=""></iframe>');
+						
+						$("#title").text("Détail paiement");
+						
+						$("#icone").attr("class","far fa-cash-register");
+				  break;
+				  case "Annulation Paiement":
+					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src=""></iframe>');
+						
+						$("#title").text("Détail paiement annuler");
+						
+						$("#icone").attr("class","far fa-ban");
+				  break;		
+				  case "Remboursement":
+					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src=""></iframe>');
+						
+						$("#title").text("Détail Remboursement");
+						
+						$("#icone").attr("class","far fa-money-check-edit");
+				  break;
+				}
+				
+				$("#display_details").modal("show");
+				
+			});
+			
+			/*
+			$("#confirm").click(function(){
+				
+				$.ajax({
+					url : 'cancel_payment',
+					data : {
+						id_payment : id_pay
+					},
+					success : function(responseJson) {
+						
+						//location.reload();
+						var url = new URL(window.location.href);
+						url.searchParams.set('ret','ok');
+						window.location.href = url.href;
+						
+					}
+					
+				});
+				
+			});
+			
+			
+		});
+		
+		$(function () {
+		    $('#display_details').on('shown.bs.modal', function () {
+		        //$('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>');
+		    });
+		});
+		*/
+		});
+		function ifrhgh(){
+		    var iframehght =  $("#frame").contents().height();
+		    $("#frame").height(iframehght);
+		}
+		
+		</script>
+		
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100"> <!-- h-100 -->
+		
+		<div class="card">
+		
+			<h3 class="card-header  text-center"> <i class="far fa-history"></i> Historique par client </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<div class="row">
+					
+						<div class="col-md-3" >
+						
+							<label>Client</label>
+							<select class="selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
+																								name="clt" id="clt" data-size="5">
+								<option  value="0" th:if="${id_client}==0" selected>Client</option>
+								<option  value="0" th:unless="${id_client}==0" >Client</option>
+								
+								<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.code}"
+											th:object="${clt}" th:if="${clt.id}==${id_client}"
+											th:attr="data-subtext=${clt.nom}+' '+${clt.prenom}" selected></option>
+								
+								<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.code}"
+											th:object="${clt}" th:unless="${clt.id}==${id_client}"
+											th:attr="data-subtext=${clt.nom}+' '+${clt.prenom}" ></option>
+								
+							</select>
+							
+						</div>
+						<!--  
+						<div class="col-md-3" >
+							
+							<label>RC</label>
+							<select class="selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
+																								name="rc" id="rc" data-size="5">
+								<option  value="0" selected>RC</option>
+
+							</select>
+						
+						</div>
+						-->
+						<div class="col-md-3" >
+						
+							<div class="input-group">
+								
+									<div class="input-group-append">
+									
+										<input id="debut" type="date" name="start"  class="form-control date" style="width:100%;" 
+										th:value="${start}" placeholder="DU">
+										<span class="input-group-text declaration far fa-calendar-alt"> </span>
+										<input id="fin" type="date" name="end"  class="form-control date" style="width:100%;" 
+										th:value="${end}" placeholder="AU">
+										<button id="afficher" name="afficher" class="btn btn-secondary" type="button">Afficher</button>
+										
+									</div>
+									
+							</div>
+						
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					
+						<thead class="thead-dark">
+							
+							<tr>
+							<!--  
+								<th></th>
+								<th></th> 
+								<th></th>
+								<th></th>
+								<th> <input type="text" id="sold_debut_rc" class="form-control" 
+								th:value="${#numbers.formatDecimal(sold_fin_rc, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								<th>⮜ Sold Début RC</th> -->
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th>Sold Début Client ➤</th>
+								<th> <input type="text" id="sold_debut_clt" class="form-control" 
+								th:value="${#numbers.formatDecimal(sold_debut_clt, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								<th></th>
+								<th> <input type="text" id="sold_fin_clt" class="form-control" 
+								th:value="${#numbers.formatDecimal(sold_fin_clt, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								<th>⮜ Sold Final Client </th>
+								<th></th> 
+								
+							</tr>
+							
+							<tr>
+							
+								<th>N° RC</th>
+								<th>RC</th> 
+								<th>Date</th>
+								<th>Type operation</th>
+								<th>Montant</th>
+								<th>Ancien Sold Client</th>
+								<th>Ancien Sold RC</th>
+								<th>Nouveau Sold Client</th>
+								<th>Nouveau Sold RC</th>
+								<th>Détail</th>
+								
+							</tr>
+							
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="hist:${history}">
+								<!--  
+								<td th:text="${hist.client.code}"></td>
+								<td th:text="${hist.client.nom}+' '+${hist.client.prenom}"></td> -->
+								<td th:text="${hist.registre_commerce.numero_rc}"></td>
+								<td th:text="${hist.registre_commerce.nom}+' '+${hist.registre_commerce.prenom}"></td>
+								<td th:text="${hist.date}"></td>
+								<td th:text="${hist.type_operation}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.montant_operation, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.old_sold_client, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.old_sold_rc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.new_sold_client, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.new_sold_rc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								
+								<td style="text-align: center;"> <button type="button" class="btn btn-info info" 
+																	th:attr="id_operation=${hist.id_operation},
+																			 type_operation=${hist.type_operation}"> 
+																		<i class="far fa-info-square"></i>
+																 </button> 
+								</td>
+								
+							</tr>
+						
+						</tbody>
+						
+						<tfoot class="thead-dark">
+						
+							<tr>
+								<!--  
+								<th></th>
+								<th></th> -->
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								
+								
+							</tr>
+							<!--  
+							<tr>
+							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th>Sold Final Client ➤</th>
+								<th> <input type="text" id="sold_fin_clt" class="form-control" 
+								th:value="${#numbers.formatDecimal(sold_fin_clt, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								<!--  <th> <input type="text" id="sold_fin_rc" class="form-control" 
+								th:value="${#numbers.formatDecimal(sold_fin_rc, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								<th>⮜ Sold Final RC</th> -->
+								<!-- 
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								
+							</tr>
+							-->
+						</tfoot>
+						
+					</table>
+				
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<div id="display_details" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title" class="modal-title" > </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body" >
+	         
+	         <div id="print_content">
+	         
+	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         
+	         </div>
+	         
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	<!--  
+	<div id="confirmation" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered"  role="document">
+	  	
+	    <div class="modal-content">
+	      
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-exclamation-triangle" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title">Attention</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body">
+	        <p id="text_confirmation"></p>
+	      </div>
+	      
+	      <div class="modal-footer justify-content-center">
+	      	<button id="confirm" type="button" class="btn btn-primary">OUI</button>
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">NON</button>
+	      </div>
+	      
+	    </div>
+	    
+	  </div>
+	</div>
+	-->
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+	
+	
+</body>
+</html>

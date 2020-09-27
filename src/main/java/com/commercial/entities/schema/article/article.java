@@ -1,0 +1,173 @@
+package com.commercial.entities.schema.article;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.commercial.entities.schema.dynamic_data.Magasin;
+import com.commercial.entities.schema.static_data.tva;
+import com.commercial.entities.schema.static_data.unite_mesure;
+
+import org.springframework.beans.factory.annotation.Value;
+
+@Entity
+
+@Table(name="article" , schema = "article")
+
+public class article implements Serializable{
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+	
+	@Column(unique = true)
+	private String code;
+	
+	@ManyToOne
+	@JoinColumn(name = "produit")
+	private produit produit;
+	
+	@ManyToOne
+	@JoinColumn(name = "emballage_produit")
+	private emballage_produit emballage_produit;
+	
+	@ManyToOne
+	@JoinColumn(name = "pesage_produit")
+	private pesage_produit pesage_produit;
+	
+	private String image_article;
+	
+	@Column(name="vendu",columnDefinition = "numeric default 0")
+	private double vendu = 0; //-------------- unite
+	
+	private String date_creation;
+	
+	private String code_comptable;
+	
+	@ManyToOne
+	@JoinColumn(name = "unite_mesure_vente")
+	private unite_mesure unite_mesure_vente;
+	
+	@ManyToOne
+	@JoinColumn(name = "magasin")
+	private Magasin magasin;
+	
+	public article() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public article(String code, com.commercial.entities.schema.article.produit produit,
+			com.commercial.entities.schema.article.emballage_produit emballage_produit,
+			com.commercial.entities.schema.article.pesage_produit pesage_produit, String image_article, double vendu,
+			String date_creation, String code_comptable, unite_mesure unite_mesure_vente, Magasin magasin) {
+		super();
+		this.code = code;
+		this.produit = produit;
+		this.emballage_produit = emballage_produit;
+		this.pesage_produit = pesage_produit;
+		this.image_article = image_article;
+		this.vendu = vendu;
+		this.date_creation = date_creation;
+		this.code_comptable = code_comptable;
+		this.unite_mesure_vente = unite_mesure_vente;
+		this.magasin = magasin;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public produit getProduit() {
+		return produit;
+	}
+
+	public void setProduit(produit produit) {
+		this.produit = produit;
+	}
+
+	public emballage_produit getEmballage_produit() {
+		return emballage_produit;
+	}
+
+	public void setEmballage_produit(emballage_produit emballage_produit) {
+		this.emballage_produit = emballage_produit;
+	}
+
+	public pesage_produit getPesage_produit() {
+		return pesage_produit;
+	}
+
+	public void setPesage_produit(pesage_produit pesage_produit) {
+		this.pesage_produit = pesage_produit;
+	}
+
+	public String getImage_article() {
+		return image_article;
+	}
+
+	public void setImage_article(String image_article) {
+		this.image_article = image_article;
+	}
+
+	public double getVendu() {
+		return vendu;
+	}
+
+	public void setVendu(double vendu) {
+		this.vendu = vendu;
+	}
+
+	public String getDate_creation() {
+		return date_creation;
+	}
+
+	public void setDate_creation(String date_creation) {
+		this.date_creation = date_creation;
+	}
+
+	public String getCode_comptable() {
+		return code_comptable;
+	}
+
+	public void setCode_comptable(String code_comptable) {
+		this.code_comptable = code_comptable;
+	}
+
+	public unite_mesure getUnite_mesure_vente() {
+		return unite_mesure_vente;
+	}
+
+	public void setUnite_mesure_vente(unite_mesure unite_mesure_vente) {
+		this.unite_mesure_vente = unite_mesure_vente;
+	}
+
+	public Magasin getMagasin() {
+		return magasin;
+	}
+
+	public void setMagasin(Magasin magasin) {
+		this.magasin = magasin;
+	}
+
+	
+
+}

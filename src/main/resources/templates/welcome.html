@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Pate</title>
+
+<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+
+<link rel="stylesheet" href="resources\Plugins\materialize\css\materialize.min.css"  >
+<link rel="stylesheet" href="resources\Plugins\materialize\icon\materializ_icon.css" >
+
+<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+
+<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.min.js"></script>
+
+<script  src="resources\Plugins\materialize\js\materialize.min.js"></script>
+
+
+
+<!--  <link rel="stylesheet" href="resources\PagesCSS\welcome.css" />  -->
+
+<script type="text/javascript">
+		
+			$(document).ready(function(){
+				
+				var h = window.innerHeight;
+				var w = window.innerWidth;
+				$("#frame").css("height",(parseInt(h)-5)+"px");
+				$("#frame").css("width",(parseInt(w)-5)+"px");
+				
+				$(window).on('resize', function(){
+				      
+					var h = window.innerHeight;
+					var w = window.innerWidth;
+					$("#frame").css("height",(parseInt(h)-5)+"px");
+					$("#frame").css("width",(parseInt(w)-5)+"px");
+					
+				});
+				
+				 
+				setInterval(function(){	
+					
+					$.ajax({
+						
+						url: 'get_notification',
+						dataType: 'json',
+						data : {
+							
+				        },
+				        success : function(resp) {
+							
+							if (resp != "null") {
+
+								$.each(resp, function(key, value) {
+									
+									var htm = " <div class='tt'> "+
+											  "	<i class='far fa-file-invoice'></i> <span>Facture N° "+value.numero+" est Prête </span>"+
+											  " <hr>"+
+											  " <span>"+value.registre_commerce.nom+" "+value.registre_commerce.prenom+"</span>"+
+											  " <span> N° "+value.registre_commerce.numero+"</span>";
+									
+									M.toast({html: htm});	
+											  
+								});
+								
+							}
+							
+							$(".tt").click(function(){
+								
+								$("#frame").attr("src","/list_fact?date_debut=0&date_fin=0");
+								
+							});
+							
+						}
+					});
+					
+				},5000);
+				 
+				
+			  });
+
+		</script>
+
+</head>
+<body >
+
+	<header th:insert="navbar.html"> </header>
+	
+	<iframe id="frame" style="" frameborder="0" name="frame" allowfullscreen  th:src="@{/acceuil}"> </iframe>
+	
+</body>
+</html>

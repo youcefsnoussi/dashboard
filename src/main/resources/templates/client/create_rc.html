@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Gestion de blé</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
+		
+		<script type="text/javascript" src="resources\PagesJS\client\create_rc.js"></script>
+		
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100"> <!-- h-100 -->
+		
+		<div class="card">
+		
+			<!--  
+			<h3 class="card-header  text-center"> <i class="far fa-file-invoice"></i>  Nouveau registre commerce </h3>
+			<br>
+			-->
+				<form id="frm" th:action="@{/create_rc}" method="post" autocomplete="off">
+				
+							  
+					<div class="card-body" >
+					
+			        <div class="row">
+			        
+			        	<div class="col-md-4">
+			        		
+			        		<label> Nom </label>
+			        		
+			        		<input type="text" id="nom" name="nom" class="form-control saisie_rc" required>
+			        	
+			        	</div>
+			        	
+			        	<div class="col-md-4">
+			        		
+			        		<label> Prénom </label>
+			        		
+			        		<input type="text" id="prenom" name="prenom" class="form-control saisie_rc" required>
+			        	
+			        	</div>
+			        
+			        </div>
+			        <hr>
+			        <div class="row">
+			        
+			        	<div class="col-md-4">
+			        		
+			        		<label> Numero RC </label>
+			        		
+			        		<input type="text" id="num_rc" name="num_rc" class="form-control saisie_rc n_rc" required>
+			        	
+			        	</div>
+			        	
+			        	<div class="col-md-4">
+			        		
+			        		<label> Numero ART </label>
+			        		
+			        		<input type="text" id="num_art" name="num_art" class="form-control saisie_rc n_art" required>
+			        	
+			        	</div>
+			        	
+			        	<div class="col-md-4">
+			        		
+			        		<label> Numero NIF </label>
+			        		
+			        		<input type="text" id="num_nif" name="num_nif" class="form-control saisie_rc n_nif" required>
+			        	
+			        	</div>
+			        
+			        </div>
+			        <hr>
+			        <div class="row">
+			        
+			        	<div class="col-md-4">
+			        		
+			        		<label> Date Emission </label>
+			        		
+			        		<input type="date" id="date_emission" name="date_emission" class="form-control saisie_rc" required>
+			        	
+			        	</div>
+			        	
+			        	<div class="col-md-4">
+			        		
+			        		<label> Date Fin </label>
+			        		
+			        		<input type="date" id="date_fin" name="date_fin" class="form-control saisie_rc" required>
+			        	
+			        	</div>
+			        	
+			        </div>
+			        <hr>
+			        <div class="row">
+			        
+			        	<div class="col-md-4">
+			        		
+			        		<label> Adresse </label>
+			        		
+			        		<textarea id="adresse" name="adresse" class="form-control saisie_rc" required></textarea>
+			        		
+			        	</div>
+			        	
+			        	<div class="col-md-4">
+			        		
+			        		<label> Comune </label>
+			        		
+			        		<input type="text" id="comune" name="comune" class="form-control saisie_rc" required>
+			        	
+			        	</div>
+			        	
+			        	<div class="col-md-4">
+			        		
+			        		<label> Wilaya </label>
+			        		
+			        		<input type="text" id="wilaya" name="wilaya" class="form-control saisie_rc" required>
+			        	
+			        	</div>
+			        
+			        </div>
+			        <hr>
+			        <div class="row">
+			        
+			        	<div class="col-md-4">
+			        		
+			        		<label> Plafond </label>
+			        		
+			        		<div class="input-group">
+			        		
+			        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc" value="0" required>
+			        			
+			        			<div class="input-group-append">
+							      <div class="input-group-text"> <b>DA</b> </div>
+							    </div>
+			        			
+			        		</div>
+			        		
+			        	</div>
+			        	
+			        	<div class="col-md-1">
+			        		
+			        		<label> TVA </label>
+			        		
+			        		<input type="checkbox" id="tva" name="tva" class="form-control" checked >
+			        	
+			        	</div>
+			        	
+			        	<div class="col-md-4">
+			        		
+			        		<label> Activite</label>
+			        		
+			        		<textarea id="activite" name="activite" class="form-control saisie_rc" required></textarea>
+			        	
+			        	</div>
+			        	
+			        </div>
+			        
+			      
+						
+						<hr>
+						
+						<div class="d-flex justify-content-center">
+						
+							<input type="submit" class="btn btn-primary" value="Valider">
+						
+						</div>
+					</div>
+				
+				</form>
+				
+			</div>
+			
+		</div>
+		<br>
+		<!-- ------------------------------------------------------------result message ------------------------------------------------------------- -->
+		
+		<div id="error" class="modal" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		        <p id="text"></p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	
+</body>
+</html>

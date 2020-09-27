@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Gestion de blé</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
+		
+		
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\locales\fr.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\plugins\purify.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\plugins\sortable.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\plugins\piexif.min.js"></script>   
+		
+		<script type="text/javascript" src="resources\PagesJS\client\info_rc.js"></script>
+		
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100">
+		
+		<div class="card">
+		
+			<!--  
+			<h3 class="card-header  text-center"> <i class="far fa-user-alt"></i>  Ajouter un client </h3>
+			<br>  -->
+					  
+				<div class="card-body" >
+						  
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
+					
+					  <li class="nav-item">
+					    <a class="nav-link active" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">Info</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#list_client" role="tab" aria-controls="info" aria-selected="true">Client</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#list_commandes" role="tab" aria-controls="info" aria-selected="true">Commandes</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#list_bl" role="tab" aria-controls="info" aria-selected="true">Bons de livraison</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#list_facture" role="tab" aria-controls="info" aria-selected="true">Factures</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#list_facture_a" role="tab" aria-controls="info" aria-selected="true">Factures d'avoir</a>
+					  </li>
+					  
+					</ul>
+					
+					<div class="tab-content" id="myTabContent">
+					  <!-- ------------------------------------------------------------------INFO CLIENT ------------------------------------------------------------ -->
+					  <div class="tab-pane fade show active" id="info" role="tabpanel" >
+					  	
+					  		<form id="frm" th:if="${edit_option}=='edit'" th:action="@{/edit_rc}" method="post" autocomplete="off" >
+					  			
+					  			<div class="card-body" th:with="rc = ${rc}">
+						  			
+						  			<input type="hidden" id="id_rc" name="id_rc" th:value="${rc.id}">
+						  			
+						  			<div class="row">
+			        
+							        	<div class="col-md-3">
+							        		
+							        		<label> Nom </label>
+							        		
+							        		<input type="text" id="nom" name="nom" class="form-control saisie_rc" th:value="${rc.nom}" required>
+							        	
+							        	</div>
+							        	
+							        	<div class="col-md-3">
+							        		
+							        		<label> Prénom </label>
+							        		
+							        		<input type="text" id="prenom" name="prenom" class="form-control saisie_rc" th:value="${rc.prenom}" required>
+							        	
+							        	</div>
+							        	
+							        	<div class="col-md-3">
+								    	
+								    		<label> Etat blockage </label> <br>
+								    		<button id="active" type="button" class="btn btn-lg btn-success rounded-pill" 
+								    			data-toggle="tooltip" data-placement="bottom" title="Active" ></button>
+								    		<button id="block" type="button" class="btn btn-lg btn-danger rounded-pill" 
+								    			data-toggle="tooltip" data-placement="bottom" title="Blocké"></button>
+								    		<button id="blacklist" type="button" class="btn btn-lg btn-dark rounded-pill" 
+								    			data-toggle="tooltip" data-placement="bottom" title="Blacklisté"></button>
+								    			
+								    		<input type="hidden" id="etat_blockage" name="etat_blockage" th:value="${rc.etat_blockage}">
+								    		
+								    	</div>
+							        	
+							        </div>
+							        <hr>
+							        <div class="row">
+							        
+							        	<div class="col-md-4">
+							        		
+							        		<label> Numero RC </label>
+							        		
+							        		<input type="text" id="num_rc" name="num_rc" class="form-control saisie_rc n_rc" th:value="${rc.numero_rc}" required>
+							        	
+							        	</div>
+							        	
+							        	<div class="col-md-4">
+							        		
+							        		<label> Numero ART </label>
+							        		
+							        		<input type="text" id="num_art" name="num_art" class="form-control saisie_rc n_art" th:value="${rc.numero_art}" required>
+							        	
+							        	</div>
+							        	
+							        	<div class="col-md-4">
+							        		
+							        		<label> Numero NIF </label>
+							        		
+							        		<input type="text" id="num_nif" name="num_nif" class="form-control saisie_rc n_nif" th:value="${rc.numero_nif}" required>
+							        	
+							        	</div>
+							        
+							        </div>
+							        <hr>
+							        <div class="row">
+							        
+							        	<div class="col-md-4">
+							        		
+							        		<label> Date Emission </label>
+							        		
+							        		<input type="date" id="date_emission" name="date_emission" class="form-control saisie_rc" th:value="${date_emission}" required>
+							        	
+							        	</div>
+							        	 
+							        	<div class="col-md-4">
+							        		
+							        		<label> Date Fin </label>
+							        		
+							        		<input type="date" id="date_fin" name="date_fin" class="form-control saisie_rc" th:value="${date_fin}" required>
+							        	
+							        	</div>
+							        	
+							        </div>
+							        <hr>
+							        <div class="row">
+							        
+							        	<div class="col-md-4">
+							        		
+							        		<label> Adresse </label>
+							        		
+							        		<textarea id="adresse" name="adresse" class="form-control saisie_rc" th:text="${rc.adresse}" required></textarea>
+							        		
+							        	</div>
+							        	
+							        	<div class="col-md-4">
+							        		
+							        		<label> Comune </label>
+							        		
+							        		<input type="text" id="comune" name="comune" class="form-control saisie_rc" th:value="${rc.comune}" required>
+							        	
+							        	</div>
+							        	
+							        	<div class="col-md-4">
+							        		
+							        		<label> Wilaya </label>
+							        		
+							        		<input type="text" id="wilaya" name="wilaya" class="form-control saisie_rc" th:value="${rc.wilaya}" required>
+							        	
+							        	</div>
+							        
+							        </div>
+							        <hr>
+							        <div class="row">
+							        
+							        	<div class="col-md-4">
+							        		
+							        		<label> Plafond </label>
+							        		
+							        		<div class="input-group">
+							        		
+							        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc" th:value="${rc.plafond}" required>
+							        			
+							        			<div class="input-group-append">
+											      <div class="input-group-text"> <b>DA</b> </div>
+											    </div>
+							        			
+							        		</div>
+							        		
+							        	</div>
+							        	
+							        	<div class="col-md-1">
+							        		
+							        		<label> TVA </label>
+							        		
+							        		<input th:if="${rc.tva}==1" type="checkbox" id="tva" name="tva" class="form-control" checked >
+							        		<input th:unless="${rc.tva}==1" type="checkbox" id="tva" name="tva" class="form-control"  >
+							        	
+							        	</div>
+							        	
+							        	<div class="col-md-4">
+							        		
+							        		<label> Activite</label>
+							        		
+							        		<textarea id="activite" name="activite" class="form-control saisie_rc" th:text="${rc.activite}" required></textarea>
+							        	
+							        	</div>
+							        	
+							        </div>
+							        
+									<hr>
+									
+									<div class="d-flex justify-content-center">
+									
+										<input type="submit" class="btn btn-primary" value="Valider">
+									
+									</div>
+									
+								</div>
+					  		
+					  		</form>
+					  		
+					  		<!-- ------------------------------------------------------------------------------------------------------------------- -->
+					  		
+					  		<div class="card-body" th:unless="${edit_option}=='edit'" th:with="c = ${client}">
+						  			
+						  		<div class="row">
+			        
+						        	<div class="col-md-4">
+						        		
+						        		<label> Nom </label>
+						        		
+						        		<input type="text" id="nom" name="nom" class="form-control saisie_rc" th:value="${rc.nom}" disabled>
+						        	
+						        	</div>
+						        	
+						        	<div class="col-md-4">
+						        		
+						        		<label> Prénom </label>
+						        		
+						        		<input type="text" id="prenom" name="prenom" class="form-control saisie_rc" th:value="${rc.prenom}" disabled>
+						        	
+						        	</div>
+						        	
+						        	<div class="col-md-3">
+								    	
+								    		<label> Etat blockage </label> <br>
+								    		<button id="active" type="button" class="btn btn-lg btn-success rounded-pill" 
+								    			data-toggle="tooltip" data-placement="bottom" title="Active" disabled></button>
+								    		<button id="block" type="button" class="btn btn-lg btn-danger rounded-pill" 
+								    			data-toggle="tooltip" data-placement="bottom" title="Blocké" disabled></button>
+								    		<button id="blacklist" type="button" class="btn btn-lg btn-dark rounded-pill" 
+								    			data-toggle="tooltip" data-placement="bottom" title="Blacklisté" disabled></button>
+								    			
+								    		<input type="hidden" id="etat_blockage" name="etat_blockage" th:value="${rc.etat_blockage}">
+								    		
+								    	</div>
+						        	
+						        </div>
+						        <hr>
+						        <div class="row">
+						        
+						        	<div class="col-md-4">
+						        		
+						        		<label> Numero RC </label>
+						        		
+						        		<input type="text" id="num_rc" name="num_rc" class="form-control saisie_rc n_rc" th:value="${rc.numero_rc}" disabled>
+						        	
+						        	</div>
+						        	
+						        	<div class="col-md-4">
+						        		
+						        		<label> Numero ART </label>
+						        		
+						        		<input type="text" id="num_art" name="num_art" class="form-control saisie_rc n_art" th:value="${rc.numero_art}" disabled>
+						        	
+						        	</div>
+						        	
+						        	<div class="col-md-4">
+						        		
+						        		<label> Numero NIF </label>
+						        		
+						        		<input type="text" id="num_nif" name="num_nif" class="form-control saisie_rc n_nif" th:value="${rc.numero_nif}" disabled>
+						        	
+						        	</div>
+						        
+						        </div>
+						        <hr>
+						        <div class="row">
+						        
+						        	<div class="col-md-4">
+						        		
+						        		<label> Date Emission </label>
+						        		
+						        		<input type="date" id="date_emission" name="date_emission" class="form-control saisie_rc" th:value="${date_emission}" disabled>
+						        	
+						        	</div>
+						        	 
+						        	<div class="col-md-4">
+						        		
+						        		<label> Date Fin </label>
+						        		
+						        		<input type="date" id="date_fin" name="date_fin" class="form-control saisie_rc" th:value="${date_fin}" disabled>
+						        	
+						        	</div>
+						        	
+						        </div>
+						        <hr>
+						        <div class="row">
+						        
+						        	<div class="col-md-4">
+						        		
+						        		<label> Adresse </label>
+						        		
+						        		<textarea id="adresse" name="adresse" class="form-control saisie_rc" th:value="${rc.adresse}" disabled></textarea>
+						        		
+						        	</div>
+						        	
+						        	<div class="col-md-4">
+						        		
+						        		<label> Comune </label>
+						        		
+						        		<input type="text" id="comune" name="comune" class="form-control saisie_rc" th:value="${rc.comune}" disabled>
+						        	
+						        	</div>
+						        	
+						        	<div class="col-md-4">
+						        		
+						        		<label> Wilaya </label>
+						        		
+						        		<input type="text" id="wilaya" name="wilaya" class="form-control saisie_rc" th:value="${rc.wilaya}" disabled>
+						        	
+						        	</div>
+						        
+						        </div>
+						        <hr>
+						        <div class="row">
+						        
+						        	<div class="col-md-4">
+						        		
+						        		<label> Plafond </label>
+						        		
+						        		<div class="input-group">
+						        		
+						        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc" th:value="${rc.plafond}" disabled>
+						        			
+						        			<div class="input-group-append">
+										      <div class="input-group-text"> <b>DA</b> </div>
+										    </div>
+						        			
+						        		</div>
+						        		
+						        	</div>
+						        	
+						        	<div class="col-md-1">
+						        		
+						        		<label> TVA </label>
+						        		
+						        		<input th:if="${rc.tva}==1" type="checkbox" id="tva" name="tva" class="form-control" checked disabled>
+						        		<input th:unless="${rc.tva}==1" type="checkbox" id="tva" name="tva" class="form-control"  disabled>
+						        	
+						        	</div>
+						        	
+						        	<div class="col-md-4">
+						        		
+						        		<label> Activite</label>
+						        		
+						        		<textarea id="activite" name="activite" class="form-control saisie_rc" th:value="${rc.activite}" disabled></textarea>
+						        	
+						        	</div>
+						        	
+						        </div>	
+									
+							</div>
+					  		
+					  		
+					  </div>
+					  
+					   <!-- ------------------------------------------------------------------ END INFO-CLIENT ------------------------------------------------------------ -->
+					  
+					  <div class="tab-pane fade" id="list_client" role="tabpanel" >
+					  	
+					  	<iframe th:with="rc = ${rc}" width="100%" height="700" id="client_list" frameborder="0" th:attr="src='/list_rc_clt?id_client=0&id_rc='+${rc.id}"></iframe>
+					  	
+					  </div>
+					  
+					  <div class="tab-pane fade" id="list_commandes" role="tabpanel" >
+					  
+					  	<iframe width="100%" height="100%" id="commandes_list" frameborder="0"></iframe>
+					  
+					  </div>
+					  
+					  <div class="tab-pane fade" id="list_bl" role="tabpanel" >
+					  
+					  	<iframe width="100%" height="100%" id="bl_list" frameborder="0"></iframe>
+					  
+					  </div>
+					  
+					  <div class="tab-pane fade" id="list_facture" role="tabpanel" >
+					  
+					  	<iframe width="100%" height="100%" id="facture_list" frameborder="0"></iframe>
+					  
+					  </div>
+					  
+					  <div class="tab-pane fade" id="list_facture_a" role="tabpanel" >
+					  
+					  	<iframe width="100%" height="100%" id="facture_a_list" frameborder="0"></iframe>
+					  
+					  </div>
+					  
+					</div>
+					
+				</div>
+			
+		</div>
+		
+		<br>
+		
+	</div>
+	
+</body>
+</html>

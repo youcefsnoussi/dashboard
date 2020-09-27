@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" >
+		
+		$(document).ready(function() {
+			
+			var datatable_config = {
+					"language": {
+				            "url": "resources/Plugins/datatable/lang/French.json"
+				    },
+					"ordering": true,
+			    	"bPaginate": false,
+					"scrollY":"400px",
+					"scrollX": "auto",
+			        "deferRender": true,
+			        initComplete: function () {
+			            this.api().columns([1,2,3,4,5]).every( function () {
+			                var column = this;
+			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                        var val = $.fn.dataTable.util.escapeRegex(
+			                            $(this).val()
+			                        );
+			 
+			                        column
+			                            .search( val ? '^'+val+'$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option value="'+d+'">'+d+'</option>' )
+			                } );
+			            } );
+			        },
+					 drawCallback: function () {
+						
+					      var api = this.api();
+					      /*
+					      $( api.column( 2, {page:'current'} ).footer() ).html(
+					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					      $( api.column( 3, {page:'current'} ).footer() ).html(
+					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      */
+					 },
+		    };
+		 		
+		 	var table = $('#table').DataTable(datatable_config);
+			
+			$("#add_art").click(function(){
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="950px" onload="" frameborder="0" src="/add_art?id_art=0"></iframe>');
+				
+				$("#title").text("Nouveau Article");
+				
+				$("#icone").attr("class","far fa-bread-slice");
+				             
+				$("#new_art").modal("show");
+				
+			});
+			
+			$(".edit").click(function(){
+				
+				var id_art = $(this).attr("id_art");
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="950px" onload="" frameborder="0" src="/add_art?id_art='+id_art+' "></iframe>');
+				
+				$("#title").text("Détail Article");
+				
+				$("#icone").attr("class","far fa-file-edit");
+				
+				$("#new_art").modal("show");
+				
+			});
+			
+			
+			/////////////////------------- END
+		});
+		
+		</script>
+		
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100">
+		
+		<div class="card">
+		
+			
+			<h3 class="card-header  text-center"> <i class="far fa-list-alt"></i>  List des Articles </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<div class="row">
+					
+						<div class="col-md-3">
+						
+							<button id="add_art" class="btn btn-dark btn_icon"> <span> Ajouter un nouveau Article </span> <i class="far fa-plus-circle"></i> </button>
+						
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					
+						<thead class="thead-dark">
+						
+							<tr>
+							
+								<th>Code</th>
+								<th>Category</th>
+								<th>Sous Category</th>
+								<th>Produit</th>
+								<th>Emballage</th>
+								<th>Magasin</th>
+								<th>Pesage</th>
+								<th>Détail</th>
+								
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="art:${articles}">
+							
+								<td th:text="${art.code}"></td>
+								<td th:text="${art.produit.sous_category_produit.category_produit.nom_category}"></td>
+								<td th:text="${art.produit.sous_category_produit.nom_sous_category}"></td>
+								<td th:text="${art.produit.designation}"></td>
+								<td th:text="${art.emballage_produit.nom_emballage}"></td>
+								<td th:text="${art.magasin.name}"></td>
+								<td th:text="${art.pesage_produit.pesage}+' '+${art.pesage_produit.unite_pesage}"></td>
+								<td style="text-align: center;"> <button type="button" class="btn btn-info edit" th:attr="id_art=${art.id}"> 
+																				<i class="far fa-info-square"></i>
+																		 </button> 
+								</td>
+								
+							</tr>
+						
+						</tbody>
+						
+						<tfoot class="thead-dark">
+						
+							<tr>
+							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								
+							</tr>
+						
+						</tfoot>
+						
+					</table>
+				
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<div id="new_art" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i class="far fa-user-alt" style="font-size:30px;margin-right:10px;" id="icone"></i> <h5 class="modal-title" id="title"> Nouveau Client </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body" id="print_content">
+	        
+	         <!--  <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>  -->
+	        
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	
+	
+	
+</body>
+</html>
