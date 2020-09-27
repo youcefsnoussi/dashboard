@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\plugins\piexif.js"></script>
+		
+		<script type="text/javascript">
+		
+		$(document).ready(function() {
+			
+			var getUrlParameter = function getUrlParameter(sParam) {
+			    var sPageURL = window.location.search.substring(1),
+			        sURLVariables = sPageURL.split('&'),
+			        sParameterName,
+			        i;
+
+			    for (i = 0; i < sURLVariables.length; i++) {
+			        sParameterName = sURLVariables[i].split('=');
+
+			        if (sParameterName[0] === sParam) {
+			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+			        }
+			    }
+			};
+			
+			var ret = getUrlParameter('ret');
+			
+			if(ret!=null){
+				
+				$("#title").text("Information");
+				$("#icone").attr("class","far fa-info-circle");
+				
+				$("#text").text("Annulation effectuer avec succes ");
+				
+				$("#error").modal('show');
+					
+			}
+			
+			$('[data-toggle="tooltip"]').tooltip()
+			
+			var img_path = $("#img").val();
+			
+			$("#img_piece").fileinput({
+			    overwriteInitial: true,
+			    maxFileSize: 25000,
+			    showClose: false,
+			    showCaption: false,
+			    browseLabel: '',
+			    removeLabel: '',
+			    browseIcon: '<i class="far fa-folder-open"></i>',
+			    removeIcon: '<i class="far fa-trash-alt"></i>',
+			    removeTitle: 'Cancel or reset changes',
+			    elErrorContainer: '#kv-avatar-errors-1',
+			    msgErrorClass: 'alert alert-block alert-danger',
+			    defaultPreviewContent: '<img src="/display_img?link='+img_path+'" >',
+			    layoutTemplates: {main2: '{preview} {remove} {browse}'},
+			    allowedFileExtensions: ["jpg", "png", "svg","jpeg"]
+			});
+			
+			var datatable_config = {
+					"language": {
+				            "url": "resources/Plugins/datatable/lang/French.json"
+				    },
+					"ordering": true,
+			    	"bPaginate": false,
+					"scrollY":"400px",
+					"scrollX": "auto",
+			        "deferRender": true,
+			        initComplete: function () {
+			            this.api().columns([1,4,5]).every( function () {
+			                var column = this;
+			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                        var val = $.fn.dataTable.util.escapeRegex(
+			                            $(this).val()
+			                        );
+			 
+			                        column
+			                            .search( val ? '^'+val+'$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option value="'+d+'">'+d+'</option>' )
+			                } );
+			            } );
+			        },
+					 drawCallback: function () {
+						
+					      var api = this.api();
+					      
+					      $( api.column( 3, {page:'current'} ).footer() ).html(
+					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					 },
+		    };
+		 		
+		 	var table = $('#table').DataTable(datatable_config);
+			
+			$("#new_payment").click(function(){
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe>');
+				
+				$("#title_pay").text("Nouveau paiement");
+				
+				$("#icone_pay").attr("class","far fa-cash-register");
+				
+				$("#new_payment_modal").modal("show");
+				
+			});
+			
+			$("#remboursement").click(function(){
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/new_rmb"></iframe>');
+				
+				$("#title_pay").text("Remboursement");
+				
+				$("#icone_pay").attr("class","far fa-cash-register");
+				
+				$("#new_payment_modal").modal("show");
+				
+			});
+			
+			$(".img").click(function(){
+				
+				var url = $(this).attr("src");
+				
+				$("#img_preview").attr("src",url);
+				
+				$("#img_display").modal('show');
+				
+			});
+			
+			var id_pay = 0;
+			
+			$(".cancel").click(function(){
+			
+				id_pay = $(this).attr("id_payment");
+				var nom_client = $(this).attr("nom_client");
+				var code_client = $(this).attr("code_client");
+				var montant = $(this).attr("montant");
+				var num_piece = $(this).attr("num_piece");
+				
+				
+				
+				$("#text_confirmation").html("Etes vous sure d'annuler le paiement N°<b>"+num_piece+"</b> avec le monatant <b>"+montant+" DA</b>"+ 
+												" du client <b>"+nom_client+"</b> avec le code <b>"+code_client+"</b> ?");
+				
+				$("#confirmation").modal('show');
+				
+				/*
+				
+				*/
+			})
+			
+			$(".add_img").click(function(){
+			
+				var id_pay = $(this).attr("id_payment");
+				
+				$("#id-payment").val(id_pay);
+				
+				$("#add_image").modal('show');
+				
+			})
+			
+			$("#confirm").click(function(){
+				
+				$.ajax({
+					url : 'cancel_payment',
+					data : {
+						id_payment : id_pay
+					},
+					success : function(responseJson) {
+						
+						//location.reload();
+						var url = new URL(window.location.href);
+						url.searchParams.set('ret','ok');
+						window.location.href = url.href;
+						
+					}
+					
+				});
+				
+			});
+			
+			
+		});
+
+		$(function () {
+		    $('#new_payement_modal').on('shown.bs.modal', function () {
+		        //$('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>');
+		    });
+		});
+
+		function ifrhgh(){
+		    var iframehght =  $("#frame").contents().height();
+		    $("#frame").height(iframehght);
+		}
+		
+		</script>
+		
+		<style type="text/css">
+		
+			.kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover {
+			    margin: 0;
+			    padding: 0;
+			    border: none;
+			    box-shadow: none;
+			    text-align: center;
+			}
+			.kv-avatar {
+			    display: inline-block;
+			}
+			.kv-avatar .file-input {
+			    display: table-cell;
+			    width: 100%;
+			}
+			.kv-reqd {
+			    color: red;
+			    font-family: monospace;
+			    font-weight: normal;
+			}
+		
+		</style>
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100"> <!-- h-100 -->
+		
+		<div class="card">
+		
+			
+			<h3 class="card-header  text-center"> <i class="far fa-cash-register"></i>  List des Paiements </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<div class="row">
+					
+						<div class="col-md-3" >
+						
+							<button id="new_payment" class="btn btn-dark btn_icon"> <span> Nouveau paiement </span> <i class="far fa-plus-circle"></i> </button>
+						
+						</div>
+						
+						<div class="col-md-3" >
+						
+							<button id="remboursement" class="btn btn-dark btn_icon"> <span> Remboursement </span> <i class="far fa-plus-circle"></i> </button>
+						
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					
+						<thead class="thead-dark">
+						
+							<tr>
+							
+								<th>ID</th>
+								<th>Client</th>
+								<th>N° RC</th>
+								<th>Montant</th>
+								<th>Mode de paiement</th>
+								<th>Banque</th>
+								<th>Date</th>
+								<th>N° de la piece</th>
+								<th>Image</th>
+								<th>Annuler</th>
+								
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="pay:${payments}">
+							
+								<td th:text="${pay.id}"></td>
+								<td th:text="${pay.client.nom}+' '+${pay.client.prenom}+' '+${pay.client.code}"></td>
+								<td th:text="${pay.registre_commerce.nom}+' '+${pay.registre_commerce.prenom}+' '+${pay.registre_commerce.numero_rc}"></td>
+								<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${pay.mode_paiement.designation}"></td>
+								<td th:if="${pay.banque}==null" ></td>
+								<td th:unless="${pay.banque}==null" th:text="${pay.banque.nom_banque}"></td>
+								<td th:text="${pay.date}"></td>
+								<td th:text="${pay.numero_piece}"></td>
+								<td >
+									<button th:if="${pay.path_img}==''" class="btn btn-info add_img" th:attr="id_payment=${pay.id}">Ajouter image</button> 
+									
+									<a th:unless="${pay.path_img}==''" href="#">
+										<img alt="" class="img" height="100" width="100" style="height: auto;" 
+										th:attr="src='http://localhost:8081/display_img?link='+${pay.path_img}" > 
+									</a>
+									
+								</td>
+								<td style="text-align: center;"> <button th:if="${cancel_pay}==true" type="button" class="btn btn-danger cancel" 
+																	th:attr="id_payment=${pay.id},
+																			 nom_client=${pay.client.nom}+' '+${pay.client.prenom},
+																			 code_client=${pay.client.code},
+																			 montant=${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 0,'COMMA')},
+																			 num_piece=${pay.numero_piece}"> 
+																												<i class="far fa-trash"></i>
+																										 </button> 
+								</td>
+								
+							</tr>
+						
+						</tbody>
+						
+						<tfoot>
+						
+							<tr>
+							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								
+							</tr>
+						
+						</tfoot>
+						
+					</table>
+				
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<div id="new_payment_modal" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone_pay" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title_pay" class="modal-title" > </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body" >
+	         
+	         <div id="print_content">
+	         
+	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         
+	         </div>
+	         
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+	<div id="confirmation" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered"  role="document">
+	  	
+	    <div class="modal-content">
+	      
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-exclamation-triangle" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title">Attention</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body">
+	        <p id="text_confirmation"></p>
+	      </div>
+	      
+	      <div class="modal-footer justify-content-center">
+	      	<button id="confirm" type="button" class="btn btn-primary">OUI</button>
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">NON</button>
+	      </div>
+	      
+	    </div>
+	    
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+	<div id="img_display" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      
+	      <div class="modal-body text-center" >
+	         
+	         	<img id="img_preview" class="" alt="" src="">
+	         	
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+	<div id="add_image" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered"  role="document">
+	  	
+	    <div class="modal-content">
+	      
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-plus-circle" style="font-size:30px;color:black;margin-right:10px;"></i> <h5 class="modal-title" id="title">Ajouter image</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body">
+	      
+	        <form id="frm" th:action="@{/add_img_payment}" method="post" autocomplete="off" enctype="multipart/form-data">
+	        	
+	        	<input type="hidden" id="id-payment" name="id-payment">
+	        	
+		        <div class="row">
+										
+					<div class="col-md-3">
+						
+						<label> <b>Image de la piece</b> </label>
+						
+						<div class="kv-avatar">
+			                <div class="file-loading">
+			                    <input id="img_piece" name="img_piece" type="file" accept=".jpg,.png,.jpeg,.svg" >
+			                </div>
+			            </div>
+						
+					</div>
+					
+				</div>
+				
+				<hr>
+				
+				<div class="d-flex justify-content-center">
+				
+					<input id="sub" type="submit" class="btn btn-primary" value="Valider">
+				
+				</div>
+			
+			</form>
+	        
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	    
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+	
+</body>
+</html>

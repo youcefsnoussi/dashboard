@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\PagesJS\client\list_rc_client.js"></script>
+		
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100">
+		
+		<div class="card">
+		
+			<!--  
+			<h3 class="card-header  text-center"> <i class="far fa-repeat"></i>  Relation Client RC </h3>
+			<br>
+			-->
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					
+						<thead class="thead-dark">
+						
+							<tr>
+							
+								<th>Code Client</th>
+								<th>Nom Prénom Client</th>
+								<th>Category</th>
+								<th>Nom Prénom RC</th>
+								<th>Date début</th>
+								<th>Date fin</th>
+								
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="rc_client:${rc_client}">
+							
+								<td th:text="${rc_client.client.code}"></td>
+								<td th:text="${rc_client.client.nom}+' '+${rc_client.client.prenom}"></td>
+								<td th:text="${rc_client.client.category.nom_category}"></td>
+								<td th:text="${rc_client.registre_commerce.nom}+' '+${rc_client.registre_commerce.prenom}"></td>
+								<td th:text="${rc_client.date_debut}"></td>
+								<td th:text="${rc_client.date_fin}"></td>
+								
+							</tr>
+						
+						</tbody>
+						
+						<tfoot>
+						
+							<tr>
+							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								
+							</tr>
+						
+						</tfoot>
+						
+					</table>
+				
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	
+	
+	
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Gestion de blé</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+	 
+	</head>
+	<body>
+		
+		<!--  <header th:insert="navbar.html"> </header> -->
+		
+		<div class="container">	
+		
+			<form id="frm" th:action="@{/login}" method="post" autocomplete="off">
+			
+							<div class="row justify-content-center">
+								
+								<div class="col-12 col-md-6 align-self-center">
+									
+									<div class="card shadow p-3 mb-5 bg-white rounded" >
+									
+										<img class="card-img-top  align-self-center " src="resources\images\login\sim.png" alt="" style="width:300px;">
+										
+  										<div class="card-body">
+									
+											  <div class="text-center mb-4">
+											  
+											    <h1 class="h3 mb-3 font-weight-normal">Commercial</h1>
+											    
+											  </div>
+												
+											  <div th:if="${param.error}">
+											  	
+											  
+												<p style="color: red">Nom d'utilisateur ou mot de passe incorrecte !!!</p>
+										
+											  </div>
+											
+											  <div th:if="${param.out}">
+											  
+												<p style="color: red">Déconnecter :)</p>
+										
+											  </div>
+																
+											  <div class="form-label-group">
+											  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+											    <input type="text" id="inputUsername" class="form-control" name="username" required autofocus>
+											    <label for="inputUsername">Nom d'utilisateur</label>
+											  </div>
+											
+											  <div class="form-label-group">
+											    <input type="password" id="inputPassword" class="form-control" name="password" required>
+											    <label for="inputPassword">Mot de passe</label>
+											  </div>
+											
+											  <button class="btn btn-lg btn-primary btn-block" type="submit">Identification</button>
+											  <p class="mt-5 mb-3 text-muted text-center">&copy; SIM-AGRO</p>
+									  
+								</div>
+							</div>
+							
+					</div>
+					
+				</div>	
+				
+			</form>
+		
+		</div>
+		
+	</body>
+</html>

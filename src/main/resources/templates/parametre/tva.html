@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\PagesJS\parametre\tva.js"></script>
+		
+</head>
+<body>
+	
+	<div class="container h-100">
+		
+		<div class="card">
+		
+			<h3 class="card-header  text-center"> <i class="far fa-percentage"></i>  TVA </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container">
+					
+					<div class="row">
+					
+						<div class="col-md-3">
+						
+							<button id="add_taux" class="btn btn-dark btn_icon"> <span> Nouveau Taux </span> <i class="far fa-plus-circle"></i> </button>
+						
+						</div>
+					
+					</div>
+					
+					<hr>
+					
+					<table id="list_b" class="table table-bordered table-hover">
+					
+						<thead class="thead-dark">
+						
+							<tr>
+							
+								<th>Taux TVA (%)</th>
+								<th>Modifier</th>
+								
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="tva:${tva}">
+							
+								<td th:text="${tva.taux_tva}"></td>
+								<td style="text-align: center;"> <button type="button" class="btn btn-info edit" th:attr="id_tva=${tva.id},
+																														  taux_tva=${tva.taux_tva}"
+																														  > 
+																				<i class="far fa-edit"></i>
+																		 </button> 
+								</td>
+								
+							</tr>
+						
+						</tbody>
+						
+					</table>
+					
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<!-- --------------------------------------------------------------------------------------------------- -->
+	
+	
+	<div id="new_tva" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i class="" style="font-size:30px;margin-right:10px;" id="icone"></i> <h5 class="modal-title" id="title"> Information </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body">
+	
+			<form id="frm" th:action="@{/add_edit_tva}" method="post" autocomplete="off">
+				
+				<input type="hidden" id="id_tva" name="id_tva">
+				<br>
+				<div class="row justify-content-center">
+				
+					<div class="col-md-4">
+						
+						<div class="input-group">
+												
+							<input type="number" id="tva" class="form-control clear" step="any" name="tva" required th:value="${tva}">
+							
+							<div class="input-group-append">
+						      <div class="input-group-text"> <b>%</b> </div>
+						    </div>
+							
+						</div>
+					
+					</div>
+				
+				</div>
+				
+				<hr>
+				
+				<div class="d-flex justify-content-center">
+					
+					<input type="submit" class="btn btn-primary" value="Valider">
+				
+				</div>
+				
+				<br>
+			
+			</form>
+	
+	</div>
+   
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+	
+	
+</body>
+</html>

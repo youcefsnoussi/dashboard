@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
+		
+		
+		<link rel="stylesheet" href="resources\PagesCSS\parametre\entreprise_information.css"/>
+		<script type="text/javascript" src="resources\PagesJS\parametre\entreprise_information.js"></script>
+		
+		
+</head>
+<body>
+	
+	<div class="container h-100">
+		
+		<div class="card">
+		
+			
+			<h3 class="card-header  text-center"> <i class="far fa-align-justify"></i>  Information de l'entreprise </h3>
+			<br>
+			
+			<div class="card-body">
+			
+					<form id="frm" th:action="@{/entreprise_info}" method="post" autocomplete="off" enctype="multipart/form-data">
+					
+							  
+							  <div class="card-body" th:with="info = ${info_entreprise}">
+							  
+							  <input type="hidden" id="logo_preview" th:value="${info.chemain_logo}">
+							  <input type="hidden" id="id_banque" th:value="${id_banque}">
+										
+								<div class="row">
+								
+									<div class="col-md-3">
+									
+										<label> Nom de l'entreprise </label>
+										
+										<input type="text" id="nom_entreprise" class="form-control" name="nom_entreprise" th:value="${info.nom_entreprise}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> Capitale (DA)</label>
+										
+										<input type="number" step="any" id="capitale" class="form-control" name="capitale" th:value="${info.capitale}" required/>
+										
+									</div>
+									
+								</div>
+								
+								<br>
+									
+								<div class="row">
+								
+									<div class="col-md-3">
+									
+										<label> Adresse de facturation </label>
+										
+										<input type="text" id="adresse_facturation" class="form-control" name="adresse_facturation" th:value="${info.adresse_facturation}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> Commune </label>
+										
+										<input type="text" id="commune" class="form-control" name="commune" th:value="${info.commune}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> Wilaya </label>
+										
+										<input type="text" id="wilaya" class="form-control" name="wilaya" th:value="${info.wilaya}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> Code Postal </label>
+										
+										<input type="text" id="code_postal" class="form-control" name="code_postal" th:value="${info.code_postal}" required/>
+										
+									</div>
+									
+								</div>
+								
+								<br>
+								
+								<div class="row">
+								
+									<div class="col-md-3">
+									
+										<label> Telephone </label>
+										
+										<input type="text" id="telephone" class="form-control" name="telephone" th:value="${info.telephone}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> Fax </label>
+										
+										<input type="text" id="fax" class="form-control" th:value="${info.fax}" name="fax" />
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> E-mail </label>
+										
+										<input type="email" id="email" class="form-control" th:value="${info.email}" name="email" />
+										
+									</div>
+									
+								</div>
+								
+								<br>
+								
+								<div class="row">
+								
+									<div class="col-md-3">
+									
+										<label> Banque </label>
+										  
+										 <select  id="banque" class="form-control" name="banque">
+										  
+											 <option th:each="banque:${banque}"  th:value="${banque.id}"
+											 	 th:text="${banque.nom_banque}" >  </option>	 
+										 	 
+										 </select>
+										
+										
+									</div>
+								
+								</div>
+								
+								<hr>
+								
+								<div class="row">
+								
+									<div class="col-md-4">
+									
+										<label> Activité </label> 
+										<textarea rows="5" id="activite" class="form-control" name="activite"
+										 th:text="${info.activite_entreprise}" required></textarea>
+										
+									</div>
+									
+								</div>
+								
+								<br>
+								
+								<div class="row">
+								
+									<div class="col-md-3">
+									
+										<label> N° RC </label>
+										
+										<input type="text" id="num_rc" class="form-control" name="num_rc" th:value="${info.num_rc}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> N° NIF </label>
+										
+										<input type="text" id="num_nif" class="form-control" name="num_nif" th:value="${info.num_nif}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> N° NIS </label>
+										
+										<input type="text" id="num_nis" class="form-control" name="num_nis" th:value="${info.num_nis}" required/>
+										
+									</div>
+									
+									<div class="col-md-3">
+									
+										<label> N° ART </label>
+										
+										<input type="text" id="num_art" class="form-control" name="num_art" th:value="${info.num_art}" required/>
+										
+									</div>
+									
+								</div>
+								
+								<br>
+								
+							  	<div class="row">
+									
+									<div class="col-md-3">
+										
+										<label> <b>Logo</b> </label>
+										
+										<div class="kv-avatar">
+							                <div class="file-loading">
+							                    <input id="logo" name="logo" type="file" accept=".jpg,.png,.jpeg,.svg" required>
+							                </div>
+							            </div>
+										
+									</div>
+									
+								</div>
+						
+						<br> <!-- ------------------------------------------------------------------------------------------ -->
+						
+						
+						
+						<hr>
+						
+						<div class="d-flex justify-content-center">
+						
+							<input type="submit" class="btn btn-primary" value="Valider">
+						
+						</div>
+						
+					</div>
+			
+				</form>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+</body>
+</html>

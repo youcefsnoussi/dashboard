@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+.img{
+	
+	margin-top:0%;
+	margin-left:37%;
+	
+}
+
+@media  screen and (min-width : 320px) and (max-width : 600px) /* height >= 820 px */
+{
+    .img {
+        margin-top: 5%;
+        margin-left: 0%;
+        width:100%;
+    }
+}

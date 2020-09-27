@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\plugins\piexif.js"></script>
+		
+		<script type="text/javascript" >
+		
+		$(document).ready(function() {
+			
+			var getUrlParameter = function getUrlParameter(sParam) {
+			    var sPageURL = window.location.search.substring(1),
+			        sURLVariables = sPageURL.split('&'),
+			        sParameterName,
+			        i;
+
+			    for (i = 0; i < sURLVariables.length; i++) {
+			        sParameterName = sURLVariables[i].split('=');
+
+			        if (sParameterName[0] === sParam) {
+			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+			        }
+			    }
+			};
+			
+			var ret = getUrlParameter('ret');
+			
+			if(ret!=null){
+				
+				$("#title").text("Information");
+				$("#icone").attr("class","far fa-info-circle");
+				
+				$("#text").text("Remboursement effectuer avec succes !!!");
+				
+				$("#error").modal('show');
+					
+			}
+			
+			var img_path = $("#img").val();
+			
+			$("#img_piece").fileinput({
+			    overwriteInitial: true,
+			    maxFileSize: 25000,
+			    showClose: false,
+			    showCaption: false,
+			    browseLabel: '',
+			    removeLabel: '',
+			    browseIcon: '<i class="far fa-folder-open"></i>',
+			    removeIcon: '<i class="far fa-trash-alt"></i>',
+			    removeTitle: 'Cancel or reset changes',
+			    elErrorContainer: '#kv-avatar-errors-1',
+			    msgErrorClass: 'alert alert-block alert-danger',
+			    defaultPreviewContent: '<img src="/display_img?link='+img_path+'" >',
+			    layoutTemplates: {main2: '{preview} {remove} {browse}'},
+			    allowedFileExtensions: ["jpg", "png", "svg","jpeg"]
+			});
+			
+			$("#client").change(function(){
+				
+				onchange_select_client();
+			
+			});
+			
+			$("#sub").click(function(){
+				
+				var mnt = parseFloat($('option:selected', $("#rc")).attr('balance'))*(-1);
+				
+				if( parseFloat($("#montant").val()) > mnt ){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").text("Le montant a rembourser supperieur a la balance actuel ");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					//console.log("submit");
+					$(this).prop("disabled","true");
+					$("#frm").submit();
+					
+				}
+				
+				
+			});
+			
+			onchange_select_client();
+			
+		});
+		
+		function onchange_select_client (){
+			
+			//console.log("enter");
+			
+			var id_client = $("#client").val();
+			
+			$("#rc").empty();
+			$("#rc").selectpicker('refresh');
+			
+			$.ajax({
+				url : 'get_rc_by_client',
+				data : {
+					id_client : id_client
+				},
+				success : function(responseJson) {
+					
+					if (responseJson != "null") {
+
+						$.each(responseJson, function(key, value) {
+							
+							if(parseFloat(value.sold_encours)<0){
+								
+								$("#rc").append('<option value="'+value.id+'" rc="'+value.numero_rc+'" data-subtext="'+value.numero_rc+'" nif="'+value.numero_nif+'"' 
+										+' art="'+value.numero_art+'" plafond="'+value.plafond+'" balance="'+value.sold_encours+'" >'+value.nom+' '+value.prenom+'</option>');
+								
+							}
+							
+						});
+						
+						$("#rc").selectpicker('refresh');
+					}
+					
+				}
+				
+			});
+			
+		}
+		
+		</script>
+		
+		<style type="text/css">
+		
+			.kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover {
+			    margin: 0;
+			    padding: 0;
+			    border: none;
+			    box-shadow: none;
+			    text-align: center;
+			}
+			.kv-avatar {
+			    display: inline-block;
+			}
+			.kv-avatar .file-input {
+			    display: table-cell;
+			    width: 100%;
+			}
+			.kv-reqd {
+			    color: red;
+			    font-family: monospace;
+			    font-weight: normal;
+			}
+		
+		</style>
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100">
+		
+		<div class="card">
+		
+			<!--  
+			<h3 class="card-header  text-center"> <i class="far fa-cash-register"></i>  Paiement </h3>
+			
+			
+			<br>
+			-->
+			<div class="card-body">
+			
+				<div class="container">
+					
+					<form id="frm" th:action="@{/remboursement_post}" method="post" autocomplete="off" enctype="multipart/form-data">
+					
+						<input type="hidden" id="img" value="">
+						
+						
+						<div class="row">
+						
+							<div class="col-md-3">
+							
+								<label>Client</label>
+								
+								<select id="client" name="client" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								
+									<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.nom}+' '+${clt.prenom}"
+											th:attr="data-subtext=${clt.code}"></option>
+								
+								</select>
+								
+							</div>
+							
+							
+							<div class="col-md-3 offset-md-2">
+							
+								<label>Registre Commerce</label>
+								
+								<select id="rc" name="rc" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								
+									
+								
+								</select>
+								
+							</div>
+							
+							
+						</div>
+						
+						<hr>
+						
+						<div class="row">
+						
+							<div class="col-md-3">
+							
+								<label>Mode paiement</label>
+								
+								<select id="mode_pay" name="mode_pay" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								
+									<option th:each="mode_p:${mode_payement}" th:value="${mode_p.id}" th:text="${mode_p.designation}"></option>
+								
+								</select>
+								
+							</div>
+							
+							<div class="col-md-3">
+							
+								<label>Banque</label>
+								
+								<select id="bank" name="bank" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+									
+									<option value="0"> Aucune</option>
+									<option th:each="bank:${bank}" th:value="${bank.id}" th:text="${bank.nom_banque}"></option>
+								
+								</select>
+								
+							</div>
+							
+							<div class="col-md-3">
+							
+								<label>Numero de la piece</label>
+								
+								<input type="text" id="num_piece" name="num_piece" class="form-control" required>
+								
+							</div>
+							
+						</div>
+						
+						<br>
+						
+						<div class="row">
+							
+							<div class="col-md-3">
+								
+								<label>Montant</label>
+								
+								<div class="input-group">
+								
+									<input type="number" step="any" value="" id="montant" name="montant" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+									
+									<div class="input-group-append">
+									    <span class="input-group-text" style="margin-bottom:5px">DA</span>
+									</div>
+								
+								</div>
+							
+							</div>
+							
+							<div class="col-md-3">
+							
+								<label>Date de la piece</label>
+								
+								<input type="date" id="date_piece" name="date_piece" class="form-control">
+								
+							</div>
+							
+						</div>
+						
+						<hr>
+							
+						<div class="row">
+									
+							<div class="col-md-3">
+								
+								<label> <b>Image de la piece</b> </label>
+								
+								<div class="kv-avatar">
+					                <div class="file-loading">
+					                    <input id="img_piece" name="img_piece" type="file" accept=".jpg,.png,.jpeg,.svg" >
+					                </div>
+					            </div>
+								
+							</div>
+							
+						</div>
+						
+						<hr>
+						
+						<div class="d-flex justify-content-center">
+						
+							<input id="sub" type="button" class="btn btn-primary" value="Valider">
+						
+						</div>
+					
+					</form>
+					
+				</div>
+					
+				
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------ -->
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------ -->
+	
+	
+	
+	
+</body>
+</html>
