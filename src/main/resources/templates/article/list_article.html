@@ -39,7 +39,7 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([1,2,3,4,5]).every( function () {
+			            this.api().columns([1,2,3,4]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value=""></option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -82,6 +82,18 @@
 				$("#title").text("Nouveau Article");
 				
 				$("#icone").attr("class","far fa-bread-slice");
+				             
+				$("#new_art").modal("show");
+				
+			});
+			
+			$("#add_redux_prix").click(function(){ 
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="950px" onload="" frameborder="0" src="/new_reduction"></iframe>');
+				
+				$("#title").text("Nouvelle Réduction");
+				
+				$("#icone").attr("class","far fa-user-tag");
 				             
 				$("#new_art").modal("show");
 				
@@ -131,6 +143,12 @@
 						
 						</div>
 						
+						<div class="col-md-3">
+						
+							<button id="add_redux_prix" class="btn btn-dark btn_icon"> <span> Ajouter une nouvelle reduction de prix </span> <i class="far fa-plus-circle"></i> </button>
+						
+						</div>
+						
 					</div>
 					
 					<hr>
@@ -146,7 +164,6 @@
 								<th>Sous Category</th>
 								<th>Produit</th>
 								<th>Emballage</th>
-								<th>Magasin</th>
 								<th>Pesage</th>
 								<th>Détail</th>
 								
@@ -163,7 +180,6 @@
 								<td th:text="${art.produit.sous_category_produit.nom_sous_category}"></td>
 								<td th:text="${art.produit.designation}"></td>
 								<td th:text="${art.emballage_produit.nom_emballage}"></td>
-								<td th:text="${art.magasin.name}"></td>
 								<td th:text="${art.pesage_produit.pesage}+' '+${art.pesage_produit.unite_pesage}"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-info edit" th:attr="id_art=${art.id}"> 
 																				<i class="far fa-info-square"></i>
@@ -178,7 +194,6 @@
 						
 							<tr>
 							
-								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

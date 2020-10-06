@@ -157,7 +157,31 @@
 						<br>
 	
 						<div class="card-body">
-			
+							
+							<div class="row">
+							
+								<div class="col-md-4">
+								
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration"
+												style="min-width: 76px; text-align: left;">Cause </span>
+										</div>
+										
+										<select id="cause" class="form-control" name="cause" required>
+										
+											<option th:each="cause:${causes}" th:text="${cause.designation}" th:value="${cause.id}">  </option>
+										
+										</select>
+	
+									</div>
+								
+								</div>
+							
+							</div>
+							
+							<br>
+							
 							<div class="row">
 	
 								<div class="col-md-4 column">
@@ -242,7 +266,8 @@
 												style="min-width: 130px; text-align: left;">RC </span>
 										</div>
 										
-										<input type="text" class="form-control" name="num_rc" id="num_rc" th:value="${facture.registre_commerce.numero_rc}" disabled > 
+										<input type="text" class="form-control" name="num_rc" id="num_rc" 
+												th:value="${facture.registre_commerce.numero_rc}" disabled > 
 										
 									</div>
 								</div>

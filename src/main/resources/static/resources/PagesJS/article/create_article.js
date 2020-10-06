@@ -66,6 +66,8 @@ $(document).ready(function(){
 				
 				//--------------------- init sous cat select --------------------
 				
+				console.log($("#id_magasin").val())
+				
 				if($("#article").val()!=""){
 					
 					$("#frm").attr("action","edit_article");

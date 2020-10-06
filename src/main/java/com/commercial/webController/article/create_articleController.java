@@ -2,11 +2,12 @@ package com.commercial.webController.article;
 
 
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,9 @@ import com.commercial.entities.schema.article.repository.*;
 import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.dynamic_data.Magasin;
+import com.commercial.entities.schema.dynamic_data.magasin_article;
 import com.commercial.entities.schema.dynamic_data.repository.MagasinRepository;
+import com.commercial.entities.schema.dynamic_data.repository.magasin_articleRepository;
 import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.static_data.unite_mesure;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
@@ -76,6 +79,9 @@ public class create_articleController {
 	@Autowired
 	MagasinRepository magRepo;
 	
+	@Autowired
+	magasin_articleRepository mag_artRepo;
+	
 	@RequestMapping(value="/add_art")
 	public String client(HttpServletRequest request,
 						 @RequestParam("id_art") long id_art,
@@ -90,6 +96,18 @@ public class create_articleController {
 			
 			model.addAttribute("article", artRepo.getOne(id_art));
 			model.addAttribute("prices", prix_u_art_catcRepo.get_prices_by_CatClient(artRepo.getOne(id_art)));
+			
+			List <Magasin> list_mag = mag_artRepo.get_magasin_by_article(artRepo.getOne(id_art));
+			
+			String ids="";
+			
+			for (int i = 0; i < list_mag.size(); i++) {
+				
+				ids = ids+list_mag.get(i).getId()+"/";
+				
+			}
+			
+			model.addAttribute("magasins", ids);
 			
 		}
 		
@@ -106,11 +124,11 @@ public class create_articleController {
 	}
 	
 	@RequestMapping(value="/create_article",method=RequestMethod.POST)
-	public String inster_article_DB(HttpServletRequest req,
+	public String insert_article_DB(HttpServletRequest req,
 		//@RequestParam("cat_prod") long cat_prod,
 		//@RequestParam("sous_cat_prod") long sous_cat_prod,
 		@RequestParam("prod") long prod,
-		@RequestParam("magasin") long id_magasin,
+		@RequestParam("magasin") long [] id_magasin,
 		@RequestParam("emb_prod") long emb_prod,
 		@RequestParam("pesage_prod") long pesage_prod,
 		@RequestParam("code_art") String code_art,
@@ -123,6 +141,14 @@ public class create_articleController {
 		@SessionAttribute("user") users user){
 		
 		//------------ mazal khedma ta3 code client kifeh ngenerih --------------------//
+		
+		System.out.println(id_magasin);
+		
+		for(int i=0;i<id_magasin.length;i++) {
+			
+			System.out.println("==>"+id_magasin[i]);
+			
+		}
 		
 		String ret = "succes";
 		
@@ -137,7 +163,9 @@ public class create_articleController {
 		emballage_produit emb_produit = embRepo.getOne(emb_prod);
 		
 		pesage_produit pes_produit = pesRepo.getOne(pesage_prod);
-		  
+		
+		
+		
 		//--------------------------
 		
 		article art_if_code_existe = artRepo.if_code_art_exist(code_art);
@@ -147,13 +175,23 @@ public class create_articleController {
 			article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, code_comptable);
 			
 			if(art_if_same_specs==null) {
-				
-				//tva tva = tvaRepo.getOne(id_tva);
+				/*
+				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(), code_comptable, 
+						unite_mesureRepo.getOne(id_unite_mesure), magasin_stock);
+				*/
 				
 				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(), code_comptable, 
-						unite_mesureRepo.getOne(id_unite_mesure), magRepo.getOne(id_magasin)); //----- last parametre image
+						unite_mesureRepo.getOne(id_unite_mesure));
 				
 				artRepo.save(art);artRepo.flush();
+				
+				for(int i=0;i<id_magasin.length;i++) {
+					
+					magasin_article mag_art = new magasin_article(art, magRepo.getOne(id_magasin[i]));
+					
+					mag_artRepo.save(mag_art);mag_artRepo.flush();
+					
+				}
 				
 				for(int i=0;i<cat_client.length;i++) {
 					
@@ -192,7 +230,7 @@ public class create_articleController {
 		@RequestParam("id_art") long id_art,
 		@RequestParam("prod") long prod,
 		@RequestParam("emb_prod") long emb_prod,
-		@RequestParam("magasin") long id_magasin,
+		@RequestParam("magasin") long [] id_magasin,
 		@RequestParam("pesage_prod") long pesage_prod,
 		@RequestParam("unite_mesure_vente") long id_unite_mesure,
 		@RequestParam("code_art") String code_art,
@@ -207,7 +245,7 @@ public class create_articleController {
 		
 		String ret = "succes";
 		
-		get_time_date gtd = new get_time_date();
+		//get_time_date gtd = new get_time_date();
 		
 		//category_produit cat_produit = catpRepo.getOne(cat_prod);
 		
@@ -221,15 +259,13 @@ public class create_articleController {
 		
 		unite_mesure unite_m = unite_mesureRepo.getOne(id_unite_mesure);
 		
-		Magasin magasin = magRepo.getOne(id_magasin);
-		
 		//--------------------------
 		
 		//article art_if_code_existe = artRepo.if_code_art_exist(code_art);
 		
 		article art = artRepo.getOne(id_art);
 		
-		System.out.println("db code = "+art.getCode()+" || code saisie = "+code_art);
+		//System.out.println("db code = "+art.getCode()+" || code saisie = "+code_art);
 		
 		if(art.getCode().equals(code_art)) {
 			
@@ -250,9 +286,25 @@ public class create_articleController {
 				art.setProduit(produit);
 				//art.setTva(tva);
 				art.setUnite_mesure_vente(unite_m);
-				art.setMagasin(magasin);
+				//art.setMagasin_stock(magasin);
 				
 				artRepo.save(art);artRepo.flush();
+				
+				List <magasin_article> list_magasin_encours = mag_artRepo.list_magasin_by_article(art); 
+				
+				for (int i = 0; i < list_magasin_encours.size(); i++) {
+					
+					mag_artRepo.delete(list_magasin_encours.get(i));
+					
+				}
+				
+				for (int i = 0; i < id_magasin.length; i++) {
+					
+					magasin_article mag_art = new magasin_article(art, magRepo.getOne(id_magasin[i]));
+					
+					mag_artRepo.save(mag_art);mag_artRepo.flush();
+					
+				}
 				
 				for(int i=0;i<cat_client.length;i++) {
 					

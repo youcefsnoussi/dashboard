@@ -64,6 +64,8 @@ $(document).ready(function() {
 
 								$.each(responseJson, function(key, value) {
 									
+									console.log(value.id)
+									
 									$("#rc").append('<option value="'+value.id+'" rc="'+value.registre_commerce.numero_rc+'" data-subtext="'+value.registre_commerce.numero_rc+' [ '+value.date_debut+' ➤ '+value.date_fin+' ]" nif="'+value.registre_commerce.numero_nif+'" title="'+value.registre_commerce.numero_rc+'" adresse="'+value.registre_commerce.adresse+'"' 
 											+' art="'+value.registre_commerce.numero_art+'" plafond="'+value.registre_commerce.plafond+'" sold="'+value.registre_commerce.sold_encours+'" nom="'+value.registre_commerce.nom+'" prenom="'+value.registre_commerce.prenom+'">'+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</option>');
 
