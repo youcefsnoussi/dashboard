@@ -11,11 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.commercial.entities.schema.dynamic_data.Magasin;
-import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.static_data.unite_mesure;
-
-import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 
@@ -55,10 +51,6 @@ public class article implements Serializable{
 	@JoinColumn(name = "unite_mesure_vente")
 	private unite_mesure unite_mesure_vente;
 	
-	@ManyToOne
-	@JoinColumn(name = "magasin")
-	private Magasin magasin;
-	
 	public article() {
 		// TODO Auto-generated constructor stub
 	}
@@ -66,7 +58,7 @@ public class article implements Serializable{
 	public article(String code, com.commercial.entities.schema.article.produit produit,
 			com.commercial.entities.schema.article.emballage_produit emballage_produit,
 			com.commercial.entities.schema.article.pesage_produit pesage_produit, String image_article, double vendu,
-			String date_creation, String code_comptable, unite_mesure unite_mesure_vente, Magasin magasin) {
+			String date_creation, String code_comptable, unite_mesure unite_mesure_vente) {
 		super();
 		this.code = code;
 		this.produit = produit;
@@ -77,7 +69,6 @@ public class article implements Serializable{
 		this.date_creation = date_creation;
 		this.code_comptable = code_comptable;
 		this.unite_mesure_vente = unite_mesure_vente;
-		this.magasin = magasin;
 	}
 
 	public long getId() {
@@ -158,14 +149,6 @@ public class article implements Serializable{
 
 	public void setUnite_mesure_vente(unite_mesure unite_mesure_vente) {
 		this.unite_mesure_vente = unite_mesure_vente;
-	}
-
-	public Magasin getMagasin() {
-		return magasin;
-	}
-
-	public void setMagasin(Magasin magasin) {
-		this.magasin = magasin;
 	}
 
 	

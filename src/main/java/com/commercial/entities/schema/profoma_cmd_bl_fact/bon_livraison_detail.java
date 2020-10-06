@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.static_data.unite_mesure;
+import com.commercial.entities.schema.user_menu.users;
 
 @Entity
 
@@ -43,6 +44,10 @@ public class bon_livraison_detail implements Serializable{
 	private double tva;
 	
 	@ManyToOne
+	@JoinColumn(name = "users")
+	private users user_magasin_validate;
+	
+	@ManyToOne
 	@JoinColumn(name = "unite_mesure")
 	private unite_mesure unite_mesure;
 	
@@ -55,7 +60,7 @@ public class bon_livraison_detail implements Serializable{
 
 	public bon_livraison_detail(com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison bon_livraison,
 			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
-			double montant_ht, double montant_tva, double tva,
+			double montant_ht, double montant_tva, double tva, users user_magasin_validate,
 			com.commercial.entities.schema.static_data.unite_mesure unite_mesure, boolean validation) {
 		super();
 		this.bon_livraison = bon_livraison;
@@ -65,6 +70,7 @@ public class bon_livraison_detail implements Serializable{
 		this.montant_ht = montant_ht;
 		this.montant_tva = montant_tva;
 		this.tva = tva;
+		this.user_magasin_validate = user_magasin_validate;
 		this.unite_mesure = unite_mesure;
 		this.validation = validation;
 	}
@@ -133,6 +139,14 @@ public class bon_livraison_detail implements Serializable{
 		this.tva = tva;
 	}
 
+	public users getUser_magasin_validate() {
+		return user_magasin_validate;
+	}
+
+	public void setUser_magasin_validate(users user_magasin_validate) {
+		this.user_magasin_validate = user_magasin_validate;
+	}
+
 	public unite_mesure getUnite_mesure() {
 		return unite_mesure;
 	}
@@ -148,5 +162,7 @@ public class bon_livraison_detail implements Serializable{
 	public void setValidation(boolean validation) {
 		this.validation = validation;
 	}
+
+	
 
 }

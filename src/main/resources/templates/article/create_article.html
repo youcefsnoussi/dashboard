@@ -62,7 +62,7 @@
 						<input type="hidden" id="date_creation" th:value="${article.date_creation}">
 						<input type="hidden" id="id_unite_mesure_vente" th:value="${article.unite_mesure_vente.id}">
 						<input type="hidden" id="prices" th:value="${prices}">
-						<input type="hidden" id="id_magasin" th:value="${article.magasin.id}">
+						<input type="hidden" id="id_magasin" th:value="${magasins}">
 					
 					</div>
 					
@@ -135,9 +135,9 @@
 						
 						<div class="col-md-3">
 						
-							<label> Pesage produit</label>
+							<label> Magasin </label>
 							
-							<select class="form-control" id="magasin" name="magasin" required>
+							<select class="selectpicker" data-style="btn btn-outline-secondary" id="magasin" name="magasin" multiple required>
 								
 								<option th:each="mag:${magasin}" th:value="${mag.id}" th:text="${mag.name}" ></option>
 								

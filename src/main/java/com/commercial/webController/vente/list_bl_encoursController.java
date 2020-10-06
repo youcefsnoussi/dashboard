@@ -312,7 +312,7 @@ public class list_bl_encoursController {
 					if(article[i]!=0 && quantite[i]!=0) {
 						
 						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
-								montant_ht_art[i], tva_art[i], montant_tva_art[i], umRepo.getOne(id_unite_mesure[i]), false);
+								montant_ht_art[i], tva_art[i], montant_tva_art[i], null, umRepo.getOne(id_unite_mesure[i]), false);
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 						
@@ -368,6 +368,7 @@ public class list_bl_encoursController {
 			bon_livraison_detail bl_d_one = bon_l_dRepo.getOne(id_bl_detail[index]);
 			
 			bl_d_one.setValidation(true);
+			bl_d_one.setUser_magasin_validate(user);
 			
 			bon_l_dRepo.save(bl_d_one); bon_l_dRepo.flush();
 			

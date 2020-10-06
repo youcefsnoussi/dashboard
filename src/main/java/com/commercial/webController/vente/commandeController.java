@@ -245,7 +245,9 @@ public class commandeController {
 				if(quantite[i]!=0) {
 					
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], 
-							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], umRepo.getOne(id_unite_mesure[i]), false);
+							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), false);
+					
+					
 					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 					

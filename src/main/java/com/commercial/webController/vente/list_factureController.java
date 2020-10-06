@@ -5,6 +5,7 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
+import com.commercial.entities.schema.static_data.repository.causes_facture_avoirRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
@@ -125,6 +127,9 @@ public class list_factureController {
 	
 	@Autowired
 	mouvementRepository mvmRepo;
+	
+	@Autowired
+	causes_facture_avoirRepository causeRepo;
 	
 	public list_factureController() {
 		// TODO Auto-generated constructor stub
@@ -248,18 +253,20 @@ public class list_factureController {
 			
 			model.addAttribute("facture", fact);
 			
+			model.addAttribute("causes", causeRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+			
 			model.addAttribute("detail_facture", fact_detRepo.get_facture_detail(fact));
 			
 		}
 		else {
 			
-			model.addAttribute("facture", fact);
+			model.addAttribute("facture_avoir", grp.getFacture_avoir());
 			
 			model.addAttribute("avoir","true");
 			
-			model.addAttribute("detail_facture", fact_detRepo.get_facture_detail(fact));
+			model.addAttribute("detail_facture_avoir", fact_avoir_detRepo.get_facture_avoir_detail(grp.getFacture_avoir()));
 			
-			ret = "vente/info_facture";
+			ret = "vente/info_facture_avoir";
 			
 		}
 		
@@ -276,6 +283,7 @@ public class list_factureController {
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
+			@RequestParam("cause") long cause,
 			
 			@RequestParam("id_art") long [] article,
 			@RequestParam("id_um") long [] id_unite_mesure,
@@ -338,7 +346,8 @@ public class list_factureController {
 			
 			//--------------------------------------insert to facture avoir table ------
 			
-			facture_avoir fact_av = new facture_avoir(clt, rc, today, time, numero, montant_ht, montant_tva, montant_ttc, "", fct, user, "", 0);
+			facture_avoir fact_av = new facture_avoir(clt, rc, today, time, numero, montant_ht, montant_tva, montant_ttc, "", fct, user, "", 0, 
+														causeRepo.getOne(cause));
 			
 			//new facture(client, registre_commerce, date, time, numero, montant_ht, tva, matricule_camion, montant_ttc, montant_tva, link_pdf, bon_livraison, mode_paiement, users, etat_sold, sold_rest)
 			

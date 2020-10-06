@@ -6,28 +6,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
+import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
+import com.commercial.entities.schema.client.reduction_client_prixU_article;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
+import com.commercial.entities.schema.client.repository.reduction_client_prixU_articleRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
+import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 
 @RestController
+@SessionAttributes("user")
 
 public class factureRestController {
 	
@@ -55,6 +62,9 @@ public class factureRestController {
 	@Autowired
 	prixUnitaire_article_categoryClient_Repository pu_a_ctRepo;
 	
+	@Autowired
+	reduction_client_prixU_articleRepository reduxRepo;
+	
 	public factureRestController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -64,8 +74,6 @@ public class factureRestController {
 		@RequestParam("code") String code) throws IOException, ParseException{
 		
 		client clt = clientRepo.get_client_by_code(code);
-		
-		System.out.println(clt.getSold_encours());
 		
 		return clt;
 	}
@@ -93,9 +101,33 @@ public class factureRestController {
 		
 		client clt = clientRepo.getOne(id_client);
 		
+		get_time_date gtd = new get_time_date();
+		
 		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt.getCategory());
 		
-		System.out.println(list_art);
+		//------------------------- get reduction if existe -----------------------
+		
+		for(int i=0;i<list_art.size();i++) {
+			
+			prixUnitaire_article_categoryClient pu = list_art.get(i);
+			
+			reduction_client_prixU_article red = reduxRepo.get_reduction_by_clt_art(clt, pu.getArticle(), gtd.get_date()); 
+			
+			System.out.println("====>"+red);
+			
+			if(red != null) {
+				
+				System.out.println("=>"+red.getNouveau_prix());
+				
+				pu.setPrix(red.getNouveau_prix());
+				
+				list_art.set(i, pu);
+				
+			}
+			
+		}
+		
+		//--------------------------------------------------------------------------
 		
 		return list_art;
 		
@@ -158,21 +190,55 @@ public class factureRestController {
 	//------------------------------------------------------------------
 	
 	@RequestMapping(value="/get_notification")
-	public List <facture> notification_facture_ready() throws IOException, ParseException{
+	public List <facture> notification_facture_ready(
+			@SessionAttribute("user") users user
+			) throws IOException, ParseException{
 		
 		List <facture> list_fct = factRepo.get_notification();
+		
+		List <facture> ret = null;
 		
 		for(int i=0;i<list_fct.size();i++) {
 			
 			facture fct = list_fct.get(i);
 			
-			fct.setNotification(true);
-			
-			factRepo.save(fct);factRepo.flush();
+			if(fct.getUsers()==user || user.getRole().getNom_role().equals("Admin") || user.getRole().getNom_role().equals("A.C.imprimer")) {
+				
+				fct.setNotification(true);
+				
+				factRepo.save(fct);factRepo.flush();
+				
+				ret.add(fct);
+				
+			}
 			
 		}
 		
-		return list_fct;
+		return ret;
+		
+	}
+	
+	//_____________________________________ hedi ta3 REST COntroller article mabid dertha hna _____________
+	
+	@RequestMapping(value="/get_prix_by_client")
+	public Map<String, Double> get_prix_article_by_client(
+			@RequestParam("id_client") long id_client,
+			@RequestParam("id_article") long id_article
+			) throws IOException, ParseException{
+		
+		double prix = 0;
+		
+		category_client cat_client = clientRepo.getOne(id_client).getCategory();
+		
+		article art = artRepo.getOne(id_article);
+		
+		prix = pu_a_ctRepo.get_prix_articles_by_CatClient(cat_client, art);
+		
+		Map<String, Double> ret = new HashMap<>();
+		
+		ret.put("prix", prix);
+		
+		return ret;
 		
 	}
 	

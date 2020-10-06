@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.commercial.entities.schema.article.*;
+import com.commercial.entities.schema.user_menu.users;
 
 @Entity
 
@@ -29,23 +30,43 @@ public class reduction_client_prixU_article implements Serializable{
 	@JoinColumn(name = "article")
 	private article article;
 	
+	private double ancien_prix;
+	
 	private double nouveau_prix;
 	
 	private String date_debut;
 	
 	private String date_fin;
 	
+	private String date_etablissement;
+	
+	private String observation;
+	
+	@ManyToOne
+	@JoinColumn(name = "users")
+	private users users;
+	
+	private boolean active = false;
+	
 	public reduction_client_prixU_article() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public reduction_client_prixU_article(client client,article article, double nouveau_prix, String date_debut,String date_fin) {
+	public reduction_client_prixU_article(com.commercial.entities.schema.client.client client,
+			com.commercial.entities.schema.article.article article, double ancien_prix, double nouveau_prix,
+			String date_debut, String date_fin, String date_etablissement, String observation,
+			com.commercial.entities.schema.user_menu.users users, boolean active) {
 		super();
 		this.client = client;
 		this.article = article;
+		this.ancien_prix = ancien_prix;
 		this.nouveau_prix = nouveau_prix;
 		this.date_debut = date_debut;
 		this.date_fin = date_fin;
+		this.date_etablissement = date_etablissement;
+		this.observation = observation;
+		this.users = users;
+		this.active = active;
 	}
 
 	public long getId() {
@@ -72,6 +93,14 @@ public class reduction_client_prixU_article implements Serializable{
 		this.article = article;
 	}
 
+	public double getAncien_prix() {
+		return ancien_prix;
+	}
+
+	public void setAncien_prix(double ancien_prix) {
+		this.ancien_prix = ancien_prix;
+	}
+
 	public double getNouveau_prix() {
 		return nouveau_prix;
 	}
@@ -95,7 +124,39 @@ public class reduction_client_prixU_article implements Serializable{
 	public void setDate_fin(String date_fin) {
 		this.date_fin = date_fin;
 	}
+
+	public String getDate_etablissement() {
+		return date_etablissement;
+	}
+
+	public void setDate_etablissement(String date_etablissement) {
+		this.date_etablissement = date_etablissement;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
+	public users getUsers() {
+		return users;
+	}
+
+	public void setUsers(users users) {
+		this.users = users;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	
-	
-	
+
 }
