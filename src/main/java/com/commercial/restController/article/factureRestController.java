@@ -117,8 +117,6 @@ public class factureRestController {
 			
 			if(red != null) {
 				
-				System.out.println("=>"+red.getNouveau_prix());
-				
 				pu.setPrix(red.getNouveau_prix());
 				
 				list_art.set(i, pu);
