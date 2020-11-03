@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.repository.articleRepository;
-import com.commercial.entities.schema.client.registre_commerce;
 
 @Controller
 @SessionAttributes("user")

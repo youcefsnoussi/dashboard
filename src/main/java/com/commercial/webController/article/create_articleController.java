@@ -16,24 +16,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.emballage_produit;
+import com.commercial.entities.schema.article.magasin_article;
 import com.commercial.entities.schema.article.pesage_produit;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.produit;
 import com.commercial.entities.schema.article.repository.*;
+import com.commercial.entities.schema.backup_edit.article_backup;
+import com.commercial.entities.schema.backup_edit.prixUnitaire_article_categoryClient_backup;
+import com.commercial.entities.schema.backup_edit.repository.article_backupRepository;
+import com.commercial.entities.schema.backup_edit.repository.prixUnitaire_article_categoryClient_backupRepository;
 import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
-import com.commercial.entities.schema.dynamic_data.Magasin;
-import com.commercial.entities.schema.dynamic_data.magasin_article;
-import com.commercial.entities.schema.dynamic_data.repository.MagasinRepository;
-import com.commercial.entities.schema.dynamic_data.repository.magasin_articleRepository;
 import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.static_data.unite_mesure;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
+import com.commercial.functions.track_operations;
 
 
 
@@ -82,34 +85,32 @@ public class create_articleController {
 	@Autowired
 	magasin_articleRepository mag_artRepo;
 	
+	@Autowired
+	article_backupRepository art_bRepo;
+	
+	@Autowired
+	prixUnitaire_article_categoryClient_backupRepository prix_c_bRepo;
+	
+	@Autowired
+	track_operations trk;
+	
 	@RequestMapping(value="/add_art")
-	public String client(HttpServletRequest request,
-						 @RequestParam("id_art") long id_art,
+	public String add_new_article(HttpServletRequest request,
+						 @SessionAttribute("user") users user,
 						 Model model){
 		
-		if(id_art==0) {
-			
-			model.addAttribute("article", null);
-			
-		}
-		else {
-			
-			model.addAttribute("article", artRepo.getOne(id_art));
-			model.addAttribute("prices", prix_u_art_catcRepo.get_prices_by_CatClient(artRepo.getOne(id_art)));
-			
-			List <Magasin> list_mag = mag_artRepo.get_magasin_by_article(artRepo.getOne(id_art));
-			
-			String ids="";
-			
-			for (int i = 0; i < list_mag.size(); i++) {
-				
-				ids = ids+list_mag.get(i).getId()+"/";
-				
-			}
-			
-			model.addAttribute("magasins", ids);
-			
-		}
+		String ret = "";
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("add_article")) ) 
+		{ ret = "article/create_article"; }
+		else { ret = "403"; }
+		
+		//----------------------------------------------------------------
+		
+		model.addAttribute("article", null);
 		
 		model.addAttribute("cat_produit", catpRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		model.addAttribute("cat_client", catclientRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
@@ -119,9 +120,57 @@ public class create_articleController {
 		model.addAttribute("unite_mesure", unite_mesureRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		model.addAttribute("magasin", magRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
-		return "article/create_article";
+		return ret;
 		
 	}
+	
+	//---------------------------------------------------------------------------------------------
+	
+	@RequestMapping(value="/edit_art")
+	public String edit_article(HttpServletRequest request,
+						 @RequestParam("id_art") long id_art,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String ret = "";
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_article")) ) 
+		{ ret = "article/create_article"; }
+		else { ret = "article/info_article"; }
+		
+		//----------------------------------------------------------------
+		
+		model.addAttribute("article", artRepo.getOne(id_art));
+		model.addAttribute("prices", prix_u_art_catcRepo.get_prices_by_CatClient(artRepo.getOne(id_art)));
+		
+		List <Magasin> list_mag = mag_artRepo.get_magasin_by_article(artRepo.getOne(id_art));
+		
+		String ids="";
+		
+		for (int i = 0; i < list_mag.size(); i++) {
+			
+			ids = ids+list_mag.get(i).getId()+"/";
+			
+		}
+		
+		model.addAttribute("magasins", ids);
+			
+		model.addAttribute("cat_produit", catpRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("cat_client", catclientRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("emballage", embRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("pesage", pesRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("tva", tvaRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("unite_mesure", unite_mesureRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("magasin", magRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		
+		return ret;
+		
+	}
+	
+	//---------------------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/create_article",method=RequestMethod.POST)
 	public String insert_article_DB(HttpServletRequest req,
@@ -185,11 +234,23 @@ public class create_articleController {
 				
 				artRepo.save(art);artRepo.flush();
 				
+				//-------------------- tracking operation -----------------------------------
+				
+				trk.add_track("article", "Ajout nouveau article", art.getId(), user);
+				
+				//-------------------- tracking operation -----------------------------------
+				
 				for(int i=0;i<id_magasin.length;i++) {
 					
 					magasin_article mag_art = new magasin_article(art, magRepo.getOne(id_magasin[i]));
 					
 					mag_artRepo.save(mag_art);mag_artRepo.flush();
+					
+					//-------------------- tracking operation -----------------------------------
+					
+					trk.add_track("magasin_article", "Ajout magasin ou l'article peut etre chargé", mag_art.getId(), user);
+					
+					//-------------------- tracking operation -----------------------------------
 					
 				}
 				
@@ -202,6 +263,12 @@ public class create_articleController {
 					prixUnitaire_article_categoryClient prix_u_c = new prixUnitaire_article_categoryClient(art, cat_c, prix_category[i], tva);
 					
 					prix_u_art_catcRepo.save(prix_u_c);prix_u_art_catcRepo.flush();
+					
+					//-------------------- tracking operation -----------------------------------
+					
+					trk.add_track("prixUnitaire_article_categoryClient", "Ajout prix d'article pour catagory client", prix_u_c.getId(), user);
+					
+					//-------------------- tracking operation -----------------------------------
 					
 				}
 				
@@ -290,6 +357,15 @@ public class create_articleController {
 				
 				artRepo.save(art);artRepo.flush();
 				
+				//-------------------- tracking operation + back up -----------------------------------
+				
+				article_backup art_b = new article_backup(art, user);
+				art_bRepo.save(art_b);art_bRepo.flush(); 
+				
+				trk.add_track("article", "modification article", art.getId(), user);
+				
+				//-------------------- tracking operation ---------------------------------------------
+				
 				List <magasin_article> list_magasin_encours = mag_artRepo.list_magasin_by_article(art); 
 				
 				for (int i = 0; i < list_magasin_encours.size(); i++) {
@@ -317,6 +393,16 @@ public class create_articleController {
 					prix_u_c.setTva(tva);
 					
 					prix_u_art_catcRepo.save(prix_u_c);prix_u_art_catcRepo.flush();
+					
+					//-------------------- tracking operation + back up -----------------------------------
+					
+					prixUnitaire_article_categoryClient_backup pcb = new prixUnitaire_article_categoryClient_backup(prix_u_c, user);
+					
+					prix_c_bRepo.save(pcb);prix_c_bRepo.flush(); 
+					
+					trk.add_track("prixUnitaire_article_categoryClient", "Modification prix d'article pour catagory client", prix_u_c.getId(), user);
+					
+					//-------------------- tracking operation ---------------------------------------------
 					
 				}
 				

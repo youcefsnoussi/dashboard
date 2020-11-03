@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.commercial.entities.schema.backup_edit.client_backup;
+import com.commercial.entities.schema.backup_edit.repository.client_backupRepository;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
@@ -29,6 +31,7 @@ import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -53,6 +56,12 @@ public class list_clientController {
 	@Autowired
 	client_registreCommerceRepository crcRepo;
 	
+	@Autowired
+	client_backupRepository clt_bRepo;
+	
+	@Autowired
+	track_operations trk;
+	
 	public list_clientController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -63,8 +72,6 @@ public class list_clientController {
 						 Model model){
 		
 		String id_rc = "";
-		
-		String role_add_client = "add_client";
 		
 		id_rc = request.getParameter("id_rc");
 		
@@ -79,25 +86,7 @@ public class list_clientController {
 			
 			model.addAttribute("clients_info", crcRepo.client_by_rc(rc));
 			
-			role_add_client = "no_add_client";
-			
 		}
-		
-		String s = user.getRole().getIds_banned();
-		
-		if(s!=null && s.contains("add_client")) {
-			
-			//role_add_client = "no_add_client";
-			
-		}
-		else {
-			
-			role_add_client = "no_add_client";
-			
-		}
-		
-		model.addAttribute("add_client", role_add_client);
-		
 		return "client/list_client";
 		
 	}
@@ -162,9 +151,9 @@ public class list_clientController {
 		
 		//------------ mazal khedma ta3 code client kifeh ngenerih --------------------//
 		
-		get_time_date gtd = new get_time_date();
+		//get_time_date gtd = new get_time_date();
 		
-		double sold = 0;
+		//double sold = 0;
 		
 		client clt = clientRepo.getOne(id_c);
 		
@@ -213,7 +202,7 @@ public class list_clientController {
 			clt.setAdresse(adresse);
 			clt.setBanque(banqueRepo.getOne(id_banque));
 			clt.setCategory(cat_clientRepo.getOne(cat_client));
-			clt.setCode("");
+			//clt.setCode("");
 			clt.setCode_postal(code_postal);
 			clt.setEmail(email);
 			clt.setEtat_blockage(etat_blockage); 
@@ -229,7 +218,14 @@ public class list_clientController {
 			
 			clientRepo.save(clt);clientRepo.flush();
 			
+			//-------------------- tracking operation -----------------------------------
 			
+			client_backup clt_b = new client_backup(clt, user);
+			clt_bRepo.save(clt_b);clt_bRepo.flush();
+			
+			trk.add_track("client", "Modification client", clt.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
 		
 		
 		return "redirect:/info_client?id_c="+id_c;

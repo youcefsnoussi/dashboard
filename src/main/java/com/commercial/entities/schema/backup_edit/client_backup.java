@@ -1,28 +1,31 @@
-package com.commercial.entities.schema.client;
+package com.commercial.entities.schema.backup_edit;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.commercial.entities.schema.static_data.*;
+import com.commercial.entities.schema.client.category_client;
+import com.commercial.entities.schema.client.client;
+import com.commercial.entities.schema.static_data.banque;
+import com.commercial.entities.schema.static_data.type_reglement;
+import com.commercial.entities.schema.static_data.unite;
+import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.get_time_date;
 
 @Entity
 
-@Table(name="client" , schema = "client")
+@Table(name="client_backup" , schema = "backup_edit")
 
-public class client implements Serializable{
+public class client_backup implements Serializable{
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	private long id;
 	
 	private String nom;
@@ -37,7 +40,6 @@ public class client implements Serializable{
 	
 	private String fax;
 	
-	@Column(unique = true)
 	private String code;
 	
 	private String date_creation;
@@ -68,17 +70,32 @@ public class client implements Serializable{
 	
 	private String img;
 	
-	public client() {
+	private long id_client;
+	
+	private String date;
+	
+	private String time;
+	
+	@ManyToOne
+	@JoinColumn(name = "users")
+	private users users;
+	
+	public client_backup() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public client(String nom, String prenom, String adresse, String wilaya, String code_postal, String email,
+	public client_backup(String nom, String prenom, String adresse, String wilaya, String code_postal, String email,
 			String telephone, String fax, String code, String date_creation, category_client category,
 			com.commercial.entities.schema.static_data.banque banque,
 			com.commercial.entities.schema.static_data.type_reglement type_reglement,
 			com.commercial.entities.schema.static_data.unite unite, double sold_encours, double plafond,
-			boolean etat_blockage, boolean remise, String img) {
+			boolean etat_blockage, boolean remise, String img, long id_client, users user) {
+		
 		super();
+		
+		get_time_date gtd = new get_time_date();
+		
 		this.nom = nom;
 		this.prenom = prenom;
 		this.adresse = adresse;
@@ -98,6 +115,43 @@ public class client implements Serializable{
 		this.etat_blockage = etat_blockage;
 		this.remise = remise;
 		this.img = img;
+		this.id_client = id_client;
+		this.date = gtd.get_date();
+		this.time = gtd.get_time();
+		this.users = user;
+		
+	}
+	
+	public client_backup(client clt, users user) {
+		
+		super();
+		
+		get_time_date gtd = new get_time_date();
+		
+		this.nom = clt.getNom();
+		this.prenom = clt.getPrenom();
+		this.adresse = clt.getAdresse();
+		this.wilaya = clt.getAdresse();
+		this.code_postal = clt.getCode_postal();
+		this.email = clt.getEmail();
+		this.telephone = clt.getTelephone();
+		this.fax = clt.getFax();
+		this.code = clt.getCode();
+		this.date_creation = clt.getDate_creation();
+		this.category = clt.getCategory();
+		this.banque = clt.getBanque();
+		this.type_reglement = clt.getType_reglement();
+		this.unite = clt.getUnite();
+		this.sold_encours = clt.getSold_encours();
+		this.plafond = clt.getPlafond();
+		this.etat_blockage = clt.isEtat_blockage();
+		this.remise = clt.isRemise();
+		this.img = clt.getImg();
+		this.id_client = clt.getId();
+		this.date = gtd.get_date();
+		this.time = gtd.get_time();
+		this.users = user;
+		
 	}
 
 	public long getId() {
@@ -259,5 +313,37 @@ public class client implements Serializable{
 	public void setImg(String img) {
 		this.img = img;
 	}
-	
+
+	public long getId_client() {
+		return id_client;
+	}
+
+	public void setId_client(long id_client) {
+		this.id_client = id_client;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public users getUsers() {
+		return users;
+	}
+
+	public void setUsers(users users) {
+		this.users = users;
+	}
+
 }

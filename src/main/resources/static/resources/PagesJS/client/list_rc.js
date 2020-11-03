@@ -50,7 +50,7 @@ $(document).ready(function() {
 			
 			$("#add_rc").click(function(){
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/add_rc"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="add_rc"></iframe>');
 				
 				$("#title").text("Nouveau RC");
 				
@@ -64,7 +64,7 @@ $(document).ready(function() {
 				
 				var id_rc = $(this).attr("id_rc");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="800" onload="ifrhgh()" frameborder="0" src="/info_rc?id_rc='+id_rc+' "></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="800" onload="ifrhgh()" frameborder="0" src="info_rc?id_rc='+id_rc+' "></iframe>');
 				
 				$("#title").text("Détail RC");
 				
@@ -76,7 +76,7 @@ $(document).ready(function() {
 			
 			$("#rc_clt").click(function(){
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="700" onload="ifrhgh()" frameborder="0" src="/clt_rc"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="700" onload="ifrhgh()" frameborder="0" src="clt_rc"></iframe>');
 				
 				$("#title").text("Relation registre commerce client");
 				

@@ -15,7 +15,7 @@ $(document).ready(function() {
 	    removeTitle: 'Cancel or reset changes',
 	    elErrorContainer: '#kv-avatar-errors-1',
 	    msgErrorClass: 'alert alert-block alert-danger',
-	    defaultPreviewContent: '<img src="http://localhost:8080/display_img?link='+logo_path+'" >',
+	    //defaultPreviewContent: '<img src="http://localhost:8080/display_img?link='+logo_path+'" >',
 	    layoutTemplates: {main2: '{preview} {remove} {browse}'},
 	    allowedFileExtensions: ["jpg", "png", "svg","jpeg"]
 	    

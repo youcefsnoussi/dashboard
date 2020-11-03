@@ -159,14 +159,14 @@
 				
 				switch(type_op) {
 				  case "Facture":
-					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/info_fact?id_fact='+id_op+'"></iframe>');
+					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="info_fact?id_fact='+id_op+'"></iframe>');
 						
 						$("#title").text("Détail Facture");
 						
 						$("#icone").attr("class","far fa-file-invoice");
 				  break;
 				  case "Facture Avoire":
-					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/fact_avoir?id_fact='+id_op+'"></iframe>');
+					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="fact_avoir?id_fact='+id_op+'"></iframe>');
 						
 						$("#title").text("Détail Facture avoire");
 						

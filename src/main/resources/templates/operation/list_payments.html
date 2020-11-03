@@ -129,7 +129,7 @@
 			
 			$("#new_payment").click(function(){
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="new_payment"></iframe>');
 				
 				$("#title_pay").text("Nouveau paiement");
 				
@@ -141,7 +141,7 @@
 			
 			$("#remboursement").click(function(){
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="/new_rmb"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="new_rmb"></iframe>');
 				
 				$("#title_pay").text("Remboursement");
 				
@@ -190,6 +190,12 @@
 				$("#id-payment").val(id_pay);
 				
 				$("#add_image").modal('show');
+				
+			})
+			
+			$(".cloose").click(function(){
+			
+				location.reload();
 				
 			})
 			
@@ -393,7 +399,7 @@
 	      </div>
 	      
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	        <button type="button" class="btn btn-secondary cloose" data-dismiss="modal">Fermer</button>
 	      </div>
 	      
 	    </div>
@@ -518,7 +524,7 @@
 	      </div>
 	      
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	        <button type="button" class="btn btn-secondary cloose" data-dismiss="modal">Fermer</button>
 	      </div>
 	      
 	    </div>

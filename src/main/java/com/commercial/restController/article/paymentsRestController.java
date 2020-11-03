@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.registre_commerce;
@@ -22,9 +24,12 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement_facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
+import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
+import com.commercial.functions.track_operations;
 
 @RestController
+@SessionAttributes("user")
 
 public class paymentsRestController {
 
@@ -53,6 +58,9 @@ public class paymentsRestController {
 	@Autowired
 	mouvementRepository mvmRepo;
 	
+	@Autowired
+	track_operations trk;
+	
 	//----------------------------------------------------------------------------
 	
 	@RequestMapping(value="/get_rc_by_client")
@@ -70,7 +78,8 @@ public class paymentsRestController {
 	
 	@RequestMapping(value="/cancel_payment")
 	public String cancel_payment(
-		@RequestParam("id_payment") long id_payment) throws IOException, ParseException{
+		@RequestParam("id_payment") long id_payment,
+									@SessionAttribute("user") users user) throws IOException, ParseException{
 		
 		get_time_date gtd = new get_time_date();
 		
@@ -81,6 +90,12 @@ public class paymentsRestController {
 		pay.setCancel(true);
 		
 		payRepo.save(pay);payRepo.flush();
+		
+		//-------------------- tracking operation -----------------------------------
+		
+		trk.add_track("paiement", "Annulation d'un paiement", pay.getId(), user);
+		
+		//-------------------- tracking operation -----------------------------------
 		
 		//-------------- update sold client inverse ----------
 		

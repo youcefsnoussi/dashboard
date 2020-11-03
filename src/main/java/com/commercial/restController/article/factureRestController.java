@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.articleRepository;
+import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
@@ -65,6 +67,9 @@ public class factureRestController {
 	@Autowired
 	reduction_client_prixU_articleRepository reduxRepo;
 	
+	@Autowired
+	magasin_articleRepository magRepo;
+	
 	public factureRestController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -113,8 +118,6 @@ public class factureRestController {
 			
 			reduction_client_prixU_article red = reduxRepo.get_reduction_by_clt_art(clt, pu.getArticle(), gtd.get_date()); 
 			
-			System.out.println("====>"+red);
-			
 			if(red != null) {
 				
 				pu.setPrix(red.getNouveau_prix());
@@ -129,6 +132,17 @@ public class factureRestController {
 		
 		return list_art;
 		
+	}
+	
+	//----------------------------------------------------------------
+	
+	@RequestMapping(value="/ajax_get_magasin_by_art")
+	public List<Magasin> get_magasin_by_article(
+		@RequestParam("id_article") long id_article) throws IOException, ParseException{
+		
+		List<Magasin> list_mag = magRepo.get_magasin_by_article(artRepo.getOne(id_article));
+		
+		return list_mag;
 	}
 	
 	//------------------------------------------------------------------

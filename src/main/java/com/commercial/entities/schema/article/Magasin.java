@@ -1,4 +1,4 @@
-package com.commercial.entities.schema.dynamic_data;
+package com.commercial.entities.schema.article;
 
 import java.io.Serializable;
 
@@ -10,12 +10,12 @@ import javax.persistence.Table;
 
 @Entity
 
-@Table(name="magasin" , schema = "dynamic_data")
+@Table(name="magasin" , schema = "article")
 
 public class Magasin implements Serializable {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	private long id;
 	
 	String name;

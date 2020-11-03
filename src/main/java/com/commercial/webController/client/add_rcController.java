@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.backup_edit.repository.registre_commerce_backupRepository;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
-import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.get_time_date;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -34,31 +34,33 @@ public class add_rcController {
 	@Autowired
 	tva_Repository tvaRepo;
 	
+	@Autowired
+	registre_commerce_backupRepository rcbRepo;
+	
+	@Autowired
+	track_operations trk;
+	
 	public add_rcController() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	@RequestMapping(value="/add_rc")
-	public String rc(HttpServletRequest request,
+	public String add_new_rc(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
 		String ret = "client/create_rc";
 		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("add_rc"))) 
+		{ ret = "client/create_rc"; }
+		else { ret = "403"; }
+		
+		//----------------------------------------------------------------	
+		
 		model.addAttribute("client", clientRepo.findAll());
-		
-		String s = user.getRole().getIds_banned();
-		
-		if(s!=null && s.contains("add_rc")) {
-			
-			//ret = "403";
-			
-		}
-		else {
-			
-			ret = "403";
-			
-		}
 		
 		return ret;
 		
@@ -82,8 +84,6 @@ public class add_rcController {
 		
 		@SessionAttribute("user") users user){
 		
-		get_time_date gtd = new get_time_date();
-		
 		convert_string_to_date_util ctd = new convert_string_to_date_util();
 		
 		System.out.println("tva==="+tva);
@@ -94,7 +94,7 @@ public class add_rcController {
 		
 		date_emission = ctd.convertion_InputDate_to_MyDate(date_emission);
 		
-		//date_fin = ctd.convertion_InputDate_to_MyDate(date_fin);
+		date_fin = ctd.convertion_InputDate_to_MyDate(date_fin);
 		
 		float taux_tva = 0;
 		
@@ -118,6 +118,12 @@ public class add_rcController {
 			//new registre_commerce(nom, prenom, numero_rc, numero_art, numero_nif, date_emission, date_fin, adresse, comune, wilaya, etat, tva, plafond, sold_encours, activite, etat_blockage)
 			
 			rcRepo.save(rc);rcRepo.flush();
+			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("registre_commerce", "Ajout d'un RC", rc.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
 			
 			ret = "added";
 			

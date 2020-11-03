@@ -1,4 +1,4 @@
-package com.commercial.entities.schema.dynamic_data;
+package com.commercial.entities.schema.article;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -6,18 +6,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import com.commercial.entities.schema.article.article;;
+import javax.persistence.Table;;
 
 @Entity
 
-@Table(name="magasin_article" , schema = "dynamic_data")
+@Table(name="magasin_article" , schema = "article")
 
 public class magasin_article {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	private long id;
 	
 	@ManyToOne
