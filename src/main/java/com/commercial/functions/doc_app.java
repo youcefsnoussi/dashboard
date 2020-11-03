@@ -9,6 +9,29 @@ public class doc_app {
 	/*				
 	 * 						ids_banned hia les roles li yakadro yakhedmo bihom 				
 	 * 											ghlat dertha ids_banned
+	 * 				
+	 * 
+	 * 				------------------------------  Article  ---------------------------------
+					- add_reduction => yakder yajouter reduction de prix
+					- add_article => yakder yajouter article
+					- edit_article => yakder imodifier aricle
+					- view_detail_article => yakder ichof detail ta3 article
+					------------------------------  RC  -------------------------------------
+					- add_rc => mayakderch yajouti rc (makach button + page inaccessible)
+					- edit_rc => edit client previlege
+					- rc_client =>yakder yarbet bin rc + client
+					
+					------------------------------ Client -------------------------------------
+					- add_client => manafichich button ta3 add client ma3endoch plafond (=10da) + blocké
+					- add_client_admin => add client normal b plafond
+					- edit_client => yakder edition client
+					
+					------------------------------  Payment -------------------------------------
+					- add_payment =>  yajouti payement
+					- cancel_payment => anuuler payment
+					- add_remboursement => yakder irembourssi
+	 * 
+	 * 				____________________________________________________________________________________________
 	 * 
 	 * 				------------------------------  Client -------------------------------------
 	 *				- add_rc => mayakderch yajouti rc (makach button + page inaccessible)
@@ -27,7 +50,11 @@ public class doc_app {
 	 *
 	 *				------------------------------  VENTE -------------------------------------
 	 *				- change_user_cmd =>  ibedel user li khdem commande 
+	 * 				
+	 * 				
 	 * 
+	 * 				
+
 	 * 
 	 * 
 	 * 

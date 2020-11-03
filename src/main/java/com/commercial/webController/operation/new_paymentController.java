@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
@@ -44,7 +43,7 @@ import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
-import com.commercial.restController.article.paymentsRestController;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -90,6 +89,9 @@ public class new_paymentController {
 	@Autowired
 	remboursementRepository rembRepo;
 	
+	@Autowired
+	track_operations trk;
+	
 	public new_paymentController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -99,7 +101,16 @@ public class new_paymentController {
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
-		String ret = "operation/new_payment";
+		String ret = "";
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("add_payment"))) 
+		{ ret = "operation/new_payment"; }
+		else { ret = "403"; }
+		
+		//----------------------------------------------------------------
 		
 		model.addAttribute("mode_payement", mode_payRepo.findAll());
 		
@@ -108,21 +119,6 @@ public class new_paymentController {
 		model.addAttribute("client", clientRepo.findAll());
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
-		
-		String s = user.getRole().getIds_banned();
-		
-		if(s!=null && s.contains("add_payment")) {
-			
-			
-			
-		}
-		else {
-			
-			ret="403";
-			
-		}
-		
-		
 		
 		return ret;
 		
@@ -135,7 +131,16 @@ public class new_paymentController {
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
-		String ret = "operation/remboursement";
+		String ret = "";
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("add_remboursement"))) 
+		{ ret = "operation/remboursement"; }
+		else { ret = "403"; }
+		
+		//----------------------------------------------------------------
 		
 		model.addAttribute("mode_payement", mode_payRepo.findAll());
 		
@@ -144,21 +149,6 @@ public class new_paymentController {
 		model.addAttribute("client", clientRepo.findAll());
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
-		
-		String s = user.getRole().getIds_banned();
-		
-		if(s!=null && s.contains("add_remboursement")) {
-			
-			
-			
-		}
-		else {
-			
-			ret="403";
-			
-		}
-		
-		
 		
 		return ret;
 		
@@ -255,6 +245,12 @@ public class new_paymentController {
 					banque, user, num_piece, img_path, false);
 			
 			payRepo.save(pay);payRepo.flush();
+			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("paiement", "Ajout nouveau paiement", pay.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
 			
 			//-------------- update sold client
 			
@@ -406,6 +402,12 @@ public class new_paymentController {
 			
 			payRepo.save(pay);payRepo.flush();
 			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("paiement", "Ajout l'image du paiement", pay.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
+			
 			return ret;
 		
 	}
@@ -472,6 +474,12 @@ public class new_paymentController {
 			
 			
 			rembRepo.save(rmb);rembRepo.flush();
+			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("remboursement", "Ajout d'un rembourssement", rmb.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
 			
 			//-------------- update sold client
 			

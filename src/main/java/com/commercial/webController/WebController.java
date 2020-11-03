@@ -13,11 +13,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.repository.articleRepository;
+import com.commercial.entities.schema.backup_edit.article_backup;
+import com.commercial.entities.schema.backup_edit.repository.article_backupRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
+import com.commercial.entities.schema.user_menu.login_track;
 import com.commercial.entities.schema.user_menu.roles;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.entities.schema.user_menu.repository.login_trackRepository;
 import com.commercial.entities.schema.user_menu.repository.menuRepository;
 import com.commercial.entities.schema.user_menu.repository.rolesRepository;
 import com.commercial.entities.schema.user_menu.repository.roles_menuRepository;
@@ -50,6 +57,16 @@ public class WebController {
 	
 	@Autowired
 	private client_registreCommerceRepository client_rcRepo;
+	
+	@Autowired
+	private login_trackRepository loginRepo;
+	
+	@Autowired
+	articleRepository artRepo;
+	
+	@Autowired
+	article_backupRepository art_bRepo;
+	
 	
 	@RequestMapping(value="/")
 	
@@ -159,14 +176,70 @@ public class WebController {
 	}
 	
 	@RequestMapping(value="/acceuil")
-	public String acceuil(){
+	public String acceuil(HttpServletRequest request, @SessionAttribute("user") users user){
+		
+		String adresse = request.getRemoteAddr();
+		
+		get_time_date gtd = new get_time_date();
+		
+		Cookie [] cookie = request.getCookies();
+		
+		for(int i=0;i<cookie.length;i++) {
+			
+			System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
+			
+			if(cookie[i].getName().equals("JSESSIONID")) {
+				
+				String cookie_value = cookie[i].getValue();
+				
+				login_track lt = loginRepo.if_login_exist(cookie_value);
+				
+				if(lt==null) {
+					
+					login_track new_lt = new login_track(user, adresse, gtd.get_date(), gtd.get_time(), "", "", cookie_value);
+					
+					loginRepo.save(new_lt); loginRepo.flush();
+					
+				}
+				
+			}
+			
+		}
 		
 		return "acceuil";
 		
 	}
 	
 	@RequestMapping(value="/logout")
-	public String logout(HttpServletRequest request,HttpServletResponse response){
+	public String logout(HttpServletRequest request, HttpServletResponse response, @SessionAttribute("user") users user){
+		
+		get_time_date gtd = new get_time_date();
+		
+		Cookie [] cookie = request.getCookies();
+		
+		for(int i=0;i<cookie.length;i++) {
+			
+			System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
+			
+			if(cookie[i].getName().equals("JSESSIONID")) {
+				
+				String cookie_value = cookie[i].getValue();
+				
+				login_track lt = loginRepo.if_login_exist(cookie_value);
+				
+				if(lt!=null) {
+					
+					lt.setDate_logout(gtd.get_date());
+					
+					lt.setTime_logout(gtd.get_time());
+					
+					loginRepo.save(lt); loginRepo.flush();
+					
+				}
+				
+			}
+			
+		}
 		
 		response.addCookie(new Cookie("JSESSIONID", "0000"));
 		
@@ -174,6 +247,7 @@ public class WebController {
 		
 	}
 	
+	//---------------------------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/login")
 	public String login(){
@@ -181,6 +255,8 @@ public class WebController {
 		return "login";
 		
 	}
+	
+	//----------------------------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/403")
 	public String error(){

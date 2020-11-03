@@ -50,7 +50,7 @@ $(document).ready(function() {
 					$("#solde_rc").val("");
 					$("#max_solde_rc").val("");
 					
-					$.ajaxSetup({async: false});
+					//$.ajaxSetup({async: false});
 					$.ajax({
 						url: 'ajax_get_rc_by_client_fact',
 						//type: 'POST',
@@ -84,7 +84,7 @@ $(document).ready(function() {
 					$('.art').find('option:not(:first)').remove();
 					$(".art").selectpicker('refresh');
 					
-					$.ajaxSetup({async: false});
+					//$.ajaxSetup({async: false});
 					$.ajax({
 						url: 'ajax_get_art_by_client_cat',
 						//type: 'POST',
@@ -116,7 +116,7 @@ $(document).ready(function() {
 						}
 					});
 					
-					//-----------------------------------------------------
+					//-----------------------------------------------------------
 					
 					$(".qte").attr("readonly", false);
 					$(".qte").val(0);
@@ -173,6 +173,34 @@ $(document).ready(function() {
 	$(".art").change(function(){
 		
 		var parrent = $(this).parent().parent().parent();
+		
+		//-------------------- get unite chargement by art -----------------
+		
+		parrent.find('#id_magasin').empty();
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_get_magasin_by_art',
+			//type: 'POST',
+			dataType: 'json',
+			data : {
+				id_article	: $(this).val(),
+	        },
+	        success : function(responseJson) {
+	        	
+				$.each(responseJson, function(key, value) {
+					
+					parrent.find("#id_magasin").each(function(){
+						
+						$(this).append('<option value="'+value.id+'" > '+value.name+' </option>');
+						
+					});
+					
+				});
+				
+			}
+		});
+		
+		//-----------------------------------------------------
 		
 		console.log("art val = "+$(this).val())
 		

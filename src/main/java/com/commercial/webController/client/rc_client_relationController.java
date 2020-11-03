@@ -23,6 +23,7 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.time_between;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -38,15 +39,28 @@ public class rc_client_relationController {
 	@Autowired
 	client_registreCommerceRepository crcRepo;
 	
+	@Autowired
+	track_operations trk;
+	
 	public rc_client_relationController() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	@RequestMapping(value="/clt_rc")
 	public String clt_rc(HttpServletRequest request,
+						 @SessionAttribute("user") users user,
 						 Model model){
 		
-		get_time_date gtd = new get_time_date();
+		String ret = "";
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("rc_client"))) 
+		{ ret = "client/rc_client"; }
+		else { ret = "403"; }
+		
+		//----------------------------------------------------------------	
 		
 		model.addAttribute("today", rcRepo.rc_active_only());
 		
@@ -54,7 +68,7 @@ public class rc_client_relationController {
 		
 		model.addAttribute("rc", rcRepo.rc_active_only());
 		
-		return "client/rc_client";
+		return ret;
 		
 	}
 	
@@ -68,8 +82,6 @@ public class rc_client_relationController {
 		@SessionAttribute("user") users user){
 		
 		String ret = "no_succes";
-		
-		get_time_date gtd = new get_time_date();
 		
 		time_between tb = new time_between(); 
 		
@@ -91,6 +103,8 @@ public class rc_client_relationController {
 			
 			crcRepo.save(new_crc); crcRepo.flush();
 			
+			trk.add_track("client_registreCommerce", "Creation relation client RC", new_crc.getId(), user);
+			
 			ret = "succes";
 			
 		}
@@ -104,6 +118,8 @@ public class rc_client_relationController {
 					client_registreCommerce new_crc = new client_registreCommerce(clt, rc, date_debut, date_fin, 0);
 					
 					crcRepo.save(new_crc); crcRepo.flush();
+					
+					trk.add_track("client_registreCommerce", "Creation relation client RC", new_crc.getId(), user);
 					
 					ret = "succes";
 					

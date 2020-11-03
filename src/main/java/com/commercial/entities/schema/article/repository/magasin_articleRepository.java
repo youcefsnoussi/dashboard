@@ -1,4 +1,4 @@
-package com.commercial.entities.schema.dynamic_data.repository;
+package com.commercial.entities.schema.article.repository;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
-import com.commercial.entities.schema.dynamic_data.Magasin;
-import com.commercial.entities.schema.dynamic_data.magasin_article;
+import com.commercial.entities.schema.article.magasin_article;
 
 public interface magasin_articleRepository extends JpaRepository<magasin_article,Long>{
 	

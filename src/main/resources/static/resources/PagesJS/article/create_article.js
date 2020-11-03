@@ -89,6 +89,14 @@ $(document).ready(function(){
 					//$("#tva").val($("#id_tva").val());
 					$("#unite_mesure_vente").val($("#id_unite_mesure_vente").val());
 					
+					var units = $("#id_magasin").val().split("/");
+					
+					units.splice(-1,1);
+					
+					$("#magasin").val(units);
+					
+					$("#magasin").selectpicker('refresh');
+					
 				}
 				
 				$("#cat_prod").change(function(){

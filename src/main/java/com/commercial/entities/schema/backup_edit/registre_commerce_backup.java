@@ -1,33 +1,36 @@
-package com.commercial.entities.schema.client;
+package com.commercial.entities.schema.backup_edit;
+
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.commercial.entities.schema.client.registre_commerce;
+import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.get_time_date;
 
 @Entity
 
-@Table(name="registre_commerce" , schema = "client")
+@Table(name="registre_commerce_backup" , schema = "backup_edit")
 
-public class registre_commerce implements Serializable{
+public class registre_commerce_backup implements Serializable{
 	
-	 @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue
 	 private long id;
 	 
 	 private String nom;
 	 private String prenom;
 	 
-	 @Column(unique = true)
 	 private String numero_rc;
 	 
-	 @Column(unique = true)
 	 private String numero_art;
 	 
-	 @Column(unique = true)
 	 private String numero_nif;
 	 
 	 private String date_emission;
@@ -50,14 +53,28 @@ public class registre_commerce implements Serializable{
 	 
 	 private String etat_blockage = "active";
 	 
-	public registre_commerce() {
+	 private long id_rc;
+	 
+	 private String date;
+		
+	 private String time;
+	
+	 @ManyToOne
+	 @JoinColumn(name = "users")
+	 private users users;
+	 
+	public registre_commerce_backup() {
 		// TODO Auto-generated constructor stub
+		super();
 	}
 
-	public registre_commerce(String nom, String prenom, String numero_rc, String numero_art, String numero_nif,
+	public registre_commerce_backup(String nom, String prenom, String numero_rc, String numero_art, String numero_nif,
 			String date_emission, String date_fin, String adresse, String comune, String wilaya, String etat,
-			double tva, double plafond, double sold_encours, String activite, String etat_blockage) {
+			double tva, double plafond, double sold_encours, String activite, String etat_blockage, long id_rc, users user) {
 		super();
+		
+		get_time_date gtd = new get_time_date();
+		
 		this.nom = nom;
 		this.prenom = prenom;
 		this.numero_rc = numero_rc;
@@ -74,6 +91,40 @@ public class registre_commerce implements Serializable{
 		this.sold_encours = sold_encours;
 		this.activite = activite;
 		this.etat_blockage = etat_blockage;
+		this.id_rc = id_rc;
+		this.date = gtd.get_date();
+		this.time = gtd.get_time();
+		this.users = user;
+		
+	}
+
+	public registre_commerce_backup(registre_commerce rc, users user) {
+		
+		super();
+		
+		get_time_date gtd = new get_time_date();
+		
+		this.nom = rc.getNom();
+		this.prenom = rc.getPrenom();
+		this.numero_rc = rc.getNumero_rc();
+		this.numero_art = rc.getNumero_art();
+		this.numero_nif = rc.getNumero_nif();
+		this.date_emission = rc.getDate_emission();
+		this.date_fin = rc.getDate_fin();
+		this.adresse = rc.getAdresse();
+		this.comune = rc.getComune();
+		this.wilaya = rc.getWilaya();
+		this.etat = rc.getEtat();
+		this.tva = rc.getTva();
+		this.plafond = rc.getPlafond();
+		this.sold_encours = rc.getSold_encours();
+		this.activite = rc.getActivite();
+		this.etat_blockage = rc.getEtat_blockage();
+		this.id_rc = rc.getId();
+		this.date = gtd.get_date();
+		this.time = gtd.get_time();
+		this.users = user;
+		
 	}
 
 	public long getId() {
@@ -212,4 +263,36 @@ public class registre_commerce implements Serializable{
 		this.etat_blockage = etat_blockage;
 	}
 
+	public long getId_rc() {
+		return id_rc;
+	}
+
+	public void setId_rc(long id_rc) {
+		this.id_rc = id_rc;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public users getUsers() {
+		return users;
+	}
+
+	public void setUsers(users users) {
+		this.users = users;
+	}
+	
 }

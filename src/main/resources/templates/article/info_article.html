@@ -40,7 +40,6 @@
 			<h3 class="card-header  text-center"> <i class="far fa-bread-slice"></i>  Ajouter un article </h3>
 			<br>
 			-->
-			<form id="frm" th:action="@{/create_article}" method="post" autocomplete="off">
 				
 				<input type="hidden" id="article" th:value="${article}">
 						  
@@ -73,7 +72,7 @@
 						
 							<label> Category produit</label>
 							
-							<select class="form-control" id="cat_prod" name="cat_prod" required>
+							<select class="form-control" id="cat_prod" name="cat_prod" required disabled>
 							
 								<option th:each="cat_produit:${cat_produit}" th:value="${cat_produit.id}" th:text="${cat_produit.nom_category}" ></option>
 								
@@ -85,7 +84,7 @@
 						
 							<label> Sous Category produit</label>
 							
-							<select class="form-control" id="sous_cat_prod" name="sous_cat_prod" required>
+							<select class="form-control" id="sous_cat_prod" name="sous_cat_prod" required disabled>
 								
 								
 							</select>
@@ -96,7 +95,7 @@
 						
 							<label> Produit </label>
 							
-							<select class="form-control" id="prod" name="prod" required>
+							<select class="form-control" id="prod" name="prod" required disabled>
 								
 								
 							</select>
@@ -113,7 +112,7 @@
 						
 							<label> Emballage produit</label>
 							
-							<select class="form-control" id="emb_prod" name="emb_prod" required>
+							<select class="form-control" id="emb_prod" name="emb_prod" required disabled>
 								
 								<option th:each="emballage:${emballage}" th:value="${emballage.id}" th:text="${emballage.nom_emballage}" ></option>
 								
@@ -125,7 +124,7 @@
 						
 							<label> Pesage produit</label>
 							
-							<select class="form-control" id="pesage_prod" name="pesage_prod" required>
+							<select class="form-control" id="pesage_prod" name="pesage_prod" required disabled>
 								
 								<option th:each="pesage:${pesage}" th:value="${pesage.id}" th:text="${pesage.pesage}+' '+${pesage.unite_pesage}" ></option>
 								
@@ -137,7 +136,7 @@
 						
 							<label> Magasin </label> <br>
 							
-							<select class="selectpicker" data-style="btn btn-outline-secondary" id="magasin" name="magasin" multiple required>
+							<select class="selectpicker" data-style="btn btn-outline-secondary" id="magasin" name="magasin" multiple required disabled>
 								
 								<option th:each="mag:${magasin}" th:value="${mag.id}" th:text="${mag.name}" ></option>
 								
@@ -157,7 +156,7 @@
 						
 							<label> Code </label>
 							
-							<input type="text" id="code_art" name="code_art" class="form-control"  required>
+							<input type="text" id="code_art" name="code_art" class="form-control"  required disabled>
 						
 						</div>
 						
@@ -165,7 +164,7 @@
 						
 							<label> Code Comptable</label>
 							
-							<input type="text" id="code_comptable" name="code_comptable" class="form-control"  required>
+							<input type="text" id="code_comptable" name="code_comptable" class="form-control"  required disabled>
 						
 						</div>
 						
@@ -173,7 +172,7 @@
 						 
 							<label> Unite de mesure (Vente)</label>
 							
-							<select class="form-control" id="unite_mesure_vente" name="unite_mesure_vente" required>
+							<select class="form-control" id="unite_mesure_vente" name="unite_mesure_vente" required disabled>
 								
 								<option th:each="u_m:${unite_mesure}" th:value="${u_m.id}" th:text="${u_m.nom_unite_mesure}" ></option>
 								
@@ -202,7 +201,7 @@
 							
 							<div class="input-group" th:each="cat_client:${cat_client}">
 							
-								<input  type="number" step="any" value="0" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+								<input  type="number" step="any" value="0" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" disabled required>
 								
 								<div class="input-group-append">
 							    	<span class="input-group-text" style="margin-bottom:5px">DA</span>
@@ -217,7 +216,7 @@
 							<label> Taux Tva </label>
 							<hr>
 							
-							<select th:each="cat_client:${cat_client}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" required>
+							<select th:each="cat_client:${cat_client}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" required disabled>
 								
 								<option th:each="tva:${tva}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" ></option>
 								
@@ -246,7 +245,7 @@
 							
 							<div class="input-group" th:each="price:${prices}">
 							
-								<input type="number" step="any" th:value="${price.prix}" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+								<input type="number" step="any" th:value="${price.prix}" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" disabled required>
 								
 								<div class="input-group-append">
 								    <span class="input-group-text" style="margin-bottom:5px">DA</span>
@@ -261,7 +260,7 @@
 							<label> Taux Tva </label>
 							<hr>
 							
-							<select th:each="price:${prices}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" required>
+							<select th:each="price:${prices}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" disabled required>
 								
 								<option th:each="tva:${tva}" th:if="${price.tva.id}==${tva.id}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" selected></option>
 								<option th:each="tva:${tva}" th:unless="${price.tva.id}==${tva.id}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" ></option>
@@ -272,17 +271,8 @@
 					
 					</div>
 					
-					<hr>
-					
-					<div class="d-flex justify-content-center">
-					
-						<input type="submit" class="btn btn-primary" value="Valider">
-					
-					</div>
-					
 				</div>
 			
-			</form>
 			
 		</div>
 		

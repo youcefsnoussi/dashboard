@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.commercial.entities.schema.backup_edit.client_backup;
+import com.commercial.entities.schema.backup_edit.repository.client_backupRepository;
 import com.commercial.entities.schema.client.*;
 
 import com.commercial.entities.schema.client.repository.category_clientRepository;
@@ -29,6 +31,7 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -50,16 +53,31 @@ public class add_clientController {
 	@Autowired
 	uniteRepository uniteRepo;
 	
+	@Autowired
+	client_backupRepository clt_bRepo;
+	
+	@Autowired
+	track_operations trk;
+	
 	public add_clientController() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	@RequestMapping(value="/add_client")
-	public String client(HttpServletRequest request,
+	public String add_new_client(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
-		String ret = "client/create_client";
+		String ret = "";
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("add_client"))) 
+		{ ret = "client/create_client"; }
+		else { ret = "403"; }
+		
+		//----------------------------------------------------------------	
 		
 		model.addAttribute("type_reg", type_rRepo.findAll());
 		
@@ -72,7 +90,7 @@ public class add_clientController {
 		String s = user.getRole().getIds_banned();
 		
 		//---------------------- access control --------------
-		
+		/*
 		if(s!=null && s.contains("add_client")) {
 			
 			//ret = "403";
@@ -83,7 +101,7 @@ public class add_clientController {
 			ret = "403";
 			
 		}
-		
+		*/
 		if(s!=null && s.contains("add_client_admin")) {
 			
 			model.addAttribute("role", "");
@@ -91,7 +109,7 @@ public class add_clientController {
 		}
 		else {
 			
-			model.addAttribute("role", "add_client_basic");
+			model.addAttribute("role", "add_client");
 			
 		}
 		
@@ -179,6 +197,12 @@ public class add_clientController {
 			
 			clientRepo.save(clt);clientRepo.flush();
 			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("client", "Ajout d'un client", clt.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
+			
 		}
 		
 		return "redirect:/add_client";
@@ -260,6 +284,12 @@ public class add_clientController {
 			clt.setImg(path_img_client);
 			
 			clientRepo.save(clt);clientRepo.flush();
+			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("client", "Ajout d'un client", clt.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
 			
 		}
 		

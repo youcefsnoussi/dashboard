@@ -3,6 +3,7 @@ package com.commercial.webController.vente;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
 import com.commercial.entities.schema.article.repository.emballage_produitRepository;
+import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.pesage_produitRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.article.repository.produitRepository;
@@ -44,6 +47,7 @@ import com.commercial.entities.schema.static_data.repository.unite_mesureReposit
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -111,6 +115,15 @@ public class commandeController {
 	@Autowired
 	client_registreCommerceRepository clt_rcRepo;
 	
+	@Autowired
+	magasin_articleRepository magRepo;
+	
+	@Autowired
+	MagasinRepository magasinRepo;
+	
+	@Autowired
+	track_operations trk;
+	
 	//---------------------------------------------
 	
 	@Autowired
@@ -137,7 +150,10 @@ public class commandeController {
 		
 		model.addAttribute("clients", clientRepo.client_active_only());
 		
-		model.addAttribute("mode_paiements", mode_payRepo.findAll());
+		model.addAttribute("mode_paiements", mode_payRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
+		
+		model.addAttribute("magasin", magasinRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
+		
 		//model.addAttribute("articles", artRepo.findAll());
 		
 		//model.addAttribute("cat_client", cat_clientRepo.findAll());
@@ -171,6 +187,7 @@ public class commandeController {
 			
 			@RequestParam("art") long [] article,
 			@RequestParam("id_um") long [] id_unite_mesure,
+			@RequestParam("id_magasin") long [] id_magasin,
 			@RequestParam("montant_ht_art") double [] montant_ht_art,
 			//@RequestParam("montant_ttc_art") double [] montant_ttc_art,
 			@RequestParam("tva_art") double [] tva_art,
@@ -211,6 +228,12 @@ public class commandeController {
 			
 			cmdRepo.save(cmd);cmdRepo.flush();
 			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("commande", "Creation commande", cmd.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
+			
 			for(int i=0;i<article.length;i++) {
 				
 				if(quantite[i]!=0) {
@@ -240,13 +263,18 @@ public class commandeController {
 			
 			bon_lRepo.save(bl);bon_lRepo.flush();
 			
+			//-------------------- tracking operation -----------------------------------
+			
+			trk.add_track("bon_livraison", "Génération de bon livraison a partir de la commande", cmd.getId(), user);
+			
+			//-------------------- tracking operation -----------------------------------
+			
 			for(int i=0;i<article.length;i++) {
 				
 				if(quantite[i]!=0) {
 					
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], 
-							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), false);
-					
+							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), false, magRepo.getOne(id_magasin[i]));
 					
 					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();

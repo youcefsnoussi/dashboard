@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.backup_edit.registre_commerce_backup;
+import com.commercial.entities.schema.backup_edit.repository.registre_commerce_backupRepository;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
 import com.commercial.entities.schema.client.registre_commerce;
@@ -22,7 +25,7 @@ import com.commercial.entities.schema.client.repository.client_registreCommerceR
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.get_time_date;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -42,6 +45,12 @@ public class list_rcController {
 	@Autowired
 	clientRepository cltRepo;
 	
+	@Autowired
+	registre_commerce_backupRepository rcbRepo;
+	
+	@Autowired
+	track_operations trk;
+	
 	@RequestMapping(value="/list_rc")
 	public String rc(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
@@ -49,15 +58,11 @@ public class list_rcController {
 		
 		String id_client = "";
 		
-		String role_access_rc_client = "access_rc_client";
-		
-		String role_add_rc = "add_rc";
-		
 		id_client = request.getParameter("id_c");
 		
 		if(Integer.parseInt(id_client)==0) {
 			
-			model.addAttribute("rc_info", rcRepo.findAll());
+			model.addAttribute("rc_info", rcRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 			
 		}
 		else {
@@ -66,43 +71,7 @@ public class list_rcController {
 			
 			model.addAttribute("rc_info", crcRepo.rc_by_client(clt));
 			
-			role_access_rc_client = "no_access_rc_client";
-			
-			role_add_rc = "no_add_rc";
-			
 		}
-		
-		//------------------------ access controle
-		
-		String s = user.getRole().getIds_banned();
-		
-		if(s!=null && s.contains("rc_client")) {
-			
-			role_access_rc_client = "access_rc_client"; //------------- yakder yarbet rc m3a client
-			
-		}
-		else {
-			
-			role_access_rc_client = "no_access_rc_client"; //------------- meyakderch yarbet rc m3a client
-			
-		}
-		
-		if(s!=null && s.contains("add_rc")) {
-			
-			role_add_rc = "add_rc";  //---------- yakder yahouti RC
-			
-		}
-		else {
-			
-			role_add_rc = "no_add_rc"; //---------- mayakderch yahouti RC
-			
-		}
-		
-		//------------------------ ---------------------------------------------
-		
-		model.addAttribute("access_rc_client", role_access_rc_client);
-		
-		model.addAttribute("add_rc", role_add_rc);
 		
 		return "client/list_rc";
 		
@@ -163,8 +132,6 @@ public class list_rcController {
 		
 		//------------ mazal khedma ta3 code client kifeh ngenerih --------------------//
 		
-		get_time_date gtd = new get_time_date();
-		
 		convert_string_to_date_util ctd = new convert_string_to_date_util();
 		
 		registre_commerce rc = rcRepo.getOne(id_rc);
@@ -197,6 +164,15 @@ public class list_rcController {
 		rc.setWilaya(wilaya);
 		
 		rcRepo.save(rc);rcRepo.flush();
+		
+		//-------------------- tracking operation -----------------------------------
+		
+		registre_commerce_backup rcb = new registre_commerce_backup(rc, user);
+		rcbRepo.save(rcb);rcbRepo.flush();
+		
+		trk.add_track("registre_commerce", "Modification RC", rc.getId(), user);
+		
+		//-------------------- tracking operation -----------------------------------
 		
 		return "redirect:/info_rc?id_rc="+id_rc+"&resp=edit_ok";
 		

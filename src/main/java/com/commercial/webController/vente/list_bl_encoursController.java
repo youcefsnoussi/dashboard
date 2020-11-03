@@ -17,10 +17,15 @@ import com.commercial.entities.schema.article.prixUnitaire_article_categoryClien
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
 import com.commercial.entities.schema.article.repository.emballage_produitRepository;
+import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.pesage_produitRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.article.repository.produitRepository;
 import com.commercial.entities.schema.article.repository.sous_category_produitRepository;
+import com.commercial.entities.schema.backup_edit.bon_livraison_backup;
+import com.commercial.entities.schema.backup_edit.bon_livraison_detail_backup;
+import com.commercial.entities.schema.backup_edit.repository.bon_livraison_backupRepository;
+import com.commercial.entities.schema.backup_edit.repository.bon_livraison_detail_backupRepository;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
 import com.commercial.entities.schema.client.registre_commerce;
@@ -52,6 +57,7 @@ import com.commercial.entities.schema.static_data.repository.unite_mesureReposit
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -143,6 +149,18 @@ public class list_bl_encoursController {
 	
 	@Autowired
 	prof_cmd_bl_fact_client_rc_avoirRepository grpRepo;
+	
+	@Autowired
+	bon_livraison_backupRepository blbRepo;
+	
+	@Autowired
+	bon_livraison_detail_backupRepository bldbRepo;
+	
+	@Autowired
+	magasin_articleRepository magRepo;
+	
+	@Autowired
+	track_operations trk;
 	
 	public list_bl_encoursController() {
 		// TODO Auto-generated constructor stub
@@ -239,6 +257,7 @@ public class list_bl_encoursController {
 			
 			@RequestParam(name="art", defaultValue = "0") long [] article,
 			@RequestParam(name="id_um", defaultValue = "0") long [] id_unite_mesure,
+			@RequestParam(name="id_magasin",defaultValue = "0") long [] id_magasin,
 			@RequestParam(name="montant_ht_art", defaultValue = "0") double [] montant_ht_art,
 			//@RequestParam("montant_ttc_art") double [] montant_ttc_art,
 			@RequestParam(name="tva_art", defaultValue = "0") double [] tva_art,
@@ -255,15 +274,6 @@ public class list_bl_encoursController {
 			String today = gtd.get_date();
 			
 			String time = gtd.get_time();
-			
-			bl.setMontant_ht(montant_ht);
-			bl.setMontant_ttc(montant_ttc);
-			bl.setTva(montant_tva);
-			
-			bl.setDate(today);
-			bl.setTime(time);
-			
-			bl.setUsers(user);
 			
 			//------------------------- TEST PLAFOND
 			
@@ -294,12 +304,46 @@ public class list_bl_encoursController {
 			String ret;
 			
 			if(t==0) {
-			
+				
+				//-------------------- tracking operation -----------------------------------
+				
+				bon_livraison_backup bl_b = new bon_livraison_backup(bl, user);
+				blbRepo.save(bl_b);bldbRepo.flush();
+				
+				trk.add_track("bon_livraison", "Modification Bon livraison", bl.getId(), user);
+				
+				//-------------------- tracking operation -----------------------------------
+				
+				//------------------------- edit BL --------------------------------------
+				
+				bl.setMontant_ht(montant_ht);
+				bl.setMontant_ttc(montant_ttc);
+				bl.setTva(montant_tva);
+				
+				bl.setDate(today);
+				bl.setTime(time);
+				
+				bl.setUsers(user);
+				
+				bon_lRepo.save(bl); bon_lRepo.flush();
+				
+				//---------------------------------------------------------------
+				
 				List <bon_livraison_detail> bld = bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl));
 				
 				for(int i=0;i<bld.size();i++) {
 					
+					
+					
 					bon_livraison_detail bl_d = bld.get(i);
+					
+					//---------------- backup bl detail before delete ----------------------
+					
+					bon_livraison_detail_backup bl_db = new bon_livraison_detail_backup(bl_d, bl_b);
+					
+					bldbRepo.save(bl_db); bldbRepo.flush();
+					
+					//--------------------------------------------------------------------
 					
 					bon_l_dRepo.delete(bl_d);
 					
@@ -312,7 +356,8 @@ public class list_bl_encoursController {
 					if(article[i]!=0 && quantite[i]!=0) {
 						
 						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
-								montant_ht_art[i], tva_art[i], montant_tva_art[i], null, umRepo.getOne(id_unite_mesure[i]), false);
+								montant_ht_art[i], tva_art[i], montant_tva_art[i], null, umRepo.getOne(id_unite_mesure[i]),
+								false, magRepo.getOne(id_magasin[i]));
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 						
@@ -451,6 +496,12 @@ public class list_bl_encoursController {
 						bl.getMontant_ttc(), false);
 				
 				factRepo.save(fact);factRepo.flush();
+				
+				//-------------------- tracking operation -----------------------------------
+				
+				trk.add_track("facture", "creation facture apres validation BL", fact.getId(), user);
+				
+				//-------------------- tracking operation -----------------------------------
 				
 				List<bon_livraison_detail> bld_list = bon_l_dRepo.get_bl_detail(bl);
 				

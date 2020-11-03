@@ -13,22 +13,15 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.article;
-import com.commercial.entities.schema.article.emballage_produit;
-import com.commercial.entities.schema.article.pesage_produit;
-import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
-import com.commercial.entities.schema.article.produit;
 import com.commercial.entities.schema.article.repository.articleRepository;
-import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.reduction_client_prixU_article;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.reduction_client_prixU_articleRepository;
-import com.commercial.entities.schema.dynamic_data.magasin_article;
-import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.user_menu.users;
-import com.commercial.functions.convert_calander_string;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -43,6 +36,9 @@ public class create_reduction_prixController {
 	
 	@Autowired
 	clientRepository cltRepo;
+	
+	@Autowired
+	track_operations trk;
 	
 	@RequestMapping(value="/new_reduction")
 	public String new_reduction(HttpServletRequest request,
@@ -98,6 +94,12 @@ public class create_reduction_prixController {
 				gtd.get_date(), obs, user, true);
 		
 		reduxRepo.save(red);reduxRepo.flush();
+		
+		//-------------------- tracking operation -----------------------------------
+		
+		trk.add_track("reduction_client_prixU_article", "Ajout reduction prix article pour client", red.getId(), user);
+		
+		//-------------------- tracking operation -----------------------------------
 		
 		return "redirect:/new_reduction";
 		
