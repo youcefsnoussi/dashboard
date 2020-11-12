@@ -2,8 +2,10 @@ package com.commercial.entities.schema.user_menu;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -13,9 +15,9 @@ import javax.persistence.Table;
 
 public class roles   implements Serializable{
 	
-	@Id @GeneratedValue
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
-	private long id;
 	private String nom_role;
 	private String ids_banned;
 	

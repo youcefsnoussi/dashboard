@@ -3,6 +3,7 @@ package com.commercial.webController.client;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.repository.wilayaRepository;
 import com.commercial.entities.schema.backup_edit.repository.registre_commerce_backupRepository;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
+import com.commercial.entities.schema.static_data.wilaya;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
@@ -40,6 +43,9 @@ public class add_rcController {
 	@Autowired
 	track_operations trk;
 	
+	@Autowired
+	wilayaRepository wilayaRepo;
+	
 	public add_rcController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -61,6 +67,7 @@ public class add_rcController {
 		//----------------------------------------------------------------	
 		
 		model.addAttribute("client", clientRepo.findAll());
+		model.addAttribute("wilaya", wilayaRepo.findAll(Sort.by(Sort.Direction.ASC, "code")));
 		
 		return ret;
 		
@@ -77,7 +84,7 @@ public class add_rcController {
 		@RequestParam("date_fin") String date_fin,
 		@RequestParam("adresse") String adresse,
 		@RequestParam("comune") String comune,
-		@RequestParam("wilaya") String wilaya,
+		@RequestParam("wilaya") long id_wilaya,
 		@RequestParam(value = "tva", required = false) String tva,
 		@RequestParam("plafond") double plafond,
 		@RequestParam("activite") String activite,
@@ -109,6 +116,8 @@ public class add_rcController {
 			}
 			
 			System.out.println("watch dog");
+			
+			wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 			
 			//new registre_commerce(nom, prenom, numero_rc, numero_art, numero_nif, date_emission, date_fin, adresse, comune, wilaya, etat, tva, plafond, balance, activite, etat_blockage)
 			

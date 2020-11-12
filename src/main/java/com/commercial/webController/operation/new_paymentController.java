@@ -34,7 +34,6 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.remboursementRepository;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.remboursement;
 import com.commercial.entities.schema.static_data.banque;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
@@ -44,6 +43,7 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.track_operations;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.remboursement;
 
 @Controller
 @SessionAttributes("user")
@@ -155,24 +155,34 @@ public class new_paymentController {
 	}
 	
 	//-------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/list_payments")
-	public String list_paiements(HttpServletRequest request,
+	public String list__paiements(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
 		String ret = "operation/list_payments";
 		
-		String s = user.getRole().getIds_banned();
-		
 		boolean cancel_pay = false;
 		
-		if(s.contains("cancel_payment")) {
+		//----------------------ROLE TEST---------------------------------
+		
+		System.out.println(user.getId());
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("cancel_payment"))) 
+		{ cancel_pay = true; }
+		
+		//----------------------------------------------------------------
+		
+		/*
+		if(s.contains("cancel_payment") || role.equals("Admin")) {
 			
 			cancel_pay = true;
 			
 		}
-		
+		*/
 		model.addAttribute("cancel_pay", cancel_pay);
 		
 		model.addAttribute("payments", payRepo.get_payments_no_cancled());
@@ -197,28 +207,28 @@ public class new_paymentController {
 			@SessionAttribute("user") users user){
 			
 			//System.out.println(" ||==========> "+logo.getName()+" //==========> "+logo.getSize());
-			
+			/*
 			paiement pp = payRepo.findFirst1ByOrderByIdDesc();
 			
 			long new_id = 1;
-			
+		
 			if(pp!=null) {
 				
 				new_id = pp.getId()+1;
 				
 			}
-			
+			*/
 			String img_path = "";
 			
 			if(!img_piece.isEmpty()) {
 				
-				img_path = "D:/Commercial/payments/" + new_id;
+				img_path = "D:/Commercial/payments/" +img_piece.getName();
 				
 				try {
 
 		            // Get the file and save it somewhere
 		            byte[] bytes = img_piece.getBytes();
-		            Path path = Paths.get("D:\\Commercial\\payments\\" + new_id);
+		            Path path = Paths.get("D:\\Commercial\\payments\\" + img_piece.getName());
 		            Files.write(path, bytes);
 
 		        } catch (IOException e) {
@@ -241,7 +251,8 @@ public class new_paymentController {
 			}
 			
 			
-			paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),
+			paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
+										cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),
 					banque, user, num_piece, img_path, false);
 			
 			payRepo.save(pay);payRepo.flush();

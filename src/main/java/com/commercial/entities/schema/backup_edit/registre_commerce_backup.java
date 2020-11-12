@@ -6,6 +6,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
+import com.commercial.entities.schema.static_data.wilaya;
 
 @Entity
 
@@ -21,8 +23,8 @@ import com.commercial.functions.get_time_date;
 
 public class registre_commerce_backup implements Serializable{
 	
-	@Id @GeneratedValue
-	 private long id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	 private Long id;
 	 
 	 private String nom;
 	 private String prenom;
@@ -39,7 +41,10 @@ public class registre_commerce_backup implements Serializable{
 	 
 	 private String adresse;
 	 private String comune;
-	 private String wilaya;
+	 
+	 @ManyToOne
+	 @JoinColumn(name = "wilaya")
+	 private wilaya wilaya;
 	 
 	 private String etat; //------------------> etat tweli desactivé ki ifout la date
 	 
@@ -69,7 +74,7 @@ public class registre_commerce_backup implements Serializable{
 	}
 
 	public registre_commerce_backup(String nom, String prenom, String numero_rc, String numero_art, String numero_nif,
-			String date_emission, String date_fin, String adresse, String comune, String wilaya, String etat,
+			String date_emission, String date_fin, String adresse, String comune, wilaya wilaya, String etat,
 			double tva, double plafond, double sold_encours, String activite, String etat_blockage, long id_rc, users user) {
 		super();
 		
@@ -207,11 +212,11 @@ public class registre_commerce_backup implements Serializable{
 		this.comune = comune;
 	}
 
-	public String getWilaya() {
+	public wilaya getWilaya() {
 		return wilaya;
 	}
 
-	public void setWilaya(String wilaya) {
+	public void setWilaya(wilaya wilaya) {
 		this.wilaya = wilaya;
 	}
 

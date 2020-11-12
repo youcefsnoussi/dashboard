@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -23,7 +21,7 @@ public class article implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	@Column(unique = true)
 	private String code;
@@ -53,6 +51,9 @@ public class article implements Serializable{
 	@JoinColumn(name = "unite_mesure_vente")
 	private unite_mesure unite_mesure_vente;
 	
+	@Column(columnDefinition="boolean default false")
+	private boolean subvension = false;
+	
 	public article() {
 		// TODO Auto-generated constructor stub
 	}
@@ -60,7 +61,7 @@ public class article implements Serializable{
 	public article(String code, com.commercial.entities.schema.article.produit produit,
 			com.commercial.entities.schema.article.emballage_produit emballage_produit,
 			com.commercial.entities.schema.article.pesage_produit pesage_produit, String image_article, double vendu,
-			String date_creation, String code_comptable, unite_mesure unite_mesure_vente) {
+			String date_creation, String code_comptable, unite_mesure unite_mesure_vente, boolean subvension) {
 		super();
 		this.code = code;
 		this.produit = produit;
@@ -71,6 +72,7 @@ public class article implements Serializable{
 		this.date_creation = date_creation;
 		this.code_comptable = code_comptable;
 		this.unite_mesure_vente = unite_mesure_vente;
+		this.subvension = subvension;
 	}
 
 	public long getId() {
@@ -153,6 +155,12 @@ public class article implements Serializable{
 		this.unite_mesure_vente = unite_mesure_vente;
 	}
 
-	
+	public boolean isSubvension() {
+		return subvension;
+	}
+
+	public void setSubvension(boolean subvension) {
+		this.subvension = subvension;
+	}
 
 }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.commercial.entities.schema.article.repository.wilayaRepository;
 import com.commercial.entities.schema.backup_edit.client_backup;
 import com.commercial.entities.schema.backup_edit.repository.client_backupRepository;
 import com.commercial.entities.schema.client.client;
@@ -30,7 +32,6 @@ import com.commercial.entities.schema.client.repository.registre_commerceReposit
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
 import com.commercial.entities.schema.user_menu.users;
-import com.commercial.functions.get_time_date;
 import com.commercial.functions.track_operations;
 
 @Controller
@@ -61,6 +62,12 @@ public class list_clientController {
 	
 	@Autowired
 	track_operations trk;
+	
+	@Autowired
+	wilayaRepository wilayarepo;
+	
+	@Autowired
+	wilayaRepository wilayaRepo;
 	
 	public list_clientController() {
 		// TODO Auto-generated constructor stub
@@ -99,24 +106,20 @@ public class list_clientController {
 		
 		client c = clientRepo.getOne(id_c);
 		
-		String s = user.getRole().getIds_banned();
+		//String s = user.getRole().getIds_banned();
 		
 		String role_edit = "edit";
 		
-		if(s!=null && s.contains("edit_client")) {
-			
-			role_edit="edit"; //---------- ibedel f client
-			
-		}
-		else {
-			
-			role_edit="no_edit"; //----------- ichof bark client
-			
-		}
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_client"))) 
+		{ role_edit="edit"; }
+		else { role_edit="no_edit"; }
 		
 		model.addAttribute("edit_option", role_edit);
 		
 		model.addAttribute("client", c);
+		
+		model.addAttribute("wilaya", wilayaRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
 		model.addAttribute("type_reg", type_rRepo.findAll());
 		
@@ -136,7 +139,7 @@ public class list_clientController {
 		@RequestParam("prenom") String prenom,
 		@RequestParam("adresse") String adresse,
 		@RequestParam("etat_blockage") boolean etat_blockage,
-		@RequestParam("wilaya") String wilaya,
+		@RequestParam("wilaya") long id_wilaya,
 		@RequestParam("code_postal") String code_postal,
 		@RequestParam("telephone") String telephone,
 		@RequestParam("fax") String fax,
@@ -214,7 +217,7 @@ public class list_clientController {
 			//clt.setRemise(remise);
 			clt.setTelephone(telephone);
 			clt.setType_reglement(type_rRepo.getOne(type_reg));
-			clt.setWilaya(wilaya);
+			clt.setWilaya(wilayarepo.getOne(id_wilaya));
 			
 			clientRepo.save(clt);clientRepo.flush();
 			

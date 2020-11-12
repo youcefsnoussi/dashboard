@@ -56,6 +56,8 @@
 						<input type="hidden" id="id_sous_cat_prod" th:value="${article.produit.sous_category_produit.id}">
 						<input type="hidden" id="id_prod" th:value="${article.produit.id}">
 						
+						<input type="hidden" id="sub" th:value="${article.subvension}">
+						
 						<input type="hidden" id="id_emb_prod" th:value="${article.emballage_produit.id}">
 						<input type="hidden" id="id_pes_prod" th:value="${article.pesage_produit.id}">
 						<input type="hidden" id="vendu" th:value="${article.vendu}">
@@ -180,7 +182,15 @@
 							</select>
 					
 						</div>
-					
+						
+						<div class="col-md-1">
+			        		
+			        		<label> Subvention </label>
+			        		
+			        		<input type="checkbox" id="subvension" name="subvension" class="form-control"  >
+			        	
+			        	</div>
+						
 					</div>
 					<hr>
 					<div class="row" th:if="${prices}==null">
@@ -202,7 +212,7 @@
 							
 							<div class="input-group" th:each="cat_client:${cat_client}">
 							
-								<input  type="number" step="any" value="0" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+								<input  type="number" step="any" value="-1 " name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
 								
 								<div class="input-group-append">
 							    	<span class="input-group-text" style="margin-bottom:5px">DA</span>

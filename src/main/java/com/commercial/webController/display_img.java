@@ -1,6 +1,5 @@
 package com.commercial.webController;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,12 +9,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.pdfbox.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.lowagie.text.pdf.codec.Base64.InputStream;
 
 @Controller
 @SessionAttributes("user")
@@ -27,7 +24,7 @@ public class display_img {
 	}
 	
 	@RequestMapping(value="/display_img", produces="image/jpeg")
-	public void display_img(HttpServletRequest request, HttpServletResponse response) {
+	public void display(HttpServletRequest request, HttpServletResponse response) {
 		
 String link = request.getParameter("link");
 		
@@ -37,7 +34,7 @@ String link = request.getParameter("link");
 	      
 
 	      if(!file.exists())
-	    	  file = new File("D:\\Vehicule\\no_img.png");
+	    	  file = new File("D:\\Commercial\\no_img.png");
 	    	  
 	    	  
 	    	  

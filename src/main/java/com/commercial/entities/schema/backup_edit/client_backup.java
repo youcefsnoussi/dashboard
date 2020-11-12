@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,6 +19,8 @@ import com.commercial.entities.schema.static_data.unite;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 
+import com.commercial.entities.schema.static_data.wilaya;;
+
 @Entity
 
 @Table(name="client_backup" , schema = "backup_edit")
@@ -25,14 +28,18 @@ import com.commercial.functions.get_time_date;
 public class client_backup implements Serializable{
 	
 	@Id
-	@GeneratedValue
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	private String nom;
 	private String prenom;
 	
 	private String adresse;
-	private String wilaya;
+	
+	@ManyToOne
+	@JoinColumn(name = "wilaya")
+	private wilaya wilaya;
+	
 	private String code_postal;
 	private String email;
 	
@@ -85,7 +92,7 @@ public class client_backup implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public client_backup(String nom, String prenom, String adresse, String wilaya, String code_postal, String email,
+	public client_backup(String nom, String prenom, String adresse, wilaya wilaya, String code_postal, String email,
 			String telephone, String fax, String code, String date_creation, category_client category,
 			com.commercial.entities.schema.static_data.banque banque,
 			com.commercial.entities.schema.static_data.type_reglement type_reglement,
@@ -131,7 +138,7 @@ public class client_backup implements Serializable{
 		this.nom = clt.getNom();
 		this.prenom = clt.getPrenom();
 		this.adresse = clt.getAdresse();
-		this.wilaya = clt.getAdresse();
+		this.wilaya = clt.getWilaya();
 		this.code_postal = clt.getCode_postal();
 		this.email = clt.getEmail();
 		this.telephone = clt.getTelephone();
@@ -186,11 +193,11 @@ public class client_backup implements Serializable{
 		this.adresse = adresse;
 	}
 
-	public String getWilaya() {
+	public wilaya getWilaya() {
 		return wilaya;
 	}
 
-	public void setWilaya(String wilaya) {
+	public void setWilaya(wilaya wilaya) {
 		this.wilaya = wilaya;
 	}
 

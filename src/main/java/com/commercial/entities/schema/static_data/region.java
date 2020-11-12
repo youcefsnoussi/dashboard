@@ -1,7 +1,5 @@
 package com.commercial.entities.schema.static_data;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,22 +9,21 @@ import javax.persistence.Table;
 
 @Entity
 
-@Table(name="causes_facture_avoir" , schema = "static_data")
+@Table(name="region" , schema = "static_data")
 
-public class causes_facture_avoir implements Serializable {
+public class region {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private String designation;
-
-	public causes_facture_avoir() {
-		super();
+	
+	public region() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public causes_facture_avoir(String designation) {
+	public region(String designation) {
 		super();
 		this.designation = designation;
 	}
@@ -46,7 +43,5 @@ public class causes_facture_avoir implements Serializable {
 	public void setDesignation(String designation) {
 		this.designation = designation;
 	}
-	
-	
 	
 }

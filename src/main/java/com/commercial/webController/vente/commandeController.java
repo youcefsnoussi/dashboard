@@ -274,7 +274,7 @@ public class commandeController {
 				if(quantite[i]!=0) {
 					
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], 
-							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), false, magRepo.getOne(id_magasin[i]));
+							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), false, magasinRepo.getOne(id_magasin[i]));
 					
 					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
@@ -289,7 +289,7 @@ public class commandeController {
 			
 			grpRepo.save(grp); grpRepo.flush();
 			
-			return "redirect:/commande";
+			return "redirect:/commande?id_bl="+bl.getId()+"&num_bl="+bl.getNumero();
 		
 	}
 	

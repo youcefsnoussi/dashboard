@@ -44,9 +44,15 @@ public class convert_string_to_date_util {
 	
 	public String convertion_MyDate_to_InputDate(String date) {
 		
-		String [] sp = date.split("/");
+		String result = "";
 		
-		String result = sp[2]+"-"+sp[1]+"-"+sp[0];
+		if(date!=null) {
+		
+			String [] sp = date.split("/");
+			
+			result = sp[2]+"-"+sp[1]+"-"+sp[0];
+		
+		}
 		
 		return result;
 		

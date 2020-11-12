@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -23,13 +21,17 @@ public class client implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	private String nom;
 	private String prenom;
 	
 	private String adresse;
-	private String wilaya;
+	
+	@ManyToOne
+	@JoinColumn(name = "wilaya")
+	wilaya wilaya;
+	
 	private String code_postal;
 	private String email;
 	
@@ -72,7 +74,7 @@ public class client implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public client(String nom, String prenom, String adresse, String wilaya, String code_postal, String email,
+	public client(String nom, String prenom, String adresse, wilaya wilaya, String code_postal, String email,
 			String telephone, String fax, String code, String date_creation, category_client category,
 			com.commercial.entities.schema.static_data.banque banque,
 			com.commercial.entities.schema.static_data.type_reglement type_reglement,
@@ -132,11 +134,11 @@ public class client implements Serializable{
 		this.adresse = adresse;
 	}
 
-	public String getWilaya() {
+	public wilaya getWilaya() {
 		return wilaya;
 	}
 
-	public void setWilaya(String wilaya) {
+	public void setWilaya(wilaya wilaya) {
 		this.wilaya = wilaya;
 	}
 

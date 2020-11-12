@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.magasin_article;
 import com.commercial.entities.schema.static_data.unite_mesure;
@@ -24,7 +25,7 @@ public class bon_livraison_detail implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "bon_livraison")
@@ -57,7 +58,7 @@ public class bon_livraison_detail implements Serializable{
 	
 	@ManyToOne
 	@JoinColumn(name = "magasin")
-	private magasin_article magasin;
+	private Magasin magasin;
 	
 	public bon_livraison_detail() {
 		// TODO Auto-generated constructor stub
@@ -67,7 +68,7 @@ public class bon_livraison_detail implements Serializable{
 			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
 			double montant_ht, double montant_tva, double tva, users user_magasin_validate,
 			com.commercial.entities.schema.static_data.unite_mesure unite_mesure, boolean validation,
-			magasin_article magasin) {
+			Magasin magasin) {
 		super();
 		this.bon_livraison = bon_livraison;
 		this.article = article;
@@ -170,11 +171,11 @@ public class bon_livraison_detail implements Serializable{
 		this.validation = validation;
 	}
 
-	public magasin_article getMagasin() {
+	public Magasin getMagasin() {
 		return magasin;
 	}
 
-	public void setMagasin(magasin_article magasin) {
+	public void setMagasin(Magasin magasin) {
 		this.magasin = magasin;
 	}
 

@@ -27,8 +27,8 @@ import com.commercial.functions.get_time_date;
 public class bon_livraison_backup implements Serializable{
 	
 	@Id
-	@GeneratedValue
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "client")

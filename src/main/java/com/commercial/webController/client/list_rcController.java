@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.repository.wilayaRepository;
 import com.commercial.entities.schema.backup_edit.registre_commerce_backup;
 import com.commercial.entities.schema.backup_edit.repository.registre_commerce_backupRepository;
 import com.commercial.entities.schema.client.client;
@@ -51,6 +52,9 @@ public class list_rcController {
 	@Autowired
 	track_operations trk;
 	
+	@Autowired
+	wilayaRepository wilayaRepo;
+	
 	@RequestMapping(value="/list_rc")
 	public String rc(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
@@ -85,21 +89,20 @@ public class list_rcController {
 		
 		registre_commerce rc = rcRepo.getOne(id_rc);
 		
-		String s = user.getRole().getIds_banned();
-		
 		String role_edit = "no_edit";
 		
-		if(s!=null && s.contains("edit_rc")) {
-			
-			role_edit="edit";
-			
-		}
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_rc"))) 
+		{ role_edit="edit"; }
+		else { role_edit="no_edit"; }
 		
 		model.addAttribute("edit_option", role_edit);
 		
 		model.addAttribute("rc", rc);
 		
 		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		model.addAttribute("wilaya", wilayaRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
 		model.addAttribute("date_emission", conv.convertion_MyDate_to_InputDate(rc.getDate_emission()));
 		
@@ -122,7 +125,7 @@ public class list_rcController {
 		@RequestParam("date_fin") String date_fin,
 		@RequestParam("adresse") String adresse,
 		@RequestParam("comune") String comune,
-		@RequestParam("wilaya") String wilaya,
+		@RequestParam("wilaya") long id_wilaya,
 		@RequestParam(value = "tva", required = false) String tva,
 		@RequestParam("plafond") double plafond,
 		@RequestParam("activite") String activite,
@@ -136,9 +139,9 @@ public class list_rcController {
 		
 		registre_commerce rc = rcRepo.getOne(id_rc);
 		
-		 date_emission = ctd.convertion_InputDate_to_MyDate(date_emission);
+		date_emission = ctd.convertion_InputDate_to_MyDate(date_emission);
 		
-		//date_fin = ctd.convertion_InputDate_to_MyDate(date_fin);
+		date_fin = ctd.convertion_InputDate_to_MyDate(date_fin);
 		
 		rc.setActivite(activite);
 		rc.setAdresse(adresse);
@@ -161,13 +164,16 @@ public class list_rcController {
 		}
 		
 		rc.setTva(ttva);
-		rc.setWilaya(wilaya);
+		rc.setWilaya(wilayaRepo.getOne(id_wilaya));
 		
 		rcRepo.save(rc);rcRepo.flush();
 		
 		//-------------------- tracking operation -----------------------------------
-		
+		//*********-*/654654dqsfsdfsdfsdfsd
 		registre_commerce_backup rcb = new registre_commerce_backup(rc, user);
+		
+		System.out.println("===== ID ==>"+rcb.getId()+" / id_rc ===>"+rcb.getId_rc());
+		
 		rcbRepo.save(rcb);rcbRepo.flush();
 		
 		trk.add_track("registre_commerce", "Modification RC", rc.getId(), user);

@@ -66,7 +66,6 @@ $(document).ready(function(){
 				
 				//--------------------- init sous cat select --------------------
 				
-				console.log($("#id_magasin").val())
 				
 				if($("#article").val()!=""){
 					
@@ -96,6 +95,12 @@ $(document).ready(function(){
 					$("#magasin").val(units);
 					
 					$("#magasin").selectpicker('refresh');
+					
+					if($("#sub").val()=="true"){
+						
+						$("#subvension").prop("checked",true);
+						
+					}
 					
 				}
 				

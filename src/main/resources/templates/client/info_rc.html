@@ -185,10 +185,19 @@
 							        	
 							        	<div class="col-md-4">
 							        		
-							        		<label> Wilaya </label>
+							        		<label> Wilaya </label><br>
 							        		
-							        		<input type="text" id="wilaya" name="wilaya" class="form-control saisie_rc" th:value="${rc.wilaya}" required>
-							        	
+							        		<select class="selectpicker show-tick" data-style="btn btn-outline-secondary" data-live-search="true" 
+							        				id="wilaya" name="wilaya" required>
+												
+												<option th:each="w:${wilaya}" th:if="${w}==${rc.wilaya}" th:value="${w.id}" 
+													th:text="${w.designation}" selected></option>
+												   
+												<option th:each="w:${wilaya}" th:unlesse="${w}==${rc.wilaya}" th:value="${w.id}" 
+													th:text="${w.designation}" ></option>
+											
+											</select>
+							        		
 							        	</div>
 							        
 							        </div>
