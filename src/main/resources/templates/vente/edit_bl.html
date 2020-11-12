@@ -256,6 +256,7 @@
 								<th  align="center" >Libellé</th>
 								<th  align="center"  width="8%">Um</th>
 								<th  align="center" >Qte</th>
+								<th  align="center" >Unité</th>
 								<th  align="center" >PU</th>
 								<th  align="center" >TVA</th>
 								<th  align="center" >MONTANT HT</th>
@@ -299,6 +300,9 @@
 								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${bl_det.quantite}" style="text-align: right;" > 
 										<input type="hidden" id="qte_init" class="qte_init" th:value="${bl_det.quantite}"> </td>
 								
+								<td> <input class="form-control qte zero" id="magasin" name="magasin" type="text" th:value="${bl_det.magasin.name}" style="text-align: center;" disabled> 
+										<input type="hidden" id="id_magasin" class="id_magasin" name="id_magasin" th:value="${bl_det.magasin.id}"> </td>
+								
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${bl_det.prix_u_ht}" type="number" step="any" style="text-align: right;" readonly> </td>
 								
 								<td><input class="form-control tva_art" id="tva_art" name="tva_art" type="number" th:value="${bl_det.tva}" step="any" value="" style="text-align: right;" readonly> </td>
@@ -327,6 +331,12 @@
 										<input type="hidden" id="id_um" name="id_um" value="0" > </td>
 								
 								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="0" style="text-align: right;"> </td>
+								
+								<td> 
+									<select id="id_magasin" name="id_magasin" class="form-control id_magasin">
+										
+									</select>	
+								</td>
 								
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
 								

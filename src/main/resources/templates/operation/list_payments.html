@@ -330,8 +330,8 @@
 									<button th:if="${pay.path_img}==''" class="btn btn-info add_img" th:attr="id_payment=${pay.id}">Ajouter image</button> 
 									
 									<a th:unless="${pay.path_img}==''" href="#">
-										<img alt="" class="img" height="100" width="100" style="height: auto;" 
-										th:attr="src='http://localhost:8081/display_img?link='+${pay.path_img}" > 
+										<img alt="" class="img" height="50" width="100"  
+										th:attr="src='/display_img?link='+${pay.path_img}" > 
 									</a>
 									
 								</td>

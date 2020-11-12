@@ -28,7 +28,7 @@ public class commande implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	private String date;
 	private String time;

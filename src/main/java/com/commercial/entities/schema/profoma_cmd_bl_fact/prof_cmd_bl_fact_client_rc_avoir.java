@@ -2,6 +2,7 @@ package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,9 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
-import com.commercial.entities.schema.client.registre_commerce;
 
 @Entity
 
@@ -22,7 +21,7 @@ public class prof_cmd_bl_fact_client_rc_avoir implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "client_registrecommerce")

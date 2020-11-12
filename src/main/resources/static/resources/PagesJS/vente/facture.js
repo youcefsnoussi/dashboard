@@ -1,7 +1,42 @@
 $(document).ready(function() {
 			
 	//$('#code_client').bind("enterKey",function(e){
+	
+	//-------------------------------------------------------------------------------
+	
+	var getUrlParameter = function getUrlParameter(sParam) {
+	    var sPageURL = window.location.search.substring(1),
+	        sURLVariables = sPageURL.split('&'),
+	        sParameterName,
+	        i;
+
+	    for (i = 0; i < sURLVariables.length; i++) {
+	        sParameterName = sURLVariables[i].split('=');
+
+	        if (sParameterName[0] === sParam) {
+	            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+	        }
+	    }
+	};
+	
+	var id_bl = getUrlParameter('id_bl');
+	
+	var num_bl = getUrlParameter('num_bl');
+	
+	if(id_bl!=null){
 		
+		$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_bl?id_bl='+id_bl+'"></iframe>');
+		
+		$("#title_bl").text("Détail BL N° "+num_bl);
+		
+		$("#icone_bl").attr("class","far fa-file-invoice");
+		
+		$("#bl_detail_modal").modal("show");
+			
+	}
+	
+	//-------------------------------------------------------------------------------
+	
 	$("#id_client").change(function(){
 	
 		$("#designation").val("");

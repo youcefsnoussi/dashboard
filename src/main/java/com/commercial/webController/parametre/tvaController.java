@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.commercial.entities.schema.static_data.banque;
 import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.user_menu.users;

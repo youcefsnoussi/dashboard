@@ -1,8 +1,10 @@
 package com.commercial.webController.vente;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
+import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
 import com.commercial.entities.schema.article.repository.emballage_produitRepository;
@@ -58,6 +61,8 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 import com.commercial.functions.track_operations;
+import com.commercial.functions.generateQRcode;
+import com.commercial.functions.generate_Doc;
 
 @Controller
 @SessionAttributes("user")
@@ -160,6 +165,9 @@ public class list_bl_encoursController {
 	magasin_articleRepository magRepo;
 	
 	@Autowired
+	MagasinRepository magasinRepo;
+	
+	@Autowired
 	track_operations trk;
 	
 	public list_bl_encoursController() {
@@ -218,6 +226,35 @@ public class list_bl_encoursController {
 		model.addAttribute("articles", list_art);
 		
 		return "vente/info_bl";
+		
+	}
+	
+	//-----------------------------------------------------------------------------
+	
+	@Autowired
+    private DataSource localDataSource;
+	
+	@RequestMapping(value="/print_bl")
+	public String print_bl(HttpServletRequest request,
+						 @RequestParam("id_bl") long id_bl,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		bon_livraison bl = bon_lRepo.getOne(id_bl);
+		
+		String qr_code = generateQRcode.createQRcode(bl.getNumero(), "BL");
+		
+		String pdf = "";
+		try {
+			
+			pdf = generate_Doc.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
+			
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		return "redirect:/display_pdf?file="+pdf;
 		
 	}
 	
@@ -357,7 +394,7 @@ public class list_bl_encoursController {
 						
 						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
 								montant_ht_art[i], tva_art[i], montant_tva_art[i], null, umRepo.getOne(id_unite_mesure[i]),
-								false, magRepo.getOne(id_magasin[i]));
+								false, magasinRepo.getOne(id_magasin[i]));
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 						
@@ -365,7 +402,19 @@ public class list_bl_encoursController {
 					
 				}
 				
-				ret="redirect:/edit_bl?id_bl="+bl.getId()+"&plafond=false";
+				String qr_code = generateQRcode.createQRcode(bl.getNumero(), "BL");
+				
+				String pdf = "";
+				try {
+					
+					pdf = generate_Doc.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				ret="redirect:/display_pdf?file="+pdf;
 				
 			}
 			else {

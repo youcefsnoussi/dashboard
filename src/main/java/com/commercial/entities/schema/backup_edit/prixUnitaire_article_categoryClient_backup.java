@@ -2,6 +2,7 @@ package com.commercial.entities.schema.backup_edit;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,8 +25,8 @@ import com.commercial.functions.get_time_date;
 public class prixUnitaire_article_categoryClient_backup implements Serializable{
 	
 	@Id
-	@GeneratedValue
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "article")

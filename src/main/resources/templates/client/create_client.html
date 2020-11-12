@@ -103,9 +103,13 @@
 			        	
 			        	<div class="col-md-3">
 			        		
-			        		<label> Wilaya </label>
+			        		<label> Wilaya </label> <br>
 			        		
-			        		<input type="text" id="wilaya" name="wilaya" class="form-control " required>
+			        		<select class="selectpicker" data-style="btn btn-outline-secondary" data-live-search="true" id="wilaya" name="wilaya" required>
+								
+								<option th:each="w:${wilaya}" th:value="${w.id}" th:text="${w.designation}" ></option>
+								
+							</select>
 			        	
 			        	</div>
 			        	

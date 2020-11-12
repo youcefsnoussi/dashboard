@@ -5,11 +5,13 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.magasin_article;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
@@ -23,8 +25,8 @@ import com.commercial.entities.schema.user_menu.users;
 public class bon_livraison_detail_backup implements Serializable{
 	
 	@Id
-	@GeneratedValue
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "bon_livraison_backup")
@@ -57,7 +59,7 @@ public class bon_livraison_detail_backup implements Serializable{
 	
 	@ManyToOne
 	@JoinColumn(name = "magasin")
-	private magasin_article magasin;
+	private Magasin magasin;
 	
 	public bon_livraison_detail_backup() {
 		// TODO Auto-generated constructor stub
@@ -68,7 +70,7 @@ public class bon_livraison_detail_backup implements Serializable{
 			com.commercial.entities.schema.backup_edit.bon_livraison_backup bon_livraison_backup,
 			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
 			double montant_ht, double montant_tva, double tva, users user_magasin_validate,
-			com.commercial.entities.schema.static_data.unite_mesure unite_mesure, boolean validation, magasin_article magasin) {
+			com.commercial.entities.schema.static_data.unite_mesure unite_mesure, boolean validation, Magasin magasin) {
 		super();
 		this.bon_livraison_backup = bon_livraison_backup;
 		this.article = article;
@@ -186,6 +188,14 @@ public class bon_livraison_detail_backup implements Serializable{
 
 	public void setValidation(boolean validation) {
 		this.validation = validation;
+	}
+
+	public Magasin getMagasin() {
+		return magasin;
+	}
+
+	public void setMagasin(Magasin magasin) {
+		this.magasin = magasin;
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.commercial.entities.schema.client;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,8 +20,9 @@ import com.commercial.entities.schema.user_menu.users;
 
 public class reduction_client_prixU_article implements Serializable{
 	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "client")

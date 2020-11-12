@@ -2,8 +2,10 @@ package com.commercial.entities.schema.user_menu;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,9 +25,9 @@ import com.commercial.entities.schema.static_data.unite;
 
 public class users implements Serializable{
 	
-	@Id @GeneratedValue
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
-	private long id;
 	private String username;
 	private String password;
 	private String nom;

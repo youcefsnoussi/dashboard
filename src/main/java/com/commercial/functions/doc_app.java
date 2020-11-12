@@ -52,7 +52,9 @@ public class doc_app {
 	 *				- change_user_cmd =>  ibedel user li khdem commande 
 	 * 				
 	 * 				
-	 * 
+	 * 				--------------------------------------------------------------------------------
+	 * 	
+	 * 				PS : PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
 	 * 				
 
 	 * 

@@ -69,6 +69,9 @@
 					"scrollY":"600px",
 					"scrollX": "auto",
 			        "deferRender": true,
+			        "columnDefs": [
+			            { "width": "7%", "targets": 11 }
+			          ],
 			        initComplete: function () {
 			            this.api().columns([2,3,4,5,6]).every( function () {
 			                var column = this;
@@ -126,7 +129,21 @@
 				
 			});
 			
-			
+			$(".print").click(function(){
+				
+				var id_bl = $(this).attr("id_bl");
+				
+				num_bl = $(this).attr("num_bl");
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_bl?id_bl='+id_bl+'"></iframe>');
+				
+				$("#title_bl").text("Détail BL N° "+num_bl);
+				
+				$("#icone_bl").attr("class","far fa-file-invoice");
+				
+				$("#bl_detail_modal").modal("show");
+				
+			});
 			
 			$("#afficher").click(function(){
 				
@@ -237,7 +254,7 @@
 								<th>Montant HT</th>
 								<th>Montant TVA</th>
 								<th>Montant TTC</th>
-								<th>Valider</th>
+								<th></th>
 								
 							</tr>
 						
@@ -259,7 +276,10 @@
 								<td th:text="${#numbers.formatDecimal(bl.tva, 3, 'WHITESPACE', 0,'COMMA')}"></td>
 								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-info info" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
-																						<i class="far fa-check"></i>
+																						<i class="far fa-edit"></i>
+																 </button> 
+																 <button type="button" class="btn btn-info print" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
+																						<i class="far fa-print"></i>
 																 </button> 
 								</td>
 								

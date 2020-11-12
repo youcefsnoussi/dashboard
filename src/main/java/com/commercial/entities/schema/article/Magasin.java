@@ -2,6 +2,7 @@ package com.commercial.entities.schema.article;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,8 +16,8 @@ import javax.persistence.Table;
 public class Magasin implements Serializable {
 	
 	@Id
-	@GeneratedValue
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	String name;
     

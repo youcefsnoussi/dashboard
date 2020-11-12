@@ -23,10 +23,10 @@ public class generateQRcode {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public String createQRcode(String numero, long id_unite) {
+	public static String createQRcode(String numero, String doc_type) {
 		
 		String myCodeText = numero;
-		String filePath = "/D:/Pate/QRcode/paletteQR_"+id_unite+".png";
+		String filePath = "/D:/Commercial/QRcode/"+doc_type+"/QR.png";
 		int size = 250;
 		String fileType = "png";
 		File myFile = new File(filePath);

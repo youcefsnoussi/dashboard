@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +20,14 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.commercial.entities.schema.backup_edit.client_backup;
+import com.commercial.entities.schema.article.repository.wilayaRepository;
 import com.commercial.entities.schema.backup_edit.repository.client_backupRepository;
 import com.commercial.entities.schema.client.*;
 
 import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.static_data.unite;
+import com.commercial.entities.schema.static_data.wilaya;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
@@ -59,6 +61,9 @@ public class add_clientController {
 	@Autowired
 	track_operations trk;
 	
+	@Autowired
+	wilayaRepository wilayaRepo;
+	
 	public add_clientController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -79,13 +84,15 @@ public class add_clientController {
 		
 		//----------------------------------------------------------------	
 		
-		model.addAttribute("type_reg", type_rRepo.findAll());
+		model.addAttribute("type_reg", type_rRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
-		model.addAttribute("banque", banqueRepo.findAll());
+		model.addAttribute("banque", banqueRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
-		model.addAttribute("cat_client", cat_clientRepo.findAll());
+		model.addAttribute("cat_client", cat_clientRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
-		model.addAttribute("unite", uniteRepo.findAll());
+		model.addAttribute("unite", uniteRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		
+		model.addAttribute("wilaya", wilayaRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
 		String s = user.getRole().getIds_banned();
 		
@@ -127,7 +134,7 @@ public class add_clientController {
 		@RequestParam("prenom") String prenom,
 		@RequestParam("adresse") String adresse,
 		@RequestParam("unite") long unite,
-		@RequestParam("wilaya") String wilaya,
+		@RequestParam("wilaya") long id_wilaya,
 		@RequestParam("code_postal") String code_postal,
 		@RequestParam("telephone") String telephone,
 		@RequestParam("fax") String fax,
@@ -151,6 +158,8 @@ public class add_clientController {
 		category_client cat_clt = cat_clientRepo.getOne(cat_client);
 		
 		String code_client = un.getId()+cat_clt.getLettre()+new_number_code_client();
+		
+		wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 		
 		client clt = new client(nom, prenom, adresse, wilaya, code_postal, email, telephone, fax, code_client, gtd.get_date(), cat_clt, 
 				banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg), un, sold, plafond, false, false, "");
@@ -215,7 +224,7 @@ public class add_clientController {
 		@RequestParam("prenom") String prenom,
 		@RequestParam("adresse") String adresse,
 		@RequestParam("unite") long unite,
-		@RequestParam("wilaya") String wilaya,
+		@RequestParam("wilaya") long id_wilaya,
 		@RequestParam("code_postal") String code_postal,
 		@RequestParam("telephone") String telephone,
 		@RequestParam("fax") String fax,
@@ -239,6 +248,8 @@ public class add_clientController {
 		category_client cat_clt = cat_clientRepo.getOne(cat_client);
 		
 		String code_client = un.getId()+cat_clt.getLettre()+new_number_code_client();
+		
+		wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 		
 		client clt = new client(nom, prenom, adresse, wilaya, code_postal, email, telephone, fax, code_client, gtd.get_date(), cat_clt, 
 				banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg), un, sold, 10, true, false, "");

@@ -1,5 +1,6 @@
 package com.commercial.entities.schema.article;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,8 +16,8 @@ import javax.persistence.Table;;
 public class magasin_article {
 	
 	@Id
-	@GeneratedValue
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "article")
@@ -25,7 +26,11 @@ public class magasin_article {
 	@ManyToOne
 	@JoinColumn(name = "magasin")
 	private Magasin magasin;
-
+	
+	public magasin_article() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public magasin_article(com.commercial.entities.schema.article.article article, Magasin magasin) {
 		super();
 		this.article = article;

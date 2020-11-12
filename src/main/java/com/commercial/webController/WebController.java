@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.repository.articleRepository;
-import com.commercial.entities.schema.backup_edit.article_backup;
 import com.commercial.entities.schema.backup_edit.repository.article_backupRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
 import com.commercial.entities.schema.user_menu.login_track;
@@ -26,12 +24,9 @@ import com.commercial.entities.schema.user_menu.roles;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.entities.schema.user_menu.repository.login_trackRepository;
 import com.commercial.entities.schema.user_menu.repository.menuRepository;
-import com.commercial.entities.schema.user_menu.repository.rolesRepository;
 import com.commercial.entities.schema.user_menu.repository.roles_menuRepository;
-import com.commercial.entities.schema.user_menu.repository.sub_menuRepository;
 import com.commercial.entities.schema.user_menu.repository.userRepository;
 import com.commercial.functions.get_time_date;
-import com.commercial.functions.time_between;
 
 
 
@@ -85,7 +80,7 @@ public class WebController {
 		
 		roles role = user.getRole();//roles_repository.getOne(user.getId_role().getId());
 		
-		long id_role = role.getId();
+		//long id_role = role.getId();
 		
 		String nom_role = role.getNom_role();
 		

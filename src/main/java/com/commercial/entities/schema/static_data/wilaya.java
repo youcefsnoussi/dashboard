@@ -1,34 +1,41 @@
 package com.commercial.entities.schema.static_data;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
 
-@Table(name="causes_facture_avoir" , schema = "static_data")
+@Table(name="wilaya" , schema = "static_data")
 
-public class causes_facture_avoir implements Serializable {
+public class wilaya {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private String designation;
-
-	public causes_facture_avoir() {
-		super();
+	
+	@ManyToOne
+	@JoinColumn(name = "region")
+	private region region;
+	
+	private String code;
+	
+	public wilaya() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public causes_facture_avoir(String designation) {
+	public wilaya(String designation, com.commercial.entities.schema.static_data.region region, String code) {
 		super();
 		this.designation = designation;
+		this.region = region;
+		this.code = code;
 	}
 
 	public long getId() {
@@ -46,7 +53,21 @@ public class causes_facture_avoir implements Serializable {
 	public void setDesignation(String designation) {
 		this.designation = designation;
 	}
-	
-	
+
+	public region getRegion() {
+		return region;
+	}
+
+	public void setRegion(region region) {
+		this.region = region;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 	
 }

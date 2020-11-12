@@ -186,6 +186,7 @@ public class create_articleController {
 		@RequestParam("unite_mesure_vente") long id_unite_mesure,
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("prix_category") double [] prix_category,
+		@RequestParam("subvension") String check,
 		
 		@SessionAttribute("user") users user){
 		
@@ -213,7 +214,13 @@ public class create_articleController {
 		
 		pesage_produit pes_produit = pesRepo.getOne(pesage_prod);
 		
+		boolean sub = false;
 		
+		if(check.equals("on")) {
+			
+			sub = true;
+			
+		}
 		
 		//--------------------------
 		
@@ -224,13 +231,10 @@ public class create_articleController {
 			article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, code_comptable);
 			
 			if(art_if_same_specs==null) {
-				/*
-				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(), code_comptable, 
-						unite_mesureRepo.getOne(id_unite_mesure), magasin_stock);
-				*/
+				
 				
 				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(), code_comptable, 
-						unite_mesureRepo.getOne(id_unite_mesure));
+						unite_mesureRepo.getOne(id_unite_mesure), sub);
 				
 				artRepo.save(art);artRepo.flush();
 				
@@ -305,6 +309,7 @@ public class create_articleController {
 		@RequestParam("tva") long [] id_tva,
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("prix_category") double [] prix_category,
+		@RequestParam("subvension") String check,
 		
 		@SessionAttribute("user") users user){
 		
@@ -325,6 +330,14 @@ public class create_articleController {
 		pesage_produit pes_produit = pesRepo.getOne(pesage_prod);
 		
 		unite_mesure unite_m = unite_mesureRepo.getOne(id_unite_mesure);
+		
+		boolean sub = false;
+		
+		if(check.equals("on")) {
+			
+			sub = true;
+			
+		}
 		
 		//--------------------------
 		
@@ -354,6 +367,7 @@ public class create_articleController {
 				//art.setTva(tva);
 				art.setUnite_mesure_vente(unite_m);
 				//art.setMagasin_stock(magasin);
+				art.setSubvension(sub);
 				
 				artRepo.save(art);artRepo.flush();
 				
