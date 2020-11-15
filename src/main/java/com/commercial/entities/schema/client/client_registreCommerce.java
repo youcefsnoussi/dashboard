@@ -50,11 +50,11 @@ public class client_registreCommerce implements Serializable{
 		this.montant_actuel = montant_actuel;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -97,5 +97,7 @@ public class client_registreCommerce implements Serializable{
 	public void setMontant_actuel(double montant_actuel) {
 		this.montant_actuel = montant_actuel;
 	}
+
+	
 
 }

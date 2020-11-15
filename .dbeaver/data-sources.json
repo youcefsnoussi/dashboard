@@ -105,8 +105,7 @@
 				"auth-model": "oracle_native"
 			},
 			"custom-properties": {
-				"database.meta.separate.connection": "false",
-				"resultset.maxrows": "667"
+				"database.meta.separate.connection": "false"
 			}
 		}
 	},

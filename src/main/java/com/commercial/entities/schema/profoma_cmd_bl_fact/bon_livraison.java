@@ -91,12 +91,26 @@ public class bon_livraison implements Serializable{
 		this.montant_ttc = montant_ttc;
 	}
 
-	public long getId() {
+	
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public void setMontant_ht(Double montant_ht) {
+		this.montant_ht = montant_ht;
+	}
+
+	public void setTva(Double tva) {
+		this.tva = tva;
+	}
+
+	public void setMontant_ttc(Double montant_ttc) {
+		this.montant_ttc = montant_ttc;
 	}
 
 	public client getClient() {

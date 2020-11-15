@@ -314,7 +314,7 @@ public class numerotation_by_year {
 	
 	//-------------------------------------------------------------------------------------	
 		
-	public String return_num_facture (String num,int unite){ //assm la rebrique numero 
+	public String return_num_facture (String num,Long long1){ //assm la rebrique numero 
 		
 		
 		String numero ="",resnum="",year_encours="",month_encours="";
@@ -356,14 +356,14 @@ public class numerotation_by_year {
 					
 					else{
 						
-						numero = unite+"FCT_"+y+"/"+m+"/00000001"; 
+						numero = long1+"FCT_"+y+"/"+m+"/00000001"; 
 						
 					}
 			}
 			
 			else{
 				
-				numero = unite+"FCT_"+y+"/"+m+"/00000001";
+				numero = long1+"FCT_"+y+"/"+m+"/00000001";
 				
 			}
 			

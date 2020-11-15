@@ -35,12 +35,12 @@ public class category_produit implements Serializable{
 	}
 
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -53,7 +53,7 @@ public class category_produit implements Serializable{
 	public void setNom_category(String nom_category) {
 		this.nom_category = nom_category;
 	}
-	
+
 	
 	
 }

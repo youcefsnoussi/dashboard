@@ -83,12 +83,12 @@ public class registre_commerce implements Serializable{
 		this.activite = activite;
 		this.etat_blockage = etat_blockage;
 	}
-
-	public long getId() {
+	
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

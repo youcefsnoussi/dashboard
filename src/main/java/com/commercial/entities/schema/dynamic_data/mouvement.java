@@ -75,11 +75,11 @@ public class mouvement implements Serializable{
 		this.new_sold_rc = new_sold_rc;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -178,5 +178,7 @@ public class mouvement implements Serializable{
 	public void setNew_sold_rc(double new_sold_rc) {
 		this.new_sold_rc = new_sold_rc;
 	}
+
+	
 
 }

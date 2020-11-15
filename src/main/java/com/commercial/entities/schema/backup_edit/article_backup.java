@@ -75,8 +75,6 @@ public class article_backup implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	
-	
 	public article_backup(String code, com.commercial.entities.schema.article.produit produit,
 			com.commercial.entities.schema.article.emballage_produit emballage_produit,
 			com.commercial.entities.schema.article.pesage_produit pesage_produit, String image_article, double vendu,
@@ -125,11 +123,11 @@ public class article_backup implements Serializable{
 		
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -244,5 +242,7 @@ public class article_backup implements Serializable{
 	public void setSubvension(boolean subvension) {
 		this.subvension = subvension;
 	}
+
+	
 	
 }

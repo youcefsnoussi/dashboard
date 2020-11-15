@@ -186,7 +186,7 @@ public class create_articleController {
 		@RequestParam("unite_mesure_vente") long id_unite_mesure,
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("prix_category") double [] prix_category,
-		@RequestParam("subvension") String check,
+		@RequestParam("subvention") String check,
 		
 		@SessionAttribute("user") users user){
 		
@@ -236,7 +236,8 @@ public class create_articleController {
 				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(), code_comptable, 
 						unite_mesureRepo.getOne(id_unite_mesure), sub);
 				
-				artRepo.save(art);artRepo.flush();
+				artRepo.save(art);
+				artRepo.flush();
 				
 				//-------------------- tracking operation -----------------------------------
 				
@@ -264,16 +265,19 @@ public class create_articleController {
 					
 					tva tva = tvaRepo.getOne(id_tva[i]);
 					
-					prixUnitaire_article_categoryClient prix_u_c = new prixUnitaire_article_categoryClient(art, cat_c, prix_category[i], tva);
+					//if(prix_category[i] != -1) {
 					
-					prix_u_art_catcRepo.save(prix_u_c);prix_u_art_catcRepo.flush();
+						prixUnitaire_article_categoryClient prix_u_c = new prixUnitaire_article_categoryClient(art, cat_c, prix_category[i], tva);
+						
+						prix_u_art_catcRepo.save(prix_u_c);prix_u_art_catcRepo.flush();
+						
+						//-------------------- tracking operation -----------------------------------
+						
+						trk.add_track("prixUnitaire_article_categoryClient", "Ajout prix d'article pour catagory client", prix_u_c.getId(), user);
+						
+						//-------------------- tracking operation -----------------------------------
 					
-					//-------------------- tracking operation -----------------------------------
-					
-					trk.add_track("prixUnitaire_article_categoryClient", "Ajout prix d'article pour catagory client", prix_u_c.getId(), user);
-					
-					//-------------------- tracking operation -----------------------------------
-					
+					//}
 				}
 				
 			}
@@ -309,7 +313,7 @@ public class create_articleController {
 		@RequestParam("tva") long [] id_tva,
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("prix_category") double [] prix_category,
-		@RequestParam("subvension") String check,
+		@RequestParam("subvention") String check,
 		
 		@SessionAttribute("user") users user){
 		
@@ -434,7 +438,7 @@ public class create_articleController {
 			
 		}
 		
-		return "redirect:/add_art?ret="+ret+"&id_art="+id_art;
+		return "redirect:/edit_art?ret="+ret+"&id_art="+id_art;
 		
 	}
 	

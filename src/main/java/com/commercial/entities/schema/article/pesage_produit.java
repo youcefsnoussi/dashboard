@@ -33,11 +33,11 @@ public class pesage_produit implements Serializable{
 		this.unite_pesage = unite_pesage;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -56,7 +56,7 @@ public class pesage_produit implements Serializable{
 	public void setUnite_pesage(String unite_pesage) {
 		this.unite_pesage = unite_pesage;
 	}
-	
+
 	
 	
 }

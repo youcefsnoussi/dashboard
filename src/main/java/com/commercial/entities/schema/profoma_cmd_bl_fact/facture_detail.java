@@ -67,12 +67,12 @@ public class facture_detail implements Serializable{
 		this.montant_ttc = montant_ttc;
 		this.unite_mesure = unite_mesure;
 	}
-
-	public long getId() {
+	
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

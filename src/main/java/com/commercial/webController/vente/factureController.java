@@ -193,7 +193,7 @@ public class factureController {
 				
 				numerotation_by_year nby = new numerotation_by_year();
 				
-				String numero_fact = nby.return_num_facture(last_number, user.getUnite().getIdentifiant());
+				String numero_fact = nby.return_num_facture(last_number, (long) user.getUnite().getIdentifiant());
 				
 				String today = gtd.get_date();
 				
