@@ -65,11 +65,11 @@ public class prof_cmd_bl_fact_client_rc_avoir implements Serializable{
 		this.facture_avoir = facture_avoir;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

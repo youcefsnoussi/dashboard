@@ -86,6 +86,12 @@ $(document).ready(function() {
 				
 			});
 			
+			$("#closee").click(function () {
+				
+				location.reload();
+				
+			})
+			
 });
 
 $(function () {

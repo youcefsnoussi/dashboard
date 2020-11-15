@@ -43,12 +43,12 @@ public class sous_category_produit  implements Serializable{
 	}
 
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -71,7 +71,6 @@ public class sous_category_produit  implements Serializable{
 	public void setCategory_produit(category_produit category_produit) {
 		this.category_produit = category_produit;
 	}
-	
-	
+
 	
 }

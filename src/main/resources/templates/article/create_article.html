@@ -23,9 +23,7 @@
 		
 		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
 		
-		<style>
-		
-		</style>
+		<script type="text/javascript" src="resources\additionalJS\saisie_num.js"></script>
 		
 		<script type="text/javascript" src="resources\PagesJS\article\create_article.js"></script>
 		
@@ -167,7 +165,7 @@
 						
 							<label> Code Comptable</label>
 							
-							<input type="text" id="code_comptable" name="code_comptable" class="form-control"  required>
+							<input type="text" id="code_comptable" name="code_comptable" class="form-control" value=" " required>
 						
 						</div>
 						
@@ -187,8 +185,9 @@
 			        		
 			        		<label> Subvention </label>
 			        		
-			        		<input type="checkbox" id="subvension" name="subvension" class="form-control"  >
-			        	
+			        		<input type="checkbox" id="subvension"  class="form-control">
+			        		<input type="hidden" id="subvention" name="subvention" value="off">
+			        		
 			        	</div>
 						
 					</div>
@@ -212,7 +211,8 @@
 							
 							<div class="input-group" th:each="cat_client:${cat_client}">
 							
-								<input  type="number" step="any" value="-1 " name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+								<input  type="number" step="any" value="-1" name="prix_category" class="form-control saisie-1" 
+									style="margin-bottom:5px" placeholder="DA" required>
 								
 								<div class="input-group-append">
 							    	<span class="input-group-text" style="margin-bottom:5px">DA</span>
@@ -256,7 +256,8 @@
 							
 							<div class="input-group" th:each="price:${prices}">
 							
-								<input type="number" step="any" th:value="${price.prix}" name="prix_category" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+								<input type="number" step="any" th:value="${price.prix}" name="prix_category" class="form-control saisie-1" 
+									style="margin-bottom:5px" placeholder="DA" required>
 								
 								<div class="input-group-append">
 								    <span class="input-group-text" style="margin-bottom:5px">DA</span>

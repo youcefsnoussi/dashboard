@@ -45,13 +45,12 @@ public class paiement_facture implements Serializable{
 		this.montant_paye_facture = montant_paye_facture;
 	}
 
-
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

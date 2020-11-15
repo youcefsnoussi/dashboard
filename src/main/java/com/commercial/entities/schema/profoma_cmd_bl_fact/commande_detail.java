@@ -50,8 +50,6 @@ public class commande_detail implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
 	public commande_detail(com.commercial.entities.schema.profoma_cmd_bl_fact.commande commande,
 			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
 			double montant_ht, double montant_tva, double tva,
@@ -67,13 +65,11 @@ public class commande_detail implements Serializable{
 		this.unite_mesure = unite_mesure;
 	}
 
-
-
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

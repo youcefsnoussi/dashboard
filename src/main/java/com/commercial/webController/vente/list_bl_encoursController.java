@@ -538,7 +538,7 @@ public class list_bl_encoursController {
 				
 				numerotation_by_year nby = new numerotation_by_year();
 				
-				String numero_fact = nby.return_num_facture(last_number, (int) user.getUnite().getId());
+				String numero_fact = nby.return_num_facture(last_number, user.getUnite().getId());
 				
 				facture fact = new facture(bl.getClient(), bl.getRegistre_commerce(), bl.getCommande().getClient_registrecommerce(), today, time, numero_fact, 
 						bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), "", bl, bl.getCommande().getMode_paiement(), user, false, 

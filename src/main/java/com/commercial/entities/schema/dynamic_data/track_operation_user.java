@@ -2,7 +2,6 @@ package com.commercial.entities.schema.dynamic_data;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -43,8 +42,18 @@ public class track_operation_user implements Serializable{
 		super();
 	}
 
+	public track_operation_user(String entity_operation, String designation, long id_operation, String date,
+			String time, users user) {
+		super();
+		this.entity_operation = entity_operation;
+		this.designation = designation;
+		this.id_operation = id_operation;
+		this.date = date;
+		this.time = time;
+		this.user = user;
+	}
+	
 	public track_operation_user(String entity_operation, String designation, long id_operation, users user) {
-		
 		super();
 		
 		get_time_date gtd = new get_time_date();
@@ -52,17 +61,16 @@ public class track_operation_user implements Serializable{
 		this.entity_operation = entity_operation;
 		this.designation = designation;
 		this.id_operation = id_operation;
-		this.user = user;
 		this.date = gtd.get_date();
 		this.time = gtd.get_time();
-		
+		this.user = user;
 	}
-
-	public long getId() {
+	
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -113,5 +121,7 @@ public class track_operation_user implements Serializable{
 	public void setUser(users user) {
 		this.user = user;
 	}
+
+	
 	
 }

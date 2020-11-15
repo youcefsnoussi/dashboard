@@ -30,11 +30,11 @@ public class emballage_produit implements Serializable{
 		this.nom_emballage = nom_emballage;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -45,7 +45,7 @@ public class emballage_produit implements Serializable{
 	public void setNom_emballage(String nom_emballage) {
 		this.nom_emballage = nom_emballage;
 	}
-	
+
 	
 	
 }

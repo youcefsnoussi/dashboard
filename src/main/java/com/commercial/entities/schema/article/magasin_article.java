@@ -30,18 +30,18 @@ public class magasin_article {
 	public magasin_article() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public magasin_article(com.commercial.entities.schema.article.article article, Magasin magasin) {
 		super();
 		this.article = article;
 		this.magasin = magasin;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

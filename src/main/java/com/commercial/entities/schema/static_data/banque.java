@@ -34,11 +34,11 @@ public class banque implements Serializable{
 		this.numero_compte_entreprise = numero_compte_entreprise;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
