@@ -1,5 +1,6 @@
 $(document).ready(function() {
 			
+	
 			$(".edit").click(function(){
 				
 				$("#title").text("modification");

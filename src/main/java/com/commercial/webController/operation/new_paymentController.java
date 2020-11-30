@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -159,6 +160,8 @@ public class new_paymentController {
 	
 	@RequestMapping(value="/list_payments")
 	public String list__paiements(HttpServletRequest request,
+						 @RequestParam("date_debut") String date_debut,
+						 @RequestParam("date_fin") String date_fin,
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
@@ -176,16 +179,74 @@ public class new_paymentController {
 		
 		//----------------------------------------------------------------
 		
-		/*
-		if(s.contains("cancel_payment") || role.equals("Admin")) {
-			
-			cancel_pay = true;
-			
+		get_time_date gtd = new get_time_date();
+		
+		String date_d = "", date_f = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		try {
+		
+			if(date_debut.equals("0") && date_fin.equals("0")) {
+				
+				
+					model.addAttribute("payments", payRepo.get_payments_no_cancled_interval(conv.convertion_from_my_date(gtd.get_date()), 
+																							conv.convertion_from_my_date(gtd.get_date())));
+				
+				
+				date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+				
+				date_f = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			}
+			else if(date_debut.equals("1") && date_fin.equals("1")) {
+				
+				//model.addAttribute("list_facture", factRepo.findAll());
+				
+			}
+			else {
+					
+					if(date_debut.contains("/")) {
+						
+						model.addAttribute("payments", 
+									payRepo.get_payments_no_cancled_interval(conv.convertion_from_my_date(date_debut), 
+																			 conv.convertion_from_my_date(date_fin)));
+						
+						model.addAttribute("selected_year",date_debut.substring(6));
+						
+						date_d =  conv.convertion_MyDate_to_InputDate(date_debut);
+						
+						date_f =  conv.convertion_MyDate_to_InputDate(date_fin);
+						
+					}
+					else {
+						
+						model.addAttribute("payments", payRepo.get_payments_no_cancled_interval(conv.convertion_from_InputDate(date_debut), 
+																								conv.convertion_from_InputDate(date_fin)));
+						
+						date_d = date_debut;
+						
+						date_f = date_fin;
+						
+					}
+					
+			}
+		
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		*/
+		
+		model.addAttribute("years", factRepo.get_years_db());
+		
+		model.addAttribute("date_d", date_d);
+		
+		model.addAttribute("date_f", date_f);
+		
+		//----------------------------------------------------------------
+		
 		model.addAttribute("cancel_pay", cancel_pay);
 		
-		model.addAttribute("payments", payRepo.get_payments_no_cancled());
+		//model.addAttribute("payments", payRepo.get_payments_no_cancled());
 		
 		return ret;
 		

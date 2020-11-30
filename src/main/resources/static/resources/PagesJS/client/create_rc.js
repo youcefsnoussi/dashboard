@@ -42,6 +42,21 @@ $(document).ready(function() {
 			
 			/***************************************** END get returned param *****************************************************/
 			
+			$("#tva_check").change(function() {
+				
+				if($(this).prop("checked")){
+					
+					$("#tva").val("on");
+					
+				}
+				else{
+					
+					$("#tva").val("off");
+					
+				}
+				
+			});
+			
 			$(".n_nif").keyup(function(){
 				
 				var val = $(this).val();

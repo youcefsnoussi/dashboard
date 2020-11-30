@@ -2,6 +2,21 @@ $(document).ready(function() {
 			
 			$('[data-toggle="tooltip"]').tooltip();
 			
+			$("#tva_check").change(function() {
+				
+				if($(this).prop("checked")){
+					
+					$("#tva").val("on");
+					
+				}
+				else{
+					
+					$("#tva").val("off");
+					
+				}
+				
+			});
+			
 			if($("#etat_blockage").val()=="active"){
 				
 				$("#active").css("border-width","4px");

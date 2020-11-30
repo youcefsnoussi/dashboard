@@ -140,6 +140,22 @@
 				
 			});
 			
+			$(".print").click(function(){
+				
+				var id_fact = $(this).attr("id_fact");
+				
+				var num_fact = $(this).attr("num_fact");
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_fact?id_fact='+id_fact+'"></iframe>');
+				
+				$("#title_fact").text("Détail Facture N° "+num_fact);
+				
+				$("#icone_fact").attr("class","far fa-file-invoice");
+				
+				$("#fact_detail_modal").modal("show");
+				
+			});
+			
 			$("#afficher").click(function(){
 				
 				var start = $("#debut").val();
@@ -229,9 +245,14 @@
 							
 								<div class="input-group-append">
 								
-									<input id="debut" type="date" name="start"  class="form-control date" style="width:100%;" placeholder="DU">
-									<span class="input-group-text declaration far fa-calendar-alt"> </span>
-									<input id="fin" type="date" name="end"  class="form-control date" style="width:100%;" placeholder="AU">
+									<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
+										style="width:100%;" placeholder="DU">
+										
+									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+									
+									<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
+									style="width:100%;" placeholder="AU">
+									
 									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 									
 								</div>
@@ -302,7 +323,10 @@
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
 																						<i class="far fa-info-square"></i>
-																 </button> 
+																 </button>
+																 <button type="button" class="btn btn-info print" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
+																						<i class="far fa-print"></i>
+																 </button>  
 								</td>
 								
 							</tr>
@@ -322,7 +346,10 @@
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
 																						<i class="far fa-info-square"></i>
-																 </button> 
+																 </button>
+																 <button type="button" class="btn btn-info print" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
+																						<i class="far fa-print"></i>
+																 </button>  
 								</td>
 								
 							</tr>
@@ -378,9 +405,9 @@
 	      		</div>
 	      		
 	      		<div class="col-md-4 offset-md-1">
-	      		
-	      			<button class="btn btn-info" id="print_duplicata"> <i id="icone_fact" class="far fa-print" style="font-size:22px;" ></i> 
-	      											Imprimer Duplicata</button>
+	      		<!--  
+	      			<button class="btn btn-info" id="print"> <i id="icone_fact" class="far fa-print" style="font-size:22px;" ></i> 
+	      											Imprimer </button> -->
 	      			<button class="btn btn-warning" id="fact_avoir"> <i id="icone_fact" class="far fa-file-invoice" style="font-size:22px;" ></i> 
 	      											Facture d'avoir </button>
 			      		

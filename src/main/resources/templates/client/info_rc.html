@@ -224,9 +224,12 @@
 							        		
 							        		<label> TVA </label>
 							        		
-							        		<input th:if="${rc.tva}==1" type="checkbox" id="tva" name="tva" class="form-control" checked >
-							        		<input th:unless="${rc.tva}==1" type="checkbox" id="tva" name="tva" class="form-control"  >
-							        	
+							        		<input th:if="${rc.tva}==1" type="checkbox" id="tva_check"  class="form-control" checked >
+							        		<input th:unless="${rc.tva}==1" type="checkbox" id="tva_check" class="form-control"  >
+							        		
+							        		<input th:if="${rc.tva}==1" type="hidden" id="tva" name="tva" class="form-control" value="on" >
+							        		<input th:unless="${rc.tva}==1" type="hidden" id="tva" name="tva" class="form-control" value="off" >
+							        		
 							        	</div>
 							        	
 							        	<div class="col-md-4">

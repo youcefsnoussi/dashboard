@@ -4,20 +4,24 @@
 <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Application Pate</title>
 
-<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+<link rel="stylesheet" href="resources\Plugins\materialize\css\materialize.min.css" />
 
-<link rel="stylesheet" href="resources\Plugins\materialize\css\materialize.min.css"  >
-<link rel="stylesheet" href="resources\Plugins\materialize\icon\materializ_icon.css" >
+<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+
+<!-- <link rel="stylesheet" href="resources\additionalCSS\BootstrapButtonMaterielizeIcon.css" />  -->
+
+<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
 
 <script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
-
-<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.min.js"></script>
+<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
 
 <script  src="resources\Plugins\materialize\js\materialize.min.js"></script>
 
-
-
-<!--  <link rel="stylesheet" href="resources\PagesCSS\welcome.css" />  -->
+<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
 
 <script type="text/javascript">
 		
@@ -37,8 +41,11 @@
 					
 				});
 				
-				 
+				$('.toast').toast('show');
+				
 				setInterval(function(){	
+					
+					//$("#notif_div").empty();
 					
 					$.ajax({
 						
@@ -53,19 +60,39 @@
 
 								$.each(resp, function(key, value) {
 									
-									var htm = " <div class='tt'> "+
-											  "	<i class='far fa-file-invoice'></i> <span>Facture N° "+value.numero+" est Prête </span>"+
-											  " <hr>"+
-											  " <span>"+value.registre_commerce.nom+" "+value.registre_commerce.prenom+"</span>"+
-											  " <span> N° "+value.registre_commerce.numero+"</span>";
+									var htm = '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" '+
+													'data-delay="120000" data-animation="true" style="cursor: pointer;">'+
+											      '<div class="toast-header"> '+
+											        '<i class="far fa-bell click"></i> &nbsp '+
+											        '<strong class="mr-auto click"> <b>Facture Prête </b></strong> '+
+											        '<small class="text-muted click">'+value.time+'</small> '+
+											        '<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"> '+
+											          ' <span aria-hidden="true">&times;</span> '+
+											        '</button> '+
+											      '</div> '+
+											      '<div class="toast-body click"> '+
+											        '<label style="font-size:larger;font-weight: normal;"> N°: '+value.numero+' </label> '+
+											        '<label style="font-size:larger;font-weight: normal;"> Code Client: '+value.client.code+'</label>'+
+											        '<label style="font-size:larger;font-weight: normal;"> Client: '+value.client.nom+' '+value.client.prenom+'</label> '+
+											        '<label style="font-size:larger;font-weight: normal;"> N°RC: '+value.registre_commerce.numero_rc+'</label>'+
+											        '<label style="font-size:larger;font-weight: normal;"> RC: '+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</label>'+
+											      '</div> '+
+											    '</div>';
 									
-									M.toast({html: htm});	
-											  
+									$("#notif_div").append(htm);		    
+											    
+										  
 								});
 								
 							}
 							
-							$(".tt").click(function(){
+							$('.toast').on('hidden.bs.toast', function () {
+								 $(this).remove();
+							});
+							
+							$('.toast').toast('show');
+							
+							$(".click").click(function(){
 								
 								$("#frame").attr("src","/list_fact?date_debut=0&date_fin=0");
 								
@@ -79,6 +106,16 @@
 				
 			  });
 
+			/*
+			var htm = " <div class='tt'> "+
+					  "	<i class='far fa-file-invoice'></i> <span>Facture N° "+value.numero+" est Prête </span>"+
+					  " <hr>"+
+					  " <span>"+value.registre_commerce.nom+" "+value.registre_commerce.prenom+"</span>"+
+					  " <span> N° "+value.registre_commerce.numero+"</span>";
+			
+			M.toast({html: htm});	
+			*/	
+			
 		</script>
 
 </head>
@@ -86,7 +123,20 @@
 
 	<header th:insert="navbar.html"> </header>
 	
-	<iframe id="frame" style="" frameborder="0" name="frame" allowfullscreen  th:src="@{/acceuil}"> </iframe>
+	<iframe id="frame" style="position: absolute;" frameborder="0"  name="frame" allowfullscreen  th:src="@{/acceuil}"> </iframe>
+	
+	<!-- -------------------++++++++++++++++++---------------------------------- -->
+	
+	<div aria-live="polite" aria-atomic="true" style=" min-height: 200px;">
+	  <!-- Position it -->
+	  <div id="notif_div" style="position: absolute; top: -35px; right: 5px;width:270px">
+	    <!-- Then put toasts within -->
+	    
+		
+	  </div>
+	</div>
+	
+	<!-- -------------------++++++++++++++++++---------------------------------- -->
 	
 </body>
 </html>

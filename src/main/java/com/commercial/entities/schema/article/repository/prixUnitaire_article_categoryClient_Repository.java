@@ -22,7 +22,7 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 	
 	@Query( " FROM prixUnitaire_article_categoryClient prix_u_c "
 			
-			+ " WHERE category_client = :cat_client ")
+			+ " WHERE category_client = :cat_client AND prix !=(-1) ")
 	
 	public List<prixUnitaire_article_categoryClient>  get_articles_by_CatClient(@Param("cat_client") category_client cat_client);
 	

@@ -157,6 +157,7 @@ public class list_rcController {
 		rc.setPrenom(prenom);
 		
 		float ttva = 0;
+		System.out.println("--->"+tva);
 		if(tva.equals("on")) {
 			
 			ttva = 1;
