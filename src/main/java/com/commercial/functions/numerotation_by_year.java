@@ -345,13 +345,13 @@ public class numerotation_by_year {
 						int nn = Integer.parseInt(n);
 						System.out.println(nn);
 						nn++;
-							if( nn < 10 ){ numero = "FCT_"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = "FCT_"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = "FCT_"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = "FCT_"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = "FCT_"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = "FCT_"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = "FCT_"+y+"/"+m+"/0"+nn;}
+							if( nn < 10 ){ numero = long1+"FCT_"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = long1+"FCT_"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = long1+"FCT_"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = long1+"FCT_"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = long1+"FCT_"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = long1+"FCT_"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = long1+"FCT_"+y+"/"+m+"/0"+nn;}
 					}
 					
 					else{

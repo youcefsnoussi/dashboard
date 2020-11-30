@@ -2,6 +2,8 @@ $(document).ready(function() {
 			
 	//$('#code_client').bind("enterKey",function(e){
 	
+	
+	
 	//-------------------------------------------------------------------------------
 	
 	var getUrlParameter = function getUrlParameter(sParam) {
@@ -34,6 +36,32 @@ $(document).ready(function() {
 		$("#bl_detail_modal").modal("show");
 			
 	}
+	
+	//---------------------------------- GET Matricules ---------------------------------------------
+	
+	$.ajax({
+		url: 'get_matricules',
+		//type: 'POST',
+		dataType: 'json',
+		data : {
+			
+        },
+        success : function(responseJson) {
+			
+			if (responseJson != "null") {
+
+				$.each(responseJson, function(key, value) {
+					
+					$("#matricule").append('<option value="'+value+'" >'+value+'</option>');
+
+				});
+				
+				$("#matricule").selectpicker('refresh');
+				$("#loading").remove();
+			}
+			
+		}
+	});
 	
 	//-------------------------------------------------------------------------------
 	
@@ -102,7 +130,7 @@ $(document).ready(function() {
 									console.log(value.id)
 									
 									$("#rc").append('<option value="'+value.id+'" rc="'+value.registre_commerce.numero_rc+'" data-subtext="'+value.registre_commerce.numero_rc+' [ '+value.date_debut+' ➤ '+value.date_fin+' ]" nif="'+value.registre_commerce.numero_nif+'" title="'+value.registre_commerce.numero_rc+'" adresse="'+value.registre_commerce.adresse+'"' 
-											+' art="'+value.registre_commerce.numero_art+'" plafond="'+value.registre_commerce.plafond+'" sold="'+value.registre_commerce.sold_encours+'" nom="'+value.registre_commerce.nom+'" prenom="'+value.registre_commerce.prenom+'">'+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</option>');
+											+' art="'+value.registre_commerce.numero_art+'" plafond="'+value.registre_commerce.plafond+'" sold="'+value.registre_commerce.sold_encours+'" nom="'+value.registre_commerce.nom+'" prenom="'+value.registre_commerce.prenom+'" tva="'+value.registre_commerce.tva+'">'+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</option>');
 
 								});
 								
@@ -120,6 +148,8 @@ $(document).ready(function() {
 					$(".art").selectpicker('refresh');
 					
 					//$.ajaxSetup({async: false});
+					$("#redux").empty();
+					
 					$.ajax({
 						url: 'ajax_get_art_by_client_cat',
 						//type: 'POST',
@@ -130,16 +160,18 @@ $(document).ready(function() {
 				        success : function(responseJson) {
 							
 							if (responseJson != "null") {
-
+								
 								$.each(responseJson, function(key, value) {
+									console.log("=>"+value.id)
+									if(value.id==(-1)){
+										
+										$("#redux").append("<span class='badge badge-secondary' id='art'> "+value.article.produit.designation+" "+value.article.emballage_produit.nom_emballage+" "+value.article.pesage_produit.pesage+value.article.pesage_produit.unite_pesage+"</span>")
+										
+									}
 									
 									$(".art").each(function(){
-									
-										$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" data-subtext="'+value.article.code+'" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" pu="'+value.prix+'"' 
-												+' tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" >'+value.article.produit.designation+' '+value.article.emballage_produit.nom_emballage+' '+value.article.pesage_produit.pesage+'</option>');
-										
-										$(this).selectpicker('refresh');
-										
+																				$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" data-subtext="'+value.article.code+'" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" pu="'+value.prix+'"' 												+' tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" >'+value.article.produit.designation+' '+value.article.emballage_produit.nom_emballage+' '+value.article.pesage_produit.pesage+value.article.pesage_produit.unite_pesage+'</option>');																				$(this).selectpicker('refresh');
+											
 									});
 									
 								});
@@ -279,7 +311,11 @@ $(document).ready(function() {
 				
 				var tva = $(this).parent().parent().find("#tva_art").val()/100;
 				
-				montant_tva = montant_tva + ( parseFloat(v) * tva )
+				if($("#tv").val()!="0"){ //-------------------------- if RC not exnéré
+					
+					montant_tva = montant_tva + ( parseFloat(v) * tva );
+					
+				}
 				
 			}
 			
@@ -301,6 +337,22 @@ $(document).ready(function() {
 		 $("#adresse_rc").val($("#rc option:selected").attr("adresse"));
 		 $("#solde_rc").val(parseFloat($("#rc option:selected").attr("sold")).formatMoney(2, '.', ' '));
 		 $("#max_solde_rc").val(parseFloat($("#rc option:selected").attr("plafond")).formatMoney(2, '.', ' '));
+		 $("#tv").val($("#rc option:selected").attr("tva"));
+		 
+		 var exo = $("#rc option:selected").attr("tva");
+		 
+		 if(exo=="0"){
+			 
+			 $("#exo").attr("class","badge badge-warning");
+			 $("#exo").text("oui");
+			 
+		 }
+		 else{
+			 
+			 $("#exo").attr("class","badge badge-secondary");
+			 $("#exo").text("non");
+			 
+		 }
 		 
 	});
 	
@@ -347,7 +399,12 @@ $(document).ready(function() {
 				
 				var tva = $(this).parent().parent().find("#tva_art").val()/100;
 				
-				montant_tva = montant_tva + ( parseFloat(v) * tva )
+				
+				if($("#tv").val()!="0"){ //-------------------------- if RC not exnéré
+				
+					montant_tva = montant_tva + ( parseFloat(v) * tva )
+				
+				}
 				
 			}
 			

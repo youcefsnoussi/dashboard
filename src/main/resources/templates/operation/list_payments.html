@@ -193,6 +193,48 @@
 				
 			})
 			
+			$("#afficher").click(function(){
+				
+				var start = $("#debut").val();
+				
+				var end = $("#fin").val();
+				
+				if(start=="" || end==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					//console.log("start = "+start+" / end = "+end);
+					window.location.replace("list_payments?date_debut="+start+"&date_fin="+end);
+					
+				}
+				
+			});
+			
+			$("#years").change(function(){
+				
+				var start = "01/01/"+$(this).val();
+				
+				var end = "31/12/"+$(this).val();
+					
+				window.location.replace("list_payments?date_debut="+start+"&date_fin="+end);
+				
+			});
+			
+			
+			$("#today").click(function(){
+					
+				//console.log("start = "+start+" / end = "+end);
+				window.location.replace("list_payments?date_debut=0&date_fin=0");
+				
+				
+			});
+			
 			$(".cloose").click(function(){
 			
 				location.reload();
@@ -275,17 +317,57 @@
 				<div class="container-fluid">
 					
 					<div class="row">
-					
-						<div class="col-md-3" >
+						
+						<div class="col-md-2" >
 						
 							<button id="new_payment" class="btn btn-dark btn_icon"> <span> Nouveau paiement </span> <i class="far fa-plus-circle"></i> </button>
 						
 						</div>
 						
-						<div class="col-md-3" >
+						<div class="col-md-2" style="border-right:5px;border-color: #343a40;border-right-style: solid;">
 						
 							<button id="remboursement" class="btn btn-dark btn_icon"> <span> Remboursement </span> <i class="far fa-plus-circle"></i> </button>
 						
+						</div>
+						
+						<div class="col-md-4" >
+						
+							<div class="input-group">
+							
+								<div class="input-group-append">
+								
+									<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
+										style="width:100%;" placeholder="DU">
+										
+									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+									
+									<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
+									style="width:100%;" placeholder="AU">
+									
+									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
+									
+								</div>
+								
+							</div>
+							
+						</div>
+						
+						<div class="col-md-2" >
+						
+							
+								<button id="today" name="today" class="btn btn-dark" type="button">Paiements d'aujourd'hui</button>
+								
+							
+						</div>
+						
+						<div class="col-md-2" >
+						
+								<select id="years" class="form-control">
+									<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:if="${y}==${selected_year}" selected></option>
+									<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:unless="${y}==${selected_year}"></option>
+								
+								</select>
+							
 						</div>
 						
 					</div>
@@ -300,7 +382,7 @@
 							
 								<th>ID</th>
 								<th>Client</th>
-								<th>N° RC</th>
+								<th>RC</th>
 								<th>Montant</th>
 								<th>Mode de paiement</th>
 								<th>Banque</th>
@@ -320,14 +402,14 @@
 								<td th:text="${pay.id}"></td>
 								<td th:text="${pay.client.nom}+' '+${pay.client.prenom}+' '+${pay.client.code}"></td>
 								<td th:text="${pay.registre_commerce.nom}+' '+${pay.registre_commerce.prenom}+' '+${pay.registre_commerce.numero_rc}"></td>
-								<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:text="${pay.mode_paiement.designation}"></td>
 								<td th:if="${pay.banque}==null" ></td>
 								<td th:unless="${pay.banque}==null" th:text="${pay.banque.nom_banque}"></td>
 								<td th:text="${pay.date}"></td>
 								<td th:text="${pay.numero_piece}"></td>
-								<td >
-									<button th:if="${pay.path_img}==''" class="btn btn-info add_img" th:attr="id_payment=${pay.id}">Ajouter image</button> 
+								<td style="text-align: center;">
+									<button th:if="${pay.path_img}==''" class="btn btn-info add_img" th:attr="id_payment=${pay.id}"><i class="far fa-paperclip"></i></button> 
 									
 									<a th:unless="${pay.path_img}==''" href="#">
 										<img alt="" class="img" height="50" width="100"  

@@ -107,7 +107,7 @@ public class add_rcController {
 		
 		if(rc==null) {
 			
-			if(tva=="on") {
+			if(tva.equals("on")) {
 				
 				//tva tt = tvaRepo.getOne((long) 1);
 				

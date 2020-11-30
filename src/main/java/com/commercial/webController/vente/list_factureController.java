@@ -1,8 +1,10 @@
 package com.commercial.webController.vente;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -46,6 +48,8 @@ import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
+import com.commercial.functions.generateQRcode;
+import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 
@@ -146,10 +150,17 @@ public class list_factureController {
 		
 		get_time_date gtd = new get_time_date();
 		
+		String date_d = "", date_f = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
 			model.addAttribute("list_facture", factRepo.today_facture_no_printed(gtd.get_date()));
 			
+			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+			date_f = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 		}
 		else if(date_debut.equals("1") && date_fin.equals("1")) {
 			
@@ -157,9 +168,7 @@ public class list_factureController {
 			
 		}
 		else {
-			
-			convert_string_to_date_util conv = new convert_string_to_date_util();
-			
+
 			try {
 				
 				if(date_debut.contains("/")) {
@@ -169,11 +178,19 @@ public class list_factureController {
 					
 					model.addAttribute("selected_year",date_debut.substring(6));
 					
+					date_d = date_debut;
+					
+					date_f = date_fin;
+					
 				}
 				else {
 					
 					model.addAttribute("list_facture", 
 							factRepo.date_between_facture(conv.convertion_from_InputDate(date_debut), conv.convertion_from_InputDate(date_fin)));
+					
+					date_d = date_debut;
+					
+					date_f = date_fin;
 					
 				}
 				
@@ -187,23 +204,10 @@ public class list_factureController {
 		
 		model.addAttribute("years", factRepo.get_years_db());
 		
-		//model.addAttribute("list_facture", factRepo.today_facture(gtd.get_date()));
+		model.addAttribute("date_d", date_d);
 		
-		//model.addAttribute("mode_paiements", mode_payRepo.findAll());
-		//model.addAttribute("articles", artRepo.findAll());
+		model.addAttribute("date_f", date_f);
 		
-		//model.addAttribute("cat_client", cat_clientRepo.findAll());
-		
-		//model.addAttribute("unite", uniteRepo.findAll());
-		/*
-		String s = user.getRole().getIds_banned();
-		
-		if(s!=null && s.contains("no_add_client")) {
-			
-			ret = "403";
-			
-		}
-		*/
 		return ret;
 		
 	}
@@ -230,6 +234,38 @@ public class list_factureController {
 		String ret = "vente/info_facture";
 		
 		return ret;
+		
+	}
+	
+	//-----------------------------------------------------------------------------
+	
+	@Autowired
+    private DataSource localDataSource;
+	
+	@Autowired
+	generate_Doc gd;
+	
+	@RequestMapping(value="/print_fact")
+	public String print_bl(HttpServletRequest request,
+						 @RequestParam("id_fact") long id_fact,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		facture fact = factRepo.getOne(id_fact);
+		
+		String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
+		
+		String pdf = "";
+		try {
+			
+			pdf = gd.generate_Fact(fact, qr_code, localDataSource.getConnection());
+			
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		return "redirect:/display_pdf?file="+pdf;
 		
 	}
 	

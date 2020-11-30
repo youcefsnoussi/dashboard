@@ -12,6 +12,7 @@ $(document).ready(function(){
 			$(".li_drop").css("background-color","transparent");
 			
 			$(this).css("background-color","#f5f5f5");	
+			
 		});
 		
 		

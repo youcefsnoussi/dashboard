@@ -5,10 +5,13 @@
 
 		<link rel="stylesheet" href="resources\Plugins\materialize\css\materialize.min.css" />
 		<!--  <link rel="stylesheet" href="resources\Plugins\materialize\icon\materializ_icon.css" /> -->
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
 		
 		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
 		
 		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
 		<script  src="resources\Plugins\materialize\js\materialize.min.js"></script>
 		
 		<script type="text/javascript" src="resources\PagesJS\navbar.js"></script>
@@ -39,13 +42,13 @@
     		
     		<li>
     		
-    			 <a style="color:red" class="sidenav-close" th:href="notif" target="frame" ><i class="far fa-bell" style="font-size: 20px;color:red;"></i>Notification <span style="color:red" class="badge" th:text="${notification}"></span> </a>
+    			 <a style="color:red" class="sidenav-close" th:href="notif" target="frame" ><i class="far fa-bell" style="font-size: 25px;color:red;"></i>Notification <span style="color:red" class="badge" th:text="${notification}"></span> </a>
     		
     		</li>
     		
     		<li>
     		
-    			 <a class="sidenav-close" th:href="acceuil" target="frame" ><i class="far fa-home" style="font-size: 20px;"></i>Acceuil </a>
+    			 <a class="sidenav-close" th:href="acceuil" target="frame" ><i class="far fa-home" style="font-size: 25px;"></i>Acceuil </a>
     		
     		</li>
     		
@@ -58,7 +61,7 @@
       				
       					<li class="" th:each="sub:${sub_menu}" th:object="${sub}" th:if="${sub[3]} == ${menu[0]}">
       					
-      						 <a class="sidenav-close li_drop" th:href="${sub[1]}" target="frame" >  <i th:attr="class='far fa-'+${sub[4]}+''" style="font-size: 20px;"></i> <label style="color:black;" th:text="${sub[0]}"></label> </a>
+      						 <a class="sidenav-close li_drop" th:href="${sub[1]}" target="frame" >  <i th:attr="class='far fa-'+${sub[4]}+''" style="font-size: 25px;"></i> <label style="color:black;font-size: 13px;" th:text="${sub[0]}"></label> </a>
       																								<!-- <i class="material-icons" >[[${sub[4]}]]</i> // [[${sub[0]}]]-->
       					</li>
       					
@@ -74,9 +77,9 @@
     
   </ul>
   
-  <a href="#" data-target="slide-out" class="sidenav-trigger btn-floating btn-large waves-light blue" style="position:absolute;top:3px;left:3px;"><i class="material-icons">menu</i></a>
+  <a href="#" data-target="slide-out" class="sidenav-trigger btn-floating btn-large waves-light blue" style="position:absolute;top:3px;left:3px;"><i class="fas fa-arrow-alt-from-left"></i></a>
   
-  <a th:href="@{/logout}" class="btn-floating btn-large waves-effect waves-light blue" style="position:absolute;top:3px;left:61px;"><i class="material-icons">exit_to_app</i></a>
+  <a th:href="@{/logout}" class="btn-floating btn-large waves-effect waves-light blue" style="position:absolute;top:3px;left:61px;"><i class="fas fa-door-open"></i></a>
   
   
 </body>

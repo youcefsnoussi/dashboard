@@ -7,9 +7,9 @@
 	
 	<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
 	<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap.min.css">
-	<link href="resources\Plugins\jAlert-master\dist\jAlert.css" rel="stylesheet">
-	<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet">
-	<link href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css" rel="stylesheet"> 
+	<link rel="stylesheet" href="resources\Plugins\jAlert-master\dist\jAlert.css">
+	<link rel="stylesheet" href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css">
+	<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css"> 
 	
 	<script type="text/javascript" src="resources\additionalJS\jquery-3.2.1.min.js"></script>
 	
@@ -160,15 +160,30 @@
 								</div>
 	
 								<div class="col-md-6 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">Matricule</span>
+									
+									<div class="row">
+										
+										<div class="col-md-1">
+										
+											<div id="loading" class="spinner-grow" role="status">
+											  <span class="sr-only">Loading...</span>
+											</div>
+										
 										</div>
-										<input type="text" class="form-control mouve" name="matricule" id="matricule" value="" t="mode_reg" l="mode_reg"
-											b="1_lib_art" r="1_lib_art" next="1_lib_art" required placeholder="xxxxxx-xxx-xx"> <input type="hidden"
-											id="c_type_cl" value="0">
+										
+										<div class="col-md-11">
+										
+											<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
+												name="matricule" id="matricule" data-size="5">
+												<option  value="" selected>Matricule</option>
+												<option  th:each="mat : ${matricule}" th:value="${mat}" th:text="${mat}"></option>
+												
+											</select>
+										
+										</div>
+										
 									</div>
+									
 								</div>
 	
 							</div>
@@ -188,6 +203,9 @@
 											<option  value="" selected>Registre Commerce</option>
 	
 										</select>
+										
+										<input type="hidden" id="tv">
+										
 									</div>
 								</div>
 	
@@ -218,7 +236,7 @@
 							<br>
 	
 							<div class="row">
-								<div class="col-md-6 column">
+								<div class="col-md-5 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration"
@@ -228,7 +246,7 @@
 											id="solde_rc" value="" readonly="readonly">
 									</div>
 								</div>
-								<div class="col-md-6 column">
+								<div class="col-md-5 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration"
@@ -238,47 +256,68 @@
 											id="max_solde_rc" value="0" readonly="readonly">
 									</div>
 								</div>
-	
+								<div class="col-md-2 column">
+								
+									<h5>Exonération <span class="badge badge-secondary" id="exo"></span></h5>
+									
+								</div>
 							</div>
 	
 							<hr>
-	
-	
-							<div class="col-md-4 offset-md-8">
-								<div class="input-group">
-									<div class="input-group-prepend">
-										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
+							
+							<div class="row">
+							
+								<div class="col-md-7 ">
+									
+									<div class="input-group">
+						
+										<h5>Réduction sur les articles :</h5><h5 id="redux">  </h5>
+									
 									</div>
-									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" value="0" readonly="readonly">
+									
 								</div>
-							</div>
-	
-	
-							<div class="col-md-4 offset-md-8">
-								<div class="input-group">
-									<div class="input-group-prepend">
-										<span class="input-group-text declaration">Montant TVA</span>
+								
+								<div class="col-md-4 offset-md-1">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
+										</div>
+										<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" value="0" readonly="readonly">
 									</div>
-									<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" value="0" readonly="readonly">
 								</div>
+							
 							</div>
-	
-	
-							<div class="col-md-4 offset-md-8">
-								<div class="input-group">
-									<div class="input-group-prepend">
-										<span class="input-group-text declaration">Montant TTC </span>
+							
+							<div class="row">
+							
+								<div class="col-md-4 offset-md-8">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration">Montant TVA</span>
+										</div>
+										<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" value="0" readonly="readonly">
 									</div>
-									<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" value="0" readonly="readonly">
 								</div>
+							
 							</div>
+							
+							<div class="row">
+							
+								<div class="col-md-4 offset-md-8">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration">Montant TTC </span>
+										</div>
+										<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" value="0" readonly="readonly">
+									</div>
+								</div>
 	
-	
+							</div>
+							
 						</div>
 					</div>
-	
-					<hr />
-	
+					
+					<hr>
 	
 					<table class="table" id="table" width="100%">
 						<thead class="thead-dark">

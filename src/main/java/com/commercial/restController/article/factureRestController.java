@@ -2,6 +2,7 @@ package com.commercial.restController.article;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
 
 @RestController
@@ -73,6 +75,21 @@ public class factureRestController {
 	public factureRestController() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	//----------------------------------------------------------------
+	
+	@RequestMapping(value="/get_matricules")
+	public List<String> get_matricules_from_peuseurDB() throws IOException, ParseException{
+		
+		Connection_peseur con = new Connection_peseur();
+		
+		List <String> lm = con.get_matricule_from_peseur();
+		
+		return lm;
+		
+	}
+	
+	//----------------------------------------------------------------
 	
 	@RequestMapping(value="/ajax_get_client_by_code")
 	public client get_client_by_code(
@@ -120,7 +137,9 @@ public class factureRestController {
 			
 			if(red != null) {
 				
-				pu.setPrix(red.getNouveau_prix());
+				pu.setPrix(red.getNouveau_prix()); // naba3to b - bach ndetecti article li fih reduction o f client side nredo normal
+				
+				pu.setId((long) -1);
 				
 				list_art.set(i, pu);
 				
@@ -206,9 +225,11 @@ public class factureRestController {
 			@SessionAttribute("user") users user
 			) throws IOException, ParseException{
 		
+		//System.out.println("++++++++++++++----> enter notification fact ready <----+++++++++++++++");
+		
 		List <facture> list_fct = factRepo.get_notification();
 		
-		List <facture> ret = null;
+		List <facture> ret = new ArrayList <facture>();
 		
 		for(int i=0;i<list_fct.size();i++) {
 			
@@ -223,6 +244,12 @@ public class factureRestController {
 				ret.add(fct);
 				
 			}
+			
+		}
+		
+		if(ret.size()!=0) {
+			
+			System.out.println(ret.get(0).getNumero());
 			
 		}
 		
