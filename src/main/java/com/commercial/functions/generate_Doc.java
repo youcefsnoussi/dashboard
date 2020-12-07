@@ -3,18 +3,20 @@ package com.commercial.functions;
 import java.io.File;
 import java.sql.Connection;
 import java.text.DecimalFormat;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_detail;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 
@@ -30,18 +32,27 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 @Service
 public class generate_Doc {
 	
-	public generate_Doc() {
-		// TODO Auto-generated constructor stub
-	}
-	
 	@Autowired
 	factureRepository factRepo;
 	
 	@Autowired
 	facture_detailRepository fct_detRepo;
 	
-	public static String generate_BL(long id_bl, String numero, String matricule, String qr_code, Connection con) {
-		
+	@Autowired
+	bon_livraisonRepository blRepo;
+	
+	@Autowired
+	bon_livraison_detailRepository bl_dRepo;
+	
+	public generate_Doc() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	public String generate_BL(long id_bl, String numero, String matricule, String qr_code, Connection con) {
+		 
+		 String destination = "D:/Commercial/Doc/BL/BL.pdf";
+		 
 		 JasperDesign jdesign; 
 			try {
 				
@@ -49,26 +60,52 @@ public class generate_Doc {
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 				Map<String, Object> mp = new HashMap<String, Object>();
 				
-				mp.put("id_bon_livraison",id_bl);
-				mp.put("num",numero);
-				mp.put("qr_code", qr_code);
-				mp.put("Matricule", matricule);
+				bon_livraison bl = blRepo.getOne(id_bl);
 				
+				List <bon_livraison_detail> list_bld = bl_dRepo.get_bl_detail(bl);
+					
+				List <Long> magasins = new ArrayList <Long>();
 				
-				    
-				JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+				for(int i=0; i<list_bld.size(); i++) {
+					
+					if(!magasins.contains(list_bld.get(i).getMagasin().getId())) {
+						
+						magasins.add(list_bld.get(i).getMagasin().getId());
+						
+					}
+					
+				}
 				
-				File dir = new File("D:\\Commercial\\Doc\\BL");
-			    if (!dir.exists()) dir.mkdirs();
+				ArrayList<String> pdfs = new ArrayList <String>();
 				
-				JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BL\\BL.pdf");
+				for(int i=0;i<magasins.size();i++) {
+					
+					mp.put("id_bon_livraison",id_bl);
+					mp.put("num",numero);
+					mp.put("qr_code", qr_code);
+					mp.put("Matricule", matricule);
+					
+					mp.put("magasin", magasins.get(i));
+					
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\BL");
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BL\\BL"+i+".pdf");
+					
+					pdfs.add("D:\\Commercial\\Doc\\BL\\BL"+i+".pdf");
+					
+				}
+				
+				CombinePdf.combine(pdfs, destination);
 				
 			} catch (JRException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			return "D:/Commercial/Doc/BL/BL.pdf";
+			return destination;
 	
 	}		
 	
