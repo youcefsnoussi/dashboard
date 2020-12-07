@@ -234,6 +234,9 @@ public class list_bl_encoursController {
 	@Autowired
     private DataSource localDataSource;
 	
+	@Autowired
+	generate_Doc gd;
+	
 	@RequestMapping(value="/print_bl")
 	public String print_bl(HttpServletRequest request,
 						 @RequestParam("id_bl") long id_bl,
@@ -245,9 +248,10 @@ public class list_bl_encoursController {
 		String qr_code = generateQRcode.createQRcode(bl.getNumero(), "BL");
 		
 		String pdf = "";
+		
 		try {
 			
-			pdf = generate_Doc.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
+			pdf = gd.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
 			
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -260,28 +264,28 @@ public class list_bl_encoursController {
 	
 	//-----------------------------------------------------------------------------
 	
-		@RequestMapping(value="/edit_bl")
-		public String edit_bl(HttpServletRequest request,
-							 @RequestParam("id_bl") long id_bl,
-							 @RequestParam(name="plafond", defaultValue="") String plafond,
-							 @SessionAttribute("user") users user,
-							 Model model){
-			
-			model.addAttribute("bl", bon_lRepo.getOne(id_bl));
-			
-			model.addAttribute("plafond", plafond);
-			
-			model.addAttribute("detail_bl", bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl)));
-			
-			client clt = bon_lRepo.getOne(id_bl).getClient();
-			
-			List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt.getCategory());
-			
-			model.addAttribute("articles", list_art);
-			
-			return "vente/edit_bl";
-			
-		}
+	@RequestMapping(value="/edit_bl")
+	public String edit_bl(HttpServletRequest request,
+						 @RequestParam("id_bl") long id_bl,
+						 @RequestParam(name="plafond", defaultValue="") String plafond,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		model.addAttribute("bl", bon_lRepo.getOne(id_bl));
+		
+		model.addAttribute("plafond", plafond);
+		
+		model.addAttribute("detail_bl", bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl)));
+		
+		client clt = bon_lRepo.getOne(id_bl).getClient();
+		
+		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt.getCategory());
+		
+		model.addAttribute("articles", list_art);
+		
+		return "vente/edit_bl";
+		
+	}
 	
 	//-----------------------------------------------------------------------------
 	
@@ -405,9 +409,12 @@ public class list_bl_encoursController {
 				String qr_code = generateQRcode.createQRcode(bl.getNumero(), "BL");
 				
 				String pdf = "";
+				
+				generate_Doc gd = new generate_Doc();
+				
 				try {
 					
-					pdf = generate_Doc.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
+					pdf = gd.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
 					
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
