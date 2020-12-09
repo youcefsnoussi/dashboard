@@ -235,7 +235,9 @@ public class factureRestController {
 			
 			facture fct = list_fct.get(i);
 			
-			if(fct.getUsers()==user || user.getRole().getNom_role().equals("Admin") || user.getRole().getNom_role().equals("A.C.imprimer")) {
+			if(fct.getBon_livraison().getCommande().getUsers()==user 
+					|| user.getRole().getNom_role().equals("Admin") 
+					|| user.getRole().getNom_role().equals("A.C.imprimer")) {
 				
 				fct.setNotification(true);
 				
