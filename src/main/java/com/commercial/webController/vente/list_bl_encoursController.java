@@ -410,8 +410,6 @@ public class list_bl_encoursController {
 				
 				String pdf = "";
 				
-				generate_Doc gd = new generate_Doc();
-				
 				try {
 					
 					pdf = gd.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
