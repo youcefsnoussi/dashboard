@@ -29,13 +29,15 @@
 		
 		$(document).ready(function() {
 			
+			var h = window.innerHeight;
+			
 			var datatable_config = {
 					"language": {
 				            "url": "resources/Plugins/datatable/lang/French.json"
 				    },
 					"ordering": true,
 			    	"bPaginate": false,
-					"scrollY":"400px",
+					"scrollY":h-450,
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
@@ -77,7 +79,7 @@
 			
 			$("#add_art").click(function(){
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="950px" onload="" frameborder="0" src="add_art"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="add_art"></iframe>');
 				
 				$("#title").text("Nouveau Article");
 				
@@ -89,7 +91,7 @@
 			
 			$("#add_redux_prix").click(function(){ 
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="950px" onload="" frameborder="0" src="new_reduction"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="new_reduction"></iframe>');
 				
 				$("#title").text("Nouvelle Réduction");
 				
@@ -103,7 +105,7 @@
 				
 				var id_art = $(this).attr("id_art");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="950px" onload="" frameborder="0" src="edit_art?id_art='+id_art+' "></iframe>');
+				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="edit_art?id_art='+id_art+' "></iframe>');
 				
 				$("#title").text("Détail Article");
 				
@@ -231,7 +233,7 @@
 	        </button>
 	      </div>
 	      
-	      <div class="modal-body" id="print_content">
+	      <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
 	        
 	         <!--  <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>  -->
 	        

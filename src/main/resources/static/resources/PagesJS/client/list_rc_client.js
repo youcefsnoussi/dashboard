@@ -1,5 +1,7 @@
 $(document).ready(function() {
-			
+	
+	var h = window.innerHeight;
+	
 	var datatable_config = {
 			"language": {
 		            "url": "resources/Plugins/datatable/lang/French.json"

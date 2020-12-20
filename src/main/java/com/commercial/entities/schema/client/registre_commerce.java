@@ -11,6 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.commercial.entities.schema.static_data.banque;
+import com.commercial.entities.schema.static_data.mode_paiement;
+import com.commercial.entities.schema.static_data.type_reglement;
 import com.commercial.entities.schema.static_data.wilaya;
 
 @Entity
@@ -25,6 +28,13 @@ public class registre_commerce implements Serializable{
 	 
 	 private String nom;
 	 private String prenom;
+	 
+	 @Column(unique = true)
+	 private String code;
+	 
+	 @ManyToOne
+	 @JoinColumn(name = "category_client")
+	 private category_client category;
 	 
 	 @Column(unique = true)
 	 private String numero_rc;
@@ -58,16 +68,34 @@ public class registre_commerce implements Serializable{
 	 
 	 private String etat_blockage = "active";
 	 
+	 @ManyToOne
+	 @JoinColumn(name = "banque")
+	 private banque banque;
+	
+	 @ManyToOne
+	 @JoinColumn(name = "type_reglement")
+	 private type_reglement type_reglement;
+	 
+	 @ManyToOne
+	 @JoinColumn(name = "mode_paiement")
+	 private mode_paiement mode_paiement;
+	  
 	public registre_commerce() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public registre_commerce(String nom, String prenom, String numero_rc, String numero_art, String numero_nif,
-			String date_emission, String date_fin, String adresse, String comune, wilaya wilaya, String etat,
-			double tva, double plafond, double sold_encours, String activite, String etat_blockage) {
+	public registre_commerce(String nom, String prenom, String code, category_client category, String numero_rc,
+			String numero_art, String numero_nif, String date_emission, String date_fin, String adresse, String comune,
+			com.commercial.entities.schema.static_data.wilaya wilaya, String etat, double tva, double plafond,
+			double sold_encours, String activite, String etat_blockage,
+			com.commercial.entities.schema.static_data.banque banque,
+			com.commercial.entities.schema.static_data.type_reglement type_reglement,
+			com.commercial.entities.schema.static_data.mode_paiement mode_paiement) {
 		super();
 		this.nom = nom;
 		this.prenom = prenom;
+		this.code = code;
+		this.category = category;
 		this.numero_rc = numero_rc;
 		this.numero_art = numero_art;
 		this.numero_nif = numero_nif;
@@ -82,8 +110,11 @@ public class registre_commerce implements Serializable{
 		this.sold_encours = sold_encours;
 		this.activite = activite;
 		this.etat_blockage = etat_blockage;
+		this.banque = banque;
+		this.type_reglement = type_reglement;
+		this.mode_paiement = mode_paiement;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -106,6 +137,22 @@ public class registre_commerce implements Serializable{
 
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public category_client getCategory() {
+		return category;
+	}
+
+	public void setCategory(category_client category) {
+		this.category = category;
 	}
 
 	public String getNumero_rc() {
@@ -219,5 +266,31 @@ public class registre_commerce implements Serializable{
 	public void setEtat_blockage(String etat_blockage) {
 		this.etat_blockage = etat_blockage;
 	}
+
+	public banque getBanque() {
+		return banque;
+	}
+
+	public void setBanque(banque banque) {
+		this.banque = banque;
+	}
+
+	public type_reglement getType_reglement() {
+		return type_reglement;
+	}
+
+	public void setType_reglement(type_reglement type_reglement) {
+		this.type_reglement = type_reglement;
+	}
+
+	public mode_paiement getMode_paiement() {
+		return mode_paiement;
+	}
+
+	public void setMode_paiement(mode_paiement mode_paiement) {
+		this.mode_paiement = mode_paiement;
+	}
+
+	
 
 }

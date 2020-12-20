@@ -129,8 +129,13 @@ $(document).ready(function() {
 									
 									console.log(value.id)
 									
-									$("#rc").append('<option value="'+value.id+'" rc="'+value.registre_commerce.numero_rc+'" data-subtext="'+value.registre_commerce.numero_rc+' [ '+value.date_debut+' ➤ '+value.date_fin+' ]" nif="'+value.registre_commerce.numero_nif+'" title="'+value.registre_commerce.numero_rc+'" adresse="'+value.registre_commerce.adresse+'"' 
-											+' art="'+value.registre_commerce.numero_art+'" plafond="'+value.registre_commerce.plafond+'" sold="'+value.registre_commerce.sold_encours+'" nom="'+value.registre_commerce.nom+'" prenom="'+value.registre_commerce.prenom+'" tva="'+value.registre_commerce.tva+'">'+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</option>');
+									$("#rc").append('<option value="'+value.id+'" rc="'+value.registre_commerce.numero_rc+'" '+
+													'data-subtext="'+value.registre_commerce.numero_rc+' [ '+value.date_debut+' ➤ '+value.date_fin+' ]" '+
+													'nif="'+value.registre_commerce.numero_nif+'" title="'+value.registre_commerce.numero_rc+'" '+
+													'adresse="'+value.registre_commerce.adresse+'" art="'+value.registre_commerce.numero_art+'" '+
+													'plafond="'+value.registre_commerce.plafond+'" sold="'+value.registre_commerce.sold_encours+'" '+
+													'nom="'+value.registre_commerce.nom+'" prenom="'+value.registre_commerce.prenom+'" '+
+													'tva="'+value.registre_commerce.tva+'">'+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</option>');
 
 								});
 								
@@ -170,7 +175,19 @@ $(document).ready(function() {
 									}
 									
 									$(".art").each(function(){
-																				$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" data-subtext="'+value.article.code+'" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" pu="'+value.prix+'"' 												+' tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" >'+value.article.produit.designation+' '+value.article.emballage_produit.nom_emballage+' '+value.article.pesage_produit.pesage+value.article.pesage_produit.unite_pesage+'</option>');																				$(this).selectpicker('refresh');
+										
+										var sub = "Subventionné";
+										
+										if(value.article.subvension==false){
+											
+											sub = "NON Subventionné";
+											
+										}
+																				$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
+													   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
+													   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
+													   '>'+value.article.produit.designation+' '+value.article.emballage_produit.nom_emballage+' '
+													   +value.article.pesage_produit.pesage+value.article.pesage_produit.unite_pesage+'</option>');																				$(this).selectpicker('refresh');
 											
 									});
 									

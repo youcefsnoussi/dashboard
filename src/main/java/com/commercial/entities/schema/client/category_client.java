@@ -2,7 +2,6 @@ package com.commercial.entities.schema.client;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,14 +22,17 @@ public class category_client implements Serializable{
 	
 	private String lettre;
 	
+	private String special_treatment;
+	
 	public category_client() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public category_client(String nom_category, String lettre) {
+	public category_client(String nom_category, String lettre, String special_treatment) {
 		super();
 		this.nom_category = nom_category;
 		this.lettre = lettre;
+		this.special_treatment = special_treatment;
 	}
 
 	public Long getId() {
@@ -57,6 +59,12 @@ public class category_client implements Serializable{
 		this.lettre = lettre;
 	}
 
-	
-	
+	public String getSpecial_treatment() {
+		return special_treatment;
+	}
+
+	public void setSpecial_treatment(String special_treatment) {
+		this.special_treatment = special_treatment;
+	}
+
 }

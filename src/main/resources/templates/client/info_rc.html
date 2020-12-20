@@ -144,7 +144,87 @@
 							        	</div>
 							        
 							        </div>
+							        
 							        <hr>
+							        
+							        <div class="row">
+		        
+							        	<div class="col-md-3">
+							        		
+							        		<label> Category </label>
+							        		
+							        		<select class="form-control" id="cat_client" name="cat_client" required>
+							        			
+							        			<option th:if="${rc.category}==null" th:value="null" th:text="'Pas de Category'"></option>
+							        			
+							        			<option th:each="cat_client:${cat_client}" th:if="${cat_client}==${rc.category}" 
+							        				th:value="${cat_client.id}" th:text="${cat_client.nom_category}" selected></option>
+												   
+												<option th:each="cat_client:${cat_client}" th:unless="${cat_client}==${rc.category}" 
+													th:value="${cat_client.id}" th:text="${cat_client.nom_category}" ></option>
+							        			
+							        		</select>
+							        		
+							        	</div>
+							        	
+							        	<div class="col-md-3">
+							        		
+							        		<label> Banque </label>
+							        		
+							        		<select  id="banque" class="form-control" name="banque" required>
+												
+												<option th:if="${rc.banque}==null" th:value="null" th:text="'Pas de Banque'"></option>
+													
+											 	<option th:each="banque:${banque}" th:if="${banque}==${rc.banque}" 
+							        				th:value="${banque.id}" th:text="${banque.nom_banque}" selected></option>
+												   
+												<option th:each="banque:${banque}" th:unless="${banque}==${rc.banque}" 
+							        				th:value="${banque.id}" th:text="${banque.nom_banque}" ></option>
+											 	 
+											 </select>
+							        		
+							        	</div>
+							        	
+							        	<div class="col-md-3">
+							        		
+							        		<label> Type reglement </label>
+							        		
+							        		<select  id="type_reg" class="form-control" name="type_reg" required>
+												 
+												 <option th:if="${rc.type_reglement}==null" th:value="null" th:text="'Pas de type Reglement'"></option>
+												 		  
+												 <option th:each="type_reg:${type_reg}" th:if="${type_reg}==${rc.type_reglement}" 
+							        				th:value="${type_reg.id}" th:text="${type_reg.designation}" selected></option>
+												   
+												 <option th:each="type_reg:${type_reg}" th:unless="${type_reg}==${rc.type_reglement}" 
+							        				th:value="${type_reg.id}" th:text="${type_reg.designation}" ></option> 
+											 	 
+											</select>
+							        		
+							        	</div>
+							        	
+							        	<div class="col-md-3">
+							        		
+							        		<label> Mode paiement </label>
+							        		
+							        		<select  id="mode_pay" class="form-control" name="mode_pay" required>
+														  
+												 <option th:if="${rc.mode_paiement}==null" th:value="null" th:text="'Pas de mode paiement'"></option>	 
+											 	 
+											 	 <option th:each="mode_pay:${mode_pay}" th:if="${mode_pay}==${rc.mode_paiement}" 
+							        				th:value="${mode_pay.id}" th:text="${mode_pay.designation}" selected></option>
+												   
+												 <option th:each="mode_pay:${mode_pay}" th:unless="${mode_pay}==${rc.mode_paiement}" 
+							        				th:value="${mode_pay.id}" th:text="${mode_pay.designation}" ></option>
+											 	 
+											</select>
+							        		
+							        	</div>
+							        	
+							        </div>
+							        
+							        <hr>
+							        
 							        <div class="row">
 							        
 							        	<div class="col-md-4">
@@ -319,7 +399,87 @@
 						        	</div>
 						        
 						        </div>
+						        
 						        <hr>
+						        
+						         <div class="row">
+		        
+						        	<div class="col-md-3">
+						        		
+						        		<label> Category </label>
+						        		
+						        		<select class="form-control" id="cat_client" name="cat_client" disabled>
+						        			
+						        			<option th:if="${rc.category}==null" th:value="null" th:text="'Pas de Category'"></option>
+						        			
+						        			<option th:each="cat_client:${cat_client}" th:if="${cat_client}==${rc.category}" 
+						        				th:value="${cat_client.id}" th:text="${cat_client.nom_category}" selected></option>
+											   
+											<option th:each="cat_client:${cat_client}" th:unless="${cat_client}==${rc.category}" 
+												th:value="${cat_client.id}" th:text="${cat_client.nom_category}" ></option>
+						        			
+						        		</select>
+						        		
+						        	</div>
+						        	
+						        	<div class="col-md-3">
+						        		
+						        		<label> Banque </label>
+						        		
+						        		<select  id="banque" class="form-control" name="banque" disabled>
+											
+											<option th:if="${rc.banque}==null" th:value="null" th:text="'Pas de Banque'"></option>
+												
+										 	<option th:each="banque:${banque}" th:if="${banque}==${rc.banque}" 
+						        				th:value="${banque.id}" th:text="${banque.nom_banque}" selected></option>
+											   
+											<option th:each="banque:${banque}" th:unless="${banque}==${rc.banque}" 
+						        				th:value="${banque.id}" th:text="${banque.nom_banque}" ></option>
+										 	 
+										 </select>
+						        		
+						        	</div>
+						        	
+						        	<div class="col-md-3">
+						        		
+						        		<label> Type reglement </label>
+						        		
+						        		<select  id="type_reg" class="form-control" name="type_reg" disabled>
+											 
+											 <option th:if="${rc.type_reglement}==null" th:value="null" th:text="'Pas de type Reglement'"></option>
+											 		  
+											 <option th:each="type_reg:${type_reg}" th:if="${type_reg}==${rc.type_reglement}" 
+						        				th:value="${type_reg.id}" th:text="${type_reg.designation}" selected></option>
+											   
+											 <option th:each="type_reg:${type_reg}" th:unless="${type_reg}==${rc.type_reglement}" 
+						        				th:value="${type_reg.id}" th:text="${type_reg.designation}" ></option> 
+										 	 
+										</select>
+						        		
+						        	</div>
+						        	
+						        	<div class="col-md-3">
+						        		
+						        		<label> Mode paiement </label>
+						        		
+						        		<select  id="mode_pay" class="form-control" name="mode_pay" disabled>
+													  
+											 <option th:if="${rc.mode_paiement}==null" th:value="null" th:text="'Pas de mode paiement'"></option>	 
+										 	 
+										 	 <option th:each="mode_pay:${mode_pay}" th:if="${mode_pay}==${rc.mode_paiement}" 
+						        				th:value="${mode_pay.id}" th:text="${mode_pay.designation}" selected></option>
+											   
+											 <option th:each="mode_pay:${mode_pay}" th:unless="${mode_pay}==${rc.mode_paiement}" 
+						        				th:value="${mode_pay.id}" th:text="${mode_pay.designation}" ></option>
+										 	 
+										</select>
+						        		
+						        	</div>
+						        	
+						        </div>
+						        
+						        <hr>
+						        
 						        <div class="row">
 						        
 						        	<div class="col-md-4">
@@ -362,7 +522,7 @@
 						        		
 						        		<label> Wilaya </label>
 						        		
-						        		<input type="text" id="wilaya" name="wilaya" class="form-control saisie_rc" th:value="${rc.wilaya}" disabled>
+						        		<input type="text" id="wilaya" name="wilaya" class="form-control saisie_rc" th:value="${rc.wilaya.designation}" disabled>
 						        	
 						        	</div>
 						        

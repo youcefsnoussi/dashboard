@@ -21,9 +21,14 @@ import com.commercial.entities.schema.backup_edit.repository.registre_commerce_b
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
 import com.commercial.entities.schema.client.registre_commerce;
+import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
+import com.commercial.entities.schema.static_data.repository.banqueRepository;
+import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
+import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
+import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.track_operations;
@@ -54,6 +59,21 @@ public class list_rcController {
 	
 	@Autowired
 	wilayaRepository wilayaRepo;
+	
+	@Autowired
+	uniteRepository uniteRepo;
+	
+	@Autowired
+	category_clientRepository cat_clientRepo;
+	
+	@Autowired
+	banqueRepository banqueRepo;
+	
+	@Autowired
+	type_reglementRepository type_rRepo;
+	
+	@Autowired
+	mode_paiementRepository mpRepo;
 	
 	@RequestMapping(value="/list_rc")
 	public String rc(HttpServletRequest request,
@@ -108,6 +128,12 @@ public class list_rcController {
 		
 		model.addAttribute("date_fin", conv.convertion_MyDate_to_InputDate(rc.getDate_fin()));
 		
+		model.addAttribute("cat_client", cat_clientRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("unite", uniteRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("type_reg", type_rRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("banque", banqueRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("mode_pay", mpRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		
 		return "client/info_rc";
 		
 	}
@@ -130,6 +156,10 @@ public class list_rcController {
 		@RequestParam("plafond") double plafond,
 		@RequestParam("activite") String activite,
 		@RequestParam("etat_blockage") String etat_blockage,
+		@RequestParam("cat_client") long cat_client,
+		@RequestParam("banque") long id_banque,
+		@RequestParam("type_reg") long type_reg,
+		@RequestParam("mode_pay") long mode_paiement,
 		
 		@SessionAttribute("user") users user){
 		
@@ -155,6 +185,10 @@ public class list_rcController {
 		rc.setNumero_rc(num_rc);
 		rc.setPlafond(plafond);
 		rc.setPrenom(prenom);
+		rc.setCategory(cat_clientRepo.getOne(cat_client));
+		rc.setType_reglement(type_rRepo.getOne(type_reg));
+		rc.setBanque(banqueRepo.getOne(id_banque));
+		rc.setMode_paiement(mpRepo.getOne(mode_paiement));
 		
 		float ttva = 0;
 		System.out.println("--->"+tva);

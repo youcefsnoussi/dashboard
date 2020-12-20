@@ -172,14 +172,25 @@
 										</div>
 										
 										<div class="col-md-11">
-										
+											
 											<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
 												name="matricule" id="matricule" data-size="5">
 												<option  value="" selected>Matricule</option>
 												<option  th:each="mat : ${matricule}" th:value="${mat}" th:text="${mat}"></option>
 												
 											</select>
-										
+											
+											<!--  
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text declaration"
+														style="min-width: 130px; text-align: left;">Matricule</span>
+												</div>
+												<input type="text" class="form-control mouve" name="matricule" id="matricule" value="" t="mode_reg" l="mode_reg"
+													b="1_lib_art" r="1_lib_art" next="1_lib_art" required placeholder="xxxxxx-xxx-xx"> <input type="hidden"
+													id="c_type_cl" value="0">
+											</div>
+											-->
 										</div>
 										
 									</div>
