@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Table(name="roles" , schema = "user_menu")
 
-public class roles   implements Serializable{
+public class roles  implements Serializable{
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -21,15 +21,22 @@ public class roles   implements Serializable{
 	private String nom_role;
 	private String ids_banned;
 	
+	@Column(columnDefinition = "boolean default false")
+	private boolean one_interface = false;
+	
+	private String page_to_display;
+	
 	public roles() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public roles(String nom_role, String ids_banned) {
+	public roles(String nom_role, String ids_banned, boolean one_interface, String page_to_display) {
 		super();
 		this.nom_role = nom_role;
 		this.ids_banned = ids_banned;
+		this.one_interface = one_interface;
+		this.page_to_display = page_to_display;
 	}
 
 	public Long getId() {
@@ -55,7 +62,21 @@ public class roles   implements Serializable{
 	public void setIds_banned(String ids_banned) {
 		this.ids_banned = ids_banned;
 	}
-	
-	
-	
+
+	public boolean isOne_interface() {
+		return one_interface;
+	}
+
+	public void setOne_interface(boolean one_interface) {
+		this.one_interface = one_interface;
+	}
+
+	public String getPage_to_display() {
+		return page_to_display;
+	}
+
+	public void setPage_to_display(String page_to_display) {
+		this.page_to_display = page_to_display;
+	}
+
 }

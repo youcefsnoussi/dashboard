@@ -1,7 +1,7 @@
 $(document).ready(function() {
 			
 	var logo_path = "";
-	
+	/*
 	$("#img_client").fileinput({
 		
 	    overwriteInitial: true,
@@ -20,6 +20,13 @@ $(document).ready(function() {
 	    allowedFileExtensions: ["jpg", "png", "svg","jpeg"]
 	    
 	});
-			
-		
+	*/		
+	
+	$('#img_client').on('change',function(){
+        //get the file name
+        var fileName = $(this).val();
+        //replace the "Choose a file" label
+        $(this).next('.custom-file-label').html(fileName);
+    })
+	
 });	

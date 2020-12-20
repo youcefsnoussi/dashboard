@@ -42,13 +42,20 @@
     		
     		<li>
     		
-    			 <a style="color:red" class="sidenav-close" th:href="notif" target="frame" ><i class="far fa-bell" style="font-size: 25px;color:red;"></i>Notification <span style="color:red" class="badge" th:text="${notification}"></span> </a>
+    			 <a style="color:red" class="sidenav-close" th:href="notif" target="frame" th:if="${one_interface}==false">
+    			 	<i class="far fa-bell" style="font-size: 25px;color:red;"></i>
+   			 		Notification 
+   			 		<span style="color:red" class="badge" th:text="${notification}"></span> 
+    			 </a>
     		
     		</li>
     		
     		<li>
     		
-    			 <a class="sidenav-close" th:href="acceuil" target="frame" ><i class="far fa-home" style="font-size: 25px;"></i>Acceuil </a>
+    			 <a class="sidenav-close" th:href="acceuil" target="frame" th:if="${one_interface}==false">
+    			 	<i class="far fa-home" style="font-size: 25px;"></i>
+    			 	Acceuil 
+    			 </a>
     		
     		</li>
     		
@@ -77,9 +84,20 @@
     
   </ul>
   
-  <a href="#" data-target="slide-out" class="sidenav-trigger btn-floating btn-large waves-light blue" style="position:absolute;top:3px;left:3px;"><i class="fas fa-arrow-alt-from-left"></i></a>
+  <a href="#" data-target="slide-out" class="sidenav-trigger btn-floating btn-large waves-light blue" th:if="${one_interface}==false" 
+  	style="position:absolute;top:3px;left:3px;">
+  	<i class="fas fa-arrow-alt-from-left"></i>
+  </a>
   
-  <a th:href="@{/logout}" class="btn-floating btn-large waves-effect waves-light blue" style="position:absolute;top:3px;left:61px;"><i class="fas fa-door-open"></i></a>
+  <a th:href="@{/logout}" class="btn-floating btn-large waves-effect waves-light blue" style="position:absolute;top:3px;left:61px;" 
+  	th:if="${one_interface}==false">
+  	<i class="fas fa-door-open"></i>
+  </a>
+  
+  <a th:href="@{/logout}" class="btn-floating btn-large waves-effect waves-light blue" style="position:absolute;top:3px;left:3px;" 
+  	th:unless="${one_interface}==false">
+  	<i class="fas fa-door-open"></i>
+  </a>
   
   
 </body>

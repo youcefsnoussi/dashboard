@@ -602,7 +602,7 @@ public class paymentsController {
 					new_sold_clt, new_sold_rc);
 			
 			mvmRepo.save(mvm);mvmRepo.flush();
-		
+			
 			return "redirect:/new_payment?ret=ee";
 		
 	}

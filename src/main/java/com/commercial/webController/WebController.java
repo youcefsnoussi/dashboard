@@ -7,7 +7,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -82,16 +81,44 @@ public class WebController {
 		
 		//long id_role = role.getId();
 		
-		String nom_role = role.getNom_role();
+		boolean one_interface = role.isOne_interface();
 		
 		//model.addAttribute("role",nom_role);
+		
+		//---------------------------- TRACK LOGIN v----------------------------------
+		
+		String adresse = request.getRemoteAddr();
+		
+		Cookie [] cookie = request.getCookies();
+		
+		for(int i=0;i<cookie.length;i++) {
+			
+			System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
+			
+			if(cookie[i].getName().equals("JSESSIONID")) {
+				
+				String cookie_value = cookie[i].getValue();
+				
+				login_track lt = loginRepo.if_login_exist(cookie_value);
+				
+				if(lt==null) {
+					
+					login_track new_lt = new login_track(user, adresse, gtd.get_date(), gtd.get_time(), "", "", cookie_value);
+					
+					loginRepo.save(new_lt); loginRepo.flush();
+					
+				}
+				
+			}
+			
+		}
 		
 		//-----------------------------------------------------------------------------
 		
 		//------------------- Wich Interface to Redirect-------------------------------
 		
 		
-		if(!nom_role.contains("One Interface")) {
+		if(one_interface==false) {
 			
 			//---------------------------- MENU information ---------------------------
 			List<Object[]> list_menu = roles_menurepository.get_menu_by_role(role);
@@ -131,14 +158,14 @@ public class WebController {
 			
 			model.addAttribute("notification",client_rcRepo.get_number_notification(gtd.get_date()));
 			
+			model.addAttribute("one_interface", false);
+			
 			//-----------------------------------------------------------------------------
 			
 		}
 		else {
 			
-			model.addAttribute("interface", StringUtils.substringBetween(nom_role, "(", ")"));
-			
-			ret = "one_interface";
+			model.addAttribute("one_interface", true);
 			
 		}
 		
@@ -173,35 +200,19 @@ public class WebController {
 	@RequestMapping(value="/acceuil")
 	public String acceuil(HttpServletRequest request, @SessionAttribute("user") users user){
 		
-		String adresse = request.getRemoteAddr();
+		String ret = "acceuil";
 		
-		get_time_date gtd = new get_time_date();
+		roles role = user.getRole();
 		
-		Cookie [] cookie = request.getCookies();
+		boolean one_interface = role.isOne_interface();
 		
-		for(int i=0;i<cookie.length;i++) {
+		if(one_interface==true) {
 			
-			System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
-			
-			if(cookie[i].getName().equals("JSESSIONID")) {
-				
-				String cookie_value = cookie[i].getValue();
-				
-				login_track lt = loginRepo.if_login_exist(cookie_value);
-				
-				if(lt==null) {
-					
-					login_track new_lt = new login_track(user, adresse, gtd.get_date(), gtd.get_time(), "", "", cookie_value);
-					
-					loginRepo.save(new_lt); loginRepo.flush();
-					
-				}
-				
-			}
+			ret = "redirect:/"+role.getPage_to_display();
 			
 		}
 		
-		return "acceuil";
+		return ret;
 		
 	}
 	

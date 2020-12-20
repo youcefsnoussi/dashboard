@@ -57,7 +57,9 @@
 			        	</div>
 			        
 			        </div>
+			        
 			        <hr>
+			        
 			        <div class="row">
 			        
 			        	<div class="col-md-4">
@@ -85,7 +87,71 @@
 			        	</div>
 			        
 			        </div>
+			        
 			        <hr>
+			        
+			        <div class="row">
+		        
+			        	<div class="col-md-3">
+			        		
+			        		<label> Category </label>
+			        		
+			        		<select class="form-control" id="cat_client" name="cat_client" required>
+			        			
+			        			<option value="null">Séléctionner une category</option>
+			        			
+			        			<option th:each="cat_client:${cat_client}" th:value="${cat_client.id}" th:text="${cat_client.nom_category}"></option>
+			        		
+			        		</select>
+			        		
+			        	</div>
+			        	
+			        	<div class="col-md-3">
+			        		
+			        		<label> Banque </label>
+			        		
+			        		<select  id="banque" class="form-control" name="banque">
+								 
+								 <option value="null">Séléctionner une banque</option>
+								 		  
+								 <option th:each="banque:${banque}"  th:value="${banque.id}" th:text="${banque.nom_banque}" >  </option>	 
+							 	 
+							 </select>
+			        		
+			        	</div>
+			        	
+			        	<div class="col-md-3">
+			        		
+			        		<label> Type reglement </label>
+			        		
+			        		<select  id="type_reg" class="form-control" name="type_reg" required>
+								 
+								 <option value="null">Séléctionner un type</option>
+								 		  
+								 <option th:each="type_reg:${type_reg}"  th:value="${type_reg.id}" th:text="${type_reg.designation}" >  </option>	 
+							 	 
+							</select>
+			        		
+			        	</div>
+			        	
+			        	<div class="col-md-3">
+			        		
+			        		<label> Mode paiement </label>
+			        		
+			        		<select  id="mode_pay" class="form-control" name="mode_pay" required>
+								 
+								 <option value="null">Séléctionner un mode</option>
+								 		  
+								 <option th:each="mode_pay:${mode_pay}"  th:value="${mode_pay.id}" th:text="${mode_pay.designation}" >  </option>	 
+							 	 
+							</select>
+			        		
+			        	</div>
+			        	
+			        </div>
+			        
+			        <hr>
+			        
 			        <div class="row">
 			        
 			        	<div class="col-md-4">
@@ -184,6 +250,7 @@
 							<input type="submit" class="btn btn-primary" value="Valider">
 						
 						</div>
+						
 					</div>
 				
 				</form>
@@ -191,7 +258,7 @@
 			</div>
 			
 		</div>
-		<br>
+		
 		<!-- ------------------------------------------------------------result message ------------------------------------------------------------- -->
 		
 		<div id="error" class="modal" tabindex="-1" role="dialog">

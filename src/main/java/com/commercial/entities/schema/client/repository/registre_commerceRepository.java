@@ -13,6 +13,8 @@ import com.commercial.entities.schema.client.registre_commerce;
 
 public interface registre_commerceRepository extends JpaRepository<registre_commerce, Long> {
 	
+	public registre_commerce  findFirst1ByOrderByIdDesc();
+	
 	@Query( " FROM registre_commerce rc "
 			
 			+ " WHERE rc.numero_rc = :num_rc "

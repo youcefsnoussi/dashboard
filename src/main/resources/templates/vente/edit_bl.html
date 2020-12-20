@@ -299,10 +299,17 @@
 								
 								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${bl_det.quantite}" style="text-align: right;" > 
 										<input type="hidden" id="qte_init" class="qte_init" th:value="${bl_det.quantite}"> </td>
-								
-								<td> <input class="form-control qte zero" id="magasin" name="magasin" type="text" th:value="${bl_det.magasin.name}" style="text-align: center;" disabled> 
+									
+								<td> 
+										<select class="form-control id_magasin" id="id_magasin" name="magasin" >
+										<option value="">Selection</option>
+										
+										<option  th:value="${bl_det.magasin.id}" th:text="${bl_det.magasin.name}"  selected></option>
+										
+									 </select> 
+										<!--   <input class="form-control qte zero" id="magasin" name="magasin" type="text" th:value="${bl_det.magasin.name}" style="text-align: center;" disabled> 
 										<input type="hidden" id="id_magasin" class="id_magasin" name="id_magasin" th:value="${bl_det.magasin.id}"> </td>
-								
+										-->
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${bl_det.prix_u_ht}" type="number" step="any" style="text-align: right;" readonly> </td>
 								
 								<td><input class="form-control tva_art" id="tva_art" name="tva_art" type="number" th:value="${bl_det.tva}" step="any" value="" style="text-align: right;" readonly> </td>

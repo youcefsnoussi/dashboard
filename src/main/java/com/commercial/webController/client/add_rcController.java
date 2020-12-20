@@ -14,11 +14,18 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.repository.wilayaRepository;
 import com.commercial.entities.schema.backup_edit.repository.registre_commerce_backupRepository;
+import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.registre_commerce;
+import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
+import com.commercial.entities.schema.static_data.unite;
 import com.commercial.entities.schema.static_data.wilaya;
+import com.commercial.entities.schema.static_data.repository.banqueRepository;
+import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
+import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
+import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.track_operations;
@@ -46,6 +53,21 @@ public class add_rcController {
 	@Autowired
 	wilayaRepository wilayaRepo;
 	
+	@Autowired
+	uniteRepository uniteRepo;
+	
+	@Autowired
+	category_clientRepository cat_clientRepo;
+	
+	@Autowired
+	banqueRepository banqueRepo;
+	
+	@Autowired
+	type_reglementRepository type_rRepo;
+	
+	@Autowired
+	mode_paiementRepository mpRepo;
+	
 	public add_rcController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -68,6 +90,11 @@ public class add_rcController {
 		
 		model.addAttribute("client", clientRepo.findAll());
 		model.addAttribute("wilaya", wilayaRepo.findAll(Sort.by(Sort.Direction.ASC, "code")));
+		model.addAttribute("cat_client", cat_clientRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("unite", uniteRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("type_reg", type_rRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("banque", banqueRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("mode_pay", mpRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
 		return ret;
 		
@@ -88,6 +115,11 @@ public class add_rcController {
 		@RequestParam(value = "tva", required = false) String tva,
 		@RequestParam("plafond") double plafond,
 		@RequestParam("activite") String activite,
+		@RequestParam("cat_client") long cat_client,
+		@RequestParam("banque") long id_banque,
+		@RequestParam("type_reg") long type_reg,
+		@RequestParam("unite") long unite,
+		@RequestParam("mode_pay") long mode_paiement,
 		
 		@SessionAttribute("user") users user){
 		
@@ -111,7 +143,7 @@ public class add_rcController {
 				
 				//tva tt = tvaRepo.getOne((long) 1);
 				
-				taux_tva = 1; // ========> taux tva represente if ndirlo tva or not
+				taux_tva = 1; //===/=/=/=/=/=/=/=> taux tva represente if ndirlo tva or not
 				
 			}
 			
@@ -119,12 +151,16 @@ public class add_rcController {
 			
 			wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 			
-			//new registre_commerce(nom, prenom, numero_rc, numero_art, numero_nif, date_emission, date_fin, adresse, comune, wilaya, etat, tva, plafond, balance, activite, etat_blockage)
+			unite un = uniteRepo.getOne(unite);
 			
-			rc = new registre_commerce(nom, prenom, num_rc, num_art, num_nif, date_emission, date_fin, adresse, comune, wilaya, 
-						"active", taux_tva, plafond, 0, activite, "active");
+			category_client cat_rc = cat_clientRepo.getOne(cat_client);
 			
-			//new registre_commerce(nom, prenom, numero_rc, numero_art, numero_nif, date_emission, date_fin, adresse, comune, wilaya, etat, tva, plafond, sold_encours, activite, etat_blockage)
+			String code_rc = un.getId()+cat_rc.getLettre()+new_number_code_rc();
+			
+			rc = new registre_commerce(nom, prenom, code_rc, cat_rc, num_rc, num_art, num_nif, date_emission, date_fin, adresse, comune, 
+					wilaya, "active", taux_tva, plafond, 0, activite, "active", banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),
+					mpRepo.getOne(mode_paiement));
+			
 			
 			rcRepo.save(rc);rcRepo.flush();
 			
@@ -138,8 +174,46 @@ public class add_rcController {
 			
 		}
 		
-		
 		return "redirect:/add_rc?ret="+ret;
+		
+	}
+	
+	//------------------------------------------------
+	
+	public String new_number_code_rc() {
+		
+		String ret= "00001";
+		
+		registre_commerce c = rcRepo.findFirst1ByOrderByIdDesc();
+		
+		if(c!=null) {
+			
+			String code = c.getCode();
+			
+			String num = code.substring(2);
+			
+			long n = Long.parseLong(num);
+			
+			n = n+1;
+			
+			ret = ""+n;
+			
+			if(n<=9999) {
+				ret = "0"+n;
+			}
+			if(n<=999) {
+				ret = "00"+n;
+			}
+			if(n<=99) {
+				ret = "000"+n;
+			}
+			if(n<=9) {
+				ret = "0000"+n;
+			}
+			
+		}
+		
+		return ret;
 		
 	}
 	

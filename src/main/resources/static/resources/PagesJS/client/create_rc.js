@@ -1,110 +1,144 @@
 $(document).ready(function() {
 			
-			/***************************************** get returned param *****************************************************/
-			
-			var getUrlParameter = function getUrlParameter(sParam) {
-			    var sPageURL = window.location.search.substring(1),
-			        sURLVariables = sPageURL.split('&'),
-			        sParameterName,
-			        i;
+	/***************************************** get returned param *****************************************************/
+	
+	var getUrlParameter = function getUrlParameter(sParam) {
+	    var sPageURL = window.location.search.substring(1),
+	        sURLVariables = sPageURL.split('&'),
+	        sParameterName,
+	        i;
 
-			    for (i = 0; i < sURLVariables.length; i++) {
-			        sParameterName = sURLVariables[i].split('=');
+	    for (i = 0; i < sURLVariables.length; i++) {
+	        sParameterName = sURLVariables[i].split('=');
 
-			        if (sParameterName[0] === sParam) {
-			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-			        }
-			    }
-			};
+	        if (sParameterName[0] === sParam) {
+	            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+	        }
+	    }
+	};
+	
+	var ret = getUrlParameter('ret');
+	
+	if(ret!=null){
+		
+		if(ret=="exist"){
 			
-			var ret = getUrlParameter('ret');
+			$("#title").text("Erreur !!!");
+			$("#icone").attr("class","far fa-exclamation-triangle");
+			$("#text").text("Un RC existe avec les memes informations !!! ");
+			$("#error").modal('show');
 			
-			if(ret!=null){
-				
-				if(ret=="exist"){
-					
-					$("#title").text("Erreur !!!");
-					$("#icone").attr("class","far fa-exclamation-triangle");
-					$("#text").text("Un RC existe avec les memes informations !!! ");
-					$("#error").modal('show');
-					
-				}
-				else {
-					
-					$("#title").text("Information ");
-					$("#icone").attr("class","far fa-info-circle");
-					$("#text").text("Ajout effectuer avec succes :) ");
-					$("#error").modal('show');
-					
-				}
-				
-			}
+		}
+		else {
 			
-			/***************************************** END get returned param *****************************************************/
+			$("#title").text("Information ");
+			$("#icone").attr("class","far fa-info-circle");
+			$("#text").text("Ajout effectuer avec succes :) ");
+			$("#error").modal('show');
 			
-			$("#tva_check").change(function() {
-				
-				if($(this).prop("checked")){
-					
-					$("#tva").val("on");
-					
-				}
-				else{
-					
-					$("#tva").val("off");
-					
-				}
-				
-			});
+		}
+		
+	}
+	
+	/***************************************** END get returned param *****************************************************/
+	
+	$("#tva_check").change(function() {
+		
+		if($(this).prop("checked")){
 			
-			$(".n_nif").keyup(function(){
-				
-				var val = $(this).val();
-				
-				
-				if(val.length>15){
-					
-					$(this).val(val.slice(0,-1));
-					
-				}
-				
-			});
-		 	
-		 	$(".n_art").keyup(function(){
-				var val = $(this).val();
-				
-				
-				if(val.length>11){
-					
-					$(this).val(val.slice(0,-1));
-					
-				}
-				
-			});
-		 	
-		 	$(".n_rc").keyup(function(){
-				
-				var val = $(this).val();
-				
-				if(val.length==2){
-					
-					$(this).val(val+"/")
-					
-				}
-				
-				if(val.length==5){
-					
-					$(this).val(val+"-")
-					
-				}
-				
-				if(val.length>16){
-					
-					$(this).val(val.slice(0,-1));
-					
-				}
-				
-			});
-		 	
+			$("#tva").val("on");
 			
+		}
+		else{
+			
+			$("#tva").val("off");
+			
+		}
+		
+	});
+	
+	$(".n_nif").keyup(function(){
+		
+		var val = $(this).val();
+		
+		
+		if(val.length>15){
+			
+			$(this).val(val.slice(0,-1));
+			
+		}
+		
+	});
+ 	
+ 	$(".n_art").keyup(function(){
+		var val = $(this).val();
+		
+		
+		if(val.length>11){
+			
+			$(this).val(val.slice(0,-1));
+			
+		}
+		
+	});
+ 	
+ 	$(".n_rc").keyup(function(){
+		
+		var val = $(this).val();
+		
+		if(val.length==10){
+			
+			$(this).val(val+"-")
+			
+		}
+		
+		if(val.length==13){
+			
+			$(this).val(val+"/")
+			
+		}
+		
+		if(val.length>16){
+			
+			$(this).val(val.slice(0,-1));
+			
+		}
+		
+		/*
+		if(val.length==2){
+			
+			$(this).val(val+"/")
+			
+		}
+		
+		if(val.length==5){
+			
+			$(this).val(val+"-")
+			
+		}
+		
+		if(val.length>16){
+			
+			$(this).val(val.slice(0,-1));
+			
+		}
+		*/
+	});
+ 	
+ 	$("#type_reg").change(function () {
+		
+ 		if($(this).val()==2){
+ 			
+ 			$("#plafond").val(10);
+ 			$("#plafond").prop("readonly","true");
+ 			
+ 		}
+ 		else{
+ 			
+ 			$("#plafond").val(0);
+ 			$("#plafond").prop("readonly","");
+ 			
+ 		}
+	});
+				
 });	
