@@ -153,6 +153,46 @@ public class factureRestController {
 		
 	}
 	
+	//------------------------------------------------------------------
+	
+	@RequestMapping(value="/ajax_get_art_by_rc_cat")
+	public List<prixUnitaire_article_categoryClient> get_art_by_rc_cat(
+		@RequestParam("id_rc_clt") long id_rc_clt) throws IOException, ParseException{
+		
+		client_registreCommerce clt_rc = clt_rcRepo.getOne(id_rc_clt);
+		
+		get_time_date gtd = new get_time_date();
+		
+		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt_rc.getRegistre_commerce().getCategory());
+		
+		//------------------------- get reduction if existe -----------------------
+		
+		
+		
+		for(int i=0;i<list_art.size();i++) {
+			
+			prixUnitaire_article_categoryClient pu = list_art.get(i);
+			
+			reduction_client_prixU_article red = reduxRepo.get_reduction_by_clt_art(clt_rc.getClient(), pu.getArticle(), gtd.get_date()); 
+			
+			if(red != null) {
+				
+				pu.setPrix(red.getNouveau_prix()); // naba3to b - bach ndetecti article li fih reduction o f client side nredo normal
+				
+				pu.setId((long) -1);
+				
+				list_art.set(i, pu);
+				
+			}
+			
+		}
+		
+		//--------------------------------------------------------------------------
+		
+		return list_art;
+		
+	}
+	
 	//----------------------------------------------------------------
 	
 	@RequestMapping(value="/ajax_get_magasin_by_art")
@@ -168,21 +208,23 @@ public class factureRestController {
 	
 	@RequestMapping(value="/ajax_test_plafond")
 	public Map<String, Integer> test_plafond(
-		@RequestParam("id_client") long id_client,
-		@RequestParam("id_rc") long id_relation_rc_client,
+		//@RequestParam("id_client") long id_client,
+		@RequestParam("id_rc_clt") long id_relation_rc_client,
 		@RequestParam("montant_ttc") double montant_ttc) throws IOException, ParseException{
 		
 		//JSONArray arr_obj = new JSONArray();
 		
 		HashMap<String, Integer> map = new HashMap<>();
 		
-		client clt = clientRepo.getOne(id_client);
+		client_registreCommerce rc_clt = clt_rcRepo.getOne(id_relation_rc_client);
 		
-		client_registreCommerce clt_rc = clt_rcRepo.getOne(id_relation_rc_client);
+		client clt = rc_clt.getClient();
+		
+		//client_registreCommerce clt_rc = clt_rcRepo.getOne(id_relation_rc_client);
 		
 		//registre_commerce rc = rcRepo.getOne(id_rc);
 		
-		registre_commerce rc = clt_rc.getRegistre_commerce();
+		registre_commerce rc = rc_clt.getRegistre_commerce();
 		
 		double balance_clt = clt.getSold_encours();
 		
@@ -236,8 +278,8 @@ public class factureRestController {
 			facture fct = list_fct.get(i);
 			
 			if(fct.getBon_livraison().getCommande().getUsers()==user 
-					|| user.getRole().getNom_role().equals("Admin") 
-					|| user.getRole().getNom_role().equals("A.C.imprimer")) {
+					/*|| user.getRole().getNom_role().equals("Admin") 
+					|| user.getRole().getNom_role().equals("A.C.imprimer")*/) {
 				
 				fct.setNotification(true);
 				

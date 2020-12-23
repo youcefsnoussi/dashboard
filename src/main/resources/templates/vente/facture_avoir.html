@@ -305,7 +305,7 @@
 										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
 									</div>
 									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
-										th:value="${#numbers.formatDecimal(facture.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" readonly>
+										th:value="${#numbers.formatDecimal(facture.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 								</div>
 							</div>
 	
@@ -316,7 +316,7 @@
 										<span class="input-group-text declaration">Montant TVA</span>
 									</div>
 									<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
-										th:value="${#numbers.formatDecimal(facture.montant_tva, 3, 'WHITESPACE', 2,'COMMA')}" readonly>
+										th:value="${#numbers.formatDecimal(facture.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 								</div>
 							</div>
 	
@@ -327,7 +327,7 @@
 										<span class="input-group-text declaration">Montant TTC </span>
 									</div>
 									<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" 
-										th:value="${#numbers.formatDecimal(facture.montant_ttc, 3, 'WHITESPACE', 2,'COMMA')}" readonly>
+										th:value="${#numbers.formatDecimal(facture.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 								</div>
 							</div>
 	
@@ -375,7 +375,7 @@
 								
 								<td><input class="form-control tva_art" id="tva_art" name="tva_art" type="number" th:value="${fact_det.tva}" step="any" value="" style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(fact_det.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" readonly> </td>
+								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${fact_det.montant_ht}" type="text" style="text-align: right;" readonly> </td>
 	
 							</tr>
 	

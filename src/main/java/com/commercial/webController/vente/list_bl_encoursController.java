@@ -636,8 +636,8 @@ public class list_bl_encoursController {
 				String numero_fact = nby.return_num_facture(last_number, user.getUnite().getId());
 				
 				facture fact = new facture(bl.getClient(), bl.getRegistre_commerce(), bl.getCommande().getClient_registrecommerce(), today, time, numero_fact, 
-						bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), "", bl, bl.getCommande().getMode_paiement(), user, false, 
-						bl.getMontant_ttc(), false);
+						bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), "", bl, bl.getCommande().getMode_paiement(),
+						bl.getCommande().getUsers(), false,  bl.getMontant_ttc(), false, false, bl.getCommande().getPourcentage_reduction());
 				
 				factRepo.save(fact);factRepo.flush();
 				

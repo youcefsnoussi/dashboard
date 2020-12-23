@@ -148,7 +148,11 @@ public class commandeController {
 		
 		String ret = "vente/commande";
 		
-		model.addAttribute("clients", clientRepo.client_active_only());
+		get_time_date gtd = new get_time_date();
+		
+		//model.addAttribute("clients", clientRepo.client_active_only());
+		
+		model.addAttribute("rcs_clt", clt_rcRepo.ListRCwithCLIENT_acive(gtd.get_date()));
 		
 		model.addAttribute("mode_paiements", mode_payRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
 		
@@ -176,7 +180,7 @@ public class commandeController {
 	
 	@RequestMapping(value="/new_commande_post",method=RequestMethod.POST)
 	public String new_commande(HttpServletRequest req,
-			@RequestParam("id_client") long id_client,
+			//@RequestParam("id_client") long id_client,
 			@RequestParam("id_rel_rc_clt") long id_relation_rc_clt,
 			@RequestParam("matricule") String matricule_camion,
 			@RequestParam("mode_reg") long id_mode_reg,
@@ -184,6 +188,7 @@ public class commandeController {
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
+			@RequestParam("pourc_reduction") double pourc_reduction,
 			
 			@RequestParam("art") long [] article,
 			@RequestParam("id_um") long [] id_unite_mesure,
@@ -219,12 +224,12 @@ public class commandeController {
 			
 			client_registreCommerce clt_rc = clt_rcRepo.getOne(id_relation_rc_clt);
 			
-			client clt = clientRepo.getOne(id_client);
+			client clt = clt_rc.getClient();
 			
 			registre_commerce rc = clt_rc.getRegistre_commerce();
 			
 			commande cmd = new commande(today, time, numero_cmd, montant_ht, montant_tva, montant_ttc, "", null, null, user, false, matricule_camion
-					,mode_payRepo.getOne(id_mode_reg), clt_rc);
+					,mode_payRepo.getOne(id_mode_reg), clt_rc, pourc_reduction);
 			
 			cmdRepo.save(cmd);cmdRepo.flush();
 			

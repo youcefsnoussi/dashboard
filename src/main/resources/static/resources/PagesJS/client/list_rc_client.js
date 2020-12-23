@@ -12,7 +12,7 @@ $(document).ready(function() {
 			"scrollX": "auto",
 	        "deferRender": true,
 	        initComplete: function () {
-	            this.api().columns([2]).every( function () {
+	            this.api().columns([0,3]).every( function () {
 	                var column = this;
 	                var select = $('<select class="form-control" ><option value=""></option></select>')
 	                    .appendTo( $(column.footer()).empty() )

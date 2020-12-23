@@ -77,6 +77,9 @@ public class facture implements Serializable{
 	
 	private Boolean notification = false;
 	
+	@Column(columnDefinition = "double precision default 0")
+	private double pourcentage_reduction;
+	
 	public facture() {
 		// TODO Auto-generated constructor stub
 	}
@@ -87,8 +90,8 @@ public class facture implements Serializable{
 			double tva, String matricule_camion, double montant_ttc, double montant_tva, String link_pdf,
 			com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison bon_livraison,
 			com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
-			com.commercial.entities.schema.user_menu.users users, boolean etat_sold, double sold_rest,
-			Boolean printed) {
+			com.commercial.entities.schema.user_menu.users users, boolean etat_sold, double sold_rest, Boolean printed,
+			Boolean notification, double pourcentage_reduction) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;
@@ -108,6 +111,8 @@ public class facture implements Serializable{
 		this.etat_sold = etat_sold;
 		this.sold_rest = sold_rest;
 		this.printed = printed;
+		this.notification = notification;
+		this.pourcentage_reduction = pourcentage_reduction;
 	}
 
 	public Long getId() {
@@ -268,6 +273,14 @@ public class facture implements Serializable{
 
 	public void setNotification(Boolean notification) {
 		this.notification = notification;
+	}
+
+	public double getPourcentage_reduction() {
+		return pourcentage_reduction;
+	}
+
+	public void setPourcentage_reduction(double pourcentage_reduction) {
+		this.pourcentage_reduction = pourcentage_reduction;
 	}
 
 }

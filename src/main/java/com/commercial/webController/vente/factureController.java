@@ -167,6 +167,7 @@ public class factureController {
 				@RequestParam("total_tva") double montant_tva,
 				@RequestParam("total_ttc") double montant_ttc,
 				@RequestParam("total_ht") double montant_ht,
+				@RequestParam("pourc_reduction") double pourc_reduction,
 				
 				@RequestParam("art") long [] article,
 				@RequestParam("id_um") long [] id_unite_mesure,
@@ -241,7 +242,7 @@ public class factureController {
 				
 				facture fact = new facture(clt, rc, clt_rc, today, time, numero_fact, 
 										montant_ht, tva, matricule_camion, montant_ttc, montant_tva, ""
-										, null, mode_payRepo.getOne(id_mode_reg), user, false, montant_ttc, true);
+										, null, mode_payRepo.getOne(id_mode_reg), user, false, montant_ttc, true, false, pourc_reduction);
 				
 				//new facture(client, registre_commerce, client_registrecommerce, date, time, numero, montant_ht, tva, matricule_camion, montant_ttc, montant_tva, link_pdf, bon_livraison, mode_paiement, users, etat_sold, sold_rest)
 				

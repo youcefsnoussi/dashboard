@@ -84,7 +84,8 @@
 								<thead class="thead-dark">
 								
 									<tr>
-									
+										
+										<th>Code</th>
 										<th>N° RC</th>
 										<th>Nom Prénom</th>
 										<th>Sold enours</th>
@@ -99,7 +100,8 @@
 								<tbody>
 								
 									<tr th:each="rc:${rc_info}">
-									
+										
+										<td th:text="${rc.code}"></td>
 										<td th:text="${rc.numero_rc}"></td>
 										<td th:text="${rc.nom}+' '+${rc.prenom}"></td>
 										<td th:text="${#numbers.formatDecimal(rc.sold_encours, 3, 'WHITESPACE', 0,'COMMA')}"></td>
@@ -119,7 +121,8 @@
 								<tfoot>
 								
 									<tr>
-									
+										
+										<th></th>
 										<th></th>
 										<th></th>
 										<th></th>

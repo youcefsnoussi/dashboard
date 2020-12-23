@@ -48,10 +48,11 @@
 						
 							<tr>
 							
-								<th>Code Client</th>
+								
 								<th>Nom Prénom Client</th>
-								<th>Category</th>
+								<th>Code RC</th>
 								<th>Nom Prénom RC</th>
+								<th>Category</th>
 								<th>Date début</th>
 								<th>Date fin</th>
 								
@@ -63,10 +64,11 @@
 						
 							<tr th:each="rc_client:${rc_client}">
 							
-								<td th:text="${rc_client.client.code}"></td>
 								<td th:text="${rc_client.client.nom}+' '+${rc_client.client.prenom}"></td>
-								<td th:text="${rc_client.client.category.nom_category}"></td>
+								<td th:text="${rc_client.registre_commerce.code}"></td>
 								<td th:text="${rc_client.registre_commerce.nom}+' '+${rc_client.registre_commerce.prenom}"></td>
+								<td th:if="${rc_client.registre_commerce.category}!=null" th:text="${rc_client.registre_commerce.category.nom_category}"></td>
+								<td th:unless="${rc_client.registre_commerce.category}!=null" th:text="''"></td>
 								<td th:text="${rc_client.date_debut}"></td>
 								<td th:text="${rc_client.date_fin}"></td>
 								

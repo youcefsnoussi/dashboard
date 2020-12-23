@@ -63,7 +63,7 @@
 						<br>
 	
 						<div class="card-body">
-	
+							<!--  
 							<div class="row">
 	
 								<div class="col-md-4 column">
@@ -81,7 +81,7 @@
 	
 										</select>
 										
-										<!--  <input type="hidden" id="id_client" name="id_client" value="">  -->
+										  <input type="hidden" id="id_client" name="id_client" value="">  
 									</div>
 								</div>
 								<input type="hidden" class="form-control" id="lib_client"
@@ -140,66 +140,8 @@
 							</div>
 	
 							<br>
-	
-							<div class="row">
-	
-								<div class="col-md-6 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">Mode règelment </span>
-										</div>
-										<select class="form-control selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
-											name="mode_reg" id="mode_reg" data-size="5">
-											
-											<option disabled="disabled" value="" selected>Mode règelment</option>
-											<option th:each="mode_r:${mode_paiements}" th:value="${mode_r.id}" th:text="${mode_r.designation}"></option>
-	
-										</select>
-									</div>
-								</div>
-	
-								<div class="col-md-6 column">
-									
-									<div class="row">
-										
-										<div class="col-md-1">
-										
-											<div id="loading" class="spinner-grow" role="status">
-											  <span class="sr-only">Loading...</span>
-											</div>
-										
-										</div>
-										
-										<div class="col-md-11">
-											
-											<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
-												name="matricule" id="matricule" data-size="5">
-												<option  value="" selected>Matricule</option>
-												<option  th:each="mat : ${matricule}" th:value="${mat}" th:text="${mat}"></option>
-												
-											</select>
-											
-											<!--  
-											<div class="input-group">
-												<div class="input-group-prepend">
-													<span class="input-group-text declaration"
-														style="min-width: 130px; text-align: left;">Matricule</span>
-												</div>
-												<input type="text" class="form-control mouve" name="matricule" id="matricule" value="" t="mode_reg" l="mode_reg"
-													b="1_lib_art" r="1_lib_art" next="1_lib_art" required placeholder="xxxxxx-xxx-xx"> <input type="hidden"
-													id="c_type_cl" value="0">
-											</div>
-											-->
-										</div>
-										
-									</div>
-									
-								</div>
-	
-							</div>
-	
-							<hr>
+							-->
+							
 	
 							<div class="row">
 	
@@ -211,8 +153,16 @@
 										</div>
 										<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
 											name="id_rel_rc_clt" id="rc" data-size="5">
-											<option  value="" selected>Registre Commerce</option>
-	
+											<option  disabled value="" selected>Registre Commerce</option>
+											
+											<option th:each="rc_clt:${rcs_clt}" th:value="${rc_clt.id}" th:text="${rc_clt.registre_commerce.code}" 
+													th:attr="data-subtext=${rc_clt.registre_commerce.nom}+' '+${rc_clt.registre_commerce.prenom},
+													code_clt=${rc_clt.registre_commerce.code}, nom=${rc_clt.registre_commerce.nom}, 
+													prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
+													plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
+													adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id}">
+											</option>
+											
 										</select>
 										
 										<input type="hidden" id="tv">
@@ -277,6 +227,65 @@
 							<hr>
 							
 							<div class="row">
+	
+								<div class="col-md-6 column">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration"
+												style="min-width: 130px; text-align: left;">Mode règelment </span>
+										</div>
+										<select class="form-control " name="mode_reg" id="mode_reg" >
+											
+											<option disabled="disabled" value="" selected>Mode règelment</option>
+											<option th:each="mode_r:${mode_paiements}" th:value="${mode_r.id}" th:text="${mode_r.designation}"></option>
+	
+										</select>
+									</div>
+								</div>
+	
+								<div class="col-md-6 column">
+									
+									<div class="row">
+										
+										<div class="col-md-1">
+										
+											<div id="loading" class="spinner-grow" role="status">
+											  <span class="sr-only">Loading...</span>
+											</div>
+										
+										</div>
+										
+										<div class="col-md-11">
+											
+											<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
+												name="matricule" id="matricule" data-size="5">
+												<option  value="" selected>Matricule</option>
+												<option  th:each="mat : ${matricule}" th:value="${mat}" th:text="${mat}"></option>
+												
+											</select>
+											
+											<!--  
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text declaration"
+														style="min-width: 130px; text-align: left;">Matricule</span>
+												</div>
+												<input type="text" class="form-control mouve" name="matricule" id="matricule" value="" t="mode_reg" l="mode_reg"
+													b="1_lib_art" r="1_lib_art" next="1_lib_art" required placeholder="xxxxxx-xxx-xx"> <input type="hidden"
+													id="c_type_cl" value="0">
+											</div>
+											-->
+										</div>
+										
+									</div>
+									
+								</div>
+	
+							</div>
+	
+							<hr>
+							
+							<div class="row">
 							
 								<div class="col-md-7 ">
 									
@@ -293,6 +302,7 @@
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
 										</div>
+										<input type="hidden" id="total_ht_hidden" value="0">
 										<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" value="0" readonly="readonly">
 									</div>
 								</div>
@@ -304,9 +314,9 @@
 								<div class="col-md-4 offset-md-8">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Montant TVA</span>
+											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Réduction (%) </span>
 										</div>
-										<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" value="0" readonly="readonly">
+										<input type="number" step="any" class="form-control zero" name="pourc_reduction" style="text-align: right;" id="pourc_redux" value="0" >
 									</div>
 								</div>
 							
@@ -314,6 +324,33 @@
 							
 							<div class="row">
 							
+								<div class="col-md-4 offset-md-8">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT Avec Réduction </span>
+										</div>
+										<input type="text" step="any" class="form-control " name="total_ht" style="text-align: right;" id="total_ht_redux" value="0" readonly="readonly">
+									</div>
+								</div>
+							
+							</div>
+							<hr>
+							<div class="row">
+								
+								<div class="col-md-4 offset-md-8">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration">Montant TVA</span>
+										</div>
+										<input type="hidden" id="total_tva_hidden" value="0">
+										<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" value="0" readonly="readonly">
+									</div>
+								</div>
+							
+							</div>
+							
+							<div class="row">
+								
 								<div class="col-md-4 offset-md-8">
 									<div class="input-group">
 										<div class="input-group-prepend">

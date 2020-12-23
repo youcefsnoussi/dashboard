@@ -37,12 +37,12 @@ $(document).ready(function() {
 				
 			      var api = this.api();
 			      
-			      $( api.column( 2, {page:'current'} ).footer() ).html(
-			        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-			      );
-			      
 			      $( api.column( 3, {page:'current'} ).footer() ).html(
 			        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+			      );
+			      
+			      $( api.column( 4, {page:'current'} ).footer() ).html(
+			        api.column( 4, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 			      );
 			      
 			 },
