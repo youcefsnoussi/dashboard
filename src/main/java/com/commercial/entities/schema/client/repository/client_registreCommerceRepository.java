@@ -21,6 +21,8 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 	public List<client_registreCommerce>  if_relation_existe(@Param("clt") client clt, @Param("rc") registre_commerce rc);
 	
+	//---------------------------------------------
+	
 	@Query( " SELECT DISTINCT registre_commerce "
 			
 		  +	" FROM client_registreCommerce crc "
@@ -90,8 +92,40 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 		  	//+ " WHERE crc.client = :clt AND CAST(:today AS date) >= CAST(crc.date_fin AS date)")
 			
 			+ " WHERE crc.client = :clt AND CAST(:today AS date) BETWEEN CAST(date_debut AS date) AND CAST(date_fin AS date)"
+			
 			+ " AND crc.registre_commerce.etat_blockage = 'active'")
 	
 	public List<client_registreCommerce>  get_list_rc_by_client_for_facture(@Param("clt") client clt, String today);
+	
+	//-----------------------------------------------------
+	
+	@Query( "FROM client_registreCommerce crc " + 
+	
+			"WHERE registre_commerce = :rc " + 
+			
+			"AND (  ( CAST(:date_d AS date) BETWEEN CAST(date_debut AS date) AND CAST(date_fin AS date) " + 
+			
+			"OR CAST(:date_f AS date) BETWEEN CAST(date_debut AS date) AND CAST(date_fin AS date) ) " + 
+			
+			"OR " + 
+			
+			"( CAST(date_debut AS date) BETWEEN CAST(:date_d AS date) AND CAST(:date_f AS date) " + 
+			
+			"AND CAST(date_fin AS date) BETWEEN CAST(:date_d AS date) AND CAST(:date_f AS date)  ) " + 
+			
+			")" )
+	
+	public List<client_registreCommerce>  if_rc_is_already_inRelation(@Param("rc") registre_commerce rc, @Param("date_d") String date_debut
+			, @Param("date_f") String date_fin);
+	
+	//-----------------------------------------------------
+	
+	@Query( "FROM client_registreCommerce crc " + 
+	
+			"WHERE crc.registre_commerce.etat = 'active' " + 
+			
+			"AND CAST(:today AS date) BETWEEN CAST(crc.date_debut AS date) AND CAST(crc.date_fin AS date) " )
+	
+	public List<client_registreCommerce>  ListRCwithCLIENT_acive(@Param("today") String today);
 	
 }

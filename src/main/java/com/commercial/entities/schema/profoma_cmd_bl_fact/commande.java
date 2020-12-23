@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
 import com.commercial.entities.schema.client.registre_commerce;
@@ -68,6 +70,9 @@ public class commande implements Serializable{
 	@JoinColumn(name = "client_registrecommerce")
 	private client_registreCommerce client_registrecommerce;
 	
+	@Column(columnDefinition = "double precision default 0")
+	private double pourcentage_reduction;
+	
 	public commande() {
 		// TODO Auto-generated constructor stub
 	}
@@ -76,7 +81,7 @@ public class commande implements Serializable{
 			String link_pdf, com.commercial.entities.schema.profoma_cmd_bl_fact.proforma proforma,
 			List<bon_livraison> list_bon_livraison, com.commercial.entities.schema.user_menu.users users,
 			boolean cloturer, String matricule, com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
-			client_registreCommerce client_registrecommerce) {
+			client_registreCommerce client_registrecommerce, double pourcentage_reduction) {
 		super();
 		this.date = date;
 		this.time = time;
@@ -92,6 +97,7 @@ public class commande implements Serializable{
 		this.matricule = matricule;
 		this.mode_paiement = mode_paiement;
 		this.client_registrecommerce = client_registrecommerce;
+		this.pourcentage_reduction = pourcentage_reduction;
 	}
 
 	public Long getId() {
@@ -214,6 +220,12 @@ public class commande implements Serializable{
 		this.client_registrecommerce = client_registrecommerce;
 	}
 
-	
+	public double getPourcentage_reduction() {
+		return pourcentage_reduction;
+	}
+
+	public void setPourcentage_reduction(double pourcentage_reduction) {
+		this.pourcentage_reduction = pourcentage_reduction;
+	}
 
 }

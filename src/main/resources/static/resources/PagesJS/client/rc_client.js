@@ -16,14 +16,18 @@ $(document).ready(function() {
 	};
 	
 	var ret = getUrlParameter('ret');
+	/*
+	var lst = getUrlParameter('list_rc_clt');
 	
+	console.log(lst)
+	*/
 	if(ret!=null){
 		
 		if(ret!="succes"){
 			
 			$("#title").text("Erreur !!!");
 			$("#icone").attr("class","far fa-exclamation-triangle");
-			$("#text").text("Ce client est déja relier a ce RC !!! ");
+			$("#text").text("Ce RC est déja relier a un client dans cet interval !!! ");
 			$("#error").modal('show');
 			
 		}

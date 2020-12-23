@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.commercial.entities.schema.article.repository.articleRepository;
-import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
 import com.commercial.entities.schema.static_data.repository.uniteRepository;

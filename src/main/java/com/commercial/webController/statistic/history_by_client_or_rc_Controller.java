@@ -38,7 +38,8 @@ import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-//import com.commercial.functions.get_time_date;
+import com.commercial.functions.get_time_date;
+
 
 @Controller
 @SessionAttributes("user")
@@ -135,7 +136,7 @@ public class history_by_client_or_rc_Controller {
 		
 		String ret = "statistic/history_by_client";
 		
-		//get_time_date gtd = new get_time_date();
+		get_time_date gtd = new get_time_date();
 		
 		convert_string_to_date_util conv = new convert_string_to_date_util();
 		
@@ -148,8 +149,8 @@ public class history_by_client_or_rc_Controller {
 			model.addAttribute("sold_debut_rc",0);
 			model.addAttribute("sold_fin_clt",0);
 			model.addAttribute("sold_fin_rc",0);
-			model.addAttribute("start","");
-			model.addAttribute("end","");
+			model.addAttribute("start",conv.convertion_MyDate_to_InputDate(gtd.get_date()) );
+			model.addAttribute("end",conv.convertion_MyDate_to_InputDate(gtd.get_date()) );
 			
 		}
 		else {
@@ -171,8 +172,8 @@ public class history_by_client_or_rc_Controller {
 				model.addAttribute("sold_debut_rc",sold_debut_rc);
 				model.addAttribute("sold_fin_clt",sold_fin_clt);
 				model.addAttribute("sold_fin_rc",sold_fin_rc);
-				model.addAttribute("start","");
-				model.addAttribute("end","");
+				model.addAttribute("start",conv.convertion_MyDate_to_InputDate(gtd.get_date()) );
+				model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()) );
 				
 			}
 			else {
@@ -250,7 +251,7 @@ public class history_by_client_or_rc_Controller {
 		
 		String ret = "statistic/history_by_rc";
 		
-		//get_time_date gtd = new get_time_date();
+		get_time_date gtd = new get_time_date();
 		
 		convert_string_to_date_util conv = new convert_string_to_date_util();
 		
@@ -263,8 +264,8 @@ public class history_by_client_or_rc_Controller {
 			model.addAttribute("sold_debut_rc",0);
 			//model.addAttribute("sold_fin_clt",0);
 			model.addAttribute("sold_fin_rc",0);
-			model.addAttribute("start","");
-			model.addAttribute("end","");
+			model.addAttribute("start",conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+			model.addAttribute("end",conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 			
 		}
 		else {
@@ -280,14 +281,14 @@ public class history_by_client_or_rc_Controller {
 				double sold_fin_rc = mvml.get(mvml.size()-1).getNew_sold_rc();
 				
 				model.addAttribute("id_rc",rc);
-				model.addAttribute("client",clientRepo.findAll());
+				model.addAttribute("rc",rcRepo.findAll());
 				model.addAttribute("history",mvml);
 				//model.addAttribute("sold_debut_clt",sold_debut_clt);
 				model.addAttribute("sold_debut_rc",sold_debut_rc);
 				//model.addAttribute("sold_fin_clt",sold_fin_clt);
 				model.addAttribute("sold_fin_rc",sold_fin_rc);
-				model.addAttribute("start","");
-				model.addAttribute("end","");
+				model.addAttribute("start",conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+				model.addAttribute("end",conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 				
 			}
 			else {
@@ -334,7 +335,7 @@ public class history_by_client_or_rc_Controller {
 				
 				
 				model.addAttribute("id_rc",rc);
-				model.addAttribute("client",clientRepo.findAll());
+				model.addAttribute("rc",rcRepo.findAll());
 				model.addAttribute("history",mvml);
 				//model.addAttribute("sold_debut_clt",sold_debut_clt);
 				model.addAttribute("sold_debut_rc",sold_debut_rc);

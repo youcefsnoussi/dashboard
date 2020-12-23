@@ -22,7 +22,7 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	@Query( " FROM paiement pay "
 			
 			+ " WHERE pay.cancel = 'false' "
-			+ " AND CAST(pay.date AS date) BETWEEN (:start) AND (:end)")
+			+ " AND CAST(pay.date_saisie AS date) BETWEEN (:start) AND (:end)")
 	
 	public List<paiement> get_payments_no_cancled_interval(@Param("start") Date date_d, @Param("end") Date date_f);
 	

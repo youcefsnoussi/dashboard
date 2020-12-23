@@ -1,0 +1,90 @@
+<html>
+  <script src='src/js/print.min.js'></script>
+  <script type='text/javascript'>
+    function printPdf() {
+      printJS('print-js-master/test.pdf');
+    }
+
+    function printHtml(bright) {
+      printJS(bright, 'html');
+    }
+
+    function printJson() {
+        let data = [
+            {
+                test1: 'Test1 string',
+                test2: {
+                    a: 'Test2 object, a property',
+                }
+            },
+            {
+                test1: 'more Test1 string',
+                test2: {
+                    a: 'more Test2 object, a property',
+                }
+            }
+        ]
+
+        printJS({printable: data, properties: ['test1', 'test2.a'], type: 'json'})
+    }
+  </script>
+
+  <style type="text/css">
+    
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+
+  </style>
+
+  <body>
+    <div id="bright">
+      <h1>Div Printed!</h1>
+
+      <table >
+        
+      <thead>
+        
+      <tr>
+        
+      <th> a </th>
+      <th> b </th>
+
+      </tr>
+
+      </thead>
+
+      <tr>
+        
+      <td> aa </td>
+
+      <td> bb </td>
+
+      </tr>
+
+      <tr>
+        
+      <td> aa </td>
+
+      <td> bb </td>
+
+      </tr>
+
+      </table>
+
+    </div>
+    <section id="test">
+      <h1>Print.js Test Page</h1>
+      <button onClick='printPdf();'>
+        Print PDF
+      </button>
+      <button onClick="printHtml('bright');">
+        Print HTML
+      </button>
+      <button onClick='printJson();'>
+        Print JSON
+      </button>
+    </section>
+  </body>
+</html>

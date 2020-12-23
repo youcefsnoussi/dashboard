@@ -95,7 +95,7 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([1,4,5]).every( function () {
+			            this.api().columns([1,5,6]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value=""></option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -382,6 +382,7 @@
 							
 								<th>ID</th>
 								<th>Client</th>
+								<th>Code RC</th>
 								<th>RC</th>
 								<th>Montant</th>
 								<th>Mode de paiement</th>
@@ -400,7 +401,8 @@
 							<tr th:each="pay:${payments}">
 							
 								<td th:text="${pay.id}"></td>
-								<td th:text="${pay.client.nom}+' '+${pay.client.prenom}+' '+${pay.client.code}"></td>
+								<td th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
+								<td th:text="${pay.registre_commerce.code}"></td>
 								<td th:text="${pay.registre_commerce.nom}+' '+${pay.registre_commerce.prenom}+' '+${pay.registre_commerce.numero_rc}"></td>
 								<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:text="${pay.mode_paiement.designation}"></td>
@@ -435,6 +437,7 @@
 						
 							<tr>
 							
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

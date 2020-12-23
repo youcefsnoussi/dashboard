@@ -38,4 +38,14 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 	
 	public double  get_prix_articles_by_CatClient(@Param("cat_client") category_client cat_client, @Param("article") article article);
 	
+	//-------------------------------------------------------------------
+	
+	@Query(   " FROM prixUnitaire_article_categoryClient prix_u_c "
+			
+			+ " WHERE article = :article "
+			
+			+ " ORDER BY category_client.nom_category ASC ")
+	
+	public List<prixUnitaire_article_categoryClient>  listing_prices(@Param("article") article article);
+	
 }

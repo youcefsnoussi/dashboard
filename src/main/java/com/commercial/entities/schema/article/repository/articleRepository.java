@@ -1,6 +1,8 @@
 package com.commercial.entities.schema.article.repository;
 
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,5 +29,11 @@ public interface articleRepository extends JpaRepository<article, Long>{
 	
 	public article  if_art_same_spec_exist(@Param("produit") produit produit, @Param("emb_produit") emballage_produit emb_produit,
 											@Param("pes_produit") pesage_produit pes_produit, @Param("code_comptable") String code_comptable);
+	
+	@Query( " FROM article art "
+			
+			+ " ORDER BY art.produit.designation ASC ")
+	
+	public List<article>  select_articles_ordered();
 	
 }

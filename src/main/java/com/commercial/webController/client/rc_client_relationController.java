@@ -21,7 +21,6 @@ import com.commercial.entities.schema.client.repository.client_registreCommerceR
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.time_between;
 import com.commercial.functions.track_operations;
 
 @Controller
@@ -82,8 +81,6 @@ public class rc_client_relationController {
 		
 		String ret = "no_succes";
 		
-		time_between tb = new time_between(); 
-		
 		convert_string_to_date_util ctd = new convert_string_to_date_util();
 		
 		date_debut = ctd.convertion_InputDate_to_MyDate(date_debut);
@@ -94,8 +91,8 @@ public class rc_client_relationController {
 		
 		registre_commerce rc = rcRepo.getOne(id_rc);
 		
-		List<client_registreCommerce> crc = crcRepo.if_relation_existe(clt, rc);
-		
+		//List<client_registreCommerce> crc = crcRepo.if_relation_existe(clt, rc);
+		/*
 		if(crc.size()==0) {
 			
 			client_registreCommerce new_crc = new client_registreCommerce(clt, rc, date_debut, date_fin, 0);
@@ -124,7 +121,20 @@ public class rc_client_relationController {
 					
 				}
 				
+		}
+		*/
+		
+		List<client_registreCommerce> crc = crcRepo.if_rc_is_already_inRelation(rc, date_debut, date_fin);
+		
+		if(crc.size()==0) {
 			
+			client_registreCommerce new_crc = new client_registreCommerce(clt, rc, date_debut, date_fin, 0);
+			
+			crcRepo.save(new_crc); crcRepo.flush();
+			
+			trk.add_track("client_registreCommerce", "Creation relation client RC", new_crc.getId(), user);
+			
+			ret = "succes";
 			
 		}
 		

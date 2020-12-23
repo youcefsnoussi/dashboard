@@ -40,7 +40,7 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	
 	@Query( " FROM mouvement mvm "
 			
-		  + " WHERE mvm.client = :rc "
+		  + " WHERE mvm.registre_commerce = :rc "
 		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end)")
 	
 	public List<mouvement>  mouvement_by_rc_intervall(@Param("rc") registre_commerce rc,@Param("start") Date start, @Param("end") Date end); 
