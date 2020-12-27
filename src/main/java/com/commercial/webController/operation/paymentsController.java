@@ -114,11 +114,15 @@ public class paymentsController {
 		
 		//----------------------------------------------------------------
 		
+		get_time_date gtd = new get_time_date();
+		
 		model.addAttribute("mode_payement", mode_payRepo.findAll());
 		
 		model.addAttribute("bank", banqueRepo.findAll());
 		
-		model.addAttribute("client", clientRepo.findAll());
+		//model.addAttribute("client", clientRepo.findAll());
+		
+		model.addAttribute("clt_rc",c_rcRepo.ListRCwithCLIENT_acive(gtd.get_date()));
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
 		
@@ -257,8 +261,9 @@ public class paymentsController {
 	
 	@RequestMapping(value="/new_payment_post",method=RequestMethod.POST, consumes = {"multipart/form-data"})
 	public String insert_new_payment(HttpServletRequest req,
-			@RequestParam("client") long id_client,
-			@RequestParam("rc") long id_rc,
+			//@RequestParam("client") long id_client,
+			//@RequestParam("rc") long id_rc,
+			@RequestParam("rc_client") long id_clt_rc,
 			@RequestParam("mode_pay") long mode_pay,
 			@RequestParam("bank") long bank,
 			@RequestParam("num_piece") String num_piece,
@@ -312,6 +317,9 @@ public class paymentsController {
 				
 			}
 			
+			long id_client = c_rcRepo.getOne(id_clt_rc).getClient().getId();
+			
+			long id_rc = c_rcRepo.getOne(id_clt_rc).getRegistre_commerce().getId();
 			
 			paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
 										cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),

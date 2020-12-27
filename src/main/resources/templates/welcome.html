@@ -41,11 +41,13 @@
 					
 				});
 				
-				$('.toast').toast('show');
+				$('.toast').toast({type:'info'});
 				
 				setInterval(function(){	
 					
 					//$("#notif_div").empty();
+					
+					//console.log("request_notif");
 					
 					$.ajax({
 						
@@ -57,12 +59,14 @@
 				        success : function(resp) {
 							
 							if (resp != "null") {
-
+								
 								$.each(resp, function(key, value) {
 									
+									//console.log("->"+value.numero)
+									
 									var htm = '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" '+
-													'data-delay="120000" data-animation="true" style="cursor: pointer;">'+
-											      '<div class="toast-header"> '+
+													'data-delay="10000" data-animation="true" style="cursor: pointer;">'+
+											      '<div class="toast-header" > '+
 											        '<i class="far fa-bell click"></i> &nbsp '+
 											        '<strong class="mr-auto click"> <b>Facture Prête </b></strong> '+
 											        '<small class="text-muted click">'+value.time+'</small> '+
@@ -71,11 +75,9 @@
 											        '</button> '+
 											      '</div> '+
 											      '<div class="toast-body click"> '+
-											        '<label style="font-size:larger;font-weight: normal;"> N°: '+value.numero+' </label> '+
-											        '<label style="font-size:larger;font-weight: normal;"> Code Client: '+value.client.code+'</label>'+
-											        '<label style="font-size:larger;font-weight: normal;"> Client: '+value.client.nom+' '+value.client.prenom+'</label> '+
-											        '<label style="font-size:larger;font-weight: normal;"> N°RC: '+value.registre_commerce.numero_rc+'</label>'+
-											        '<label style="font-size:larger;font-weight: normal;"> RC: '+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</label>'+
+											        '<label style="font-size:medium;font-weight: 600;"> Code : '+value.registre_commerce.code+'</label>'+
+											        '<label style="font-size:medium;font-weight: 600;"> RC: '+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</label>'+
+											        '<label style="font-size:medium;font-weight: 600;"> Client: '+value.client.nom+' '+value.client.prenom+'</label> '+
 											      '</div> '+
 											    '</div>';
 									
@@ -101,7 +103,11 @@
 						}
 					});
 					
-				},5000);
+					//console.log("END request notif")
+					
+					//console.log("------------");
+					
+				},10000);
 				 
 				
 			  });

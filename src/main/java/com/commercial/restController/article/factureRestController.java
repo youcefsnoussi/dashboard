@@ -267,33 +267,53 @@ public class factureRestController {
 			@SessionAttribute("user") users user
 			) throws IOException, ParseException{
 		
-		//System.out.println("++++++++++++++----> enter notification fact ready <----+++++++++++++++");
+		//System.out.println("user entred -> "+user.getUsername());
 		
-		List <facture> list_fct = factRepo.get_notification();
+		List <facture> list_fct = new ArrayList<facture>();
 		
 		List <facture> ret = new ArrayList <facture>();
 		
-		for(int i=0;i<list_fct.size();i++) {
+		if(user.getRole().getNom_role().equals("Admin")) {
 			
-			facture fct = list_fct.get(i);
+			list_fct = factRepo.get_notifications_admin();
 			
-			if(fct.getBon_livraison().getCommande().getUsers()==user 
-					/*|| user.getRole().getNom_role().equals("Admin") 
-					|| user.getRole().getNom_role().equals("A.C.imprimer")*/) {
+			ret = list_fct;
+			
+		}
+		
+		else if(user.getRole().getNom_role().equals("A.C.imprimer")) {
+			
+			list_fct = factRepo.get_notifications_admin();
+			
+			for(int i=0;i<list_fct.size();i++) {
+				
+				facture fct = list_fct.get(i);
 				
 				fct.setNotification(true);
 				
 				factRepo.save(fct);factRepo.flush();
 				
-				ret.add(fct);
-				
 			}
+			
+			ret = list_fct;
 			
 		}
 		
-		if(ret.size()!=0) {
+		else {
 			
-			System.out.println(ret.get(0).getNumero());
+			list_fct = factRepo.get_notification_by_user(user);
+			
+			for(int i=0;i<list_fct.size();i++) {
+				
+				facture fct = list_fct.get(i);
+				
+				fct.setNotification(true);
+				
+				factRepo.save(fct);factRepo.flush();
+				
+			}
+			
+			ret = list_fct;
 			
 		}
 		

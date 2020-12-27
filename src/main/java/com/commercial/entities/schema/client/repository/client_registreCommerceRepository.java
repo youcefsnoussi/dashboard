@@ -122,10 +122,20 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 	@Query( "FROM client_registreCommerce crc " + 
 	
-			"WHERE crc.registre_commerce.etat = 'active' " + 
+			"WHERE crc.registre_commerce.etat = 'active' " +
+			
+			"AND crc.client.etat_blockage = 'false' " + 
 			
 			"AND CAST(:today AS date) BETWEEN CAST(crc.date_debut AS date) AND CAST(crc.date_fin AS date) " )
 	
 	public List<client_registreCommerce>  ListRCwithCLIENT_acive(@Param("today") String today);
+	
+	//------------------------------------------------------
+	
+	@Query( "FROM client_registreCommerce crc " + 
+			
+			"WHERE registre_commerce = :rc  ")
+	
+	public List<client_registreCommerce>  if_rc_existe_in_relation(@Param("rc") registre_commerce rc);
 	
 }
