@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
+import com.commercial.entities.schema.user_menu.users;
 
 public interface factureRepository extends JpaRepository<facture, Long> {
 	
@@ -44,18 +45,28 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	
 		@Query( " FROM facture fact "
 				
-			  + " WHERE fact.notification = 'FALSE' " )
+			  + " WHERE fact.notification = 'FALSE' "
+			  
+			  + " AND fact.users = :user" )
 		 
-		public List<facture> get_notification();
+		public List<facture> get_notification_by_user(users user);
 		
 	//----------------------------------------------------------
 	
-		@Query( " SELECT DISTINCT SUBSTR(date, 7, 9) AS dates FROM facture "
+		@Query( " FROM facture fact "
 				
-				+ " WHERE date like '__/__/_%_%_%_%' "
-				
-				+ " ORDER BY dates ASC " )
+			  + " WHERE fact.notification = 'FALSE' " )
 		 
-		public List<String> get_years_db();		
+		public List<facture> get_notifications_admin();
+		
+	//----------------------------------------------------------
+
+	@Query( " SELECT DISTINCT SUBSTR(date, 7, 9) AS dates FROM facture "
+			
+			+ " WHERE date like '__/__/_%_%_%_%' "
+			
+			+ " ORDER BY dates ASC " )
+	 
+	public List<String> get_years_db();		
 	
 }

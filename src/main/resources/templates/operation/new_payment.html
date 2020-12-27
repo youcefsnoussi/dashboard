@@ -81,13 +81,13 @@
 			    layoutTemplates: {main2: '{preview} {remove} {browse}'},
 			    allowedFileExtensions: ["jpg", "png", "svg","jpeg"]
 			});
-			
+			/*
 			$("#client").change(function(){
 				
 				onchange_select_client();
 			
 			});
-			
+			*/
 			$("#sub").click(function(){
 				
 				$(this).prop("disabled","true");
@@ -95,7 +95,19 @@
 				
 			});
 			
-			onchange_select_client();
+			//onchange_select_client();
+			
+			$("#montant").keyup(function () {
+				/*
+				var val = $(this).val();
+				
+				if(val >= '0' && val <= '9'){
+					
+					$(this).val();
+					
+				}
+				*/
+			})
 			
 		});
 		
@@ -185,16 +197,16 @@
 							
 								<label>Client</label>
 								
-								<select id="client" name="client" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								<select id="client" name="rc_client" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
 								
-									<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.nom}+' '+${clt.prenom}"
-											th:attr="data-subtext=${clt.code}"></option>
+									<option th:each="clt_rc:${clt_rc}" th:value="${clt_rc.id}" th:text="${clt_rc.registre_commerce.nom}+' '+${clt_rc.registre_commerce.prenom}"
+											th:attr="data-subtext=${clt_rc.registre_commerce.code}"></option>
 								
 								</select>
 								
 							</div>
 							
-							
+							<!--  
 							<div class="col-md-3 offset-md-2">
 							
 								<label>Registre Commerce</label>
@@ -207,7 +219,7 @@
 								
 							</div>
 							
-							
+							-->
 						</div>
 						
 						<hr>
@@ -259,7 +271,7 @@
 								
 								<div class="input-group">
 								
-									<input type="number" step="any" value="" id="montant" name="montant" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+									<input type="text" value="" id="montant" name="montant" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
 									
 									<div class="input-group-append">
 									    <span class="input-group-text" style="margin-bottom:5px">DA</span>

@@ -124,7 +124,9 @@ public class rc_client_relationController {
 		}
 		*/
 		
-		List<client_registreCommerce> crc = crcRepo.if_rc_is_already_inRelation(rc, date_debut, date_fin);
+		//List<client_registreCommerce> crc = crcRepo.if_rc_is_already_inRelation(rc, date_debut, date_fin);
+		
+		List<client_registreCommerce> crc = crcRepo.if_rc_existe_in_relation(rc);
 		
 		if(crc.size()==0) {
 			
