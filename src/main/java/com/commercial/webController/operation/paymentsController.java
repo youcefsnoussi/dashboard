@@ -122,7 +122,7 @@ public class paymentsController {
 		
 		//model.addAttribute("client", clientRepo.findAll());
 		
-		model.addAttribute("clt_rc",c_rcRepo.ListRCwithCLIENT_acive(gtd.get_date()));
+		model.addAttribute("clt_rc",c_rcRepo.ListRCwithCLIENT_active(gtd.get_date()));
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
 		
@@ -311,6 +311,8 @@ public class paymentsController {
 			
 			banque banque = null;
 			
+			String ret = "";
+			
 			if(bank!=0) {
 				
 				banque = banqueRepo.getOne(bank);
@@ -321,129 +323,137 @@ public class paymentsController {
 			
 			long id_rc = c_rcRepo.getOne(id_clt_rc).getRegistre_commerce().getId();
 			
-			paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
-										cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),
-					banque, user, num_piece, img_path, false);
+			paiement p = payRepo.if_payment_already_exist(banque, num_piece);
 			
-			payRepo.save(pay);payRepo.flush();
+			if(p==null) {
 			
-			//-------------------- tracking operation -----------------------------------
-			
-			trk.add_track("paiement", "Ajout nouveau paiement", pay.getId(), user);
-			
-			//-------------------- tracking operation -----------------------------------
-			
-			//-------------- update sold client
-			
-			client clt = clientRepo.getOne(id_client);
-			
-			double sold_encours_clt = clt.getSold_encours();
-			
-			double new_sold_clt = sold_encours_clt - montant;
-			
-			clt.setSold_encours(new_sold_clt);
-			
-			clientRepo.save(clt);clientRepo.flush();
-			
-			//-------------- update sold RC
-			
-			registre_commerce rc = rcRepo.getOne(id_rc);
-			
-			double sold_encours_rc = rc.getSold_encours();
-			
-			double new_sold_rc = sold_encours_rc - montant;
-			
-			rc.setSold_encours(new_sold_rc);
-			
-			rcRepo.save(rc);rcRepo.flush();
-			
-			//-------------- update sold RC client relationship
-			/*
-			List<client_registreCommerce> crc = c_rcRepo.if_relation_existe(clt, rc);
-			
-			int last_index = crc.size()-1;
-			
-			client_registreCommerce c_rc = crc.get(last_index);
-			
-			double sold_encours = c_rc.getMontant_actuel();
-			
-			double new_sold = sold_encours - montant;
-			
-			c_rc.setMontant_actuel(new_sold);
-			
-			c_rcRepo.save(c_rc);c_rcRepo.flush();
-			*/
-			//-------------- insert to mouvement 
-			
-			//mouvement mvm = new mouvement(clt, rc, montant, "paiement", pay.getId(), date, gtd.get_time(), banque.getNom_banque());
-			
-			mouvement mvm = new mouvement(clt, rc, montant, "Paiement", pay.getId(), gtd.get_date(), gtd.get_time(), "", sold_encours_clt, sold_encours_rc,
-					new_sold_clt, new_sold_rc);
-			
-			mvmRepo.save(mvm);mvmRepo.flush();
-			
-			//------------ update sold factures
-			
-			List<facture> list_fact = factRepo.client_active_only(clt);
-			
-			int watch_dog_out = 0;
-			
-			int i =0;
-			
-			double montant_buf = montant;
-			
-			if(list_fact.size()==0) {
+				paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
+											cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),
+						banque, user, num_piece, img_path, false);
 				
-				watch_dog_out = 1;
+				payRepo.save(pay);payRepo.flush();
 				
-			}
-			
-			while(watch_dog_out==0) {
+				//-------------------- tracking operation -----------------------------------
 				
-				facture fct = list_fact.get(i);
+				trk.add_track("paiement", "Ajout nouveau paiement", pay.getId(), user);
 				
-				if(montant_buf <= fct.getSold_rest()) {
-					
-					double new_sold_restant = fct.getSold_rest() - montant_buf;
-					
-					fct.setSold_rest(new_sold_restant);
-					
-					if(new_sold_restant==0) {
-						
-						fct.setEtat_sold(true);
-						
-					}
-					
-					factRepo.save(fct);factRepo.flush();
-					
-					paiement_facture pay_fac = new paiement_facture(pay, fct, montant_buf);
-					
-					pay_factRepo.save(pay_fac);pay_factRepo.flush();
+				//-------------------- tracking operation -----------------------------------
+				
+				//-------------- update sold client
+				
+				client clt = clientRepo.getOne(id_client);
+				
+				double sold_encours_clt = clt.getSold_encours();
+				
+				double new_sold_clt = sold_encours_clt - montant;
+				
+				clt.setSold_encours(new_sold_clt);
+				
+				clientRepo.save(clt);clientRepo.flush();
+				
+				//-------------- update sold RC
+				
+				registre_commerce rc = rcRepo.getOne(id_rc);
+				
+				double sold_encours_rc = rc.getSold_encours();
+				
+				double new_sold_rc = sold_encours_rc - montant;
+				
+				rc.setSold_encours(new_sold_rc);
+				
+				rcRepo.save(rc);rcRepo.flush();
+				
+				//-------------- update sold RC client relationship
+				/*
+				List<client_registreCommerce> crc = c_rcRepo.if_relation_existe(clt, rc);
+				
+				int last_index = crc.size()-1;
+				
+				client_registreCommerce c_rc = crc.get(last_index);
+				
+				double sold_encours = c_rc.getMontant_actuel();
+				
+				double new_sold = sold_encours - montant;
+				
+				c_rc.setMontant_actuel(new_sold);
+				
+				c_rcRepo.save(c_rc);c_rcRepo.flush();
+				*/
+				//-------------- insert to mouvement 
+				
+				//mouvement mvm = new mouvement(clt, rc, montant, "paiement", pay.getId(), date, gtd.get_time(), banque.getNom_banque());
+				
+				mouvement mvm = new mouvement(clt, rc, montant, "Paiement", pay.getId(), gtd.get_date(), gtd.get_time(), "", sold_encours_clt, sold_encours_rc,
+						new_sold_clt, new_sold_rc);
+				
+				mvmRepo.save(mvm);mvmRepo.flush();
+				
+				//------------ update sold factures
+				
+				List<facture> list_fact = factRepo.client_active_only(clt);
+				
+				int watch_dog_out = 0;
+				
+				int i =0;
+				
+				double montant_buf = montant;
+				
+				if(list_fact.size()==0) {
 					
 					watch_dog_out = 1;
 					
 				}
-				else {
+				
+				while(watch_dog_out==0) {
 					
-					montant_buf = montant_buf - fct.getSold_rest();
+					facture fct = list_fact.get(i);
 					
-					fct.setSold_rest(0);
-					fct.setEtat_sold(true);
-					factRepo.save(fct);factRepo.flush();
-					
-					paiement_facture pay_fac = new paiement_facture(pay, fct, montant_buf);
-					
-					pay_factRepo.save(pay_fac);pay_factRepo.flush();
-					
-					i++;
+					if(montant_buf <= fct.getSold_rest()) {
+						
+						double new_sold_restant = fct.getSold_rest() - montant_buf;
+						
+						fct.setSold_rest(new_sold_restant);
+						
+						if(new_sold_restant==0) {
+							
+							fct.setEtat_sold(true);
+							
+						}
+						
+						factRepo.save(fct);factRepo.flush();
+						
+						paiement_facture pay_fac = new paiement_facture(pay, fct, montant_buf);
+						
+						pay_factRepo.save(pay_fac);pay_factRepo.flush();
+						
+						watch_dog_out = 1;
+						
+					}
+					else {
+						
+						montant_buf = montant_buf - fct.getSold_rest();
+						
+						fct.setSold_rest(0);
+						fct.setEtat_sold(true);
+						factRepo.save(fct);factRepo.flush();
+						
+						paiement_facture pay_fac = new paiement_facture(pay, fct, montant_buf);
+						
+						pay_factRepo.save(pay_fac);pay_factRepo.flush();
+						
+						i++;
+						
+					}
 					
 				}
+			
+			//--------------- end
+				
+				ret = "ee";
 				
 			}
 			
-			//--------------- end
-			
-			return "redirect:/new_payment?ret=ee";
+			return "redirect:/new_payment?ret="+ret;
 		
 	}
 	

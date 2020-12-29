@@ -128,7 +128,7 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 			
 			"AND CAST(:today AS date) BETWEEN CAST(crc.date_debut AS date) AND CAST(crc.date_fin AS date) " )
 	
-	public List<client_registreCommerce>  ListRCwithCLIENT_acive(@Param("today") String today);
+	public List<client_registreCommerce>  ListRCwithCLIENT_active(@Param("today") String today);
 	
 	//------------------------------------------------------
 	

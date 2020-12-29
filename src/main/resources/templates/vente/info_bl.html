@@ -173,8 +173,8 @@
 								<th align="center"  width="8%">Art</th>
 								<th  align="center" >Libellé</th>
 								<th  align="center"  width="8%">Um</th>
-								<th  align="center" >Qte</th>
-								<th  align="center" >Validation</th>
+								<th  align="center" style="width:13%">Qte</th>
+								<th  align="center" style="width:12%">Validation</th>
 							</tr>
 						</thead>
 	
@@ -192,9 +192,13 @@
 								
 								<td>
 									 
-									 <input type="text" class="form-control" th:value="${bl_det.article.produit.designation}+' '+
-									 													${bl_det.article.emballage_produit.nom_emballage}+' '+
-									 													${bl_det.article.pesage_produit.pesage}" disabled>
+									 <input type="text" class="form-control"
+									 th:value="${bl_det.article.produit.sous_category_produit.category_produit.nom_category}+' '+
+									  ${#strings.replace(bl_det.article.produit.sous_category_produit.nom_sous_category, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '')}+' '+
+									  ${#strings.replace(#strings.replace(bl_det.article.produit.designation, bl_det.article.produit.sous_category_produit.category_produit.nom_category, ''), bl_det.article.produit.sous_category_produit.nom_sous_category, '')}+' '+
+									  ${#strings.replace(bl_det.article.emballage_produit.nom_emballage, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '') }+' '+
+									  ${bl_det.article.pesage_produit.pesage}+' '+${bl_det.article.pesage_produit.unite_pesage}" 
+									  disabled>
 									 
 								</td>
 								

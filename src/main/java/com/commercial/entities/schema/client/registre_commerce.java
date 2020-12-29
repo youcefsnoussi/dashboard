@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import com.commercial.entities.schema.static_data.banque;
 import com.commercial.entities.schema.static_data.mode_paiement;
 import com.commercial.entities.schema.static_data.type_reglement;
+import com.commercial.entities.schema.static_data.unite;
 import com.commercial.entities.schema.static_data.wilaya;
 
 @Entity
@@ -79,8 +80,13 @@ public class registre_commerce implements Serializable{
 	 @ManyToOne
 	 @JoinColumn(name = "mode_paiement")
 	 private mode_paiement mode_paiement;
-	  
+	 
+	 @ManyToOne
+	 @JoinColumn(name = "unite")
+	 private unite unite;
+	 
 	public registre_commerce() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -90,7 +96,8 @@ public class registre_commerce implements Serializable{
 			double sold_encours, String activite, String etat_blockage,
 			com.commercial.entities.schema.static_data.banque banque,
 			com.commercial.entities.schema.static_data.type_reglement type_reglement,
-			com.commercial.entities.schema.static_data.mode_paiement mode_paiement) {
+			com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
+			com.commercial.entities.schema.static_data.unite unite) {
 		super();
 		this.nom = nom;
 		this.prenom = prenom;
@@ -113,6 +120,7 @@ public class registre_commerce implements Serializable{
 		this.banque = banque;
 		this.type_reglement = type_reglement;
 		this.mode_paiement = mode_paiement;
+		this.unite = unite;
 	}
 
 	public Long getId() {
@@ -291,6 +299,14 @@ public class registre_commerce implements Serializable{
 		this.mode_paiement = mode_paiement;
 	}
 
+	public unite getUnite() {
+		return unite;
+	}
+
+	public void setUnite(unite unite) {
+		this.unite = unite;
+	}
+	 
 	
 
 }

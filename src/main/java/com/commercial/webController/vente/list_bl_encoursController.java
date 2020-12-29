@@ -482,15 +482,30 @@ public class list_bl_encoursController {
 					
 				}
 				
+				System.out.println("mag length->"+id_magasin.length);
+				System.out.println("quant length->"+quantite.length);
+				System.out.println("article length->"+article.length);
+				System.out.println("id_unite_mesure, length->"+id_unite_mesure.length);
+				System.out.println("montant_ht_art, length->"+montant_ht_art.length);
+				System.out.println("tva_art, length->"+tva_art.length);
+				System.out.println("prix_u_ht, length->"+prix_u_ht.length);
+				System.out.println("montant_tva_art length->"+montant_tva_art.length);
+				System.out.println("-----------------------------");
+				
 				for(int i=0;i<quantite.length;i++) {
 					
 					if(article[i]!=0 && quantite[i]!=0) {
+						
+						System.out.println("index->"+i+" / art->"+artRepo.getOne(article[i]).getCode()+" / quant-> "+quantite[i]+
+								" / Mag-> "+magasinRepo.getOne(id_magasin[i]).getName());
 						
 						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
 								montant_ht_art[i], tva_art[i], montant_tva_art[i], null, umRepo.getOne(id_unite_mesure[i]),
 								false, magasinRepo.getOne(id_magasin[i]));
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
+						
+						System.out.println("-------------SAVED");
 						
 					}
 					

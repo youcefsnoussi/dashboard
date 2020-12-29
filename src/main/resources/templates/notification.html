@@ -37,9 +37,9 @@
 			    	"bPaginate": false,
 					"scrollY":"400px",
 					"scrollX": "auto",
-			        "deferRender": true,/*
+			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([2,5]).every( function () {
+			            this.api().columns([2]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value=""></option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -57,16 +57,16 @@
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
 			            } );
-			        },*/
+			        },
 					 drawCallback: function () {
 						
 					      var api = this.api();
 					      
-					      $( api.column( 2, {page:'current'} ).footer() ).html(
-					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 1, {page:'current'} ).footer() ).html(
+					        api.column( 1, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
-					      $( api.column( 5, {page:'current'} ).footer() ).html(
-					        api.column( 5, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 4, {page:'current'} ).footer() ).html(
+					        api.column( 4, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					 },
 		    };
@@ -99,10 +99,10 @@
 						
 							<tr>
 							
-								<th>Code Client</th>
+								
 								<th>Nom Prénom</th>
 								<th>Sold Global</th>
-								<th>N° RC</th>
+								<th>Code RC</th>
 								<th>Nom Prénom</th>
 								<th>Sold RC</th>
 								<th>Date debut</th>
@@ -116,10 +116,10 @@
 						
 							<tr th:each="rc_client:${rc_client}">
 							
-								<td th:text="${rc_client.client.code}"></td>
+								
 								<td th:text="${rc_client.client.nom}+' '+${rc_client.client.prenom}"></td>
 								<td th:text="${#numbers.formatDecimal(rc_client.client.sold_encours, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${rc_client.registre_commerce.numero_rc}"></td>
+								<td th:text="${rc_client.registre_commerce.code}"></td>
 								<td th:text="${rc_client.registre_commerce.nom}+' '+${rc_client.registre_commerce.prenom}"></td>
 								<td th:text="${#numbers.formatDecimal(rc_client.montant_actuel, 3, 'WHITESPACE', 0,'COMMA')}"></td>
 								<td th:text="${rc_client.date_debut}"></td>
@@ -133,7 +133,6 @@
 						
 							<tr>
 							
-								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

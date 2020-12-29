@@ -225,11 +225,18 @@ $(document).ready(function() {
 									
 								}
 								
+								var cat = value.article.produit.sous_category_produit.category_produit.nom_category;
+								var s_cat = value.article.produit.sous_category_produit.nom_sous_category.replace(cat,"");
+								var prod_temp = value.article.produit.designation.replace(cat,"");
+								var prod = prod_temp.replace(s_cat,"");
+								var emb = value.article.emballage_produit.nom_emballage.replace(cat,"");
+								var pes = value.article.pesage_produit.pesage+' '+value.article.pesage_produit.unite_pesage;
+											
+								
 								$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
 											   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
 											   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
-											   '>'+value.article.produit.designation+' '+value.article.emballage_produit.nom_emballage+' '
-											   +value.article.pesage_produit.pesage+value.article.pesage_produit.unite_pesage+'</option>');
+											   '>'+cat+' '+s_cat+' '+prod+' '+emb+' '+pes+'</option>');
 								
 								$(this).selectpicker('refresh');
 									

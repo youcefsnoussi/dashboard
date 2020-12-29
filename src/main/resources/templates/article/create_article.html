@@ -56,6 +56,8 @@
 						
 						<input type="hidden" id="sub" th:value="${article.subvension}">
 						
+						<input type="hidden" id="libelle" th:value="${article.libelle}">
+						
 						<input type="hidden" id="id_emb_prod" th:value="${article.emballage_produit.id}">
 						<input type="hidden" id="id_pes_prod" th:value="${article.pesage_produit.id}">
 						<input type="hidden" id="vendu" th:value="${article.vendu}">
@@ -191,6 +193,19 @@
 			        	</div>
 						
 					</div>
+					<br>
+					<div class="row">
+					
+						<div class="col-md-6">
+						
+							<label>Libellé</label>
+							
+							<input type="text" id="lib" class="form-control" name="lib" >
+							
+						</div>
+					
+					</div>
+					
 					<hr>
 					<div class="row" th:if="${prices}==null">
 					

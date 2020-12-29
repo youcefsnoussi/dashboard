@@ -104,6 +104,8 @@ $(document).ready(function(){
 		//$("#tva").val($("#id_tva").val());
 		$("#unite_mesure_vente").val($("#id_unite_mesure_vente").val());
 		
+		$("#lib").val($("#libelle").val());
+		
 		var units = $("#id_magasin").val().split("/");
 		
 		units.splice(-1,1);

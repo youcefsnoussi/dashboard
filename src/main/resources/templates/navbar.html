@@ -29,7 +29,7 @@
 	       		<img src="resources\images\welcome\fond-noir-de-bois-en-i_1024x576.jpg" >
 	     	</div>
 	     	
-		    <img class="circle" th:src="${user.image}">
+		    <img class="circle" th:src="'display_img?link='+${user.image}">
 		    <span class="white-text name" th:text="${user.role.nom_role} +' : '+ ${user.username}"></span>
 		    <span class="white-text email"></span> 
 		  

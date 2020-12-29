@@ -26,7 +26,7 @@ public class display_img {
 	@RequestMapping(value="/display_img", produces="image/jpeg")
 	public void display(HttpServletRequest request, HttpServletResponse response) {
 		
-String link = request.getParameter("link");
+		String link = request.getParameter("link");
 		
 		//System.out.println(link);
 		

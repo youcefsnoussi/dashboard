@@ -54,12 +54,27 @@
 			
 			if(ret!=null){
 				
-				$("#title").text("Information");
-				$("#icone").attr("class","far fa-info-circle");
+				if(ret=="ee"){
+					
+					$("#title").text("Information");
+					$("#icone").attr("class","far fa-info-circle");
+					
+					$("#text").text("Paiement effectuer avec succes ");
+					
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					$("#title").text("Erreur");
+					$("#icone").attr("class","far fa-info-circle");
+					
+					$("#text").text("Paiement Existant !!! ");
+					
+					$("#error").modal('show');
+					
+				}
 				
-				$("#text").text("Paiement effectuer avec succes ");
-				
-				$("#error").modal('show');
 					
 			}
 			
@@ -109,7 +124,19 @@
 				*/
 			})
 			
+			var inputs = [];
+			
+			var index = 0;
+			
+			$(".jump").each(function () {
+				
+				inputs.
+				
+			})
+			
 		});
+		
+		
 		
 		function onchange_select_client (){
 			
@@ -197,7 +224,7 @@
 							
 								<label>Client</label>
 								
-								<select id="client" name="rc_client" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								<select id="client" name="rc_client" class="selectpicker show-tick jump" data-live-search="true" data-style="btn-outline-dark" required>
 								
 									<option th:each="clt_rc:${clt_rc}" th:value="${clt_rc.id}" th:text="${clt_rc.registre_commerce.nom}+' '+${clt_rc.registre_commerce.prenom}"
 											th:attr="data-subtext=${clt_rc.registre_commerce.code}"></option>
@@ -230,7 +257,7 @@
 							
 								<label>Mode paiement</label>
 								
-								<select id="mode_pay" name="mode_pay" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								<select id="mode_pay" name="mode_pay" class="selectpicker show-tick jump" data-live-search="true" data-style="btn-outline-dark" required>
 								
 									<option th:each="mode_p:${mode_payement}" th:value="${mode_p.id}" th:text="${mode_p.designation}"></option>
 								
@@ -242,7 +269,7 @@
 							
 								<label>Banque</label>
 								
-								<select id="bank" name="bank" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								<select id="bank" name="bank" class="selectpicker show-tick jump" data-live-search="true" data-style="btn-outline-dark" required>
 									
 									<option value="0"> Aucune</option>
 									<option th:each="bank:${bank}" th:value="${bank.id}" th:text="${bank.nom_banque}"></option>
@@ -255,7 +282,7 @@
 							
 								<label>Numero de la piece</label>
 								
-								<input type="text" id="num_piece" name="num_piece" class="form-control" required>
+								<input type="text" id="num_piece" name="num_piece" class="form-control jump" required>
 								
 							</div>
 							
@@ -271,7 +298,7 @@
 								
 								<div class="input-group">
 								
-									<input type="text" value="" id="montant" name="montant" class="form-control" style="margin-bottom:5px" placeholder="DA" required>
+									<input type="text" value="" id="montant" name="montant" class="form-control jump" style="margin-bottom:5px" placeholder="DA" required>
 									
 									<div class="input-group-append">
 									    <span class="input-group-text" style="margin-bottom:5px">DA</span>
@@ -285,7 +312,7 @@
 							
 								<label>Date de la piece</label>
 								
-								<input type="date" id="date_piece" name="date_piece" class="form-control">
+								<input type="date" id="date_piece" name="date_piece" class="form-control jump">
 								
 							</div>
 							
