@@ -219,7 +219,16 @@
 								</div>
 							</div>
 	
-	
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Réduction (%) </span>
+									</div>
+									<input type="number" step="any" class="form-control zero" name="pourc_reduction" style="text-align: right;" 
+										id="pourc_redux" th:value="${bl.commande.pourcentage_reduction}" disabled>
+								</div>
+							</div>
+							
 							<div class="col-md-4 offset-md-8">
 								<div class="input-group">
 									<div class="input-group-prepend">
@@ -301,7 +310,7 @@
 										<input type="hidden" id="qte_init" class="qte_init" th:value="${bl_det.quantite}"> </td>
 									
 								<td> 
-										<select class="form-control id_magasin" id="id_magasin" name="magasin" >
+										<select class="form-control id_magasin" id="id_magasin" name="id_magasin" >
 										<option value="">Selection</option>
 										
 										<option  th:value="${bl_det.magasin.id}" th:text="${bl_det.magasin.name}"  selected></option>

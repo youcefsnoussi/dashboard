@@ -129,6 +129,7 @@ public class generate_Doc {
 				mp.put("nif", fact.getRegistre_commerce().getNumero_nif());
 				mp.put("nis", fact.getRegistre_commerce().getNumero_art());
 				mp.put("user", fact.getUsers().getUsername());
+				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				
 				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				

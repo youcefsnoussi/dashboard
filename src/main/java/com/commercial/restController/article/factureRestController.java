@@ -29,7 +29,9 @@ import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
 import com.commercial.entities.schema.client.repository.reduction_client_prixU_articleRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
@@ -71,6 +73,9 @@ public class factureRestController {
 	
 	@Autowired
 	magasin_articleRepository magRepo;
+	
+	@Autowired
+	bon_livraisonRepository bon_lRepo;
 	
 	public factureRestController() {
 		// TODO Auto-generated constructor stub
@@ -218,19 +223,28 @@ public class factureRestController {
 		
 		client_registreCommerce rc_clt = clt_rcRepo.getOne(id_relation_rc_client);
 		
+		
 		client clt = rc_clt.getClient();
 		
-		//client_registreCommerce clt_rc = clt_rcRepo.getOne(id_relation_rc_client);
+		List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_clt(clt);
 		
-		//registre_commerce rc = rcRepo.getOne(id_rc);
+		double montant = 0;
 		
-		registre_commerce rc = rc_clt.getRegistre_commerce();
+		for(int j=0;j<list_bl.size();j++) {
+			
+			montant = montant + list_bl.get(j).getMontant_ttc();
+			
+		}
 		
-		double balance_clt = clt.getSold_encours();
+		double sold_encours = clt.getSold_encours();
 		
-		//System.out.println("("+(balance_clt+montant_ttc)+")>"+clt.getPlafond());
+		sold_encours = sold_encours + montant;
 		
-		if((balance_clt+montant_ttc)>clt.getPlafond()) {
+		//clt_rc.get(i).getRegistre_commerce().setSold_encours(sold_encours);
+		
+		//double balance_clt = clt.getSold_encours();
+		
+		if(sold_encours>clt.getPlafond()) {
 			
 			map.put("plafond_client", 1);
 			
@@ -241,11 +255,29 @@ public class factureRestController {
 			
 		}
 		
-		double balance_rc = rc.getSold_encours();
+		registre_commerce rc = rc_clt.getRegistre_commerce();
+		
+		list_bl = bon_lRepo.get_bl_encours_by_rc(rc);
+		
+		montant = 0;
+		
+		for(int j=0;j<list_bl.size();j++) {
+			
+			montant = montant + list_bl.get(j).getMontant_ttc();
+			
+		}
+		
+		sold_encours = rc.getSold_encours();
+		
+		sold_encours = sold_encours + montant;
+		
+		System.out.println("SOLD RC -> "+sold_encours);
+		
+		//double balance_rc = rc.getSold_encours();
 		
 		//System.out.println("("+(balance_rc+montant_ttc)+")>"+rc.getPlafond());
 		
-		if((balance_rc+montant_ttc)>rc.getPlafond()) {
+		if(sold_encours>rc.getPlafond()) {
 			
 			map.put("plafond_rc", 1);
 			
@@ -321,7 +353,7 @@ public class factureRestController {
 		
 	}
 	
-	//_____________________________________ hedi ta3 REST COntroller article mabid dertha hna _____________
+	//_____________________________________ hedi ta3 REST Controller article mabid dertha hna _____________
 	
 	@RequestMapping(value="/get_prix_by_client")
 	public Map<String, Double> get_prix_article_by_client(

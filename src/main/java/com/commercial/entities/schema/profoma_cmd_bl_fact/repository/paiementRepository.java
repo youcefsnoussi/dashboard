@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement;
+import com.commercial.entities.schema.static_data.banque;
 
 public interface paiementRepository extends JpaRepository<paiement, Long> {
 	
@@ -19,11 +20,25 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	
 	public List<paiement> get_payments_no_cancled();
 	
+	//------------------------------------------------------------------
+	
 	@Query( " FROM paiement pay "
 			
 			+ " WHERE pay.cancel = 'false' "
 			+ " AND CAST(pay.date_saisie AS date) BETWEEN (:start) AND (:end)")
 	
 	public List<paiement> get_payments_no_cancled_interval(@Param("start") Date date_d, @Param("end") Date date_f);
+	
+	//------------------------------------------------------------------
+	
+	@Query( " FROM paiement pay "
+			
+			+ " WHERE pay.cancel = 'false' "
+			
+			+ " AND banque = :bank "
+			
+			+ " AND numero_piece = :num_piece")
+	
+	public paiement if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece);
 	
 }

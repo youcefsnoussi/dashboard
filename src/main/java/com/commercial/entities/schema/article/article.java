@@ -54,6 +54,8 @@ public class article implements Serializable{
 	@Column(columnDefinition="boolean default false")
 	private boolean subvension = false;
 	
+	private String libelle;
+	
 	public article() {
 		// TODO Auto-generated constructor stub
 	}
@@ -61,7 +63,8 @@ public class article implements Serializable{
 	public article(String code, com.commercial.entities.schema.article.produit produit,
 			com.commercial.entities.schema.article.emballage_produit emballage_produit,
 			com.commercial.entities.schema.article.pesage_produit pesage_produit, String image_article, double vendu,
-			String date_creation, String code_comptable, unite_mesure unite_mesure_vente, boolean subvension) {
+			String date_creation, String code_comptable, unite_mesure unite_mesure_vente, boolean subvension,
+			String libelle) {
 		super();
 		this.code = code;
 		this.produit = produit;
@@ -73,6 +76,7 @@ public class article implements Serializable{
 		this.code_comptable = code_comptable;
 		this.unite_mesure_vente = unite_mesure_vente;
 		this.subvension = subvension;
+		this.libelle = libelle;
 	}
 
 	public Long getId() {
@@ -163,6 +167,12 @@ public class article implements Serializable{
 		this.subvension = subvension;
 	}
 
-	
+	public String getLibelle() {
+		return libelle;
+	}
+
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
+	}
 
 }

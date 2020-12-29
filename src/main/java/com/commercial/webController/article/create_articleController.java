@@ -187,6 +187,7 @@ public class create_articleController {
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("prix_category") double [] prix_category,
 		@RequestParam("subvention") String check,
+		@RequestParam("lib") String lib,
 		
 		@SessionAttribute("user") users user){
 		
@@ -228,13 +229,13 @@ public class create_articleController {
 		
 		if(art_if_code_existe==null) {
 			
-			article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, code_comptable);
+			article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, code_comptable, sub);
 			
 			if(art_if_same_specs==null) {
 				
 				
 				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(), code_comptable, 
-						unite_mesureRepo.getOne(id_unite_mesure), sub);
+						unite_mesureRepo.getOne(id_unite_mesure), sub, lib);
 				
 				artRepo.save(art);
 				artRepo.flush();
@@ -314,6 +315,7 @@ public class create_articleController {
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("prix_category") double [] prix_category,
 		@RequestParam("subvention") String check,
+		@RequestParam("lib") String lib,
 		
 		@SessionAttribute("user") users user){
 		
@@ -372,6 +374,7 @@ public class create_articleController {
 				art.setUnite_mesure_vente(unite_m);
 				//art.setMagasin_stock(magasin);
 				art.setSubvension(sub);
+				art.setLibelle(lib);
 				
 				artRepo.save(art);artRepo.flush();
 				
