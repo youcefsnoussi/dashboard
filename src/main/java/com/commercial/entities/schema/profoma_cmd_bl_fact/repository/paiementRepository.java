@@ -37,8 +37,10 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 			
 			+ " AND banque = :bank "
 			
-			+ " AND numero_piece = :num_piece")
+			+ " AND numero_piece = :num_piece"
+			
+			+ " AND date = :date ")
 	
-	public paiement if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece);
+	public paiement if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece, @Param("date") String date);
 	
 }

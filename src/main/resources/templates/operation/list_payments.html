@@ -423,7 +423,7 @@
 																	th:attr="id_payment=${pay.id},
 																			 nom_client=${pay.client.nom}+' '+${pay.client.prenom},
 																			 code_client=${pay.client.code},
-																			 montant=${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 0,'COMMA')},
+																			 montant=${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')},
 																			 num_piece=${pay.numero_piece}"> 
 																												<i class="far fa-trash"></i>
 																										 </button> 

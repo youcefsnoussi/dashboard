@@ -57,7 +57,13 @@ public class doc_app {
 	 * 				PS : PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
 	 * 				
 
+	 * 				////////////////////////////////----------------------------------
 	 * 
+	 * 								th:value="${bl_det.article.produit.sous_category_produit.category_produit.nom_category}+' '+
+									  ${#strings.replace(bl_det.article.produit.sous_category_produit.nom_sous_category, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '')}+' '+
+									  ${#strings.replace(#strings.replace(bl_det.article.produit.designation, bl_det.article.produit.sous_category_produit.category_produit.nom_category, ''), bl_det.article.produit.sous_category_produit.nom_sous_category, '')}+' '+
+									  ${#strings.replace(bl_det.article.emballage_produit.nom_emballage, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '') }+' '+
+									  ${bl_det.article.pesage_produit.pesage}+' '+${bl_det.article.pesage_produit.unite_pesage}" 
 	 * 
 	 * 
 	 * 

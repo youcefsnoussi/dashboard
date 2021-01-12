@@ -308,8 +308,8 @@
 								<td th:text="${list_fact.registre_commerce.nom}+' '+${list_fact.registre_commerce.prenom}"></td>
 								<!--  <td th:text="${list_fact.mode_paiement.designation}"></td>
 								<td th:text="${list_fact.matricule_camion}"></td> -->
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.tva, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.tva, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-info info" th:attr="id_fact_a=${list_fact.id},num_fact_a=${list_fact.numero}"> 
 																						<i class="far fa-info-square"></i>

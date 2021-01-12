@@ -122,7 +122,7 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 	@Query( "FROM client_registreCommerce crc " + 
 	
-			"WHERE crc.registre_commerce.etat = 'active' " +
+			"WHERE crc.registre_commerce.etat_blockage = 'active' " +
 			
 			"AND crc.client.etat_blockage = 'false' " + 
 			

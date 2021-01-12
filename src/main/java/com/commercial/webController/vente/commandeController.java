@@ -1,5 +1,6 @@
 package com.commercial.webController.vente;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -158,9 +160,13 @@ public class commandeController {
 		
 		List <client_registreCommerce> clt_rc = clt_rcRepo.ListRCwithCLIENT_active(gtd.get_date());
 		
+		List <client_registreCommerce> clt_rc_ret = new ArrayList<client_registreCommerce>();
+		
 		for(int i=0; i<clt_rc.size();i++) {
 			
-			List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_rc(clt_rc.get(i).getRegistre_commerce());
+			client_registreCommerce cl_rc = clt_rc.get(i);
+			
+			List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_rc(cl_rc.getRegistre_commerce());
 			
 			double montant = 0;
 			
@@ -170,15 +176,17 @@ public class commandeController {
 				
 			}
 			
-			double sold_encours = clt_rc.get(i).getRegistre_commerce().getSold_encours();
+			double sold_encours = cl_rc.getRegistre_commerce().getSold_encours();
 			
 			sold_encours = sold_encours + montant;
 			
-			clt_rc.get(i).getRegistre_commerce().setSold_encours(sold_encours);
+			cl_rc.getRegistre_commerce().setSold_encours(sold_encours);
+			
+			clt_rc_ret.add(cl_rc);
 			
 		}
 		
-		model.addAttribute("rcs_clt", clt_rc);
+		model.addAttribute("rcs_clt", clt_rc_ret);
 		
 		model.addAttribute("mode_paiements", mode_payRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
 		

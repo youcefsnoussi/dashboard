@@ -41,6 +41,12 @@
 				
 			}
 			
+			$("#subsub").click(function () {
+				
+				$("#frm").submit();
+				
+			});
+			
 		
 	});
 	
@@ -70,6 +76,8 @@
 						<input type="hidden" id="plafond"  th:value="${plafond}">
 						
 						<input type="hidden" id="id_bl" name="id_bl" th:value="${bl.id}">
+						
+						<input type="hidden" id="rc" name="id_rc_clt" th:value="${bl.commande.client_registrecommerce.id}">
 						
 						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
 						<br>
@@ -159,7 +167,7 @@
 										</div>
 										
 										<input type="text" class="form-control" name="matricule" id="matricule" 
-												th:value="${bl.matricule}" disabled placeholder="xxxxxx-xxx-xx"> 
+												th:value="${bl.matricule}"  placeholder="xxxxxx-xxx-xx"> 
 											
 									</div>
 								</div>
@@ -290,14 +298,12 @@
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},
 												 tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
-												 th:text="${art.article.produit.designation}+' '+${art.article.emballage_produit.nom_emballage}+' '+
-												 ${art.article.pesage_produit.pesage}" th:if="${art.article.id}==${bl_det.article.id}" selected></option>
+												 th:text="${art.article.libelle}" th:if="${art.article.id}==${bl_det.article.id}" selected></option>
 												 
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},
 												 tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
-												 th:text="${art.article.produit.designation}+' '+${art.article.emballage_produit.nom_emballage}+' '+
-												 ${art.article.pesage_produit.pesage}" th:unless="${art.article.id}==${bl_det.article.id}" ></option>
+												 th:text="${art.article.libelle}" th:unless="${art.article.id}==${bl_det.article.id}" ></option>
 									 </select> 
 								</td>
 								
@@ -368,11 +374,9 @@
 					
 					<hr>
 					
-					
-					
 					<div class="d-flex justify-content-center">
 						
-						<button type="button" id="sub" class="btn btn-success">Valider</button>
+						<button type="button" id="subsub" class="btn btn-success">Valider</button>
 					
 					</div>
 		

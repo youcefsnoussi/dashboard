@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -156,7 +157,7 @@ public class list_factureController {
 		
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
-			model.addAttribute("list_facture", factRepo.today_facture_no_printed(gtd.get_date()));
+			model.addAttribute("list_facture", factRepo.today_facture(gtd.get_date()));
 			
 			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			

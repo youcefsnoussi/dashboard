@@ -12,6 +12,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.commercial.entities.schema.client.client;
+import com.commercial.entities.schema.client.client_registreCommerce;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
@@ -323,7 +325,7 @@ public class paymentsController {
 			
 			long id_rc = c_rcRepo.getOne(id_clt_rc).getRegistre_commerce().getId();
 			
-			paiement p = payRepo.if_payment_already_exist(banque, num_piece);
+			paiement p = payRepo.if_payment_already_exist(banque, num_piece, date);
 			
 			if(p==null) {
 			
@@ -364,12 +366,12 @@ public class paymentsController {
 				rcRepo.save(rc);rcRepo.flush();
 				
 				//-------------- update sold RC client relationship
-				/*
-				List<client_registreCommerce> crc = c_rcRepo.if_relation_existe(clt, rc);
+			
+				//List<client_registreCommerce> crc = c_rcRepo.if_relation_existe(clt, rc);
 				
-				int last_index = crc.size()-1;
+				//int last_index = crc.size()-1;
 				
-				client_registreCommerce c_rc = crc.get(last_index);
+				client_registreCommerce c_rc = c_rcRepo.getOne(id_clt_rc);
 				
 				double sold_encours = c_rc.getMontant_actuel();
 				
@@ -378,7 +380,7 @@ public class paymentsController {
 				c_rc.setMontant_actuel(new_sold);
 				
 				c_rcRepo.save(c_rc);c_rcRepo.flush();
-				*/
+				
 				//-------------- insert to mouvement 
 				
 				//mouvement mvm = new mouvement(clt, rc, montant, "paiement", pay.getId(), date, gtd.get_time(), banque.getNom_banque());

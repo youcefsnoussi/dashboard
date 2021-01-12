@@ -266,13 +266,13 @@
 								<option  value="0" th:if="${id_client}==0" selected>Client</option>
 								<option  value="0" th:unless="${id_client}==0" >Client</option>
 								
-								<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.code}"
+								<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.nom}+' '+${clt.prenom}"
 											th:object="${clt}" th:if="${clt.id}==${id_client}"
-											th:attr="data-subtext=${clt.nom}+' '+${clt.prenom}" selected></option>
+											th:attr="data-subtext=''" selected></option>
 								
-								<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.code}"
+								<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.nom}+' '+${clt.prenom}"
 											th:object="${clt}" th:unless="${clt.id}==${id_client}"
-											th:attr="data-subtext=${clt.nom}+' '+${clt.prenom}" ></option>
+											th:attr="data-subtext=''" ></option>
 								
 							</select>
 							
@@ -331,10 +331,10 @@
 								<th></th>
 								<th>Sold Début Client ➤</th>
 								<th> <input type="text" id="sold_debut_clt" class="form-control" 
-								th:value="${#numbers.formatDecimal(sold_debut_clt, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								th:value="${#numbers.formatDecimal(sold_debut_clt, 3, 'WHITESPACE', 2,'POINT')}" readonly> </th>
 								<th></th>
 								<th> <input type="text" id="sold_fin_clt" class="form-control" 
-								th:value="${#numbers.formatDecimal(sold_fin_clt, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								th:value="${#numbers.formatDecimal(sold_fin_clt, 3, 'WHITESPACE', 2,'POINT')}" readonly> </th>
 								<th>⮜ Sold Final Client </th>
 								<th></th> 
 								
@@ -367,11 +367,11 @@
 								<td th:text="${hist.registre_commerce.nom}+' '+${hist.registre_commerce.prenom}"></td>
 								<td th:text="${hist.date}"></td>
 								<td th:text="${hist.type_operation}"></td>
-								<td th:text="${#numbers.formatDecimal(hist.montant_operation, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(hist.old_sold_client, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(hist.old_sold_rc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(hist.new_sold_client, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(hist.new_sold_rc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.montant_operation, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.old_sold_client, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.old_sold_rc, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.new_sold_client, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(hist.new_sold_rc, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								
 								<td style="text-align: center;"> <button type="button" class="btn btn-info info" 
 																	th:attr="id_operation=${hist.id_operation},

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
@@ -30,6 +31,8 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 @Service
+@Transactional
+
 public class generate_Doc {
 	
 	@Autowired
@@ -84,6 +87,8 @@ public class generate_Doc {
 					mp.put("num",numero);
 					mp.put("qr_code", qr_code);
 					mp.put("Matricule", matricule);
+					mp.put("client", bl.getRegistre_commerce().getNom()+" "+
+							bl.getRegistre_commerce().getPrenom());
 					
 					mp.put("magasin", magasins.get(i));
 					
@@ -121,14 +126,14 @@ public class generate_Doc {
 				
 				mp.put("num_facture", fact.getNumero());
 				mp.put("id_facture", fact.getId());
-				mp.put("num_client", fact.getClient().getCode());
+				mp.put("num_client", fact.getRegistre_commerce().getCode());
 				mp.put("matricule", fact.getMatricule_camion());
 				mp.put("nom_client", fact.getRegistre_commerce().getNom()+" "+fact.getRegistre_commerce().getPrenom());
 				mp.put("adresse", fact.getRegistre_commerce().getAdresse());
 				mp.put("rc", fact.getRegistre_commerce().getNumero_rc());
 				mp.put("nif", fact.getRegistre_commerce().getNumero_nif());
 				mp.put("nis", fact.getRegistre_commerce().getNumero_art());
-				mp.put("user", fact.getUsers().getUsername());
+				mp.put("user", fact.getUsers().getMatricule());
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				
 				DecimalFormat df = new DecimalFormat("# ###,##0.00");
