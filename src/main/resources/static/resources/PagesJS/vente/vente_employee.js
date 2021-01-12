@@ -27,7 +27,8 @@ $(document).ready(function() {
 	
 	if(id_bl!=null){
 		
-		$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_bl?id_bl='+id_bl+'"></iframe>');
+		$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_bl?id_bl='+id_bl+'">'+
+									'</iframe>');
 		
 		$("#title_bl").text("Détail BL N° "+num_bl);
 		
@@ -38,7 +39,7 @@ $(document).ready(function() {
 	}
 	
 	//---------------------------------- GET Matricules ---------------------------------------------
-	
+	/*
 	$.ajax({
 		url: 'get_matricules',
 		//type: 'POST',
@@ -62,7 +63,7 @@ $(document).ready(function() {
 			
 		}
 	});
-	
+	*/
 	//-------------------------------------------------------------------------------
 	
 	//----------------------------------------------------------------------
@@ -157,141 +158,6 @@ $(document).ready(function() {
 		$("#total_tva").val((montant_tva).formatMoney(2, '.', ' '));
 		$("#total_ttc").val((montant_ttc).formatMoney(2, '.', ' '));
 		
-	});
-	
-	//----------------------------------RADIO FUNCTIONS------------------------------------
-	
-	$("#radio_select").click(function () {
-		
-		$("#select_mat").attr("name","matricule");
-		$("#select_mat").attr('disabled',false);
-		$("#select_mat").selectpicker('refresh');
-		
-		$("#input_mat").attr("name","");
-		$("#input_mat").attr('disabled',true);
-		
-	})
-	
-	$("#radio_input").click(function () {
-		
-		$("#select_mat").attr("name","");
-		$("#select_mat").val("");
-		$("#select_mat").attr('disabled',true);
-		$("#select_mat").selectpicker('refresh');
-		
-		$("#input_mat").attr("name","matricule");
-		$("#input_mat").attr('disabled',false);
-		
-	})
-	
-	//----------------------------------------------------------------------
-	
-	$("#rc").change(function(){
-		  
-		 $("#designation_rc").val($("#rc option:selected").attr("nom")+' '+$("#rc option:selected").attr("prenom"));
-		 $("#adresse_rc").val($("#rc option:selected").attr("adresse"));
-		 $("#solde_rc").val(parseFloat($("#rc option:selected").attr("sold")).formatMoney(2, '.', ' '));
-		 $("#max_solde_rc").val(parseFloat($("#rc option:selected").attr("plafond")).formatMoney(2, '.', ' '));
-		 $("#tv").val($("#rc option:selected").attr("tva"));
-		 $("#mode_reg").val( $("#rc option:selected").attr("mode_pay") );
-		 
-		 var id_rc_clt = $(this).val();
-		 
-		 var exo = $("#rc option:selected").attr("tva");
-		 
-		 if(exo=="0"){
-			 
-			 $("#exo").attr("class","badge badge-warning");
-			 $("#exo").text("oui");
-			 
-		 }
-		 else{
-			 
-			 $("#exo").attr("class","badge badge-secondary");
-			 $("#exo").text("non");
-			 
-		 }
-		 
-		//-------------------- Update articles -----------------
-			
-			$('.art').find('option:not(:first)').remove();
-			$(".art").selectpicker('refresh');
-			
-			//$.ajaxSetup({async: false});
-			$("#redux").empty();
-			
-			$.ajax({
-				url: 'ajax_get_art_by_rc_cat',
-				//type: 'POST',
-				dataType: 'json',
-				data : {
-					id_rc_clt	:id_rc_clt,
-		        },
-		        success : function(responseJson) {
-					
-					if (responseJson != "null") {
-						
-						$.each(responseJson, function(key, value) {
-							if(value.id==(-1)){
-								
-								$("#redux").append("<span class='badge badge-secondary' id='art'> "+value.article.produit.designation+" "+
-										value.article.emballage_produit.nom_emballage+" "+value.article.pesage_produit.pesage+
-										value.article.pesage_produit.unite_pesage+"</span>")
-								
-							}
-							
-							$(".art").each(function(){
-								
-								var sub = "Subventionné";
-								
-								if(value.article.subvension==false){
-									
-									sub = "NON Subventionné";
-									
-								}
-								/*
-								var cat = value.article.produit.sous_category_produit.category_produit.nom_category;
-								var s_cat = value.article.produit.sous_category_produit.nom_sous_category.replace(cat,"");
-								var prod_temp = value.article.produit.designation.replace(cat,"");
-								var prod = prod_temp.replace(s_cat,"");
-								var emb = value.article.emballage_produit.nom_emballage.replace(cat,"");
-								var pes = value.article.pesage_produit.pesage+' '+value.article.pesage_produit.unite_pesage;
-								'+cat+' '+s_cat+' '+prod+' '+emb+' '+pes+'
-								*/			
-								
-								$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
-											   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
-											   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
-											   '>'+value.article.libelle+'</option>');
-								
-								$(this).selectpicker('refresh');
-									
-							});
-							
-						});
-						
-						$(".art").find("option").hide();
-						
-					}
-					
-				}
-			});
-			
-			//-----------------------------------------------------------
-			
-			$(".qte").attr("readonly", false);
-			$(".qte").val(0);
-			$(".prix_unitaire").val(0);
-			$(".tva").val(0);
-			$(".montant_ht").val(0);
-			$(".id_magasin").empty();
-			$(".unite_mesure").val("");
-			$(".nom_art").val("");
-			
-			$("#total_ht").val(0);
-			$("#total_tva").val(0);
-			$("#total_ttc").val(0);
-			
 	});
 	
 	//----------------------------------------------------------------------
@@ -441,33 +307,7 @@ $(document).ready(function() {
 			
 			test++;
 			msg = msg+"- Code client incorrect. <br>";
-			$("#code_client").css("border-color","red");
-			
-		}
-		
-		if($("#mode_reg").val()==null){
-			
-			test++;
-			msg = msg+"- Selectionner un mode de regelement. <br>";
-			//$("#mode_reg").css("border-color","red");
-			$(".bs-placeholder").find('[data-id=mode_reg]').css("border-color","red");
-			
-		}
-		
-		if($("#select_mat").val()=="" && $("#input_mat").val()=="" ){
-			
-			test++;
-			msg = msg+"- Matricule Vide. <br>";
-			$("#matricule").css("border-color","red");
-			
-		}
-		
-		if($("#rc").val()==""){
-			
-			test++;
-			msg = msg+"- Selectionner un Registre de commerce. <br>";
-			//$("#rc").css("border-color","red");
-			$(".bs-placeholder").find('[data-id=rc]').css("border-color","red");
+			$("#employee").css("border-color","red");
 			
 		}
 		
@@ -479,77 +319,10 @@ $(document).ready(function() {
 			
 		}
 		
-		console.log("test->"+test)
-		
 		if(test==0){
 			
-			var client_plafond = 0;
-			
-			var rc_plafond = 0;
-			
-			var msg1 = "";
-			
-			var mnt_ttc = parseFloat( $("#total_ttc").val().replace(" ","") );
-			
-			$.ajaxSetup({async: false});
-			$.ajax({
-				url: 'ajax_test_plafond',
-				//type: 'POST',
-				dataType: 'json',
-				data : {
-					id_rc_clt : $("#rc").val(),
-					montant_ttc : $("#total_ttc").val(),
-		        },
-		        success : function(responseJson) {
-					
-					if (responseJson != "null") {
-							
-							console.log("plafond_client->"+responseJson.plafond_client)
-						
-							if(responseJson.plafond_client!=0){
-								
-								client_plafond++;
-								
-								msg1 = msg1+"- Plafond client dépasser <br>";
-								
-							}
-							
-							console.log("plafond_rc->"+responseJson.plafond_rc)
-							
-							if(responseJson.plafond_rc!=0){
-								
-								rc_plafond++;
-								
-								msg1 = msg1+"- Plafond RC dépasser <br>";
-								
-							}
-							
-						
-					}
-					
-				}
-			});
-			
-			console.log("-------------------------")
-			
-			console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
-			
-			if(client_plafond==0 && rc_plafond==0){
+			$("#frm").submit();
 				
-				console.log("-----------------> SUBMIT")
-				
-				$("#frm").submit();
-				
-			}
-			else{
-				
-				$("#title").text("Erreur !!!");
-				$("#icone").attr("class","far fa-exclamation-triangle");
-				$("#text").html(msg1);
-				$("#error").modal('show');
-				
-			}
-			
 		}
 		else{
 			

@@ -62,6 +62,12 @@ public class paiement implements Serializable{
 	
 	private boolean cancel;
 	
+	@Column(columnDefinition="boolean default false")
+	private boolean verification = false;
+	
+	@Column(columnDefinition="boolean default true")
+	private boolean validation = true;
+	
 	public paiement() {
 		// TODO Auto-generated constructor stub
 	}
@@ -86,6 +92,8 @@ public class paiement implements Serializable{
 		this.numero_piece = numero_piece;
 		this.path_img = path_img;
 		this.cancel = cancel;
+		this.verification = false;
+		this.validation = true;
 	}
 
 	public Long getId() {
@@ -192,7 +200,22 @@ public class paiement implements Serializable{
 		this.cancel = cancel;
 	}
 
-	
+	public boolean isVerification() {
+		return verification;
+	}
+
+	public void setVerification(boolean verification) {
+		this.verification = verification;
+	}
+
+	public boolean isValidation() {
+		return validation;
+	}
+
+	public void setValidation(boolean validation) {
+		this.validation = validation;
+	}
+
 	
 	
 }

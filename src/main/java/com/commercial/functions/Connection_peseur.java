@@ -99,6 +99,46 @@ public class Connection_peseur {
 		
 	}
 	
+	//---------------------------------------------------------------------------------------
+	
+	public void insert_fct_to_peseur(String numero, String date) {
+		
+		
+		Connection_peseur db = new Connection_peseur();
+		Connection con = db.getconnection();
+
+	
+  		Statement state = null;
+		try {
+			state = con.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		try {
+			
+			String [] d = date.split("/");
+			
+			String datee = d[2]+"/"+d[1]+"/"+d[0];
+			
+			String sql = "INSERT INTO factures (idfacture, date_facture) VALUES ('"+numero+"', '"+datee+"')";
+			
+			state.execute(sql);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	//---------------------------------------------------------------------------------------
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		/*

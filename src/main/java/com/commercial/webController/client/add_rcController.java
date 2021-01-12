@@ -1,5 +1,7 @@
 package com.commercial.webController.client;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,7 +157,7 @@ public class add_rcController {
 			
 			category_client cat_rc = cat_clientRepo.getOne(cat_client);
 			
-			String code_rc = un.getId()+cat_rc.getLettre()+new_number_code_rc();
+			String code_rc = un.getId()+cat_rc.getLettre()+new_number_code_rc(cat_rc);
 			
 			rc = new registre_commerce(nom, prenom, code_rc, cat_rc, num_rc, num_art, num_nif, date_emission, date_fin, adresse, comune, 
 					wilaya, "active", taux_tva, plafond, 0, activite, "active", banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),
@@ -180,11 +182,13 @@ public class add_rcController {
 	
 	//------------------------------------------------
 	
-	public String new_number_code_rc() {
+	public String new_number_code_rc(category_client cat) {
 		
 		String ret= "00001";
 		
-		registre_commerce c = rcRepo.findFirst1ByOrderByIdDesc();
+		List<registre_commerce> list_c = rcRepo.last_rc_by_category(cat);
+		
+		registre_commerce c = list_c.get(list_c.size()-1);
 		
 		if(c!=null) {
 			

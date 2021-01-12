@@ -70,12 +70,13 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        "columnDefs": [
-			            { "width": "7%", "targets": 11 }
+			            { "width": "7%", "targets": 10 }
 			          ],
 			        initComplete: function () {
-			            this.api().columns([2,3,4,5,6]).every( function () {
+			            this.api().columns([2,3,5,6]).every( function () {
 			                var column = this;
-			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" data-live-search="true" data-container="body"><option value=""></option></select>')
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+
+			                				'.data-live-search="true" data-container="body"><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -96,16 +97,16 @@
 						
 					      var api = this.api();
 					      
+					      $( api.column( 7, {page:'current'} ).footer() ).html(
+					        api.column( 7, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
 					      $( api.column( 8, {page:'current'} ).footer() ).html(
 					        api.column( 8, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      
 					      $( api.column( 9, {page:'current'} ).footer() ).html(
 					        api.column( 9, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      
-					      $( api.column( 10, {page:'current'} ).footer() ).html(
-					        api.column( 10, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      
 					 },
@@ -205,6 +206,15 @@
 		
 		</script>
 		
+		<style type="text/css">
+		
+			.rr{
+			
+				text-align: right;
+			
+			}
+		
+		</style>
 		
 </head>
 <body>
@@ -245,9 +255,8 @@
 							
 								<th>N°</th>
 								<th>Date</th>
-								<th >Code Client</th>
 								<th>Client</th>
-								<th>N° RC</th>
+								<th >Code </th>
 								<th>RC</th>
 								<th>Mode Reglement</th>
 								<th>Matricule</th>
@@ -266,15 +275,14 @@
 							
 								<td th:text="${bl.numero}"></td>
 								<td th:text="${bl.date}"></td>
-								<td th:text="${bl.client.code}"></td>
 								<td th:text="${bl.client.nom}+' '+${bl.client.prenom}"></td>
-								<td th:text="${bl.registre_commerce.numero_rc}"></td>
+								<td th:text="${bl.registre_commerce.code}"></td>
 								<td th:text="${bl.registre_commerce.nom}+' '+${bl.registre_commerce.prenom}"></td>
 								<td th:text="${bl.commande.mode_paiement.designation}"></td>
 								<td th:text="${bl.matricule}"></td>
-								<td th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(bl.tva, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(bl.tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-info info" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
 																						<i class="far fa-edit"></i>
 																 </button> 
@@ -298,10 +306,9 @@
 								<th></th>
 								<th></th>
 								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
 								<th></th>
 								
 							</tr>

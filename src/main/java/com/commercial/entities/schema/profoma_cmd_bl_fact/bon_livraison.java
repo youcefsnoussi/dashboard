@@ -63,6 +63,9 @@ public class bon_livraison implements Serializable{
 	
 	private Double montant_ttc;
 	
+	@Column(columnDefinition="boolean default false")
+	boolean cancel = false;
+	
 	public bon_livraison() {
 		// TODO Auto-generated constructor stub
 	}

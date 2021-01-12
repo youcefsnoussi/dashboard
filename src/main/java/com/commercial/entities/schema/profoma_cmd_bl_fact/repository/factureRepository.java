@@ -28,9 +28,9 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	
 		@Query( " FROM facture fact "
 				
-				+ " WHERE fact.date = :today OR fact.printed = 'FALSE' ")
+				+ " WHERE fact.date = :today ")
 		 
-		public List<facture> today_facture_no_printed(@Param("today") String today);
+		public List<facture> today_facture(@Param("today") String today);
 		
 	//----------------------------------------------------------
 	
@@ -67,6 +67,22 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 			
 			+ " ORDER BY dates ASC " )
 	 
-	public List<String> get_years_db();		
+	public List<String> get_years_db();	
+	
+	//----------------------------------------------------------
+
+	@Query( " SELECT fct.registre_commerce.code, fct.registre_commerce.numero_rc, fct.registre_commerce.nom, fct.registre_commerce.prenom,"
+			
+			+ " fct.registre_commerce.adresse, fct.registre_commerce.category.nom_category"
+			
+			+ " FROM facture fct"
+			
+			+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"
+			
+			+ " GROUP BY fct.registre_commerce.code, fct.registre_commerce.numero_rc, fct.registre_commerce.nom, fct.registre_commerce.prenom," + 
+			  
+				" fct.registre_commerce.adresse, fct.registre_commerce.category.nom_category" )
+	 
+	public List<Object[]> get_rc_buy(@Param("start") String start, @Param("end") String end);
 	
 }

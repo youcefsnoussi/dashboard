@@ -33,6 +33,7 @@ public interface articleRepository extends JpaRepository<article, Long>{
 											@Param("sub") boolean subvension);
 	
 	@Query( " FROM article art "
+			+ " WHERE code != '800' "
 			
 			+ " ORDER BY art.produit.designation ASC ")
 	

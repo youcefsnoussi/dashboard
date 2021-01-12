@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.registre_commerce;
 
 
@@ -33,5 +34,13 @@ public interface registre_commerceRepository extends JpaRepository<registre_comm
 			+ " WHERE rc.etat_blockage = 'active' ")
 	
 	public List<registre_commerce>  rc_active_only();
+	
+	//----------------------
+	
+	@Query( " FROM registre_commerce rc "
+			
+			+ " WHERE rc.category = :cat ")
+	
+	public List<registre_commerce>  last_rc_by_category(@Param("cat") category_client category);
 	
 }

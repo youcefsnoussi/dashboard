@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -65,6 +66,7 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 import com.commercial.functions.track_operations;
+import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.generateQRcode;
 import com.commercial.functions.generate_Doc;
 
@@ -385,6 +387,7 @@ public class list_bl_encoursController {
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
+			@RequestParam("matricule") String matricule,
 			
 			@RequestParam(name="art", defaultValue = "0") long [] article,
 			@RequestParam(name="id_um", defaultValue = "0") long [] id_unite_mesure,
@@ -414,17 +417,40 @@ public class list_bl_encoursController {
 			
 			registre_commerce rc = bl.getRegistre_commerce();
 			
+			/**************      TEST CLIENT FATHER **********/
+			/*
 			double balance_clt = clt.getSold_encours();
 			
 			if((balance_clt+montant_ttc)>clt.getPlafond()) {
 				
 				t = 1;
 				
+			}  //----------------------------------------------> TEST rani ndiro  ajax kbel validation
+			   
+			   //----------------------------------------------> ajax_test_plafond f restController
+			    
+			*/
+			/**************      TEST  RC **********/
+			
+			List <bon_livraison>list_bl = bon_lRepo.get_bl_encours_by_rc(rc);
+			
+			double montant_bls = 0;
+			
+			for(int j=0;j<list_bl.size();j++) {
+				
+				montant_bls = montant_bls + list_bl.get(j).getMontant_ttc();
+				
+			}
+			
+			if( list_bl.contains( bon_lRepo.getOne(id_bl) ) ) {
+				
+				montant_bls = montant_bls - bon_lRepo.getOne(id_bl).getMontant_ttc();
+				
 			}
 			
 			double balance_rc = rc.getSold_encours();
 			
-			if((balance_rc+montant_ttc)>rc.getPlafond()) {
+			if((balance_rc+montant_ttc+montant_bls)>rc.getPlafond()) {
 				
 				t = 1;
 				
@@ -453,6 +479,8 @@ public class list_bl_encoursController {
 				
 				bl.setDate(today);
 				bl.setTime(time);
+				
+				bl.setMatricule(matricule);
 				
 				bl.setUsers(user);
 				
@@ -655,6 +683,14 @@ public class list_bl_encoursController {
 						bl.getCommande().getUsers(), false,  bl.getMontant_ttc(), false, false, bl.getCommande().getPourcentage_reduction());
 				
 				factRepo.save(fact);factRepo.flush();
+				
+				//------------------------- insert into MY SQL Peseur ------------
+				
+				Connection_peseur cp = new Connection_peseur();
+				
+				cp.insert_fct_to_peseur(numero_fact, today);
+				
+				//------------------------- END INSERT into MY SQL Peseur ---------------------------------------
 				
 				//-------------------- tracking operation -----------------------------------
 				

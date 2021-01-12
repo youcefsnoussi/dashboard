@@ -26,18 +26,22 @@
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.print.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
 		
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\pdfmake.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\vfs_fonts.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\pdfmake.min.js"></script>
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
+		<script type="text/javascript" src="resources\Plugins\print-js-master\src\js\print.min.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
 		
 		<script type="text/javascript" >
 		
+		function printHtml(printed) {
+		      printJS(printed, 'html');
+		    }
 		
 		$(document).ready(function() {
 			
@@ -64,21 +68,11 @@
 	                                   columns: ':visible'
 	                               }
 	                           },'excelHtml5',*/
-	                           {
-	                               extend: 'pdfHtml5',
-	                               orientation: 'landscape',
-	                               pageSize: 'LEGAL',
-	                               title : 'SIM AGRO SPA listing des prix',
-	                               filename: 'Listing des Prix',
-	                               exportOptions: {
-	                                   columns: ':visible'
-	                               }
-	                           }
-	                           ,'colvis'
+	                           'colvis'
 	                       ], 
 	                       
 			        initComplete: function () {
-			            this.api().columns([1,2,3,4]).every( function () {
+			            this.api().columns([0]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value=""></option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -108,70 +102,52 @@
 					      $( api.column( 3, {page:'current'} ).footer() ).html(
 					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
-					      */
+					       */
 					 },
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
 			
-			$("#add_art").click(function(){
+			$("#afficher").click(function(){
 				
-				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="add_art"></iframe>');
+				var start = $("#debut").val();
 				
-				$("#title").text("Nouveau Article");
+				var end = $("#fin").val();
 				
-				$("#icone").attr("class","far fa-bread-slice");
-				             
-				$("#new_art").modal("show");
-				
-			});
-			
-			$("#add_redux_prix").click(function(){ 
-				
-				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="new_reduction"></iframe>');
-				
-				$("#title").text("Nouvelle Réduction");
-				
-				$("#icone").attr("class","far fa-user-tag");
-				             
-				$("#new_art").modal("show");
-				
-			});
-			
-			$(".edit").click(function(){
-				
-				var id_art = $(this).attr("id_art");
-				
-				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="edit_art?id_art='+id_art+' "></iframe>');
-				
-				$("#title").text("Détail Article");
-				
-				$("#icone").attr("class","far fa-file-edit");
-				
-				$("#new_art").modal("show");
+				if(start=="" || end==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					//console.log("start = "+start+" / end = "+end);
+					window.location.replace("historic_ventes_rc?start="+start+"&end="+end);
+					
+				}
 				
 			});
 			
-			$("#closee").click(function () {
+			$("#today").click(function(){
+					
+				//console.log("start = "+start+" / end = "+end);
+				window.location.replace("historic_ventes_rc?start=0&end=0");
 				
-				location.reload();
 				
-			})
+			});
+			
+			$("#du").text($("#debut").val());
+			
+			$("#au").text($("#fin").val());
 			
 			/////////////////------------- END ----------------- 
 		});
 		
 		</script>
 		
-		<style type="text/css">
-		
-			.cc{
-			
-				text-align: center;
-			
-			}
-		
-		</style>
 		
 </head>
 <body>
@@ -181,45 +157,106 @@
 		<div class="card">
 		
 			
-			<h3 class="card-header  text-center"> <i class="far fa-list-alt"></i>  List des Articles </h3>
+			<h3 class="card-header  text-center"> <i class="far fa-list-alt"></i> List des RCs Achteurs </h3>
 			<br>
 			
 			<div class="card-body">
 			
 				<div class="container-fluid">
 					
-					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					<div class="row">
+						
+						<div class="col-md-4" >
+						
+							<div class="input-group">
+									
+								<div class="input-group-append">
+								
+									<input id="debut" type="date" name="start" th:value="${start}"  class="form-control date" 
+										style="width:100%;" placeholder="DU">
+										
+									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+									
+									<input id="fin" type="date" name="end" th:value="${end}" class="form-control date" 
+									style="width:100%;" placeholder="AU">
+									
+									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
+									
+								</div>
+								
+							</div>
+						
+						</div>
+						
+						<div class="col-md-2" >
+							
+							<button id="today" name="today" class="btn btn-dark" type="button">Aujourd'hui</button>
+								
+							
+						</div>
 					
-						<thead class="thead-dark">
+					</div>
+					
+					<hr>
+					
+					<button class="btn btn-dark" onClick="printHtml('table');"> Imprimer</button>
+					
+					<div id="printed">
 						
-							<tr>
+						<center> SEMOULERIE INDUSTRIELLE DE LA MITIDJA </center> <br>
+						
+						<center> Etat Cumulatif des ventes</center> <br>
+						
+						<center> DU <label id='du'></label> AU <label id='au'></label> </center>
+						
+						<table id="table" class="table table-bordered table-hover" style="width:100%">
+						
+							<thead class="thead-dark">
+							
+								<tr>
+									
+									<th>Code</th>
+									<th>N° RC</th>
+									<th>Libelle</th>
+									<th>Adresse</th>
+									<th>Category</th>
+									
+								</tr>
+							
+							</thead>
+							
+							<tbody>
+							
+								<tr th:each="lst:${list}" >
+									
+									<td th:text="${lst[0]}"></td>
+									<td th:text="${lst[1]}"></td>
+									<td th:text="${lst[2]}+' '+${lst[3]}"></td>
+									<td th:text="${lst[4]}"></td>
+									<td th:text="${lst[5]}"></td>
+									
+								</tr>
+							
+							</tbody>
+							
+							<tfoot>
 								
-								<th class="cc">Code</th>
-								<th class="cc">Désignation</th>
-								<th  class="cc" th:each="cat_c:${cat_client}" th:text="${cat_c.nom_category}"></th>
+								<tr>
+									
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+									
+								</tr>
 								
-							</tr>
-						
-						</thead>
-						
-						<tbody>
-						
-							<tr th:each="art, i:${articles}" >
-								
-								<td th:text="${art.code}" class="cc"></td>
-								<td th:text="${art.libelle}" class="cc"></td>
-								
-								<td th:each="prix:${list_prix[i.index]}"  class="cc">
-									<span th:if="${prix.prix}!=(-1)" th:text="${prix.prix}"></span>
-									<span th:unless="${prix.prix}!=(-1)" th:text="'/'"></span> 
-								</td>
-								
-							</tr>
-						
-						</tbody>
-						
-					</table>
-				
+							</tfoot>
+							
+						</table>
+					
+					</div>
+					
 				</div>
 			
 			</div>

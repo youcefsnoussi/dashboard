@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -215,9 +216,12 @@ public class factureRestController {
 	public Map<String, Integer> test_plafond(
 		//@RequestParam("id_client") long id_client,
 		@RequestParam("id_rc_clt") long id_relation_rc_client,
+		//@RequestParam("id_bl") long id_bl,
 		@RequestParam("montant_ttc") double montant_ttc) throws IOException, ParseException{
 		
 		//JSONArray arr_obj = new JSONArray();
+		
+		System.out.println("******---------------- ENTER TEST PLAFOND -----------------***");
 		
 		HashMap<String, Integer> map = new HashMap<>();
 		
@@ -236,14 +240,19 @@ public class factureRestController {
 			
 		}
 		
+		
 		double sold_encours = clt.getSold_encours();
 		
-		sold_encours = sold_encours + montant;
+		sold_encours = sold_encours + montant + montant_ttc;
 		
 		//clt_rc.get(i).getRegistre_commerce().setSold_encours(sold_encours);
 		
 		//double balance_clt = clt.getSold_encours();
 		
+		System.out.println("SOLD CLT -> "+sold_encours+"/ plafond CLT -> "+clt.getPlafond());
+		
+		/**************      TEST CLIENT FACTHER **********/
+		/*
 		if(sold_encours>clt.getPlafond()) {
 			
 			map.put("plafond_client", 1);
@@ -254,6 +263,9 @@ public class factureRestController {
 			map.put("plafond_client", 0);
 			
 		}
+		*/
+		map.put("plafond_client", 0);
+		/**************      TEST CLIENT FACTHER **********/
 		
 		registre_commerce rc = rc_clt.getRegistre_commerce();
 		
@@ -267,11 +279,15 @@ public class factureRestController {
 			
 		}
 		
+		System.out.println("montant all bls ->"+montant);
+		
 		sold_encours = rc.getSold_encours();
 		
-		sold_encours = sold_encours + montant;
+		System.out.println("TTC ---------> = "+montant_ttc);
 		
-		System.out.println("SOLD RC -> "+sold_encours);
+		sold_encours = sold_encours + montant + montant_ttc;
+		
+		System.out.println("SOLD RC -> "+sold_encours+"/ plafond RC -> "+rc.getPlafond());
 		
 		//double balance_rc = rc.getSold_encours();
 		
@@ -287,6 +303,8 @@ public class factureRestController {
 			map.put("plafond_rc", 0);
 			
 		}
+		
+		//map.put("plafond_rc", 0);
 		
 		return map;
 		

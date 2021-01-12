@@ -64,7 +64,7 @@
 								<th>Code Client</th>
 								<th>Nom Prénom</th>
 								<th>Category</th>
-								<th>Sold enours</th>
+								<th>Sold encours</th>
 								<th>Plafond</th>
 								<th>Etat blockage</th>
 								<th>Détail</th>
@@ -80,8 +80,8 @@
 								<td th:text="${client.code}"></td>
 								<td th:text="${client.nom}+' '+${client.prenom}"></td>
 								<td th:text="${client.category.nom_category}"></td>
-								<td th:text="${#numbers.formatDecimal(client.sold_encours, 3, 'WHITESPACE', 0,'COMMA')}"></td>
-								<td th:text="${#numbers.formatDecimal(client.plafond, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(client.sold_encours, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(client.plafond, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:if="${client.etat_blockage}==false" style="text-align:center"> <button type="button" class="btn active btn-lg btn-success rounded-pill"  data-toggle="tooltip" data-placement="bottom" title="Active"></button> </td>
 								<td th:unless="${client.etat_blockage}==false" style="text-align:center"> <button type="button" class="btn active btn-lg btn-danger rounded-pill" data-toggle="tooltip" data-placement="bottom" title="Blocké"></button> </td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-info edit" th:attr="id_client=${client.id}"> 
