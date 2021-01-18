@@ -4,9 +4,6 @@ package com.commercial.functions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Service;
 
 
@@ -373,7 +370,7 @@ public class numerotation_by_year {
 	
 	//--------------------------------
 	
-	public String return_num_facture_avoir (String num){ //assm la rebrique numero 
+	public String return_num_facture_avoir (String num, Long long1){ //assm la rebrique numero 
 		
 		
 		String numero ="",resnum="",year_encours="",month_encours="";
@@ -389,9 +386,9 @@ public class numerotation_by_year {
 			if(!num.equals("")){
 				
 					resnum= num;
-					year_encours = num.substring(6, 8);
+					year_encours = num.substring(7, 9);
 					
-					month_encours= num.substring(9, 11);
+					month_encours= num.substring(10, 12);
 					
 					System.out.println("year_encours == "+year_encours);
 					
@@ -399,30 +396,30 @@ public class numerotation_by_year {
 					
 					if(year_encours.equals(y) && month_encours.equals(m)){
 						
-						String n = resnum.substring(10);
+						String n = resnum.substring(13);
 						System.out.println(n);
 						int nn = Integer.parseInt(n);
 						System.out.println(nn);
 						nn++;
-							if( nn < 10 ){ numero = "FCTAV_"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = "FCTAV_"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = "FCTAV_"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = "FCTAV_"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = "FCTAV_"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = "FCTAV_"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = "FCTAV_"+y+"/"+m+"/0"+nn;}
+							if( nn < 10 ){ numero = long1+"FCTAV_"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = long1+"FCTAV_"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/0"+nn;}
 					}
 					
 					else{
 						
-						numero = "FCTAV_"+y+"/"+m+"/00000001"; 
+						numero = long1+"FCTAV_"+y+"/"+m+"/00000001"; 
 						
 					}
 			}
 			
 			else{
 				
-				numero = "FCTAV_"+y+"/"+m+"/00000001";
+				numero = long1+"FCTAV_"+y+"/"+m+"/00000001";
 				
 			}
 			
@@ -435,16 +432,16 @@ public class numerotation_by_year {
 	/**
 	 * @param args
 	 */
-	/*
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
 		numerotation_by_year numero = new numerotation_by_year();
 		
-		System.out.println(numero.return_num_commande("FCT_19/06/00024174"));
+		System.out.println(numero.return_num_facture_avoir("1FCTAV_21/01/00000001", (long) 1));
 
 	}
-	*/
+	
 	
 }
 

@@ -134,9 +134,17 @@ public class list_facture_avoirController {
 		
 		get_time_date gtd = new get_time_date();
 		
+		String date_d = "", date_f = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
 			model.addAttribute("list_facture_avoir", fact_avoirRepo.today_facture_avoir(gtd.get_date()));
+			
+			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+			date_f = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
 		}
 		else if(date_debut.equals("1") && date_fin.equals("1")) {
@@ -145,8 +153,6 @@ public class list_facture_avoirController {
 			
 		}
 		else {
-			
-			convert_string_to_date_util conv = new convert_string_to_date_util();
 			
 			try {
 				
@@ -157,11 +163,19 @@ public class list_facture_avoirController {
 					
 					model.addAttribute("selected_year",date_debut.substring(6));
 					
+					date_d = date_debut;
+					
+					date_f = date_fin;
+					
 				}
 				else {
 					
 					model.addAttribute("list_facture_avoir", 
 							fact_avoirRepo.date_between_facture_avoir(conv.convertion_from_InputDate(date_debut), conv.convertion_from_InputDate(date_fin)));
+					
+					date_d = date_debut;
+					
+					date_f = date_fin;
 					
 				}
 				
@@ -173,6 +187,10 @@ public class list_facture_avoirController {
 		}
 		
 		model.addAttribute("years", factRepo.get_years_db());
+		
+		model.addAttribute("date_d", date_d);
+		
+		model.addAttribute("date_f", date_f);
 		
 		//model.addAttribute("list_facture", factRepo.today_facture(gtd.get_date()));
 		

@@ -1,15 +1,12 @@
 package com.commercial.webController.vente;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -241,9 +238,6 @@ public class list_factureController {
 	//-----------------------------------------------------------------------------
 	
 	@Autowired
-    private DataSource localDataSource;
-	
-	@Autowired
 	generate_Doc gd;
 	
 	@RequestMapping(value="/print_fact")
@@ -257,22 +251,16 @@ public class list_factureController {
 		String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
 		
 		String pdf = "";
-		try {
-			
-			pdf = gd.generate_Fact(fact, qr_code, localDataSource.getConnection());
-			
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		
+		pdf = gd.generate_Fact(fact, qr_code);
+			
 		return "redirect:/display_pdf?file="+pdf;
 		
 	}
 	
 	//--------------------------------------------------------------------------------
 	
-	@RequestMapping(value="fact_avoir")
+	@RequestMapping(value="/fact_avoir")
 	public String fact_avoir(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
 						 
@@ -347,7 +335,7 @@ public class list_factureController {
 			
 			numerotation_by_year nby = new numerotation_by_year();
 			
-			String numero = nby.return_num_facture_avoir(last_number);
+			String numero = nby.return_num_facture_avoir(last_number, user.getUnite().getId());
 			
 			String today = gtd.get_date();
 			
@@ -427,7 +415,7 @@ public class list_factureController {
 			
 			//------------------------------------------------ END
 			
-			return "redirect:/fact";
+			return "redirect:/fact_avoir?id_fact="+id_fact;
 		
 	}
 		

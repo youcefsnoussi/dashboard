@@ -8,14 +8,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Connection_peseur {
 
 	public Connection_peseur() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Connection getconnection() {
+public Connection getconnection() {
 		
 		Connection appcon = null;
 		try {
@@ -133,25 +132,16 @@ public class Connection_peseur {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	
-	
-	//---------------------------------------------------------------------------------------
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		/*
-		Connection_peseur cc = new Connection_peseur();
 		
-		List <String> lm = cc.get_matricule_from_peseur();
-		
-		for(int i=0;i<lm.size();i++) {
+		try {
 			
-			System.out.println("->"+lm.get(i));
+			con.close();
 			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		*/
+		
 	}
-
+	
 }

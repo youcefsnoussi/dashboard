@@ -1,5 +1,6 @@
 package com.commercial.webController.vente;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -324,9 +325,6 @@ public class list_bl_encoursController {
 	//-----------------------------------------------------------------------------
 	
 	@Autowired
-    private DataSource localDataSource;
-	
-	@Autowired
 	generate_Doc gd;
 	
 	@RequestMapping(value="/print_bl")
@@ -341,14 +339,9 @@ public class list_bl_encoursController {
 		
 		String pdf = "";
 		
-		try {
+		
+		pdf = gd.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code);
 			
-			pdf = gd.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
-			
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		
 		return "redirect:/display_pdf?file="+pdf;
 		
@@ -543,14 +536,7 @@ public class list_bl_encoursController {
 				
 				String pdf = "";
 				
-				try {
-					
-					pdf = gd.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code, localDataSource.getConnection());
-					
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				pdf = gd.generate_BL(bl.getId(), bl.getNumero(), bl.getMatricule(), qr_code);
 				
 				ret="redirect:/display_pdf?file="+pdf;
 				
@@ -684,14 +670,6 @@ public class list_bl_encoursController {
 				
 				factRepo.save(fact);factRepo.flush();
 				
-				//------------------------- insert into MY SQL Peseur ------------
-				
-				Connection_peseur cp = new Connection_peseur();
-				
-				cp.insert_fct_to_peseur(numero_fact, today);
-				
-				//------------------------- END INSERT into MY SQL Peseur ---------------------------------------
-				
 				//-------------------- tracking operation -----------------------------------
 				
 				trk.add_track("facture", "creation facture apres validation BL", fact.getId(), user);
@@ -742,8 +720,17 @@ public class list_bl_encoursController {
 				bl.setEtat_livraison(1);
 				
 				bon_lRepo.save(bl); bon_lRepo.flush();
-			
+				
 			//---------------	
+				
+				//------------------------- insert into MY SQL Peseur ------------
+				
+				Connection_peseur cp = new Connection_peseur();
+				
+				cp.insert_fct_to_peseur(numero_fact, today);
+				
+				//------------------------- END INSERT into MY SQL Peseur ---------------------------------------
+				
 			}
 		
 		}
