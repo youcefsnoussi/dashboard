@@ -1,17 +1,22 @@
 package com.commercial.functions;
 
 import java.io.File;
+//import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
@@ -20,13 +25,19 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livrais
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
-
+/*
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;*/
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+//import net.sf.jasperreports.engine.data.JRXlsDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
@@ -47,12 +58,18 @@ public class generate_Doc {
 	@Autowired
 	bon_livraison_detailRepository bl_dRepo;
 	
+	@Autowired
+	MagasinRepository magRepo;
+	
+	@Autowired
+    DataSource localDataSource;
+	
 	public generate_Doc() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	
-	public String generate_BL(long id_bl, String numero, String matricule, String qr_code, Connection con) {
+	public String generate_BL(long id_bl, String numero, String matricule, String qr_code) {
 		 
 		 String destination = "D:/Commercial/Doc/BL/BL.pdf";
 		 
@@ -92,14 +109,80 @@ public class generate_Doc {
 					
 					mp.put("magasin", magasins.get(i));
 					
-					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					//------------------------------- Transfert Data ro excel data source ----------
 					
-					File dir = new File("D:\\Commercial\\Doc\\BL");
-				    if (!dir.exists()) dir.mkdirs();
+					// creation du xls
+					/*
+					try {
+						
+						WritableWorkbook workbook = null;
+						
+						try {
+							workbook = Workbook.createWorkbook(new File("D:\\Commercial\\report\\excel_transfert\\bl.xls"));
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+						WritableSheet sheet = workbook.createSheet("Premier classeur", 0);
+						
+						List <bon_livraison_detail> detail_bl = bl_dRepo.get_bl_detail_magasin(bl, magRepo.getOne(magasins.get(i)) );
+						
+						for (int j=0;j<detail_bl.size();j++) {
+							
+							System.out.println("9la9el");
+							
+							sheet.addCell(new Label(0, j, detail_bl.get(j).getArticle().getCode() ) );
+							sheet.addCell(new Label(1, j, detail_bl.get(j).getMagasin().getName() ) );
+							sheet.addCell(new Label(2, j, ""+detail_bl.get(j).getQuantite() ) );
+							sheet.addCell(new Label(3, j, detail_bl.get(j).getUnite_mesure().getNom_unite_mesure() ));
+							sheet.addCell(new Label(4, j, detail_bl.get(j).getArticle().getLibelle() ));
+							sheet.addCell(new Label(5, j, ""+detail_bl.get(j).getArticle().getPesage_produit().getPesage()));
+							sheet.addCell(new Label(6, j, detail_bl.get(j).getUnite_mesure().getNom_unite_mesure() ) );
+
+							
+						}
+						
+						 try {
+							workbook.write();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						try {
+							workbook.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						 
+					} catch (WriteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					*/
+					//------------------------------- END ------------------------------------------
 					
-					JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BL\\BL"+i+".pdf");
+					try {
+						
+						Connection con  = localDataSource.getConnection();
 					
-					pdfs.add("D:\\Commercial\\Doc\\BL\\BL"+i+".pdf");
+						JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+						
+						File dir = new File("D:\\Commercial\\Doc\\BL");
+					    if (!dir.exists()) dir.mkdirs();
+						
+						JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BL\\BL"+i+".pdf");
+						
+						pdfs.add("D:\\Commercial\\Doc\\BL\\BL"+i+".pdf");
+						
+						con.close();
+						
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					
 				}
 				
@@ -116,7 +199,7 @@ public class generate_Doc {
 	
 	//------------------------------ PRINT FACT ------------------------------------
 	
-	public String generate_Fact(facture fact, String qr_code, Connection con) {
+	public String generate_Fact(facture fact, String qr_code) {
 		
 		 JasperDesign jdesign; 
 			try {
@@ -199,13 +282,24 @@ public class generate_Doc {
 				
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 				
-				JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+				try {
+					
+					Connection con = localDataSource.getConnection();
 				
-				File dir = new File("D:\\Commercial\\Doc\\FCT");
-				
-			    if (!dir.exists()) dir.mkdirs();
-				
-				JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\FCT\\FCT.pdf");
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\FCT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\FCT\\FCT.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 			} catch (JRException e) {
 				// TODO Auto-generated catch block
@@ -215,5 +309,31 @@ public class generate_Doc {
 			return "D:/Commercial/Doc/FCT/FCT.pdf";
 	
 	}	
-	
+	/*
+	 private static JRXlsDataSource getDataSource_bl() throws JRException
+	  {
+	    JRXlsDataSource ds;
+	    try
+	    {
+	  
+	      String[] columnNames1 = new String[]{"code","name","quantite","nom_unite_mesure","lib","pesage","unite_mesage"};
+	      int[] columnIndexes1 = new int[]{ 0,1,2,3,4,5,6};
+	      
+	      //ds = new JRXlsDataSource();
+	      ds = new JRXlsDataSource("D:\\Commercial\\report\\excel_transfert\\bl.xls");
+	      ds.setColumnNames(columnNames1);
+	      ds.getNumberFormat();
+
+	    }
+	    catch (IOException e)
+	    {
+	      throw new JRException(e);
+	    }
+	    return ds;
+
+	    
+	  
+
+	  }
+	*/
 }

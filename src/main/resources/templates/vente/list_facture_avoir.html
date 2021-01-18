@@ -72,7 +72,8 @@
 			        initComplete: function () {
 			            this.api().columns([2,3,4,5]).every( function () {
 			                var column = this;
-			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" data-live-search="true" data-container="body"><option value=""></option></select>')
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+
+			                		'data-live-search="true" data-container="body"><option value=""></option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -120,7 +121,8 @@
 				
 				num_fact_a = $(this).attr("num_fact_a");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="info_fact_avoir?id_fact_a='+id_fact_a+'"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+						'src="info_fact_avoir?id_fact_a='+id_fact_a+'"></iframe>');
 				
 				$("#title_fact").text("Détail Facture Avoir N° "+num_fact_a);
 				
@@ -138,7 +140,8 @@
 				
 				num_fact = $(this).attr("num_fact");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="info_fact?id_fact='+id_fact+'"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+						'src="info_fact?id_fact='+id_fact+'"></iframe>');
 				
 				$("#title_fact").text("Détail Facture avoir N° "+num_fact);
 				
@@ -238,9 +241,11 @@
 							
 								<div class="input-group-append">
 								
-									<input id="debut" type="date" name="start"  class="form-control date" style="width:100%;" placeholder="DU">
+									<input id="debut" type="date" name="start"  class="form-control date" th:value="${date_d}" 
+										style="width:100%;" placeholder="DU">
 									<span class="input-group-text declaration far fa-calendar-alt"> </span>
-									<input id="fin" type="date" name="end"  class="form-control date" style="width:100%;" placeholder="AU">
+									<input id="fin" type="date" name="end"  class="form-control date" th:value="${date_f}" 
+										style="width:100%;" placeholder="AU">
 									<button id="afficher" name="afficher" class="btn btn-secondary" type="button">Afficher</button>
 									
 								</div>

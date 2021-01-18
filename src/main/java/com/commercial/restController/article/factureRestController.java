@@ -85,7 +85,7 @@ public class factureRestController {
 	//----------------------------------------------------------------
 	
 	@RequestMapping(value="/get_matricules")
-	public List<String> get_matricules_from_peuseurDB() throws IOException, ParseException{
+	public List<String> get_matricules_from_peuseurDB() {
 		
 		Connection_peseur con = new Connection_peseur();
 		
