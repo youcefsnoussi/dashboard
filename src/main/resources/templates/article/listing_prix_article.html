@@ -68,7 +68,14 @@
 	                               extend: 'pdfHtml5',
 	                               orientation: 'landscape',
 	                               pageSize: 'LEGAL',
-	                               title : 'SIM AGRO SPA listing des prix',
+	                               title : [{text: 'SIM AGRO SPA'+'\n'+
+	                               				  'Listing des Prix', style: 'header' } ],
+	                            /*   title :[
+	                            	    { text: 'This is a header', style: 'header' },
+	                            	    'No styling here, this is a standard paragraph',
+	                            	    { text: 'Another text', style: 'anotherStyle' },
+	                            	    { text: 'Multiple styles applied', style: [ 'header', 'anotherStyle' ] }
+	                            	],	 */		
 	                               filename: 'Listing des Prix',
 	                               exportOptions: {
 	                                   columns: ':visible'

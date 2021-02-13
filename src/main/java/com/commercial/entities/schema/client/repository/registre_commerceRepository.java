@@ -39,7 +39,9 @@ public interface registre_commerceRepository extends JpaRepository<registre_comm
 	
 	@Query( " FROM registre_commerce rc "
 			
-			+ " WHERE rc.category = :cat ")
+			+ " WHERE rc.category = :cat "
+			
+			+ " ORDER BY code ASC")
 	
 	public List<registre_commerce>  last_rc_by_category(@Param("cat") category_client category);
 	

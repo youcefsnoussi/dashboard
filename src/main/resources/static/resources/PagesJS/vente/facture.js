@@ -25,9 +25,25 @@ $(document).ready(function() {
 	
 	var num_bl = getUrlParameter('num_bl');
 	
+	var type = getUrlParameter('type');
+	
+	var t;
+	
+	//if(type=="bl"){ t="print_bl"; }else{ t="print_ble"; }
+	
+	switch (type){
+	
+		case "bl" : { t="print_bl"; } break;
+		
+		case "ble" : { t="print_ble"; } break;
+		
+		case "bti" : { t="print_bti"; } break;
+	
+	}
+	
 	if(id_bl!=null){
 		
-		$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_bl?id_bl='+id_bl+'"></iframe>');
+		$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="'+t+'?id_bl='+id_bl+'"></iframe>');
 		
 		$("#title_bl").text("Détail BL N° "+num_bl);
 		
@@ -444,7 +460,7 @@ $(document).ready(function() {
 			$("#code_client").css("border-color","red");
 			
 		}
-		
+		/*
 		if($("#mode_reg").val()==null){
 			
 			test++;
@@ -453,7 +469,7 @@ $(document).ready(function() {
 			$(".bs-placeholder").find('[data-id=mode_reg]').css("border-color","red");
 			
 		}
-		
+		*/
 		if($("#select_mat").val()=="" && $("#input_mat").val()=="" ){
 			
 			test++;

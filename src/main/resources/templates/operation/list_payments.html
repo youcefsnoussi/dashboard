@@ -11,6 +11,8 @@
 		
 		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
 		
+		<link rel="stylesheet" href="resources\Plugins\datatable\js_additional\buttons.dataTables.min.css" /> 
+		
 		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
 		
 		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
@@ -21,6 +23,15 @@
 		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\dataTables.buttons.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.html5.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.print.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\pdfmake.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\vfs_fonts.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
+		
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
@@ -31,6 +42,7 @@
 		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\plugins\piexif.js"></script>
+		
 		
 		<script type="text/javascript">
 		
@@ -93,11 +105,32 @@
 			    	"bPaginate": false,
 					"scrollY":"400px",
 					"scrollX": "auto",
-			        "deferRender": true,
+			        "deferRender": true,/*
+			        dom: 'Bfrtip',
+	                buttons: [
+	                           {
+	                               extend: 'pdfHtml5',
+	                               orientation: 'portrait',
+	                               pageSize: 'A4',
+	                               title : 'SIM AGRO SPA'+'\n\n'+
+	                               		   'BORDEREAU DE REMISE DES PAIEMENTS'+'\n'+
+	                               		   'Du : '+$("#debut").val()+'       AU : '+$("#fin").val(),	
+	                               filename: 'BORDEREAU DE REMISE',
+	                               pageMargins: [ 0, 0, 0, 0 ],
+	                               exportOptions: {
+	                                   columns: [0, 2, 3, 4, 5, 6, 7, 8, 9],
+	                                   rows : ':visible'
+	                               },
+	                               customize : function(doc) {
+	                            	   doc.content[1].table.widths = [ '9%', '11%', '30%', '10%', '5%', '5%', '5%', '5%', '10%'];
+	                           	   }
+	                           }
+	                           ,'colvis'
+	                       ], */
 			        initComplete: function () {
 			            this.api().columns([1,2,5,6]).every( function () {
 			                var column = this;
-			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			                var select = $('<select class="form-control" ><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -112,7 +145,28 @@
 			                column.data().unique().sort().each( function ( d, j ) {
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
-			            } );
+			            } );/*
+			        	this.api().columns([5]).every( function () {
+			                var column = this;
+			                var select = $('<select class="selectpicker show-tick" data-width="100%" data-style="btn btn-outline-secondary" '+ 
+			                				'data-container="body" multiple="multiple" ><option title="T" value="" selected>Tout</option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                    	var vals = $('option:selected', this).map(function (index, element) {
+			                        	return $.fn.dataTable.util.escapeRegex($(element).val());
+			                        }).toArray().join('|');
+			 
+			                        column
+			                            .search( vals.length > 0 ? '^('+vals+')$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option title="'+d.slice(0,2)+'" value="'+d+'">'+d+'</option>' )
+			                } );
+			                $('.selectpicker').selectpicker('refresh');
+			            } );*/
+			        
 			        },
 					 drawCallback: function () {
 						
@@ -138,6 +192,19 @@
 				$("#new_payment_modal").modal("show");
 				
 			});
+			
+			$("#print_b").click(function() {
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" '+
+						'src="print_bordereau_pay?start='+$("#debut").val()+'&end='+$("#fin").val()+'&mode_pay='+$("#mode_pay").val()+'"></iframe>');
+				
+				$("#title_pay").text("BORDEREAU DE REMISE DES PAIEMENTS");
+				
+				$("#icone_pay").attr("class","far fa-file-spreadsheet");
+				
+				$("#new_payment_modal").modal("show");
+				
+			})
 			
 			$("#remboursement").click(function(){
 				
@@ -308,9 +375,11 @@
 		
 		<div class="card">
 		
+			<div class="card-header">
 			
-			<h3 class="card-header  text-center"> <i class="far fa-cash-register"></i>  List des Paiements </h3>
-			<br>
+				<h3 class="text-center"> <i class="far fa-cash-register"></i>  List des Paiements </h3> 
+				
+			</div>
 			
 			<div class="card-body">
 			
@@ -370,6 +439,31 @@
 							
 						</div>
 						
+						
+					</div>
+					<br>
+					<div class="row">
+					
+						<div class="col-md-3" >
+						
+							<div class="input-group">
+						
+								<select id="mode_pay" name="mode_pay" class="selectpicker show-tick jump" data-live-search="true" 
+									data-style="btn-outline-dark" title="Mode" multiple="multiple">
+									
+									<option th:each="mode_p:${mode_payement}" th:value="${mode_p.id}" th:text="${mode_p.designation}" selected></option>
+								
+								</select>
+								
+								<div class="input-group-append">
+									<input type="button" id="print_b" class="btn btn-dark" value="Impprimer bordereau">
+									
+								</div>
+								
+							</div>
+						
+						</div>
+					
 					</div>
 					
 					<hr>
@@ -380,14 +474,15 @@
 						
 							<tr>
 							
-								<th>ID</th>
-								<th>Client</th>
-								<th>Code RC</th>
-								<th>RC</th>
-								<th>Montant</th>
+								<th width="5%">ID</th>
+								<th width="5%">Client</th>
+								<th width="5%">Code RC</th>
+								<th width="40%">RC</th>
+								<th width="10%">Montant</th>
 								<th>Mode de paiement</th>
 								<th>Banque</th>
-								<th>Date</th>
+								<th>Date piece</th>
+								<th>Date Saisie</th>
 								<th>N° de la piece</th>
 								<th>Image</th>
 								<th>Annuler</th>
@@ -403,12 +498,13 @@
 								<td th:text="${pay.id}"></td>
 								<td th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
 								<td th:text="${pay.registre_commerce.code}"></td>
-								<td th:text="${pay.registre_commerce.nom}+' '+${pay.registre_commerce.prenom}+' '+${pay.registre_commerce.numero_rc}"></td>
+								<td th:text="${pay.registre_commerce.nom}+' '+${#strings.defaultString(pay.registre_commerce.prenom,'')}"></td>
 								<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:text="${pay.mode_paiement.designation}"></td>
 								<td th:if="${pay.banque}==null" ></td>
 								<td th:unless="${pay.banque}==null" th:text="${pay.banque.nom_banque}"></td>
 								<td th:text="${pay.date}"></td>
+								<td th:text="${pay.date_saisie}"></td>
 								<td th:text="${pay.numero_piece}"></td>
 								<td style="text-align: center;">
 									<button th:if="${pay.path_img}==''" class="btn btn-info add_img" th:attr="id_payment=${pay.id}"><i class="far fa-paperclip"></i></button> 
@@ -437,6 +533,7 @@
 						
 							<tr>
 							
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>
@@ -568,7 +665,7 @@
 	    <div class="modal-content">
 	      
 	      <div class="modal-header">
-	        <i id="icone" class="far fa-plus-circle" style="font-size:30px;color:black;margin-right:10px;"></i> <h5 class="modal-title" id="title">Ajouter image</h5>
+	        <i id="icone" class="far fa-file-image" style="font-size:30px;color:black;margin-right:10px;"></i> <h5 class="modal-title" id="title">Ajouter image</h5>
 	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>

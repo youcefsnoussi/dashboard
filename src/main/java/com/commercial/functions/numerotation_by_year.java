@@ -252,62 +252,62 @@ public class numerotation_by_year {
 	
 	//------------------------------------------------------------------------------------------------------------
 	
-		public String return_num_BonCommande (String num){ //assm la rebrique numero 
-			
-			
-			String numero ="",resnum="",year_encours="",month_encours="";
-			
-			DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
-			String y = df.format(Calendar.getInstance().getTime());
-			
-			DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
-			String m = dff.format(Calendar.getInstance().getTime());
-			
-			
-			
-				if(!num.equals("")){
-					
-						resnum= num;
-						year_encours = num.substring(3, 5);
-						
-						month_encours= num.substring(6, 8);
-						
-						System.out.println("year_encours == "+year_encours);
-						
-						System.out.println("month_encours == "+month_encours);
-						
-						if(year_encours.equals(y) && month_encours.equals(m)){
-							
-							String n = resnum.substring(10);
-							System.out.println(n);
-							int nn = Integer.parseInt(n);
-							System.out.println(nn);
-							nn++;
-								if( nn < 10 ){ numero = "BC_"+y+"/"+m+"/0000000"+nn;} else
-								if( nn < 100 ){ numero = "BC_"+y+"/"+m+"/000000"+nn;} else	
-								if( nn < 1000 ){ numero = "BC_"+y+"/"+m+"/00000"+nn;} else
-								if( nn < 10000 ){ numero = "BC_"+y+"/"+m+"/0000"+nn;} else
-								if( nn < 100000 ){ numero = "BC_"+y+"/"+m+"/000"+nn;} else
-								if( nn < 1000000 ){ numero = "BC_"+y+"/"+m+"/00"+nn;}else
-								if( nn < 10000000 ){ numero = "BC_"+y+"/"+m+"/0"+nn;}
-						}
-						
-						else{
-							
-							numero = "BL_"+y+"/"+m+"/00000001"; 
-							
-						}
-				}
+	public String return_num_BonCommande (String num){ //assm la rebrique numero 
+		
+		
+		String numero ="",resnum="",year_encours="",month_encours="";
+		
+		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+		String y = df.format(Calendar.getInstance().getTime());
+		
+		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
+		String m = dff.format(Calendar.getInstance().getTime());
+		
+		
+		
+			if(!num.equals("")){
 				
-				else{
+					resnum= num;
+					year_encours = num.substring(3, 5);
 					
-					numero = "BL_"+y+"/"+m+"/00000001";
+					month_encours= num.substring(6, 8);
 					
-				}
-				
+					System.out.println("year_encours == "+year_encours);
+					
+					System.out.println("month_encours == "+month_encours);
+					
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
+						
+						String n = resnum.substring(10);
+						System.out.println(n);
+						int nn = Integer.parseInt(n);
+						System.out.println(nn);
+						nn++;
+							if( nn < 10 ){ numero = "BC"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = "BC"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = "BC"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = "BC"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = "BC"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = "BC"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = "BC"+y+"/"+m+"/0"+nn;}
+					}
+					
+					else{
+						
+						numero = "BC"+y+"/"+m+"/00000001"; 
+						
+					}
+			}
 			
-			return numero;
-		}
+			else{
+				
+				numero = "BC"+y+"/"+m+"/00000001";
+				
+			}
+			
+		
+		return numero;
+	}
 	
 	//-------------------------------------------------------------------------------------	
 		
@@ -327,40 +327,40 @@ public class numerotation_by_year {
 			if(!num.equals("")){
 				
 					resnum= num;
-					year_encours = num.substring(5, 7);
+					year_encours = num.substring(4, 6);
 					
-					month_encours= num.substring(8, 10);
+					month_encours= num.substring(7, 9);
 					
 					System.out.println("year_encours == "+year_encours);
 					
 					System.out.println("month_encours == "+month_encours);
 					
-					if(year_encours.equals(y) && month_encours.equals(m)){
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(11);
 						System.out.println(n);
 						int nn = Integer.parseInt(n);
 						System.out.println(nn);
 						nn++;
-							if( nn < 10 ){ numero = long1+"FCT_"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = long1+"FCT_"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = long1+"FCT_"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = long1+"FCT_"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = long1+"FCT_"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = long1+"FCT_"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = long1+"FCT_"+y+"/"+m+"/0"+nn;}
+							if( nn < 10 ){ numero = long1+"FCT"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = long1+"FCT"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = long1+"FCT"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = long1+"FCT"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = long1+"FCT"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = long1+"FCT"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = long1+"FCT"+y+"/"+m+"/0"+nn;}
 					}
 					
 					else{
 						
-						numero = long1+"FCT_"+y+"/"+m+"/00000001"; 
+						numero = long1+"FCT"+y+"/"+m+"/00000001"; 
 						
 					}
 			}
 			
 			else{
 				
-				numero = long1+"FCT_"+y+"/"+m+"/00000001";
+				numero = long1+"FCT"+y+"/"+m+"/00000001";
 				
 			}
 			
@@ -386,46 +386,227 @@ public class numerotation_by_year {
 			if(!num.equals("")){
 				
 					resnum= num;
-					year_encours = num.substring(7, 9);
+					year_encours = num.substring(6, 8);
 					
-					month_encours= num.substring(10, 12);
+					month_encours= num.substring(9, 11);
 					
 					System.out.println("year_encours == "+year_encours);
 					
 					System.out.println("month_encours == "+month_encours);
 					
-					if(year_encours.equals(y) && month_encours.equals(m)){
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(13);
 						System.out.println(n);
 						int nn = Integer.parseInt(n);
 						System.out.println(nn);
 						nn++;
-							if( nn < 10 ){ numero = long1+"FCTAV_"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = long1+"FCTAV_"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = long1+"FCTAV_"+y+"/"+m+"/0"+nn;}
+							if( nn < 10 ){ numero = long1+"FCTAV"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = long1+"FCTAV"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = long1+"FCTAV"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = long1+"FCTAV"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = long1+"FCTAV"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = long1+"FCTAV"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = long1+"FCTAV"+y+"/"+m+"/0"+nn;}
 					}
 					
 					else{
 						
-						numero = long1+"FCTAV_"+y+"/"+m+"/00000001"; 
+						numero = long1+"FCTAV"+y+"/"+m+"/00000001"; 
 						
 					}
 			}
 			
 			else{
 				
-				numero = long1+"FCTAV_"+y+"/"+m+"/00000001";
+				numero = long1+"FCTAV"+y+"/"+m+"/00000001";
 				
 			}
 			
 		
 		return numero;
 	}
+	
+	//------------------------------------------------------------------------------------------------------------
+	
+	public String return_num_BonTransfert (String num, Long unite){ //assm la rebrique numero 
+		
+		
+		String numero ="",resnum="",year_encours="",month_encours="";
+		
+		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+		String y = df.format(Calendar.getInstance().getTime());
+		
+		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
+		String m = dff.format(Calendar.getInstance().getTime());
+		
+		
+		
+			if(!num.equals("")){
+				
+					resnum= num;
+					year_encours = num.substring(3, 5);
+					
+					month_encours= num.substring(6, 8);
+					
+					System.out.println("year_encours == "+year_encours);
+					
+					System.out.println("month_encours == "+month_encours);
+					
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
+						
+						String n = resnum.substring(10);
+						System.out.println(n);
+						int nn = Integer.parseInt(n);
+						System.out.println(nn);
+						nn++;
+							if( nn < 10 ){ numero = unite+"BT"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = unite+"BT"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = unite+"BT"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = unite+"BT"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = unite+"BT"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = unite+"BT"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = unite+"BT"+y+"/"+m+"/0"+nn;}
+					}
+					
+					else{
+						
+						numero = unite+"BT"+y+"/"+m+"/00000001"; 
+						
+					}
+			}
+			
+			else{
+				
+				numero = unite+"BT"+y+"/"+m+"/00000001";
+				
+			}
+			
+		
+		return numero;
+	}
+	
+	//------------------------------------------------------------------------------------------------------------
+	
+	//------------------------------------------------------------------------------------------------------------
+	
+	public String return_num_BonTransfertInterne (String num, Long unite){ //assm la rebrique numero 
+		
+		
+		String numero ="",resnum="",year_encours="",month_encours="";
+		
+		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+		String y = df.format(Calendar.getInstance().getTime());
+		
+		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
+		String m = dff.format(Calendar.getInstance().getTime());
+		
+		
+		
+			if(!num.equals("")){
+				
+					resnum= num;
+					year_encours = num.substring(4, 6);
+					
+					month_encours= num.substring(7, 9);
+					
+					System.out.println("year_encours == "+year_encours);
+					
+					System.out.println("month_encours == "+month_encours);
+					
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
+						
+						String n = resnum.substring(10);
+						System.out.println(n);
+						int nn = Integer.parseInt(n);
+						System.out.println(nn);
+						nn++;
+							if( nn < 10 ){ numero = unite+"BTI"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = unite+"BTI"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = unite+"BTI"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = unite+"BTI"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = unite+"BTI"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = unite+"BTI"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = unite+"BTI"+y+"/"+m+"/0"+nn;}
+					}
+					
+					else{
+						
+						numero = unite+"BTI"+y+"/"+m+"/00000001"; 
+						
+					}
+			}
+			
+			else{
+				
+				numero = unite+"BTI"+y+"/"+m+"/00000001";
+				
+			}
+			
+		
+		return numero;
+	}
+	
+	//------------------------------------------------------------------------------------------------------------
+	
+	public String return_num_BonSortie (String num, Long unite){ //assm la rebrique numero 
+		
+		
+		String numero ="",resnum="",year_encours="",month_encours="";
+		
+		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+		String y = df.format(Calendar.getInstance().getTime());
+		
+		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
+		String m = dff.format(Calendar.getInstance().getTime());
+		
+		
+		
+			if(!num.equals("")){
+				
+					resnum= num;
+					year_encours = num.substring(3, 5);
+					
+					month_encours= num.substring(6, 8);
+					
+					System.out.println("year_encours == "+year_encours);
+					
+					System.out.println("month_encours == "+month_encours);
+					
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
+						
+						String n = resnum.substring(10);
+						System.out.println(n);
+						int nn = Integer.parseInt(n);
+						System.out.println(nn);
+						nn++;
+							if( nn < 10 ){ numero = unite+"BS"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = unite+"BS"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = unite+"BS"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = unite+"BS"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = unite+"BS"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = unite+"BS"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = unite+"BS"+y+"/"+m+"/0"+nn;}
+					}
+					
+					else{
+						
+						numero = unite+"BS"+y+"/"+m+"/00000001"; 
+						
+					}
+			}
+			
+			else{
+				
+				numero = unite+"BS"+y+"/"+m+"/00000001";
+				
+			}
+			
+		
+		return numero;
+	}
+	
+	
 	
 	// static void main
 	
@@ -438,7 +619,7 @@ public class numerotation_by_year {
 		
 		numerotation_by_year numero = new numerotation_by_year();
 		
-		System.out.println(numero.return_num_facture_avoir("1FCTAV_21/01/00000001", (long) 1));
+		System.out.println(numero.return_num_BonTransfertInterne("1BTI21/01/00000451", (long) 1)); //, (long) 1
 
 	}
 	

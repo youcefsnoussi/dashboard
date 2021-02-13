@@ -64,7 +64,7 @@
 								
 								<select id="id_rc" class="selectpicker" data-live-search="true" name="id_rc" required>
 								
-									<option th:each="rc:${rc}" th:value="${rc.id}" th:text="${rc.nom}+' '+${rc.prenom}" th:attr="data-subtext=${rc.numero_rc}"> </option>
+									<option th:each="rc:${rc}" th:value="${rc.id}" th:text="${rc.nom}+' '+${rc.prenom}" th:attr="data-subtext=${rc.code}"> </option>
 								
 								</select>
 							

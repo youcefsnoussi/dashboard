@@ -64,46 +64,26 @@
 			<br>
 			-->
 			<div class="card-body">
-					<!--  
+					
 					<input type="hidden" id="info_av" th:value="${avoir}">
-					-->
+					
 					<div class="card" >
 	
-						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
+						<h5 class="card-header "> <i class="far fa-user-alt"></i> Employee </h5>
 						<br>
 	
 						<div class="card-body">
-							
-							<div class="row">
-							
-								<div class="col-md-4">
-								
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Cause </span>
-										</div>
-										
-										<input type="text" id="cause" class="form-control" th:value="${facture_avoir.cause.designation}" disabled>
 	
-									</div>
-								
-								</div>
-							
-							</div>
-							
-							<br>
-							
 							<div class="row">
 	
 								<div class="col-md-4 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Code </span>
+												style="min-width: 76px; text-align: left;">Matricule </span>
 										</div>
 										<input type="text" class="form-control  code_client"
-											name="code_client" id="code_client" th:value="${facture_avoir.registre_commerce.code}" disabled>
+											name="code_rc" id="code_rc" th:value="${ble.matricule_employee}" disabled>
 	
 									</div>
 								</div>
@@ -114,98 +94,25 @@
 								<div class="col-md-4 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Désignation</span>
+											<span class="input-group-text declaration">Nom Prenom</span>
 										</div>
 										<input type="text" name="designation" id="designation" class="form-control " 
-												th:value="${facture_avoir.client.nom}+' '+${facture_avoir.client.prenom}" disabled>
+												th:value="${ble.nom_employee}+' '+${ble.prenom_employee}" disabled>
 	
 									</div>
 								</div>
-	
-	
+								
 								<div class="col-md-4 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Adresse </span>
+											<span class="input-group-text declaration">Date</span>
 										</div>
-										<input type="text" class="form-control " name="adresse"
-											id="adresse" th:value="${facture_avoir.client.adresse}" disabled>
-									</div>
-								</div>
-	
-							</div>
-	
-							<hr>
-	
-							<div class="row">
-								<!--  
-								<div class="col-md-6 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">Mode règelment </span>
-										</div>
-										<input type="text" class="form-control " name="mode_reg" id="mode_reg"
-											th:value="${facture_avoir.mode_paiement.designation}"  disabled>
-										
-									</div>
-								</div>
-								-->
-								<div class="col-md-6 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">Matricule</span>
-										</div>
-										
-										<input type="text" class="form-control" name="matricule" id="matricule" 
-												th:value="${facture_avoir.facture.matricule_camion}" disabled placeholder="xxxxxx-xxx-xx"> 
-											
-									</div>
-								</div>
-	
-							</div>
-	
-							<hr>
-	
-							<div class="row">
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">RC </span>
-										</div>
-										
-										<input type="text" class="form-control" name="num_rc" id="num_rc" th:value="${facture_avoir.registre_commerce.numero_rc}" disabled > 
-										
-									</div>
-								</div>
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Désignation</span>
-										</div>
-										<input type="text" name="designation_rc" id="designation_rc" class="form-control" 
-														th:value="${facture_avoir.registre_commerce.nom}+' '+${facture_avoir.registre_commerce.prenom}" disabled>
+										<input type="text" name="designation" id="designation" class="form-control " 
+												th:value="${ble.date}" disabled>
 	
 									</div>
 								</div>
-	
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Adresse </span>
-										</div>
-										<input type="text" class="form-control " name="adresse_rc"
-											id="adresse_rc" th:value="${facture_avoir.registre_commerce.adresse}" disabled>
-									</div>
-								</div>
-	
+								
 							</div>
 	
 							<hr>
@@ -216,7 +123,7 @@
 										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
 									</div>
 									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
-										th:value="${#numbers.formatDecimal(facture_avoir.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
+										th:value="${#numbers.formatDecimal(ble.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
 								</div>
 							</div>
 	
@@ -227,7 +134,7 @@
 										<span class="input-group-text declaration">Montant TVA</span>
 									</div>
 									<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
-										th:value="${#numbers.formatDecimal((facture_avoir.montant_ttc - facture_avoir.montant_ht), 3, 'WHITESPACE', 2,'COMMA')}" disabled>
+										th:value="${#numbers.formatDecimal(ble.tva, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
 								</div>
 							</div>
 	
@@ -238,7 +145,7 @@
 										<span class="input-group-text declaration">Montant TTC </span>
 									</div>
 									<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" 
-										th:value="${#numbers.formatDecimal(facture_avoir.montant_ttc, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
+										th:value="${#numbers.formatDecimal(ble.montant_ttc, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
 								</div>
 							</div>
 	
@@ -253,8 +160,8 @@
 						<thead class="thead-dark">
 							<tr>
 								<th align="center"  width="8%">Art</th>
-								<th  align="center" >Libellé</th>
-								<th  align="center"  width="8%">Um</th>
+								<th  align="center" width="40%">Libellé</th>
+								<th  align="center" >Um</th>
 								<th  align="center" >Qte</th>
 								<th  align="center" >PU</th>
 								<th  align="center" >TVA</th>
@@ -264,26 +171,26 @@
 	
 						<tbody>
 	
-							<tr th:each="fact_det_a:${detail_facture_avoir}" >
+							<tr th:each="ble_det:${detail_ble}" >
 	
-								<td> <input class="form-control nom_art" type="text" th:value="${fact_det_a.article.code}" id="code_art" disabled> </td>
+								<td> <input class="form-control nom_art" type="text" th:value="${ble_det.article.code}" id="code_art" disabled> </td>
 								
 								<td> 
 									<input class="form-control nom_art" type="text" id="art" name="art" disabled
-										th:value="${fact_det_a.article.libelle}" > 
+										th:value="${ble_det.article.libelle}" > 
 								</td>
 								
 								<td> <input class="form-control unite_mesure" id="unite_mesure" type="text" value="" style="text-align: center;"
-												th:value="${fact_det_a.article.unite_mesure_vente.nom_unite_mesure}" disabled> 
+												th:value="${ble_det.article.unite_mesure_vente.nom_unite_mesure}" disabled> 
 								</td>
 								
-								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${fact_det_a.quantite}" style="text-align: right;" disabled> </td>
+								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${ble_det.quantite}" style="text-align: right;" disabled> </td>
 								
-								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${fact_det_a.prix_u_ht}" type="number" step="any" style="text-align: right;" disabled> </td>
+								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${ble_det.prix_u_ht}" type="number" step="any" style="text-align: right;" disabled> </td>
 								
-								<td><input class="form-control tva" id="tva" name="tva_art" type="number" th:value="${fact_det_a.tva}" step="any" value="" style="text-align: right;" disabled> </td>
+								<td><input class="form-control tva" id="tva" name="tva_art" type="number" th:value="${ble_det.tva}" step="any" value="" style="text-align: right;" disabled> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(fact_det_a.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
+								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(ble_det.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
 	
 							</tr>
 	

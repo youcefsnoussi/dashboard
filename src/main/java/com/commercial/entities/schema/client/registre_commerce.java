@@ -85,6 +85,8 @@ public class registre_commerce implements Serializable{
 	 @JoinColumn(name = "unite")
 	 private unite unite;
 	 
+	 private String date_last_facture;
+	 
 	public registre_commerce() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -305,6 +307,14 @@ public class registre_commerce implements Serializable{
 
 	public void setUnite(unite unite) {
 		this.unite = unite;
+	}
+
+	public String getDate_last_facture() {
+		return date_last_facture;
+	}
+
+	public void setDate_last_facture(String date_last_facture) {
+		this.date_last_facture = date_last_facture;
 	}
 	 
 	

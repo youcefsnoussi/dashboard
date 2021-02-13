@@ -28,6 +28,51 @@
 	    
 	<script type="text/javascript" src="resources\PagesJS\vente\vente_employee.js"></script>
 	      
+	
+	<script type="text/javascript">
+	
+	$(document).ready(function() {
+		
+		$("#sub_bt").click(function() {
+			
+			var wd = 0;
+			
+			var err = "";
+			
+			$(".qte").each(function() {
+					
+				if(parseFloat($(this).val())!=0){
+					
+					wd = 1;
+					
+				}
+				
+			});
+			
+			if($("#destination").val()!="" && wd==1){
+				
+				wd = 1;
+				
+			}
+			else{ wd = 0;}
+			
+			if(wd==0){
+				
+				alert("Veuillez Indiquer la destination \n Veuillez Selectioner des produit et leurs quantité !!!")
+				
+			}
+			else{
+				
+				$("#frm").submit();
+				
+			}
+			
+			
+		})
+		
+	});
+	
+	</script>
 	      
 	</head>
 
@@ -44,7 +89,7 @@
 		<div class="card">
 	
 			<h3 class="card-header  text-center">
-				<i class="far fa-file-invoice"></i> Vente Employée <button type="button" id="sub" class="btn btn-success">Valider</button>
+				<i class="far fa-file-invoice"></i> Bon de Transfert Interne <button type="button" id="sub_bt" class="btn btn-success">Valider</button>
 			</h3>
 			
 			<br>
@@ -52,11 +97,8 @@
 			<div class="card-body">
 	
 	
-				<form id="frm" th:action="@{/new_commande_employee}" method="post" style="height: 100%" autocomplete="off">
+				<form id="frm" th:action="@{/new_bon_transfert_interne}" method="post" style="height: 100%" autocomplete="off">
 					
-					<input type="hidden" id="tva_general" name="tva" value="0.19">
-	
-	
 					<div class="card">
 	
 	
@@ -68,125 +110,17 @@
 							<div class="row">
 	
 								<div class="col-md-4 column">
+								
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">Employée </span>
+												style="min-width: 130px; text-align: left;">Déstiné a : </span>
 										</div>
-										<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
-											name="employee" id="employee" data-size="5" required>
-											<option  disabled value="" selected>Employée</option>
-											
-											<option th:each="emp:${list_emp}" th:value="${emp.matricule}+'/'+${emp.nom}+'/'+${emp.prenom}" 
-													th:text="${emp.matricule}" 
-													th:attr="data-subtext=${emp.nom}+' '+${emp.prenom},
-													nom=${emp.nom}, prenom=${emp.prenom}">
-											</option>
-											
-										</select>
+										<input type="text" id="destination" name="destination" class="form-control" required>
 										
 									</div>
 								</div>
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Nom</span>
-										</div>
-										<input type="text" name="np" id="nom" class="form-control " readonly="readonly">
-	
-									</div>
-								</div>
 								
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Prénom</span>
-										</div>
-										<input type="text" name="prenom" id="prenom" class="form-control " readonly="readonly">
-	
-									</div>
-								</div>
-	
-							</div>
-	
-							<hr>
-							
-							<div class="row">
-							
-								<div class="col-md-7 ">
-									
-									<div class="input-group">
-						
-										<h5>Réduction sur les articles :</h5><h5 id="redux">  </h5>
-									
-									</div>
-									
-								</div>
-								
-								<div class="col-md-4 offset-md-1">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
-										</div>
-										<input type="hidden" id="total_ht_hidden" value="0">
-										<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" value="0" readonly="readonly">
-									</div>
-								</div>
-							
-							</div>
-							
-							<div class="row">
-							
-								<div class="col-md-4 offset-md-8">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Réduction (%) </span>
-										</div>
-										<input type="number" step="any" class="form-control zero" name="pourc_reduction" style="text-align: right;" id="pourc_redux" value="0" readonly>
-									</div>
-								</div>
-							
-							</div>
-							
-							<div class="row">
-							
-								<div class="col-md-4 offset-md-8">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT Avec Réduction </span>
-										</div>
-										<input type="text" step="any" class="form-control " name="total_ht" style="text-align: right;" id="total_ht_redux" value="0" readonly="readonly">
-									</div>
-								</div>
-							
-							</div>
-							<hr>
-							<div class="row">
-								
-								<div class="col-md-4 offset-md-8">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Montant TVA</span>
-										</div>
-										<input type="hidden" id="total_tva_hidden" value="0">
-										<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" value="0" readonly="readonly">
-									</div>
-								</div>
-							
-							</div>
-							
-							<div class="row">
-								
-								<div class="col-md-4 offset-md-8">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Montant TTC </span>
-										</div>
-										<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" value="0" readonly="readonly">
-									</div>
-								</div>
-	
 							</div>
 							
 						</div>
@@ -203,9 +137,6 @@
 								<th  align="center"  width="8%">Um</th>
 								<th  align="center" >Qte</th>
 								<th  align="center" >Unité</th>
-								<th  align="center" >PU</th>
-								<th  align="center" >TVA</th>
-								<th  align="center" >MONTANT HT</th>
 							</tr>
 						</thead>
 	
@@ -218,10 +149,10 @@
 								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="art">
 										<option value="0" selected>Selection</option>
 										
-										<option th:each="art:${articles}" th:value="${art.article.id}" th:text="${art.article.libelle}"
-										th:attr="code=${art.article.code}, data-subtext=${art.article.code}, 
-										um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix}, tva=${art.tva.taux_tva},
-										id_um=${art.article.unite_mesure_vente.id} "></option>
+										<option th:each="art:${articles}" th:value="${art.id}" th:text="${art.libelle}"
+										th:attr="code=${art.code}, data-subtext=${art.code}, 
+										um=${art.unite_mesure_vente.nom_unite_mesure}, 
+										id_um=${art.unite_mesure_vente.id} "></option>
 										
 									 </select> 
 								</td>
@@ -237,12 +168,6 @@
 									</select>	
 								</td>
 								
-								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
-								
-								<td> <input class="form-control tva" id="tva_art" name="tva_art" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
-								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" type="text" style="text-align: right;" value="0" readonly> </td>
-	
 							</tr>
 	
 						</tbody>
