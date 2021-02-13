@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -223,6 +222,7 @@ public class commandeController {
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
 			@RequestParam("pourc_reduction") double pourc_reduction,
+			@RequestParam("observation") String observation,
 			
 			@RequestParam("art") long [] article,
 			@RequestParam("id_um") long [] id_unite_mesure,
@@ -263,7 +263,7 @@ public class commandeController {
 			registre_commerce rc = clt_rc.getRegistre_commerce();
 			
 			commande cmd = new commande(today, time, numero_cmd, montant_ht, montant_tva, montant_ttc, "", null, null, user, false, matricule_camion
-					,mode_payRepo.getOne(id_mode_reg), clt_rc, pourc_reduction);
+					,mode_payRepo.getOne(id_mode_reg), clt_rc, pourc_reduction, observation);
 			
 			cmdRepo.save(cmd);cmdRepo.flush();
 			
@@ -328,7 +328,7 @@ public class commandeController {
 			
 			grpRepo.save(grp); grpRepo.flush();
 			
-			return "redirect:/commande?id_bl="+bl.getId()+"&num_bl="+bl.getNumero();
+			return "redirect:/commande?id_bl="+bl.getId()+"&num_bl="+bl.getNumero()+"&type=bl";
 		
 	}
 	

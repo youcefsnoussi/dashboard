@@ -1,17 +1,13 @@
 package com.commercial.webController.vente;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -406,7 +402,7 @@ public class list_bl_encoursController {
 			
 			int t = 0;
 			
-			client clt = bl.getClient();
+			//client clt = bl.getClient();
 			
 			registre_commerce rc = bl.getRegistre_commerce();
 			
@@ -521,7 +517,7 @@ public class list_bl_encoursController {
 								" / Mag-> "+magasinRepo.getOne(id_magasin[i]).getName());
 						
 						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
-								montant_ht_art[i], tva_art[i], montant_tva_art[i], null, umRepo.getOne(id_unite_mesure[i]),
+								montant_ht_art[i], (montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], null, umRepo.getOne(id_unite_mesure[i]),
 								false, magasinRepo.getOne(id_magasin[i]));
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
@@ -590,7 +586,7 @@ public class list_bl_encoursController {
 			
 			bon_l_dRepo.save(bl_d_one); bon_l_dRepo.flush();
 			
-			//--------------------- TEST if all row validated so validate all (create facture) -------------
+			//--------------------- TEST if all row validated so (create facture) -------------
 			
 			List <bon_livraison_detail> list_bld = bon_l_dRepo.get_bl_detail(bl);
 			
@@ -670,6 +666,14 @@ public class list_bl_encoursController {
 				
 				factRepo.save(fact);factRepo.flush();
 				
+				//--------------------- add date last facture to registre commerce -------------------
+				
+				rc.setDate_last_facture(fact.getDate());
+				
+				rcRepo.save(rc);rcRepo.flush();
+				
+				//----------------------------------------------------------------------------------
+				
 				//-------------------- tracking operation -----------------------------------
 				
 				trk.add_track("facture", "creation facture apres validation BL", fact.getId(), user);
@@ -721,14 +725,14 @@ public class list_bl_encoursController {
 				
 				bon_lRepo.save(bl); bon_lRepo.flush();
 				
-			//---------------	
+				//---------------	
 				
 				//------------------------- insert into MY SQL Peseur ------------
 				
 				Connection_peseur cp = new Connection_peseur();
 				
 				cp.insert_fct_to_peseur(numero_fact, today);
-				
+				 
 				//------------------------- END INSERT into MY SQL Peseur ---------------------------------------
 				
 			}

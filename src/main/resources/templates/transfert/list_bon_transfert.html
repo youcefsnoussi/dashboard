@@ -69,11 +69,14 @@
 					"scrollY":"600px",
 					"scrollX": "auto",
 			        "deferRender": true,
+			        "columnDefs": [
+			            { "width": "7%", "targets": 6 }
+			          ],
 			        initComplete: function () {
-			            this.api().columns([2,3,5,6]).every( function () {
+			            this.api().columns([2,3,4,5]).every( function () {
 			                var column = this;
-			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+ 
-			                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+
+			                				'.data-live-search="true" data-container="body"><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -88,73 +91,47 @@
 			                column.data().unique().sort().each( function ( d, j ) {
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
-			                $('.selectpicker').selectpicker('refresh');
 			            } );
 			        },
 					 drawCallback: function () {
 						
-					      var api = this.api();
-					      
-					      $( api.column( 7, {page:'current'} ).footer() ).html(
-					        api.column( 7, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      
-					      $( api.column( 8, {page:'current'} ).footer() ).html(
-					        api.column( 8, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      
-					      $( api.column( 9, {page:'current'} ).footer() ).html(
-					        api.column( 9, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
 					      
 					 },
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
-			
-		 	var id_fact; var num_fact;
 		 	
 			$(".info").click(function(){
 				
-				id_fact = $(this).attr("id_fact");
+				var id_bl = $(this).attr("id_bl");
 				
-				$("#id_facture").val(id_fact);
+				num_bl = $(this).attr("num_bl");
 				
-				num_fact = $(this).attr("num_fact");
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+						'src="info_ble?id_ble='+id_bl+'"></iframe>');
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="info_fact?id_fact='+id_fact+'"></iframe>');
+				$("#title_bl").text("Détail BL N° "+num_bl);
 				
-				$("#title_fact").text("Détail Facture N° "+num_fact);
+				$("#icone_bl").attr("class","far fa-file-invoice");
 				
-				$("#icone_fact").attr("class","far fa-file-invoice");
-				
-				$("#fact_detail_modal").modal("show");
-				
-			});
-			
-			$("#fact_avoir").click(function(){
-				
-				$("#id_facture").val(id_fact);
-				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="fact_avoir?id_fact='+id_fact+'"></iframe>');
-				
-				$("#title_fact").text("Facture Avoir pour Facture N° "+num_fact);
+				$("#bl_detail_modal").modal("show");
 				
 			});
 			
 			$(".print").click(function(){
 				
-				var id_fact = $(this).attr("id_fact");
+				var id_bl = $(this).attr("id_bl");
 				
-				var num_fact = $(this).attr("num_fact");
+				num_bl = $(this).attr("num_bl");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_fact?id_fact='+id_fact+'"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+						'src="print_ble?id_bl='+id_bl+'"></iframe>');
 				
-				$("#title_fact").text("Détail Facture N° "+num_fact);
+				$("#title_bl").text("Détail BL N° "+num_bl);
 				
-				$("#icone_fact").attr("class","far fa-file-invoice");
+				$("#icone_bl").attr("class","far fa-file-invoice");
 				
-				$("#fact_detail_modal").modal("show");
+				$("#bl_detail_modal").modal("show");
 				
 			});
 			
@@ -175,31 +152,26 @@
 				else{
 					
 					//console.log("start = "+start+" / end = "+end);
-					window.location.replace("list_fact?date_debut="+start+"&date_fin="+end);
+					window.location.replace("list_bon_transfert?start="+start+"&end="+end);
 					
 				}
 				
 			});
-			
-			$("#years").change(function(){
+			/*
+			$("#refresh").click(function(){
 				
-				var start = "01/01/"+$(this).val();
+				location.reload();
 				
-				var end = "31/12/"+$(this).val();
-					
-				window.location.replace("list_fact?date_debut="+start+"&date_fin="+end);
-				
-			});
-			
-			
+			});*/
+			/*
 			$("#today").click(function(){
 					
 				//console.log("start = "+start+" / end = "+end);
-				window.location.replace("list_fact?date_debut=0&date_fin=0");
+				window.location.replace("/list_fact?date_debut=0&date_fin=0");
 				
 				
 			});
-			/*
+			*//*
 			$("#all_sys").click(function(){
 				
 				//console.log("start = "+start+" / end = "+end);
@@ -212,7 +184,8 @@
 
 		$(function () {
 		    $('#fact_detail_modal').on('shown.bs.modal', function () {
-		        //$('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>');
+		        /* $('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" 
+		        		frameborder="0" src="/add_client"></iframe>'); */
 		    });
 		});
 
@@ -241,59 +214,45 @@
 		<div class="card ">
 		
 			
-			<h3 class="card-header  text-center"> <i class="far fa-clipboard-list-check"></i>  List des Factures </h3>
-			<br>
+			<div class="card-header  text-center"> 
 			
-			<div class="card-body">
-			
-				<div class="container-fluid">
+				<div class="row">
 					
-					<div class="row">
-						 
-						<div class="col-md-4" >
+					<div class="col-md-4 offset-md-1" >
 						
-							<div class="input-group">
+						<div class="input-group">
+						
+							<div class="input-group-append">
 							
-								<div class="input-group-append">
+								<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
+									style="width:100%;" placeholder="DU">
+									
+								<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
 								
-									<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
-										style="width:100%;" placeholder="DU">
-										
-									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
-									
-									<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
-									style="width:100%;" placeholder="AU">
-									
-									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
-									
-								</div>
+								<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
+								style="width:100%;" placeholder="AU">
+								
+								<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 								
 							</div>
 							
 						</div>
 						
-						<div class="col-md-2" >
-						
-							
-								<button id="today" name="today" class="btn btn-dark" type="button">Factures d'aujourd'hui</button>
-								
-							
-						</div>
-						
-						<div class="col-md-2" >
-						
-								<select id="years" class="form-control">
-									<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:if="${y}==${selected_year}" selected></option>
-									<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:unless="${y}==${selected_year}"></option>
-								
-								</select>
-							
-						</div>
-						
 					</div>
 					
-					<hr>
+					<div class="col-md-4 offset-md-1">
 					
+						<h3 class="text-center"> <i class="far fa-clipboard-list-check"></i>  List des Bons Transfert </h3>
+					
+					</div>
+					
+				</div>
+			
+			</div>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
 					<table id="table" class="table table-bordered table-hover" style="width:100%">
 					
 						<thead class="thead-dark">
@@ -302,15 +261,11 @@
 							
 								<th>N°</th>
 								<th>Date</th>
-								<th>Client</th>
-								<th >Code </th>
-								<th>RC</th>
-								<th>Mode Reglement</th>
-								<th>Matricule</th>
-								<th>Montant HT</th>
-								<th>Montant TVA</th>
-								<th>Montant TTC</th>
-								<th>Visualiser</th>
+								<th>Code</th>
+								<th>Unité interne</th>
+								<th>Matricule V</th>
+								<th>Chauffeur</th>
+								<th></th>
 								
 							</tr>
 						
@@ -318,51 +273,24 @@
 						
 						<tbody>
 						
-							<tr th:each="list_fact:${list_facture}" th:if="${list_fact.printed}==true">
+							<tr th:each="bt:${list_bt}">
 							
-								<td th:text="${list_fact.numero}"></td>
-								<td th:text="${list_fact.date}"></td>
-								<td th:text="${list_fact.client.nom}+' '+${list_fact.client.prenom}"></td>
-								<td th:text="${list_fact.registre_commerce.code}"></td>
-								<td th:text="${list_fact.registre_commerce.nom}+' '+${list_fact.registre_commerce.prenom}"></td>
-								<td th:if="${list_fact.mode_paiement}!=null" th:text="${list_fact.mode_paiement.designation}"></td>
-								<td th:unless="${list_fact.mode_paiement}!=null" th:text="''"></td>
-								<td th:text="${list_fact.matricule_camion}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
-																						<i class="far fa-info-square"></i>
-																 </button>
-																 <button type="button" class="btn btn-info print" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
+								<td th:text="${bt.numero}"></td>
+								<td th:text="${bt.date}"></td>
+								<td th:text="${bt.unite_interne.code}"></td>
+								<td th:text="${bt.unite_interne.designation}"></td>
+								<td th:text="${bt.matricule_vehicule}" ></td>
+								<td th:text="${bt.chauffeur}" ></td>
+								<td style="text-align: center;"> <button type="button" class="btn btn-info info" th:attr="id_bt=${bt.id},num_bt=${bt.numero}"> 
+																						<i class="far fa-eye"></i>
+																 </button> 
+																 <button type="button" class="btn btn-info print" th:attr="id_bt=${bt.id},num_bt=${bt.numero}"> 
 																						<i class="far fa-print"></i>
-																 </button>  
+																 </button> 
 								</td>
 								
 							</tr>
-							
-							<tr th:each="list_fact:${list_facture}" th:unless="${list_fact.printed}==true" style="background-color:#ef9a9a;">
-							
-								<td th:text="${list_fact.numero}"></td>
-								<td th:text="${list_fact.date}"></td>
-								<td th:text="${list_fact.client.nom}+' '+${list_fact.client.prenom}"></td>
-								<td th:text="${list_fact.registre_commerce.code}"></td>
-								<td th:text="${list_fact.registre_commerce.nom}+' '+${list_fact.registre_commerce.prenom}"></td>
-								<td th:text="${list_fact.mode_paiement.designation}"></td>
-								<td th:text="${list_fact.matricule_camion}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
-																						<i class="far fa-info-square"></i>
-																 </button>
-																 <button type="button" class="btn btn-info print" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
-																						<i class="far fa-print"></i>
-																 </button>  
-								</td>
-								
-							</tr>
-							
+						
 						</tbody>
 						
 						<tfoot>
@@ -375,10 +303,6 @@
 								<th></th>
 								<th></th>
 								<th></th>
-								<th></th>
-								<th class="rr"></th>
-								<th class="rr"></th>
-								<th class="rr"></th>
 								<th></th>
 								
 							</tr>
@@ -395,7 +319,7 @@
 		
 	</div> 
 	
-	<div id="fact_detail_modal" class="modal" tabindex="-1" role="dialog">
+	<div id="bl_detail_modal" class="modal" tabindex="-1" role="dialog">
 	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -406,21 +330,21 @@
 	      			
 	      			<div class="input-group">
 	      				<div class="input-group-prepend">
-	      					<i id="icone_fact" class="far fa-file-invoice" style="font-size:30px;margin-right:10px;" ></i>
+	      					<i id="icone_bl" class="far fa-file-invoice" style="font-size:30px;margin-right:10px;" ></i>
 	      				</div>	
-	      					<h5 id="title_fact" class="modal-title" > </h5>
+	      					<h5 id="title_bl" class="modal-title" > </h5>
 			        </div>	
 	      		</div>
-	      		
-	      		<div class="col-md-4 offset-md-1">
 	      		<!--  
-	      			<button class="btn btn-info" id="print"> <i id="icone_fact" class="far fa-print" style="font-size:22px;" ></i> 
-	      											Imprimer </button> -->
+	      		<div class="col-md-4 offset-md-1">
+	      		
+	      			<button class="btn btn-info" id="print_duplicata"> <i id="icone_fact" class="far fa-print" style="font-size:22px;" ></i> 
+	      											Imprimer Duplicata</button>
 	      			<button class="btn btn-warning" id="fact_avoir"> <i id="icone_fact" class="far fa-file-invoice" style="font-size:22px;" ></i> 
 	      											Facture d'avoir </button>
 			      		
 	      		</div>
-	      	
+	      		-->
 	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>

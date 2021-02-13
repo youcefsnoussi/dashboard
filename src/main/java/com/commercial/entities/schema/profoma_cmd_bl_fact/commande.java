@@ -73,15 +73,13 @@ public class commande implements Serializable{
 	@Column(columnDefinition = "double precision default 0")
 	private double pourcentage_reduction;
 	
-	public commande() {
-		// TODO Auto-generated constructor stub
-	}
-
+	private String observation;
+	
 	public commande(String date, String time, String numero, double montant_ht, double tva, double montant_ttc,
 			String link_pdf, com.commercial.entities.schema.profoma_cmd_bl_fact.proforma proforma,
 			List<bon_livraison> list_bon_livraison, com.commercial.entities.schema.user_menu.users users,
 			boolean cloturer, String matricule, com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
-			client_registreCommerce client_registrecommerce, double pourcentage_reduction) {
+			client_registreCommerce client_registrecommerce, double pourcentage_reduction, String observation) {
 		super();
 		this.date = date;
 		this.time = time;
@@ -98,6 +96,11 @@ public class commande implements Serializable{
 		this.mode_paiement = mode_paiement;
 		this.client_registrecommerce = client_registrecommerce;
 		this.pourcentage_reduction = pourcentage_reduction;
+		this.observation = observation;
+	}
+
+	public commande() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public Long getId() {
@@ -226,6 +229,14 @@ public class commande implements Serializable{
 
 	public void setPourcentage_reduction(double pourcentage_reduction) {
 		this.pourcentage_reduction = pourcentage_reduction;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
 	}
 
 }

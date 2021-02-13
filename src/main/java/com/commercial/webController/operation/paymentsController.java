@@ -12,7 +12,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,6 +44,7 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
+import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.track_operations;
 
@@ -116,15 +116,13 @@ public class paymentsController {
 		
 		//----------------------------------------------------------------
 		
-		get_time_date gtd = new get_time_date();
-		
 		model.addAttribute("mode_payement", mode_payRepo.findAll());
 		
 		model.addAttribute("bank", banqueRepo.findAll());
 		
 		//model.addAttribute("client", clientRepo.findAll());
 		
-		model.addAttribute("clt_rc",c_rcRepo.ListRCwithCLIENT_active(gtd.get_date()));
+		model.addAttribute("clt_rc",c_rcRepo.findAll());
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
 		
@@ -154,7 +152,9 @@ public class paymentsController {
 		
 		model.addAttribute("bank", banqueRepo.findAll());
 		
-		model.addAttribute("client", clientRepo.findAll());
+		//model.addAttribute("client", clientRepo.findAll());
+		
+		model.addAttribute("clt_rc",c_rcRepo.findAll());
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
 		
@@ -163,6 +163,34 @@ public class paymentsController {
 	}
 	
 	//-------------------------------------------------------------------------------
+	
+	@Autowired
+	generate_Doc gd;
+	
+	@RequestMapping(value="/print_bordereau_pay")
+	public String print_bl(HttpServletRequest request,
+						 @RequestParam("mode_pay") long [] mode_pay,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start = conv.convertion_InputDate_to_MyDate(start);
+		
+		end = conv.convertion_InputDate_to_MyDate(end);
+		
+		String pdf = "";
+		
+		
+		pdf = gd.generate_bordereau_pay(start, end, mode_pay);
+			
+		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
 	//-------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/list_payments")
@@ -253,7 +281,7 @@ public class paymentsController {
 		
 		model.addAttribute("cancel_pay", cancel_pay);
 		
-		//model.addAttribute("payments", payRepo.get_payments_no_cancled());
+		model.addAttribute("mode_payement", mode_payRepo.findAll());
 		
 		return ret;
 		
@@ -327,6 +355,8 @@ public class paymentsController {
 			
 			paiement p = payRepo.if_payment_already_exist(banque, num_piece, date);
 			
+			long id_pay = 0;
+			
 			if(p==null) {
 			
 				paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
@@ -334,6 +364,8 @@ public class paymentsController {
 						banque, user, num_piece, img_path, false);
 				
 				payRepo.save(pay);payRepo.flush();
+				
+				id_pay = pay.getId();
 				
 				//-------------------- tracking operation -----------------------------------
 				
@@ -443,7 +475,16 @@ public class paymentsController {
 						
 						pay_factRepo.save(pay_fac);pay_factRepo.flush();
 						
-						i++;
+						if((i+1)<list_fact.size()) {
+							
+							i++;
+							
+						}
+						else {
+							
+							watch_dog_out = 1;
+							
+						}
 						
 					}
 					
@@ -455,7 +496,7 @@ public class paymentsController {
 				
 			}
 			
-			return "redirect:/new_payment?ret="+ret;
+			return "redirect:/new_payment?ret="+ret+"&id_p="+id_pay;
 		
 	}
 	
@@ -509,8 +550,9 @@ public class paymentsController {
 	
 	@RequestMapping(value="/remboursement_post",method=RequestMethod.POST, consumes = {"multipart/form-data"})
 	public String remboursement(HttpServletRequest req,
-			@RequestParam("client") long id_client,
-			@RequestParam("rc") long id_rc,
+			//@RequestParam("client") long id_client,
+			//@RequestParam("rc") long id_rc,
+			@RequestParam("rc_client") long id_clt_rc,
 			@RequestParam("mode_pay") long mode_pay,
 			@RequestParam("bank") long bank,
 			@RequestParam("num_piece") String num_piece,
@@ -521,6 +563,10 @@ public class paymentsController {
 			@SessionAttribute("user") users user){
 			
 			remboursement remb = rembRepo.findFirst1ByOrderByIdDesc();
+			
+			long id_client = c_rcRepo.getOne(id_clt_rc).getClient().getId();
+			
+			long id_rc = c_rcRepo.getOne(id_clt_rc).getRegistre_commerce().getId();
 			
 			long new_id = 1;
 			
@@ -599,7 +645,7 @@ public class paymentsController {
 			rcRepo.save(rc);rcRepo.flush();
 			
 			//-------------- update sold RC client relationship
-			/*
+			
 			List<client_registreCommerce> crc = c_rcRepo.if_relation_existe(clt, rc);
 			
 			int last_index = crc.size()-1;
@@ -613,7 +659,7 @@ public class paymentsController {
 			c_rc.setMontant_actuel(new_sold);
 			
 			c_rcRepo.save(c_rc);c_rcRepo.flush();
-			*/
+			
 			//-------------- insert to mouvement 
 			
 			//mouvement mvm = new mouvement(clt, rc, montant, "paiement", pay.getId(), date, gtd.get_time(), banque.getNom_banque());
@@ -623,7 +669,7 @@ public class paymentsController {
 			
 			mvmRepo.save(mvm);mvmRepo.flush();
 			
-			return "redirect:/new_payment?ret=ee";
+			return "redirect:/new_rmb?ret=ee&id_rmb="+rmb.getId();
 		
 	}
 	

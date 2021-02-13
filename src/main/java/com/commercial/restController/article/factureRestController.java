@@ -85,11 +85,13 @@ public class factureRestController {
 	//----------------------------------------------------------------
 	
 	@RequestMapping(value="/get_matricules")
-	public List<String> get_matricules_from_peuseurDB() {
+	public List<String> get_matricules_from_peuseurDB(
+			@SessionAttribute("user") users user
+			) {
 		
 		Connection_peseur con = new Connection_peseur();
 		
-		List <String> lm = con.get_matricule_from_peseur();
+		List <String> lm = con.get_matricule_from_peseur(user.getUnite().getId());
 		
 		return lm;
 		

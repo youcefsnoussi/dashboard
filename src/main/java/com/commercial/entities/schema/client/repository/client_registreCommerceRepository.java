@@ -124,7 +124,7 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 			"WHERE crc.registre_commerce.etat_blockage = 'active' " +
 			
-			"AND crc.client.etat_blockage = 'false' " + 
+			"AND CAST(:today AS date) BETWEEN CAST(crc.registre_commerce.date_emission AS date) AND CAST(crc.registre_commerce.date_fin AS date) " +
 			
 			"AND CAST(:today AS date) BETWEEN CAST(crc.date_debut AS date) AND CAST(crc.date_fin AS date) " )
 	
@@ -138,4 +138,22 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 	public List<client_registreCommerce>  if_rc_existe_in_relation(@Param("rc") registre_commerce rc);
 	
+	//-----------------------------------------------------
+	
+	@Query( "FROM client_registreCommerce crc " + 
+	
+			"WHERE crc.registre_commerce.category.nom_category = 'Personnel' ")
+	
+	public List<client_registreCommerce>  RC_employee();
+	
+	//------------------------------------------------------
+	/*
+	@Query( "FROM client_registreCommerce crc " + 
+			
+			"WHERE crc.registre_commerce.etat_blockage = 'active' " +
+			
+			"AND CAST(:today AS date) BETWEEN CAST(crc.date_debut AS date) AND CAST(crc.date_fin AS date) " )
+	
+	public List<client_registreCommerce>  ListAllRCs(@Param("today") String today);
+	*/
 }

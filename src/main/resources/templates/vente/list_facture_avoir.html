@@ -150,17 +150,23 @@
 				$("#fact_detail_modal").modal("show");
 				
 			});
-			/*
-			$("#fact_avoir").click(function(){
+			
+			$(".print").click(function(){
 				
-				$("#id_facture").val(id_fact);
+				var id_fact = $(this).attr("id_fact");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="/fact_avoir?id_fact='+id_fact+'"></iframe>');
+				var num_fact = $(this).attr("num_fact");
 				
-				$("#title_fact").text("Facture Avoir pour Facture N° "+num_fact);
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_fact_av?id_fact='+id_fact+'"></iframe>');
+				
+				$("#title_fact").text("Détail Facture N° "+num_fact);
+				
+				$("#icone_fact").attr("class","far fa-file-invoice");
+				
+				$("#fact_detail_modal").modal("show");
 				
 			});
-			*/
+			
 			$("#afficher").click(function(){
 				
 				var start = $("#debut").val();
@@ -315,10 +321,13 @@
 								<td th:text="${list_fact.matricule_camion}"></td> -->
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.tva, 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-info info" th:attr="id_fact_a=${list_fact.id},num_fact_a=${list_fact.numero}"> 
 																						<i class="far fa-info-square"></i>
-																 </button> 
+																 </button>
+																 <button type="button" class="btn btn-info print" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
+																						<i class="far fa-print"></i>
+																 </button>   
 								</td>								 
 								<td style="text-align: center;"> <button type="button" class="btn btn-info fact" th:attr="id_fact=${list_fact.facture.id},num_fact=${list_fact.facture.numero}"> 
 																						<i class="far fa-info-square"></i>

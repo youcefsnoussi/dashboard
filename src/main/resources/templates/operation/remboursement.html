@@ -52,12 +52,14 @@
 			
 			var ret = getUrlParameter('ret');
 			
+			var id_rmb = getUrlParameter('id_rmb');
+			
 			if(ret!=null){
 				
 				$("#title").text("Information");
 				$("#icone").attr("class","far fa-info-circle");
 				
-				$("#text").text("Remboursement effectuer avec succes !!!");
+				$("#text").html("Remboursement effectuer avec succes <br> ID remboursement : "+id_rmb);
 				
 				$("#error").modal('show');
 					
@@ -87,6 +89,29 @@
 				onchange_select_client();
 			
 			});
+			
+			$("#montant").focus(function(){
+				
+				var now = $(this).val();
+				
+				if(now!=""){
+					
+					$(this).val(parseFloat(now.replaceAll(" ","")));
+					
+				}
+				
+				$(this).attr("type","number");
+				
+			})
+			
+			$("#montant").blur(function(){
+			
+				var m = $(this).val();
+				$(this).attr("type","text");
+				m = ( parseFloat(m) ).formatMoney(2, '.', ' ');
+				$(this).val(m);
+				
+			})
 			
 			$("#sub").click(function(){
 				
@@ -207,15 +232,16 @@
 							
 								<label>Client</label>
 								
-								<select id="client" name="client" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
+								<select id="client" name="rc_client" class="selectpicker show-tick jump" data-live-search="true" 
+									data-style="btn-outline-dark" title="RC" required>
 								
-									<option th:each="clt:${client}" th:value="${clt.id}" th:text="${clt.nom}+' '+${clt.prenom}"
-											th:attr="data-subtext=${clt.code}"></option>
+									<option th:each="clt_rc:${clt_rc}" th:value="${clt_rc.id}" th:text="${clt_rc.registre_commerce.nom}+' '+${clt_rc.registre_commerce.prenom}"
+											th:attr="data-subtext=${clt_rc.registre_commerce.code}"></option>
 								
 								</select>
 								
 							</div>
-							
+							<!--  
 							
 							<div class="col-md-3 offset-md-2">
 							
@@ -228,7 +254,7 @@
 								</select>
 								
 							</div>
-							
+							-->
 							
 						</div>
 						
