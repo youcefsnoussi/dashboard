@@ -48,6 +48,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
 import com.commercial.entities.schema.static_data.unite_mesure;
+import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
@@ -139,6 +140,9 @@ public class vente_employeeController {
 	
 	@Autowired
 	prof_cmd_bl_fact_client_rc_avoirRepository grpRepo;
+	
+	@Autowired
+	mode_paiementRepository mdpRepo;
 	
 	//------------------------------------------------------------
 	
@@ -264,6 +268,29 @@ public class vente_employeeController {
 		
 		
 		pdf = gd.generate_BLE(ble.getId(), qr_code);
+			
+		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	@RequestMapping(value="/print_etat_ble")
+	public String print_etat_ble(HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		
+		String pdf = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start = conv.convertion_InputDate_to_MyDate(start);
+		
+		end = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_vente_employee(start, end);
 			
 		
 		return "redirect:/display_pdf?file="+pdf;
@@ -516,9 +543,12 @@ public class vente_employeeController {
 		
 		String numero_fact = nby.return_num_facture(last_number, user.getUnite().getId());
 		
+		
+		
 		facture fact = new facture(clt, rc, clt_rc, today, time, numero_fact, 
-				montant_ht, 0, " ", montant_ttc, montant_tva, "", null, null,
+				montant_ht, 0, " ", montant_ttc, montant_tva, "", null, rc.getMode_paiement(),
 				user, false,  montant_ttc, false, false, 0);
+		
 		
 		factRepo.save(fact);factRepo.flush();
 		

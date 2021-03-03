@@ -48,7 +48,7 @@ $(document).ready(function() {
 	
 	$("#add_client").click(function(){
 		
-		$('#print_content').html('<iframe id="frame" width="" height="" style="border:1px solid black;" src="add_client"></iframe>');
+		$('#print_content').html('<iframe id="frame" width="" height="" style="" src="add_client"></iframe>');
 		
 		$("#title").text("Nouveau client");
 		
@@ -62,7 +62,7 @@ $(document).ready(function() {
 		
 		var id_c = $(this).attr("id_client");
 		
-		$('#print_content').html('<iframe id="frame" width="" height="" style="border:1px solid black;" src="info_client?id_c='+id_c+' "></iframe>');
+		$('#print_content').html('<iframe id="frame" width="" height="" style="" src="info_client?id_c='+id_c+' "></iframe>');
 		
 		$("#title").text("Détail client");
 		

@@ -148,6 +148,23 @@
 				
 			});
 			
+			$("#print_etat").click(function(){
+				
+				var start = $("#debut").val();
+				
+				var end = $("#fin").val();
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+						'src="print_etat_ble?start='+start+'&end='+end+' "></iframe>');
+				
+				$("#title_bl").text("Imprimer Ventes au Personnel");
+				
+				$("#icone_bl").attr("class","far fa-print");
+				
+				$("#bl_detail_modal").modal("show");
+				
+			});
+			
 			$("#afficher").click(function(){
 				
 				var start = $("#debut").val();
@@ -265,7 +282,9 @@
 						<div class="input-group">
 						
 							<div class="input-group-append">
-							
+								
+								<button id="print_etat" name="print" class="btn btn-dark" type="button">Imprimer</button>
+								
 								<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
 									style="width:100%;" placeholder="DU">
 									
@@ -339,7 +358,7 @@
 																 </button> 
 																 <button type="button" class="btn btn-info print" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
 																						<i class="far fa-print"></i>
-																 </button> 
+																 </button>
 								</td>
 								
 							</tr>

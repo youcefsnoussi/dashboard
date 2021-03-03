@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
@@ -48,6 +49,7 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 import com.commercial.functions.track_operations;
@@ -222,6 +224,8 @@ public class commandeController {
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
 			@RequestParam("pourc_reduction") double pourc_reduction,
+			@RequestParam("montant_reduction") double mnt_reduction,
+			@RequestParam("taux_tva_reduction") double taux_tva_reduction,
 			@RequestParam("observation") String observation,
 			
 			@RequestParam("art") long [] article,
@@ -263,7 +267,7 @@ public class commandeController {
 			registre_commerce rc = clt_rc.getRegistre_commerce();
 			
 			commande cmd = new commande(today, time, numero_cmd, montant_ht, montant_tva, montant_ttc, "", null, null, user, false, matricule_camion
-					,mode_payRepo.getOne(id_mode_reg), clt_rc, pourc_reduction, observation);
+					,mode_payRepo.getOne(id_mode_reg), clt_rc, pourc_reduction, mnt_reduction, taux_tva_reduction, observation);
 			
 			cmdRepo.save(cmd);cmdRepo.flush();
 			
@@ -308,6 +312,8 @@ public class commandeController {
 			
 			//-------------------- tracking operation -----------------------------------
 			
+			boolean if_son = false; //----------------> testi ila son bach ninsiri f tabla ta3 nkhala
+			
 			for(int i=0;i<article.length;i++) {
 				
 				if(quantite[i]!=0) {
@@ -318,6 +324,14 @@ public class commandeController {
 					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 					
+					article art = artRepo.getOne(article[i]);
+					
+					if(art.getProduit().getSous_category_produit().getCategory_produit().getId()==5) {
+						
+						if_son = true;
+						
+					}
+					
 				}
 				
 			}
@@ -327,6 +341,20 @@ public class commandeController {
 			prof_cmd_bl_fact_client_rc_avoir grp = new prof_cmd_bl_fact_client_rc_avoir(clt_rc, null, cmd, bl, null, null);
 			
 			grpRepo.save(grp); grpRepo.flush();
+			
+			//----------------------------------------------- 
+			
+			//-------------------------------------- INSERT F TABLE NKHALA MYSQL --------------------<
+			
+			if(if_son==true) {
+				
+				Connection_peseur cp = new Connection_peseur();
+				
+				cp.function_son_bl(bl.getNumero(), bl.getDate());
+				
+			}
+			
+			//---------------------------------------------------------------------------------------
 			
 			return "redirect:/commande?id_bl="+bl.getId()+"&num_bl="+bl.getNumero()+"&type=bl";
 		

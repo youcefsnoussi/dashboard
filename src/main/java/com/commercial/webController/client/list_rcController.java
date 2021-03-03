@@ -31,6 +31,7 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
+import com.commercial.functions.generate_Doc;
 import com.commercial.functions.track_operations;
 
 @Controller
@@ -258,5 +259,28 @@ public class list_rcController {
 		return "client/list_rc_client";
 		
 	}
+	
+	//-----------------------------------------------------------------------------
+	
+	@Autowired
+	generate_Doc gd;
+	
+	@RequestMapping(value="/print_etat_clt")
+	public String print_bl(HttpServletRequest request,
+						 @RequestParam("etat") String etat,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String pdf = "";
+		
+		
+		pdf = gd.generate_etat_client(etat);
+			
+		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	//-----------------------------------------------------------------------------
 	
 }

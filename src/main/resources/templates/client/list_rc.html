@@ -45,15 +45,35 @@
 					
 					<div class="row">
 					
-						<div class="col-md-3" >
+						<div class="col-md-2" >
 						
 							<button id="add_rc" class="btn btn-dark btn_icon"> <span> Ajouter un nouveau RC </span> <i class="far fa-plus-circle"></i> </button>
 						
 						</div>
 						
-						<div class="col-md-3" >
+						<div class="col-md-2" >
 						
 							<button id="rc_clt" class="btn btn-dark btn_icon"> <span> Client </span> <i class="far fa-repeat"></i> <span> RC </span> </button>
+						
+						</div>
+						
+						<div class="col-md-2" >
+						
+							<div class="input-group mb-3">
+							  
+							  <select id="etat_clt" class="form-control">
+							  
+							  	<option value="tout">Tout</option>
+							  	<option value="debit">Débiteur</option>
+							  	<option value="credit">Créditeur</option>
+							  	<option value="sold">Soldé</option>
+							  
+							  </select>
+							  
+							  <div class="input-group-append">
+							    <input type="button" id="print" class="btn btn-dark" value="Imprimer">
+							  </div>
+							</div>
 						
 						</div>
 						
@@ -104,8 +124,8 @@
 										<td th:text="${rc.code}"></td>
 										<td th:text="${rc.numero_rc}"></td>
 										<td th:text="${rc.nom}+' '+${rc.prenom}"></td>
-										<td th:text="${#numbers.formatDecimal(rc.sold_encours, 3, 'WHITESPACE', 2,'POINT')}"></td>
-										<td th:text="${#numbers.formatDecimal(rc.plafond, 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td style="text-align: right;" th:text="${#numbers.formatDecimal(rc.sold_encours, 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td style="text-align: right;" th:text="${#numbers.formatDecimal(rc.plafond, 3, 'WHITESPACE', 2,'POINT')}"></td>
 										<td th:if="${rc.etat_blockage}=='active'" style="text-align:center"> <button type="button" class="btn active btn-lg btn-success rounded-pill"  data-toggle="tooltip" data-placement="bottom" title="Active"></button> </td>
 										<td th:if="${rc.etat_blockage}=='block'" style="text-align:center"> <button type="button" class="btn active btn-lg btn-danger rounded-pill" data-toggle="tooltip" data-placement="bottom" title="Blocké"></button> </td>
 										<td th:if="${rc.etat_blockage}=='blacklist'" style="text-align:center"> <button type="button" class="btn active btn-lg btn-dark rounded-pill" data-toggle="tooltip" data-placement="bottom" title="Blackliste"></button> </td>
@@ -125,7 +145,7 @@
 										<th></th>
 										<th></th>
 										<th></th>
-										<th></th>
+										<th style="text-align: right;"></th>
 										<th></th>
 										<th></th>
 										<th></th>

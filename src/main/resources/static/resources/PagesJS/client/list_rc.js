@@ -41,10 +41,6 @@ $(document).ready(function() {
 			        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 			      );
 			      
-			      $( api.column( 4, {page:'current'} ).footer() ).html(
-			        api.column( 4, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-			      );
-			      
 			 },
     };
  		
@@ -66,7 +62,8 @@ $(document).ready(function() {
 		
 		var id_rc = $(this).attr("id_rc");
 		
-		$('#print_content').html('<iframe id="frame" width="" height="" onload="ifrhgh()" frameborder="0" src="info_rc?id_rc='+id_rc+' "></iframe>');
+		$('#print_content').html('<iframe id="frame" width="" height="" onload="ifrhgh()" frameborder="0" '+
+										'src="info_rc?id_rc='+id_rc+' "></iframe>');
 		
 		$("#title").text("Détail RC");
 		
@@ -85,6 +82,27 @@ $(document).ready(function() {
 		$("#icone").attr("class","far fa-repeat");
 		
 		$("#new_rc").modal("show");
+		
+	});
+	
+	$("#print").click(function(){
+		
+		var etat = $("#etat_clt").val();
+		
+		var title = $("#etat_clt option:selected").text();
+		
+		if(etat != "tout"){
+			
+			$('#print_content').html('<iframe id="frame" width="" height="" onload="ifrhgh()" frameborder="0" '+
+					'src="print_etat_clt?etat='+etat+' "></iframe>');
+
+			$("#title").text("Etat des soldes "+title);
+			
+			$("#icone").attr("class","far fa-print");
+			
+			$("#new_rc").modal("show");
+			
+		}
 		
 	});
 	

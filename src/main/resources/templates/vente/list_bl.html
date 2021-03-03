@@ -120,7 +120,8 @@
 				
 				num_bl = $(this).attr("num_bl");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="edit_bl?id_bl='+id_bl+'"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+											'src="edit_bl?id_bl='+id_bl+'"></iframe>');
 				
 				$("#title_bl").text("Détail BL N° "+num_bl);
 				
@@ -136,7 +137,8 @@
 				
 				num_bl = $(this).attr("num_bl");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="print_bl?id_bl='+id_bl+'"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+											'src="print_bl?id_bl='+id_bl+'"></iframe>');
 				
 				$("#title_bl").text("Détail BL N° "+num_bl);
 				
@@ -191,8 +193,46 @@
 				
 			});
 			
-		});
-
+			var id_bl;
+			
+			$(".cancel").click(function(){
+				
+				id_bl = $(this).attr("id_bl");
+				var num_bl = $(this).attr("num_bl");
+				var code_client = $(this).attr("code_client");
+				var montant = $(this).attr("montant");
+				var factured = $(this).attr("etat_liv");
+				
+				$("#text_confirmation").html("Etes vous sure d'annuler le Bon de chargement N°<b>"+num_bl+"</b> avec le monatant <b>"
+												+montant+" DA TTC</b> du client avec le code <b>"+code_client+"</b> ?");
+				
+				$("#confirmation").modal('show');
+				
+			});
+			
+			$("#confirm").click(function(){
+				
+				$.ajax({
+					url : 'cancel_bl',
+					data : {
+						id_bl : id_bl
+					},
+					success : function(responseJson) {
+						
+						location.reload();/*
+						var url = new URL(window.location.href);
+						url.searchParams.set('ret','ok');
+						window.location.href = url.href;*/
+						
+					}
+					
+				});
+				
+			});
+			
+		}); //-------------------------------------------> END Document Ready <-------------------------------------//
+		
+		
 		$(function () {
 		    $('#fact_detail_modal').on('shown.bs.modal', function () {
 		        //$('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>');
@@ -283,12 +323,19 @@
 								<td th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(bl.tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td style="text-align: center;"> <button type="button" class="btn btn-info info" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
-																						<i class="far fa-edit"></i>
-																 </button> 
-																 <button type="button" class="btn btn-info print" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
-																						<i class="far fa-print"></i>
-																 </button> 
+								<td style="text-align: center;    width: 10%;"> 
+									 <button type="button" class="btn btn-warning info" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
+															<i class="far fa-edit"></i>
+									 </button> 
+									 <button type="button" class="btn btn-primary print" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
+															<i class="far fa-print"></i>
+									 </button> 
+									 <button th:if="${cancel_bl}==true" type="button" class="btn btn-danger cancel" 
+										th:attr="id_bl=${bl.id},num_bl=${bl.numero},
+												 code_client=${bl.registre_commerce.code},etat_liv=${bl.etat_livraison},
+												 montant=${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"> 
+											<i class="far fa-trash"></i>
+									 </button> 
 								</td>
 								
 							</tr>

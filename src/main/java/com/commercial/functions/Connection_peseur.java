@@ -148,4 +148,148 @@ public class Connection_peseur {
 		
 	}
 	
+	//---------------------------------------------------------------------------------------
+	
+	public void function_son_bl(String numero_bl, String date) {
+		
+		
+		Connection_peseur db = new Connection_peseur();
+		Connection con = db.getconnection();
+
+	
+  		Statement state = null;
+		try {
+			state = con.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		try {
+			
+			String [] d = date.split("/");
+			
+			String datee = d[2]+"/"+d[1]+"/"+d[0];
+			
+			String sql = "INSERT INTO chargrments (idchargrments, date_chargement) VALUES ('"+numero_bl+"', '"+datee+"')";
+			
+			state.execute(sql);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		try {
+			
+			con.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//---------------------------------------------------------------------------------------
+	
+	public double function_get_quant_son_bl(String numero_bl) {
+		
+		double quant_ret = 0;
+		
+		Connection_peseur db = new Connection_peseur();
+		Connection con = db.getconnection();
+
+	
+  		Statement state = null;
+		try {
+			state = con.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		try {
+			
+			
+			String sql = "SELECT * FROM charger WHERE num_fact = '"+numero_bl+"' ";
+			
+			ResultSet res = state.executeQuery(sql);
+			
+			if(res.next()) {
+				
+				quant_ret = res.getDouble("poidnetproduitfini");
+				
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		try {
+			
+			con.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return quant_ret;
+		
+	}
+	
+	//---------------------------------------------------------------------------------------
+	
+	public void update_bl_fact_son(String numero_bl, String numero_fact) {
+		
+		
+		Connection_peseur db = new Connection_peseur();
+		Connection con = db.getconnection();
+
+	
+  		Statement state = null;
+		try {
+			state = con.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		try {
+			
+			
+			String sql = "UPDATE charger SET num_fact = '"+numero_fact+"' WHERE num_fact = '"+numero_bl+"' ";
+			
+			state.execute(sql);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		try {
+			
+			con.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//---------------------------------------------------------------------------------------
+	
+	
 }

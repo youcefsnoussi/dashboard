@@ -227,5 +227,14 @@ public class bon_livraison implements Serializable{
 	public void setMontant_ttc(double montant_ttc) {
 		this.montant_ttc = montant_ttc;
 	}
+
+	public boolean isCancel() {
+		return cancel;
+	}
+
+	public void setCancel(boolean cancel) {
+		this.cancel = cancel;
+	}
+	
 	
 }
