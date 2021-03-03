@@ -353,11 +353,16 @@ public class paymentsController {
 			
 			long id_rc = c_rcRepo.getOne(id_clt_rc).getRegistre_commerce().getId();
 			
-			paiement p = payRepo.if_payment_already_exist(banque, num_piece, date);
+			System.out.println("banc = "+banque.getNom_banque()+" / "+num_piece+" / "+date+" / "+montant+" / "+rcRepo.getOne(id_rc).getNom());
+			
+			List<paiement> p = payRepo.if_payment_already_exist(banque, num_piece, cc.convertion_InputDate_to_MyDate(date), 
+											montant, rcRepo.getOne(id_rc));
+			
+			System.out.println("if pay exist "+p.size());
 			
 			long id_pay = 0;
 			
-			if(p==null) {
+			if(p.size()==0) {
 			
 				paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
 											cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),

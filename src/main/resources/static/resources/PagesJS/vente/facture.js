@@ -370,7 +370,7 @@ $(document).ready(function() {
 		$("#total_tva_hidden").val(montant_tva);
 		
 		$("#total_ht").val((montant_ht).formatMoney(2, '.', ' '));
-		
+		/*
 		var p_redux = $("#pourc_redux").val();
 		
 		var montant_ht_redux = montant_ht - (montant_ht* (p_redux/100) );
@@ -378,12 +378,15 @@ $(document).ready(function() {
 		var montant_tva_redux = montant_tva - (montant_tva* (p_redux/100) );
 		
 		var montant_ttc_redux = montant_ht_redux + montant_tva_redux;
+		*/
 		
-		$("#total_ht_redux").val( (montant_ht_redux).formatMoney(2, '.', ' ') );
-		$("#total_tva").val( (montant_tva_redux).formatMoney(2, '.', ' ') );
-		$("#total_ttc").val( (montant_ttc_redux).formatMoney(2, '.', ' ') );
+		$("#total_ht_redux").val( (montant_ht).formatMoney(2, '.', ' ') );
+		$("#total_tva").val( (montant_tva).formatMoney(2, '.', ' ') );
+		$("#total_ttc").val( (montant_ht+montant_tva).formatMoney(2, '.', ' ') );
 		
 	});
+	
+	//____________________________________________> CALCULE REMISE <_____________________________________//
 	
 	$("#pourc_redux").keyup(function() {
 		
@@ -394,16 +397,56 @@ $(document).ready(function() {
 		var montant_tva = $("#total_tva_hidden").val();
 		
 		var montant_ht_redux = montant_ht - (montant_ht* (p_redux/100) );
-		
+		//-----------------------------------------------------------------------------> calcule b %
 		var montant_tva_redux = montant_tva - (montant_tva* (p_redux/100) );
 		
+		/*
+		var montant_ht_redux = montant_ht - p_redux;
+		
+		var montant_tva_redux = montant_tva - p_redux;
+		*/
 		var montant_ttc_redux = montant_ht_redux + montant_tva_redux;
 		
-		$("#total_ht_redux").val( (montant_ht_redux).formatMoney(2, '.', ' ') );
+		$("#total_ht").val( (montant_ht_redux).formatMoney(2, '.', ' ') );
 		$("#total_tva").val( (montant_tva_redux).formatMoney(2, '.', ' ') );
 		$("#total_ttc").val( (montant_ttc_redux).formatMoney(2, '.', ' ') );
 		
 	})
+	
+	$("#mnt_redux").keyup(function() {
+		
+		console.log("enter mnt")
+		
+		var p_redux = parseFloat($(this).val());
+		
+		var montant_ht = $("#total_ht_hidden").val();
+		
+		var montant_tva = $("#total_tva_hidden").val();
+		
+		
+		var montant_ht_redux = montant_ht - p_redux;
+		
+		var tva_redux = $("#tva_redux").val();
+		
+		var montant_tva_redux = montant_ht_redux * (tva_redux/100);
+		
+		var montant_ttc_redux = montant_ht_redux + montant_tva_redux;
+		
+		//------------ ------------------- calcule poucentage --------------------
+		
+		var pourcentage = (p_redux * 100) /  montant_ht;
+		
+		$("#pourc_redux").val(pourcentage.formatMoney(2, '.', ' '));
+		
+		//------------ --------------------- -------------------- ----------------
+		
+		$("#total_ht").val( (montant_ht_redux).formatMoney(2, '.', ' ') );
+		$("#total_tva").val( (montant_tva_redux).formatMoney(2, '.', ' ') );
+		$("#total_ttc").val( (montant_ttc_redux).formatMoney(2, '.', ' ') );
+		
+	})
+	
+	//____________________________________________> CALCULE REMISE <_____________________________________//
 	
 	//-------------------------------- Zero Blur -------------------------------------
 	

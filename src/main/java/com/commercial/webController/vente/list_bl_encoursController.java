@@ -193,7 +193,8 @@ public class list_bl_encoursController {
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
-		if(user.getRole().getNom_role().equals("Admin")) {
+		if(user.getRole().getNom_role().equals("Admin") || user.getRole().getNom_role().equals("Responsable") 
+				|| user.getRole().getNom_role().equals("Commercial") ) {
 			
 			model.addAttribute("bls", bon_lRepo.get_bl_encours());
 			
@@ -203,6 +204,17 @@ public class list_bl_encoursController {
 			model.addAttribute("bls", bon_lRepo.get_bl_encours_with_user(user));
 			
 		}
+		
+		boolean cancel_bl = false;
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("cancel_bl")) 
+		{ cancel_bl = true; }
+		
+		model.addAttribute("cancel_bl", cancel_bl);
+		
+		//----------------------------------------------------------------
 		
 		return "vente/list_bl";
 		
@@ -727,12 +739,18 @@ public class list_bl_encoursController {
 				
 				//---------------	
 				
-				//------------------------- insert into MY SQL Peseur ------------
+				//------------------------- insert into MY SQL Peseur IF AIN ROMANA------------
 				
-				Connection_peseur cp = new Connection_peseur();
+				if(user.getUnite().getIdentifiant()==1) {
 				
-				cp.insert_fct_to_peseur(numero_fact, today);
-				 
+					Connection_peseur cp = new Connection_peseur();
+					
+					cp.insert_fct_to_peseur(numero_fact, today);
+					
+					cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
+				
+				}
+				
 				//------------------------- END INSERT into MY SQL Peseur ---------------------------------------
 				
 			}

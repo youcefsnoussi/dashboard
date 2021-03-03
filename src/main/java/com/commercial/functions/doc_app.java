@@ -50,7 +50,8 @@ public class doc_app {
 	 *
 	 *				------------------------------  VENTE -------------------------------------
 	 *				- change_user_cmd =>  ibedel user li khdem commande 
-	 * 				
+	 * 				- cancel_bl => yakder yanuli BL
+	 * 				- cancel_ble => yakder yanuli BL emlpoyée
 	 * 				
 	 * 				--------------------------------------------------------------------------------
 	 * 	

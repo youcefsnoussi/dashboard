@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +20,7 @@ import com.commercial.entities.schema.article.repository.pesage_produitRepositor
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.article.repository.produitRepository;
 import com.commercial.entities.schema.article.repository.sous_category_produitRepository;
+import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
@@ -39,6 +39,7 @@ import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
+import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 
 
@@ -350,6 +351,37 @@ public class history_by_client_or_rc_Controller {
 		}
 		
 		return ret;
+		
+	}
+	
+	//----------------------------------------------------------------------------------
+	
+	@Autowired
+	generate_Doc gd;
+	
+	@RequestMapping(value="/print_releve_client")
+	public String print_vente_client(HttpServletRequest request,
+						 @RequestParam("id_rc") long id_rc,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		registre_commerce rc = rcRepo.getOne(id_rc);
+		
+		//String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
+		
+		String pdf = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start  = conv.convertion_InputDate_to_MyDate(start);
+		
+		end  = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_releve_client(start, end, rc);
+			
+		return "redirect:/display_pdf?file="+pdf;
 		
 	}
 	

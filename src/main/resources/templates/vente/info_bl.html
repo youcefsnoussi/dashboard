@@ -30,6 +30,8 @@
 		
 		$(".sub").click(function(){
 			
+			$(".sub").prop("disabled","true");
+			
 			$(".clicked").val(0);
 			
 			$(this).parent().parent().find(".clicked").val(1);

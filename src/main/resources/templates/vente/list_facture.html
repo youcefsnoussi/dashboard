@@ -22,9 +22,12 @@
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
-		
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
 		
 		<script type="text/javascript">
 		
@@ -108,6 +111,12 @@
 					      );
 					      
 					 },
+					 "createdRow": function ( row, data, index ) {
+						$('td', row).eq(7).text( parseFloat(data[7]).formatMoney(2, ',', ' ')),
+			         	$('td', row).eq(8).text( parseFloat(data[8]).formatMoney(2, ',', ' ')),
+			         	$('td', row).eq(9).text( parseFloat(data[9]).formatMoney(2, ',', ' '))
+						  
+					},
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
@@ -208,6 +217,37 @@
 				
 			});
 			*/
+			
+			$("#generate").click(function(){
+				
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.replace(/ /g, ""));
+					
+				});
+				
+				var myExcel = new ExcelGen({
+					
+					  "src_id": "table",
+					
+					  "show_header": true
+					
+				});
+				
+				myExcel.generate();
+				/*
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.formatMoney(2, '.', ' '));
+					
+				});
+				*/
+			});
+			
 		});
 
 		$(function () {
@@ -290,6 +330,12 @@
 							
 						</div>
 						
+						<div class="col-md-1" >
+						
+							<button class="btn btn-dark" id="generate">Excel</button>
+						
+						</div>
+						
 					</div>
 					
 					<hr>
@@ -328,9 +374,9 @@
 								<td th:if="${list_fact.mode_paiement}!=null" th:text="${list_fact.mode_paiement.designation}"></td>
 								<td th:unless="${list_fact.mode_paiement}!=null" th:text="''"></td>
 								<td th:text="${list_fact.matricule_camion}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${list_fact.montant_ht}" class="rr"></td>
+								<td th:text="${list_fact.montant_tva}" class="rr"></td>
+								<td th:text="${list_fact.montant_ttc}" class="rr"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
 																						<i class="far fa-info-square"></i>
 																 </button>
@@ -350,9 +396,9 @@
 								<td th:text="${list_fact.registre_commerce.nom}+' '+${list_fact.registre_commerce.prenom}"></td>
 								<td th:text="${list_fact.mode_paiement.designation}"></td>
 								<td th:text="${list_fact.matricule_camion}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${list_fact.montant_ht}" class="rr"></td>
+								<td th:text="${list_fact.montant_tva}" class="rr"></td>
+								<td th:text="${list_fact.montant_ttc}" class="rr"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
 																						<i class="far fa-info-square"></i>
 																 </button>

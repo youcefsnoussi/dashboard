@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement;
 import com.commercial.entities.schema.static_data.banque;
 
@@ -35,12 +36,17 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 			
 			+ " WHERE pay.cancel = 'false' "
 			
-			+ " AND banque = :bank "
+			+ " AND pay.banque = :bank "
 			
-			+ " AND numero_piece = :num_piece"
+			+ " AND pay.numero_piece = :num_piece "
 			
-			+ " AND date = :date ")
+			+ " AND pay.date = :date "
+			
+			+ " AND pay.montant = :montant "
+			
+			+ " AND pay.registre_commerce = :rc")
 	
-	public paiement if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece, @Param("date") String date);
+	public List<paiement> if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece, @Param("date") String date, 
+			@Param("montant") double montant, @Param("rc") registre_commerce rc);
 	
 }

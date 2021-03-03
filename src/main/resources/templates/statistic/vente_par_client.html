@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript">
+		
+		$(document).ready(function() {
+			/*
+			var getUrlParameter = function getUrlParameter(sParam) {
+			    var sPageURL = window.location.search.substring(1),
+			        sURLVariables = sPageURL.split('&'),
+			        sParameterName,
+			        i;
+
+			    for (i = 0; i < sURLVariables.length; i++) {
+			        sParameterName = sURLVariables[i].split('=');
+
+			        if (sParameterName[0] === sParam) {
+			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+			        }
+			    }
+			};
+			
+			var ret = getUrlParameter('ret');
+			
+			if(ret!=null){
+				
+				$("#title").text("Information");
+				$("#icone").attr("class","far fa-info-circle");
+				
+				$("#text").text("Annulation effectuer avec succes ");
+				
+				$("#error").modal('show');
+					
+			}
+			
+			$('[data-toggle="tooltip"]').tooltip()
+			*/
+			var datatable_config = {
+					"language": {
+				            "url": "resources/Plugins/datatable/lang/French.json"
+				    },
+					"ordering": true,
+			    	"bPaginate": false,
+					"scrollY":"400px",
+					"scrollX": "auto",
+			        "deferRender": true,
+			        initComplete: function () {
+			            this.api().columns([1]).every( function () {
+			                var column = this;
+			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                        var val = $.fn.dataTable.util.escapeRegex(
+			                            $(this).val()
+			                        );
+			 
+			                        column
+			                            .search( val ? '^'+val+'$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option value="'+d+'">'+d+'</option>' )
+			                } );
+			            } );
+			        },
+					 drawCallback: function () {
+						
+					      var api = this.api();
+					      
+					      $( api.column( 2, {page:'current'} ).footer() ).html(
+					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					 },
+		    };
+		 		
+		 	var table = $('#table').DataTable(datatable_config);
+			
+			$("#print").click(function(){
+				
+				var id_rc = $("#rc").val();
+				
+				var start = $("#start").val();
+				
+				var end = $("#end").val();
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+											'src="print_vente_client?id_rc='+id_rc+'&start='+start+'&end='+end+'"></iframe>');
+				
+				$("#title_fact").text("Imprimer");
+				
+				$("#icone_fact").attr("class","far fa-print");
+				
+				$("#display_details").modal("show");
+				
+			});
+			
+		});
+		
+		function ifrhgh(){
+		    var iframehght =  $("#frame").contents().height();
+		    $("#frame").height(iframehght);
+		}
+		
+		</script>
+		
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100"> <!-- h-100 -->
+		
+		<div class="card">
+		
+			<h3 class="card-header  text-center"> <i class="far fa-history"></i> Vente Par Client </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<div class="row">
+					
+						<div class="col-md-3" >
+						
+							<label>Registre Commerce</label>
+							<select class="selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
+																								name="rc" id="rc" data-size="5">
+								<option  value="0" th:if="${id_rc}==0" selected>RC</option>
+								<option  value="0" th:unless="${id_rc}==0" >RC</option>
+								
+								<option th:each="rc:${list_rc}" th:value="${rc.id}" th:text="${rc.code}"  
+										th:attr="data-subtext=${rc.nom}+' '+${rc.prenom}" ></option>
+								
+							</select>
+							
+						</div>
+						
+						<div class="col-md-3" >
+						
+							<div class="input-group">
+								
+									<div class="input-group-append">
+									
+										<input id="start" type="date" name="start"  class="form-control date" style="width:100%;" 
+										th:value="${start}" placeholder="DU">
+										<span class="input-group-text declaration far fa-calendar-alt"> </span>
+										<input id="end" type="date" name="end"  class="form-control date" style="width:100%;" 
+										th:value="${end}" placeholder="AU">
+										<button id="print" class="btn btn-secondary" type="button">Imprimer</button>
+										
+									</div>
+									
+							</div>
+						
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					
+						<thead class="thead-dark">
+							
+							<tr>
+							
+								<th>Code</th>
+								<th>Article</th>
+								<th>Quantite</th>
+								<th>Montant HT</th>
+								<th>Montant TTC</th>	
+								
+							</tr>
+							
+						</thead>
+						
+					</table>
+				
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<div id="display_details" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title" class="modal-title" > </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body" >
+	         
+	         <div id="print_content">
+	         
+	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         
+	         </div>
+	         
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone_error" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title_error"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	<!--  
+	<div id="confirmation" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered"  role="document">
+	  	
+	    <div class="modal-content">
+	      
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-exclamation-triangle" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title">Attention</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body">
+	        <p id="text_confirmation"></p>
+	      </div>
+	      
+	      <div class="modal-footer justify-content-center">
+	      	<button id="confirm" type="button" class="btn btn-primary">OUI</button>
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">NON</button>
+	      </div>
+	      
+	    </div>
+	    
+	  </div>
+	</div>
+	-->
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+	
+	
+</body>
+</html>

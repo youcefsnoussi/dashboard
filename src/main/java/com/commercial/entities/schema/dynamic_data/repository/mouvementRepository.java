@@ -15,7 +15,8 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	
 	@Query( " FROM mouvement mvm "
 			
-		  + " WHERE mvm.client = :clt ")
+		  + " WHERE mvm.client = :clt "
+		  + " ORDER BY mvm.id ASC ")
 	
 	public List<mouvement>  mouvement_by_client(@Param("clt") client clt); //_intervall
 	
@@ -24,7 +25,8 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	@Query( " FROM mouvement mvm "
 			
 		  + " WHERE mvm.client = :clt "
-		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end)")
+		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end)"
+		  + " ORDER BY mvm.id ASC ")
 	
 	public List<mouvement>  mouvement_by_client_intervall(@Param("clt") client clt,@Param("start") Date start, @Param("end") Date end); 
 	
@@ -32,7 +34,9 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	
 	@Query( " FROM mouvement mvm "
 			
-		  + " WHERE mvm.registre_commerce = :rc ")
+		  + " WHERE mvm.registre_commerce = :rc "
+		  
+		  + " ORDER BY mvm.id ASC ")
 	
 	public List<mouvement>  mouvement_by_rc(@Param("rc") registre_commerce rc); //_intervall
 	
@@ -41,9 +45,29 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	@Query( " FROM mouvement mvm "
 			
 		  + " WHERE mvm.registre_commerce = :rc "
-		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end)")
+		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end) "
+		  + " ORDER BY mvm.id ASC")
 	
 	public List<mouvement>  mouvement_by_rc_intervall(@Param("rc") registre_commerce rc,@Param("start") Date start, @Param("end") Date end); 
 	
+	//---------------------------------------------------------------------------------
+	
+	@Query( " FROM mouvement mvm "
+			
+		  + " WHERE mvm.registre_commerce = :rc "
+		  + " AND date = :date "
+		  + " ORDER BY mvm.id ASC")
+	
+	public List<mouvement> sold_debut_periode(@Param("rc") registre_commerce rc,@Param("date") String date);
+	
+	//---------------------------------------------------------------------------------
+	
+	@Query( " FROM mouvement mvm "
+			
+		  + " WHERE mvm.registre_commerce = :rc "
+		  + " AND date = :date "
+		  + " ORDER BY mvm.id DESC")
+	
+	public List<mouvement> sold_fin_periode(@Param("rc") registre_commerce rc,@Param("date") String date);
 	
 }

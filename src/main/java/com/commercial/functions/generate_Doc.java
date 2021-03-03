@@ -14,9 +14,11 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
+import com.commercial.entities.schema.client.registre_commerce;
+import com.commercial.entities.schema.dynamic_data.repository.mouvementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_employee;
@@ -92,6 +94,9 @@ public class generate_Doc {
 	
 	@Autowired
 	bon_transfert_interne_detailRepository bti_dRepo;
+	
+	@Autowired
+	mouvementRepository mvmRepo;
 	
 	public generate_Doc() {
 		// TODO Auto-generated constructor stub
@@ -246,9 +251,11 @@ public class generate_Doc {
 				mp.put("user", fact.getUsers().getMatricule());
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", fact.getDate());
+				mp.put("mode_reg", fact.getMode_paiement().getDesignation());
 				
 				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
+				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(fact.getMontant_ht()) );
 				mp.put("total_tva", df.format(fact.getMontant_tva()) );
 				mp.put("total_ttc", df.format(fact.getMontant_ttc()) );
@@ -316,7 +323,7 @@ public class generate_Doc {
 				    String key = entry.getKey();
 				    Double value = entry.getValue();
 				    
-				    cumule_tva = cumule_tva + key + "% \t"+ value+"\n";
+				    cumule_tva = cumule_tva + key + "% \t"+ df.format(value)+"\n";
 				    
 				}
 				
@@ -497,9 +504,9 @@ public class generate_Doc {
 		
 		return "D:/Commercial/Doc/FCT/FCTAV.pdf";
 
-}	
+	}	
 
-//------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
 	
 	public String generate_bordereau_pay(String start, String end, long [] mode_pay) {
 		 
@@ -623,18 +630,444 @@ public class generate_Doc {
 	
 	}
 	
+	//------------------------------------------------------------------------------
+	
+	public String generate_vente_client(String start, String end, registre_commerce rc) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/VC.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_client.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				String pren = rc.getPrenom();
+				
+				if(pren==null) { pren=""; }
+				
+				String clt = rc.getCode()+" "+rc.getNom()+" "+pren+" "+rc.getCategory().getNom_category();
+				
+				mp.put("start",start);
+				mp.put("end",end);
+				mp.put("code_nom_client", clt);/*
+				mp.put("total_quantite", total_quant);
+				mp.put("total_ht", total_ht);
+				mp.put("total_ttc", total_ttc);*/
+				mp.put("id_rc",rc.getId());
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\VC.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_vente_produit(String start, String end, article art) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/VP.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_produit.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				String code_libelle = art.getCode()+" - "+art.getLibelle();
+				
+				
+				
+				mp.put("start",start);
+				mp.put("end",end);
+				mp.put("code_libelle", code_libelle);
+				mp.put("id_art",art.getId());
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\VP.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_vente_produit_val(String start, String end, article art) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/VPV.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_produit_val.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				String code_libelle = art.getCode()+" - "+art.getLibelle();
+				
+				
+				
+				mp.put("start",start);
+				mp.put("end",end);
+				mp.put("code_libelle", code_libelle);
+				mp.put("id_art",art.getId());
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\VPV.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_etat_client(String etat) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/EC.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\etat_client.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				Map<String, Object> mp = new HashMap<String, Object>();
+					
+				String condition = "", etat_string = "";
+				
+					switch (etat) {
+					
+						case "debit": {
+							
+							etat_string = "Débiteur";
+							condition  = " sold_encours > '0' ";
+							
+						}break;
+						
+						case "credit": {
+							
+							etat_string = "Créditeur";
+							condition  = " sold_encours < '0' ";
+							
+						}break;
+						
+						case "sold": {
+							
+							etat_string = "Soldé";
+							condition  = " sold_encours = '0' ";
+							
+						}break;	
+							
+					}
+				
+					mp.put("etat_string", etat_string);
+					
+					mp.put("condition", condition);
+					
+					try {
+						
+						Connection con  = localDataSource.getConnection();
+					
+						JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+						
+						File dir = new File("D:\\Commercial\\Doc\\BL");
+						
+					    if (!dir.exists()) dir.mkdirs();
+						
+						JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\STAT\\EC.pdf");
+						
+						con.close();
+						
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//---------------------------------------------------------------------------------------------
+	
+	public String generate_vente_produit_global(String start, String end) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/VPG.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_produit_global.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("start",start);
+				mp.put("end",end);
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\VPG.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_vente_employee(String start, String end) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/VEMP.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_personnel.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("start",start);
+				mp.put("end",end);
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\VEMP.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_releve_client(String start, String end, registre_commerce rc) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/RC.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\releve_client.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				DecimalFormat df = new DecimalFormat("#,##0.00");
+				
+				mp.put("code_nom_client", rc.getCode()+" - "+rc.getNom()+" "+rc.getPrenom());
+				mp.put("start", start);
+				mp.put("end", end);
+				mp.put("id_rc", rc.getId());
+				mp.put("sold_start", df.format( mvmRepo.sold_debut_periode(rc, start).get(0).getOld_sold_rc() ));
+				mp.put("sold_end", df.format( mvmRepo.sold_fin_periode(rc, end).get(0).getNew_sold_rc() ));
+				
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\RC.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_vente_produit_client(String start, String end, registre_commerce rc) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/VPC.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_produit_client.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				String pren = rc.getPrenom();
+				
+				if(pren==null) { pren=""; }
+				
+				mp.put("code_nom_client", rc.getCode()+" - "+rc.getNom()+" "+pren+" "+rc.getCategory().getNom_category());
+				mp.put("start", start);
+				mp.put("end", end);
+				mp.put("id_rc", rc.getId());
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\VPC.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	//_____________________________________________________________ EXPORT EXCEL =========================
 	/*
-	 private static JRXlsDataSource getDataSource_bl() throws JRException
+	 private static JRXlsDataSource getDataSource_vente_client() throws JRException
 	  {
 	    JRXlsDataSource ds;
 	    try
 	    {
 	  
-	      String[] columnNames1 = new String[]{"code","name","quantite","nom_unite_mesure","lib","pesage","unite_mesage"};
-	      int[] columnIndexes1 = new int[]{ 0,1,2,3,4,5,6};
+	      String[] columnNames1 = new String[]{"code","libelle","quantite","total_ht","total_ttc"};
+	      int[] columnIndexes1 = new int[]{ 0,1,2,3,4};
 	      
 	      //ds = new JRXlsDataSource();
-	      ds = new JRXlsDataSource("D:\\Commercial\\report\\excel_transfert\\bl.xls");
+	      ds = new JRXlsDataSource("D:\\Commercial\\report\\excel_transfert\\vc.xls");
 	      ds.setColumnNames(columnNames1);
 	      ds.getNumberFormat();
 
@@ -650,4 +1083,75 @@ public class generate_Doc {
 
 	  }
 	*/
+	
+	//-------------------------------------------------------------------------------
+	
+	//________________________________________________________________________
+	/*
+	double total_ht = 0;
+	double total_ttc = 0;
+	double total_quant = 0;
+	
+	try {
+			
+		// creation du xls
+		WritableWorkbook workbook;
+		workbook = Workbook.createWorkbook(new File("D:\\Commercial\\report\\excel_transfert\\vc.xls"));
+		
+		WritableSheet sheet = workbook.createSheet("Premier classeur", 0);
+	
+	
+		List<Object[]> list_fct = fct_detRepo.get_quantite_sold_val_by_rc(start, end, rc);
+		
+		List<Object[]> list_fct_av = fct_av_detRepo.get_quantite_avoir_val_by_rc(start, end, rc);
+		
+		int ligne=0;
+		
+		for(int i=0;i<list_fct.size();i++) {
+			
+			sheet.addCell(new Label(0, ligne,(String) list_fct.get(i)[0] ));
+			sheet.addCell(new Label(1, ligne,(String) list_fct.get(i)[1] ));
+			sheet.addCell(new Label(2, ligne,Double.toString((double) list_fct.get(i)[2]) ));
+			sheet.addCell(new Label(3, ligne,Double.toString((double) list_fct.get(i)[3]) ));
+			sheet.addCell(new Label(4, ligne,Double.toString((double) list_fct.get(i)[5]) ));
+			
+			total_quant = total_quant + (double) list_fct.get(i)[2];
+			total_ht = total_ht + (double) list_fct.get(i)[3];
+			total_ttc = total_ttc + (double) list_fct.get(i)[5];
+			
+			ligne++;
+			
+		}
+		
+		for(int i=0;i<list_fct_av.size();i++) {
+			
+			sheet.addCell(new Label(0, ligne,(String) list_fct_av.get(i)[0] ));
+			sheet.addCell(new Label(1, ligne,(String) list_fct_av.get(i)[1] ));
+			sheet.addCell(new Label(2, ligne,Double.toString( ((double) list_fct_av.get(i)[2]) *(-1) ) ));
+			sheet.addCell(new Label(3, ligne,Double.toString( ((double) list_fct_av.get(i)[3]) *(-1) ) ));
+			sheet.addCell(new Label(4, ligne,Double.toString( ((double) list_fct_av.get(i)[5]) *(-1) ) ));
+			
+			total_quant = total_quant - (double) list_fct.get(i)[2];
+			total_ht = total_ht - (double) list_fct.get(i)[3];
+			total_ttc = total_ttc - (double) list_fct.get(i)[5];
+			
+			ligne++;
+			
+		}
+		
+		workbook.write();
+	
+		workbook.close();
+		
+	 } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}catch (WriteException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	 */
+	
+	//______________________________________________________________________________
+	
 }

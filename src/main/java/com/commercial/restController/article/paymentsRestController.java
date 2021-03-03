@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,7 +79,7 @@ public class paymentsRestController {
 	@RequestMapping(value="/cancel_payment")
 	public String cancel_payment(
 		@RequestParam("id_payment") long id_payment,
-									@SessionAttribute("user") users user) throws IOException, ParseException{
+		@SessionAttribute("user") users user) throws IOException, ParseException{
 		
 		get_time_date gtd = new get_time_date();
 		
