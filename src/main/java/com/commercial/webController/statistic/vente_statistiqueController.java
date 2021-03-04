@@ -212,6 +212,40 @@ public class vente_statistiqueController {
 	
 	//-----------------------------------------------------------------------------
 	
+	@RequestMapping(value="/vente_produit_client")
+	public String vente_produit_client(HttpServletRequest request,
+						 @RequestParam("id_rc") long id_rc,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		model.addAttribute("list_rc", rcRepo.findAll());
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		if(start.equals("0")) {
+			
+			model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+			
+			model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+			
+		}
+		else {
+			
+			model.addAttribute("start", start);
+			
+			model.addAttribute("end", end);
+			
+		}
+		
+		return "statistic/vente_produit_client";		
+	}
+	
+	//-----------------------------------------------------------------------------
+	
 	@Autowired
 	generate_Doc gd;
 	
@@ -317,6 +351,34 @@ public class vente_statistiqueController {
 		end  = conv.convertion_InputDate_to_MyDate(end);
 		
 		pdf = gd.generate_vente_produit_global(start, end);
+			
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	//------------------------------------
+	
+	@RequestMapping(value="/print_vente_produit_client")
+	public String print_vente_produit_client(HttpServletRequest request,
+						 @RequestParam("id_rc") long id_rc,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		//String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
+		
+		String pdf = "";
+		
+		registre_commerce rc = rcRepo.getOne(id_rc);
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start  = conv.convertion_InputDate_to_MyDate(start);
+		
+		end  = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_vente_produit_client(start, end, rc);
 			
 		return "redirect:/display_pdf?file="+pdf;
 		

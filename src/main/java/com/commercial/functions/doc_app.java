@@ -52,7 +52,7 @@ public class doc_app {
 	 *				- change_user_cmd =>  ibedel user li khdem commande 
 	 * 				- cancel_bl => yakder yanuli BL
 	 * 				- cancel_ble => yakder yanuli BL emlpoyée
-	 * 				
+	 * 				- facture_av => yakder idir facture avoir
 	 * 				--------------------------------------------------------------------------------
 	 * 	
 	 * 				PS : PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
