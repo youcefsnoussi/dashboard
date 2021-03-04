@@ -55,19 +55,19 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	@Query( " FROM mouvement mvm "
 			
 		  + " WHERE mvm.registre_commerce = :rc "
-		  + " AND date = :date "
+		  + " AND CAST(date as date) BETWEEN CAST(:start as date) AND CAST(:end as date)"
 		  + " ORDER BY mvm.id ASC")
 	
-	public List<mouvement> sold_debut_periode(@Param("rc") registre_commerce rc,@Param("date") String date);
+	public List<mouvement> sold_debut_periode(@Param("rc") registre_commerce rc, @Param("start") String start, @Param("end") String end);
 	
 	//---------------------------------------------------------------------------------
 	
 	@Query( " FROM mouvement mvm "
 			
 		  + " WHERE mvm.registre_commerce = :rc "
-		  + " AND date = :date "
+		  + " AND CAST(date as date) BETWEEN CAST(:start as date) AND CAST(:end as date)"
 		  + " ORDER BY mvm.id DESC")
 	
-	public List<mouvement> sold_fin_periode(@Param("rc") registre_commerce rc,@Param("date") String date);
+	public List<mouvement> sold_fin_periode(@Param("rc") registre_commerce rc, @Param("start") String start, @Param("end") String end);
 	
 }

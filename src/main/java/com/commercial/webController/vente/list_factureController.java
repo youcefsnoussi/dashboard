@@ -282,6 +282,15 @@ public class list_factureController {
 			
 			model.addAttribute("detail_facture", fact_detRepo.get_facture_detail(fact));
 			
+			//----------------------ROLE TEST---------------------------------
+			
+			if(user.getRole().getNom_role().equals("Admin") || 
+					(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("facture_av"))) 
+			{ ret = "vente/facture_avoir"; }
+			else { ret = "403"; }
+			
+			//----------------------------------------------------------------
+			
 		}
 		else {
 			

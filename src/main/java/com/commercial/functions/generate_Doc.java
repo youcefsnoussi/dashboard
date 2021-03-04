@@ -970,8 +970,8 @@ public class generate_Doc {
 				mp.put("start", start);
 				mp.put("end", end);
 				mp.put("id_rc", rc.getId());
-				mp.put("sold_start", df.format( mvmRepo.sold_debut_periode(rc, start).get(0).getOld_sold_rc() ));
-				mp.put("sold_end", df.format( mvmRepo.sold_fin_periode(rc, end).get(0).getNew_sold_rc() ));
+				mp.put("sold_start", df.format( mvmRepo.sold_debut_periode(rc, start, end).get(0).getOld_sold_rc() ));
+				mp.put("sold_end", df.format( mvmRepo.sold_fin_periode(rc, start, end).get(0).getNew_sold_rc() ));
 				
 				
 				try {
@@ -1011,6 +1011,10 @@ public class generate_Doc {
 		 JasperDesign jdesign; 
 			try {
 				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_produit_client_subreport1.jrxml");
+				
+				JasperReport JSubReport = JasperCompileManager.compileReport(jdesign);
+				
 				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\vente_produit_client.jrxml");
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 				
@@ -1024,12 +1028,13 @@ public class generate_Doc {
 				mp.put("start", start);
 				mp.put("end", end);
 				mp.put("id_rc", rc.getId());
+				mp.put("SubReportParam", JSubReport);
 				
 				try {
 					
 					Connection con  = localDataSource.getConnection();
 				
-					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					JasperPrint jprint = JasperFillManager.fillReport(jreport,  mp, con);
 					
 					File dir = new File("D:\\Commercial\\Doc\\STAT");
 					

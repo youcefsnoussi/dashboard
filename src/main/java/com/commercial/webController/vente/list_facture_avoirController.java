@@ -23,7 +23,6 @@ import com.commercial.entities.schema.client.repository.category_clientRepositor
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
 import com.commercial.entities.schema.dynamic_data.repository.mouvementRepository;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoirRepository;
@@ -38,7 +37,6 @@ import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.generateQRcode;
 import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 
