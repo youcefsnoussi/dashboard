@@ -14,17 +14,17 @@ import com.commercial.entities.schema.article.article;
 
 @Entity
 
-@Table(name="facture_avoir_detail" , schema = "proforma_cmd_bl_fact")
+@Table(name="facture_ristourne_detail" , schema = "proforma_cmd_bl_fact")
 
-public class facture_avoir_detail implements Serializable{
+public class facture_ristourne_detail implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "facture_avoir")
-	private facture_avoir facture_avoir;
+	@JoinColumn(name = "facture_ristourne")
+	private facture_ristourne facture_ristourne;
 	
 	@ManyToOne
 	@JoinColumn(name = "article")
@@ -42,15 +42,15 @@ public class facture_avoir_detail implements Serializable{
 	
 	private double montant_ttc;
 	
-	public facture_avoir_detail() {
+	public facture_ristourne_detail() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public facture_avoir_detail(com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir facture_avoir,
-			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
+	public facture_ristourne_detail(
+			facture_ristourne facture_ristourne, article article, double quantite, double prix_u_ht,
 			double montant_ht, double tva, double montant_tva, double montant_ttc) {
 		super();
-		this.facture_avoir = facture_avoir;
+		this.facture_ristourne = facture_ristourne;
 		this.article = article;
 		this.quantite = quantite;
 		this.prix_u_ht = prix_u_ht;
@@ -68,12 +68,12 @@ public class facture_avoir_detail implements Serializable{
 		this.id = id;
 	}
 
-	public facture_avoir getFacture_avoir() {
-		return facture_avoir;
+	public facture_ristourne getFacture_ristourne() {
+		return facture_ristourne;
 	}
 
-	public void setFacture_avoir(facture_avoir facture_avoir) {
-		this.facture_avoir = facture_avoir;
+	public void setFacture_ristourne(facture_ristourne facture_ristourne) {
+		this.facture_ristourne = facture_ristourne;
 	}
 
 	public article getArticle() {

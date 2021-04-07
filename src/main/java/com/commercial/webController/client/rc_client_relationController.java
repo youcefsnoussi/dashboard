@@ -64,7 +64,7 @@ public class rc_client_relationController {
 		
 		model.addAttribute("client", cltRepo.client_active_only());
 		
-		model.addAttribute("rc", rcRepo.rc_active_only());
+		model.addAttribute("rc", rcRepo.findAll());
 		
 		return ret;
 		

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.category_produit;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.client.category_client;
 
@@ -47,5 +48,15 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 			+ " ORDER BY category_client.nom_category ASC ")
 	
 	public List<prixUnitaire_article_categoryClient>  listing_prices(@Param("article") article article);
+	
+	//-------------------------------------------------------------------
+	
+	@Query(   " FROM prixUnitaire_article_categoryClient prix_u_c "
+			
+			+ " WHERE article.produit.sous_category_produit.category_produit = :cat_prod "
+			
+			+ " AND prix !=(-1) ")
+	
+	public List<prixUnitaire_article_categoryClient>  get_articles_ristourne(@Param("cat_prod") category_produit cat_prod);
 	
 }

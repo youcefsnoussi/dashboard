@@ -157,8 +157,6 @@ public class commandeController {
 		
 		//model.addAttribute("clients", clientRepo.client_active_only());
 		
-		
-		
 		List <client_registreCommerce> clt_rc = clt_rcRepo.ListRCwithCLIENT_active(gtd.get_date());
 		
 		List <client_registreCommerce> clt_rc_ret = new ArrayList<client_registreCommerce>();
@@ -240,7 +238,7 @@ public class commandeController {
 			
 			@SessionAttribute("user") users user){
 			
-			commande last_cmd = cmdRepo.findFirst1ByOrderByIdDesc();
+			commande last_cmd = cmdRepo.findFirst1ByOrderByNumeroDesc();
 			
 			String last_number = "";
 			
@@ -290,7 +288,7 @@ public class commandeController {
 				
 			}
 			
-			bon_livraison last_bl = bon_lRepo.findFirst1ByOrderByIdDesc();
+			bon_livraison last_bl = bon_lRepo.findFirst1ByOrderByNumeroDesc();
 			
 			last_number = "";
 			
@@ -346,7 +344,7 @@ public class commandeController {
 			
 			//-------------------------------------- INSERT F TABLE NKHALA MYSQL --------------------<
 			
-			if(if_son==true) {
+			if(if_son==true && user.getUnite().getIdentifiant()==1) {
 				
 				Connection_peseur cp = new Connection_peseur();
 				

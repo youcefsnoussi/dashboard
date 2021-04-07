@@ -31,7 +31,7 @@
 	</head>
 
 	<body >
-	
+	<br>
 	<!-- ---------------------------------------- -->
 	
 	<script type='text/javascript'> spin_it('on'); </script>
@@ -58,8 +58,28 @@
 	
 					<div class="card">
 	
-	
-						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
+						<div class="card-header">
+							
+							<div class="row">
+							
+								<div class="col-md-3">
+								
+									<h5 > <i class="far fa-user-alt"></i> Client </h5>
+								
+								</div>
+								
+								<div class="col-md-3">
+								
+									<button type="button" id="new_payment" class="btn btn-warning btn-sm">
+										<i class="far fa-money-bill-wave"></i> Nouveau Paiement 
+									</button>
+								
+								</div>
+							
+							</div>
+							
+						</div>		
+						
 						<br>
 	
 						<div class="card-body">
@@ -468,8 +488,9 @@
 	
 								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
 								
-								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="">
-										<option value="" selected>Selection</option>
+								<td> 
+									 <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="">
+										<option value="0" id_um="0" pu="0" tva="0" selected>Selection</option>
 									 </select> 
 								</td>
 								
@@ -505,6 +526,8 @@
 	
 	<script type='text/javascript'> spin_it('off'); </script>
 	
+	<!-- -------------------------------------------------------------------------------- -->
+	
 	<div id="error" class="modal" tabindex="-1" role="dialog">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
@@ -523,6 +546,32 @@
 	    </div>
 	  </div>
 	</div>
+	
+	<!-- ----------------------------------------------------------------------------------------------------------------- -->
+	
+	<div id="new_payment_modal" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone_pay" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title_pay" class="modal-title" > </h5>
+	        <button type="button" class="close close_pay" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content_pay" >
+	         
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary cloose close_pay" data-dismiss="modal" >Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ----------------------------------------------------------------------------------------------------------- -->
 	
 	<div id="bl_detail_modal" class="modal" tabindex="-1" role="dialog">
 	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
@@ -546,13 +595,7 @@
 	      	
 	      </div>
 	      
-	      <div class="modal-body" >
-	         
-	         <div id="print_content">
-	         
-	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
-	         
-	         </div>
+	      <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content" >
 	         
 	      </div>
 	      

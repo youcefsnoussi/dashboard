@@ -10,7 +10,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_transfert_interne;
 
 public interface bon_transfert_interneRepository extends JpaRepository<bon_transfert_interne, Long>{
 	
-	public bon_transfert_interne findFirst1ByOrderByIdDesc();
+	public bon_transfert_interne findFirst1ByOrderByNumeroDesc();
 	
 	@Query( " FROM bon_transfert_interne bti " +
 			

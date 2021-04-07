@@ -20,7 +20,7 @@ public class track_operations {
 	
 	public void add_track(String entity_operation, String designation_operation, long id_operation, users user) {
 		
-		System.out.println("=>class =>"+id_operation+" / user =>"+user.getUsername());
+		//System.out.println("=>class =>"+id_operation+" / user =>"+user.getUsername());
 		
 		track_operation_user trk =  new track_operation_user(entity_operation, designation_operation, id_operation, user);
 		

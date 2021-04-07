@@ -72,7 +72,7 @@
 	                       ], 
 	                       
 			        initComplete: function () {
-			            this.api().columns([0]).every( function () {
+			            this.api().columns([0, 4]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value=""></option></select>')
 			                    .appendTo( $(column.footer()).empty() )

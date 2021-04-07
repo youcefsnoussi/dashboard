@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.client.client;
+import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.user_menu.users;
 
 public interface factureRepository extends JpaRepository<facture, Long> {
 	
-	public facture  findFirst1ByOrderByIdDesc();
+	public facture  findFirst1ByOrderByNumeroDesc();
 	
 	//----------------------------------------------------------
 	
@@ -22,10 +23,20 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 				+ " WHERE fact.etat_sold = 'false' "
 				+ " AND fact.client = :clt")
 		 
-		public List<facture> client_active_only(@Param("clt") client clt);
+		public List<facture> client__active_only(@Param("clt") client clt);
 	
 	//----------------------------------------------------------
 	
+		@Query( " FROM facture fact "
+				
+				+ " WHERE fact.etat_sold = 'false' "
+				+ " AND fact.registre_commerce = :rc "
+				+ " ORDER BY fact.id")
+		 
+		public List<facture> get_factures_not_solde_by_rc(@Param("rc") registre_commerce rc);
+	
+	//----------------------------------------------------------
+		
 		@Query( " FROM facture fact "
 				
 				+ " WHERE fact.date = :today ")
@@ -84,5 +95,9 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 				" fct.registre_commerce.adresse, fct.registre_commerce.category.nom_category" )
 	 
 	public List<Object[]> get_rc_buy(@Param("start") String start, @Param("end") String end);
+	
+	//----------------------------------------------------------
+	
+	
 	
 }

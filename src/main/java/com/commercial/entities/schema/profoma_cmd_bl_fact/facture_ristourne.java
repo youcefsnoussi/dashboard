@@ -13,14 +13,13 @@ import javax.persistence.Table;
 
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.registre_commerce;
-import com.commercial.entities.schema.static_data.causes_facture_avoir;
 import com.commercial.entities.schema.user_menu.users;
 
 @Entity
 
-@Table(name="facture_avoir" , schema = "proforma_cmd_bl_fact")
+@Table(name="facture_ristourne" , schema = "proforma_cmd_bl_fact")
 
-public class facture_avoir implements Serializable{
+public class facture_ristourne implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,31 +48,15 @@ public class facture_avoir implements Serializable{
 	private String link_pdf;
 	
 	@ManyToOne
-	@JoinColumn(name = "facture")
-	private facture facture;
-	
-	@ManyToOne
 	@JoinColumn(name = "users")
 	private users users;
 	
-	private String etat_sold = "non_solde";
-	
-	private double sold_rest = montant_ttc;
-	
-	@ManyToOne
-	@JoinColumn(name = "cause")
-	private causes_facture_avoir cause;
-	
-	public facture_avoir() {
+	public facture_ristourne() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public facture_avoir(com.commercial.entities.schema.client.client client,
-			com.commercial.entities.schema.client.registre_commerce registre_commerce, String date, String time,
-			String numero, double montant_ht, double tva, double montant_ttc, String link_pdf,
-			com.commercial.entities.schema.profoma_cmd_bl_fact.facture facture,
-			com.commercial.entities.schema.user_menu.users users, String etat_sold, double sold_rest,
-			causes_facture_avoir cause) {
+	public facture_ristourne(client client, registre_commerce registre_commerce, String date, String time, String numero, double montant_ht, 
+			double tva, double montant_ttc, String link_pdf, users users) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;
@@ -84,11 +67,7 @@ public class facture_avoir implements Serializable{
 		this.tva = tva;
 		this.montant_ttc = montant_ttc;
 		this.link_pdf = link_pdf;
-		this.facture = facture;
 		this.users = users;
-		this.etat_sold = etat_sold;
-		this.sold_rest = sold_rest;
-		this.cause = cause;
 	}
 
 	public Long getId() {
@@ -171,14 +150,6 @@ public class facture_avoir implements Serializable{
 		this.link_pdf = link_pdf;
 	}
 
-	public facture getFacture() {
-		return facture;
-	}
-
-	public void setFacture(facture facture) {
-		this.facture = facture;
-	}
-
 	public users getUsers() {
 		return users;
 	}
@@ -187,28 +158,6 @@ public class facture_avoir implements Serializable{
 		this.users = users;
 	}
 
-	public String getEtat_sold() {
-		return etat_sold;
-	}
-
-	public void setEtat_sold(String etat_sold) {
-		this.etat_sold = etat_sold;
-	}
-
-	public double getSold_rest() {
-		return sold_rest;
-	}
-
-	public void setSold_rest(double sold_rest) {
-		this.sold_rest = sold_rest;
-	}
-
-	public causes_facture_avoir getCause() {
-		return cause;
-	}
-
-	public void setCause(causes_facture_avoir cause) {
-		this.cause = cause;
-	}
+	
 	
 }

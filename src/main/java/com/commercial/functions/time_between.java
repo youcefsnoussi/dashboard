@@ -182,8 +182,6 @@ public boolean if_grise(String now){
 		
 		boolean ret;
 		
-		convert_calander_string convert = new convert_calander_string();
-		
 		Calendar cal = Calendar.getInstance();
 		
 		//System.out.println("---- "+date);
@@ -311,12 +309,6 @@ public boolean if_grise(String now){
 	
 	public int get_current_year(){
 		
-		convert_calander_string convert = new convert_calander_string();
-		
-		String ret = "";
-		
-		Calendar cal = Calendar.getInstance();
-		Calendar sep = Calendar.getInstance();
 		
 		get_time_date dd = new get_time_date();
 		String date = dd.get_date();

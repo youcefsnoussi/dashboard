@@ -96,7 +96,7 @@ public class bon_transfert_interneController {
 		
 		numerotation_by_year nby = new numerotation_by_year();
 		
-		bon_transfert_interne last_ble = btiRepo.findFirst1ByOrderByIdDesc();
+		bon_transfert_interne last_ble = btiRepo.findFirst1ByOrderByNumeroDesc();
 		
 		String last_number = "";
 		

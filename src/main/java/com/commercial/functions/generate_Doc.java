@@ -27,6 +27,9 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_detail;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_ristourne;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_ristourne_detail;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_employeeRepository;
@@ -36,6 +39,8 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoirRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoir_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_ristourne_detailRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 
 /*
@@ -98,6 +103,12 @@ public class generate_Doc {
 	@Autowired
 	mouvementRepository mvmRepo;
 	
+	@Autowired
+	facture_ristourne_detailRepository fct_ris_dRepo;
+	
+	@Autowired
+	paiementRepository paiRepo;
+	
 	public generate_Doc() {
 		// TODO Auto-generated constructor stub
 	}
@@ -140,6 +151,8 @@ public class generate_Doc {
 					mp.put("Matricule", matricule);
 					mp.put("client", bl.getRegistre_commerce().getNom()+" "+
 							bl.getRegistre_commerce().getPrenom());
+					
+					mp.put("date",bl.getDate());
 					
 					mp.put("magasin", magasins.get(i));
 					
@@ -291,6 +304,41 @@ public class generate_Doc {
 				
 				mp.put("total_ttc_lettre", FrenchNumberToWords.convert(Double.parseDouble(m[0]))+" Virgule "+
 				virgule+" Dinars Algérien");
+				
+				//---------------- reglement 
+				
+				String reglem = "";
+				
+				if(fact.getRegistre_commerce().getType_reglement().getDesignation().equals("A Terme")) {
+					
+					reglem = "A Terme";
+					
+				}
+				else {
+					
+					List<paiement> lst_pay = paiRepo.get_payments_date_rc(fact.getDate(), fact.getRegistre_commerce());
+					
+					if(lst_pay.size()==0) {
+						
+						reglem = "A Compte";
+						
+					}
+					else {
+						
+						paiement pay = lst_pay.get(lst_pay.size()-1);
+						
+						String info_supp = "";
+						
+						if(pay.getInfo_supp_banque()!=null) {info_supp = pay.getInfo_supp_banque();}
+						
+						reglem = pay.getBanque().getNom_banque()+" "+info_supp+" "+pay.getNumero_piece();
+						
+					}
+					
+				}
+				
+				
+				mp.put("reglem", reglem);
 				
 				//----------------------- calcule Cumule TVA --------------------------
 				
@@ -466,7 +514,7 @@ public class generate_Doc {
 			    String key = entry.getKey();
 			    Double value = entry.getValue();
 			    
-			    cumule_tva = cumule_tva + key + "% \t"+ value+"\n";
+			    cumule_tva = cumule_tva + key + "% \t"+ df.format(value)+"\n";
 			    
 			}
 			
@@ -503,6 +551,135 @@ public class generate_Doc {
 		}
 		
 		return "D:/Commercial/Doc/FCT/FCTAV.pdf";
+
+	}	
+
+	//------------------------------------------------------------------------------
+	
+	public String generate_Fact_ristourne(facture_ristourne fact_ris) {
+		
+	 JasperDesign jdesign; 
+		try {
+			
+			Map<String, Object> mp = new HashMap<String, Object>();
+			
+			mp.put("num_fact_ris", fact_ris.getNumero());
+			mp.put("id_fact_ris", fact_ris.getId());
+			mp.put("code", fact_ris.getRegistre_commerce().getCode());
+			mp.put("client_category", fact_ris.getRegistre_commerce().getNom()+" "+fact_ris.getRegistre_commerce().getPrenom()+" "+
+					fact_ris.getRegistre_commerce().getCategory().getNom_category());
+			mp.put("adresse", fact_ris.getRegistre_commerce().getAdresse());
+			mp.put("date",fact_ris.getDate());
+			mp.put("user_matricule", fact_ris.getUsers().getMatricule());
+			
+			DecimalFormat df = new DecimalFormat("# ###,##0.00");
+			
+			mp.put("montant_ht", df.format(fact_ris.getMontant_ht()) );
+			mp.put("montant_tva", df.format(fact_ris.getTva()) );
+			mp.put("montant_ttc", df.format(fact_ris.getMontant_ttc()) );
+			
+			//----------------------- ajout virgule f lettre ta3 shkoupi ------------------
+			
+			String m_ttc1 = df.format(fact_ris.getMontant_ttc());
+			
+			String m_ttc = m_ttc1.replaceAll(" ", "");
+			
+			String m [] = m_ttc.split(",");
+			
+			char  chkoupi [] = m[1].toCharArray();
+			
+			String virgule = "";
+			
+			if(chkoupi[0]=='0' && chkoupi[1]!='0') {
+				
+				String chk = ""+chkoupi[0], chk1 = ""+chkoupi[1]; 
+				
+				virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+FrenchNumberToWords.convert(Double.parseDouble(chk1));
+				
+			}
+			else {
+				
+				virgule = FrenchNumberToWords.convert(Double.parseDouble(m[1]));
+				
+			}
+			
+			mp.put("montant_ttc_lettre", FrenchNumberToWords.convert(Double.parseDouble(m[0]))+" Virgule "+
+					virgule+" Dinars Algérien");
+			
+			//----------------------- calcule Cumule TVA --------------------------
+			
+			String cumule_tva = "TVA \t Montant \n";
+			
+			List <facture_ristourne_detail> list_fct_det = fct_ris_dRepo.get_facture_ristourne_detail(fact_ris);
+			
+			Map<String, Double> cuml = new HashMap<String, Double>();
+			
+			for(int i=0;i<list_fct_det.size();i++) {
+				
+				facture_ristourne_detail fct_ris_d = list_fct_det.get(i);
+				
+				if(cuml.containsKey(""+fct_ris_d.getTva())) {
+					
+					double val = cuml.get(""+fct_ris_d.getTva());
+					
+					cuml.put(""+fct_ris_d.getTva(), val + ( fct_ris_d.getMontant_ht() * (fct_ris_d.getTva()/100) ) );
+					
+				}
+				else {
+					
+					cuml.putIfAbsent(""+fct_ris_d.getTva(), fct_ris_d.getMontant_ht() * (fct_ris_d.getTva()/100));
+					
+				}
+				
+			}
+			
+			for (Map.Entry<String, Double> entry : cuml.entrySet()) {
+			    String key = entry.getKey();
+			    Double value = entry.getValue();
+			    
+			    cumule_tva = cumule_tva + key + "% \t"+ df.format(value)+"\n";
+			    
+			}
+			
+			//----------------------- +++++++++++++++++++ --------------------------
+			
+			mp.put("cumule_tva", cumule_tva);
+			
+			System.out.println("id_ris -> "+fact_ris.getId());
+			
+			
+			
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture_ristourne.jrxml");
+				
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Connection con = localDataSource.getConnection();
+			
+				JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+				
+				System.out.println(jprint.getName());
+				
+				File dir = new File("D:\\Commercial\\Doc\\FCT");
+				
+			    if (!dir.exists()) dir.mkdirs();
+				
+				JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\FCT\\FCTRIS.pdf");
+				
+				con.close();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} catch (JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "D:/Commercial/Doc/FCT/FCTRIS.pdf";
 
 	}	
 
@@ -1059,6 +1236,53 @@ public class generate_Doc {
 	}
 	
 	//------------------------------------------------------------------------------
+	
+	public String generate_declaration_tva(String start, String end) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/DTVA.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\declaration_tva.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("start", start);
+				mp.put("end", end);
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint = JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\DTVA.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	
 	
 	//_____________________________________________________________ EXPORT EXCEL =========================
 	/*

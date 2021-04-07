@@ -114,11 +114,16 @@ $(document).ready(function(){
 		
 		$("#magasin").selectpicker('refresh');
 		
+		console.log("sub val -> "+$("#sub").val());
+		
 		if($("#sub").val()=="true"){
 			
 			$("#subvension").prop("checked",true);
+			$("#subvention").val("on");
 			
 		}
+		
+		console.log("subvension val -> "+$("#subvention").val());
 		
 	}
 	

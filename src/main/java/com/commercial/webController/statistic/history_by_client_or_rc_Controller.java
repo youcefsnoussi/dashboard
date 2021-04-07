@@ -1,6 +1,7 @@
 package com.commercial.webController.statistic;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,10 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoirRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoir_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_ristourneRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.remboursementRepository;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
@@ -125,6 +129,15 @@ public class history_by_client_or_rc_Controller {
 	
 	@Autowired
 	mouvementRepository mvmRepo;
+	
+	@Autowired
+	facture_ristourneRepository fact_risRepo;
+	
+	@Autowired
+	paiementRepository payRepo;
+	
+	@Autowired
+	remboursementRepository rmbRepo;
 	
 	@RequestMapping(value="/historic_clt")
 	public String history_by_clt(HttpServletRequest request,
@@ -316,6 +329,8 @@ public class history_by_client_or_rc_Controller {
 				
 				System.out.println("===========>size mvl > "+mvml.size());
 				
+				List <String> nums = new ArrayList<String>();
+				
 				if(mvml.size()==0) {
 					
 					//sold_debut_clt = 0;
@@ -333,12 +348,72 @@ public class history_by_client_or_rc_Controller {
 					//sold_fin_clt = mvml.get(mvml.size()-1).getNew_sold_client();
 					sold_fin_rc = mvml.get(mvml.size()-1).getNew_sold_rc();
 					
+					for(mouvement mvm : mvml) {
+						
+						switch (mvm.getType_operation()) {
+						
+							case "Facture":
+							{
+								
+								nums.add(factRepo.getOne(mvm.getId_operation()).getNumero());
+								
+							}
+							break;
+							
+							case "Facture Avoire":
+							{
+								
+								nums.add(fact_avoirRepo.getOne(mvm.getId_operation()).getNumero());
+								
+							}
+							break;
+							
+							case "Facture Ristourne":
+							{
+								
+								nums.add(fact_risRepo.getOne(mvm.getId_operation()).getNumero());
+								
+							}
+							break;
+							
+							case "Paiement":
+							{
+								
+								nums.add(payRepo.getOne(mvm.getId_operation()).getId().toString());
+								
+							}
+							break;
+							
+							case "Annulation Paiement":
+							{
+								
+								nums.add(payRepo.getOne(mvm.getId_operation()).getId().toString());
+								
+							}
+							break;
+							
+							case "Remboursement":
+							{
+								
+								nums.add(rmbRepo.getOne(mvm.getId_operation()).getId().toString());
+								
+							}
+							break;
+							
+							default:
+							break;
+						
+						}
+						
+					}
+					
 				}
 				
 				
 				model.addAttribute("id_rc",rc);
 				model.addAttribute("rc",rcRepo.findAll());
 				model.addAttribute("history",mvml);
+				model.addAttribute("nums",nums);
 				//model.addAttribute("sold_debut_clt",sold_debut_clt);
 				model.addAttribute("sold_debut_rc",sold_debut_rc);
 				//model.addAttribute("sold_fin_clt",sold_fin_clt);
@@ -368,8 +443,6 @@ public class history_by_client_or_rc_Controller {
 						 Model model){
 		
 		registre_commerce rc = rcRepo.getOne(id_rc);
-		
-		//String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
 		
 		String pdf = "";
 		

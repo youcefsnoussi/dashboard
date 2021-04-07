@@ -71,7 +71,7 @@ public class facture implements Serializable{
 	
 	private boolean etat_sold;
 	
-	private double sold_rest = montant_ttc;
+	private double sold_rest;
 	
 	private Boolean printed;
 	

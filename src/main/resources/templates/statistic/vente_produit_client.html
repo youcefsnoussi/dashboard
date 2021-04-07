@@ -102,6 +102,32 @@
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
 			
+			$("#afficher").click(function(){
+				
+				var start = $("#start").val();
+				
+				var end = $("#end").val();
+				
+				var id_rc = $("#rc").val();
+				
+				if(start=="" || end=="" || id_rc==0){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone_error").attr("class","far fa-exclamation-triangle");
+					$("#title_error").text("Erreur");
+					$("#text").html("<span> Veuillez selectionner les dates !!! et un RC !!!<span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					//console.log("start = "+start+" / end = "+end);
+					window.location.replace("vente_produit_client?start="+start+"&end="+end+"&id_rc="+id_rc);
+					
+				}
+				
+			});
+		 	
 			$("#print").click(function(){
 				
 				var id_rc = $("#rc").val();
@@ -110,26 +136,48 @@
 				
 				var end = $("#end").val();
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
 											'src="print_vente_produit_client?id_rc='+id_rc+'&start='+start+'&end='+end+'"></iframe>');
 				
-				$("#title_fact").text("Imprimer");
+				$("#title").text("Imprimer");
 				
-				$("#icone_fact").attr("class","far fa-print");
+				$("#icone").attr("class","far fa-print");
 				
 				$("#display_details").modal("show");
 				
 			});
 			
+			var dist_from_top = $(".details").offset().top+21;
+			
+			$(".details").attr("style","overflow-y: scroll;height:calc(100vh - "+dist_from_top+"px);");
+			
 		});
 		
-		function ifrhgh(){
-		    var iframehght =  $("#frame").contents().height();
-		    $("#frame").height(iframehght);
-		}
+		
 		
 		</script>
 		
+		<style type="text/css">
+		
+			.cc{
+			
+				text-align: center;
+			
+			}
+			
+			.rr{
+			
+				text-align: right;
+			
+			}
+			/*
+			.details{
+			  background:yellow;
+			  overflow-y: scroll;
+			  height:calc(100vh - 300px);
+			}
+			*/
+		</style>
 		
 </head>
 <body>
@@ -156,7 +204,10 @@
 								<option  value="0" th:unless="${id_rc}==0" >RC</option>
 								
 								<option th:each="rc:${list_rc}" th:value="${rc.id}" th:text="${rc.code}"  
-										th:attr="data-subtext=${rc.nom}+' '+${rc.prenom}" ></option>
+										th:attr="data-subtext=${rc.nom}+' '+${rc.prenom}" th:if="${rc.id} != ${id_rc}"></option>
+								
+								<option th:each="rc:${list_rc}" th:value="${rc.id}" th:text="${rc.code}"  
+										th:attr="data-subtext=${rc.nom}+' '+${rc.prenom}" th:unless="${rc.id} != ${id_rc}" selected></option>
 								
 							</select>
 							
@@ -167,13 +218,16 @@
 							<div class="input-group">
 								
 									<div class="input-group-append">
-									
+										
+										<button id="print" class="btn btn-secondary" type="button">Imprimer</button>
+										
 										<input id="start" type="date" name="start"  class="form-control date" style="width:100%;" 
 										th:value="${start}" placeholder="DU">
 										<span class="input-group-text declaration far fa-calendar-alt"> </span>
 										<input id="end" type="date" name="end"  class="form-control date" style="width:100%;" 
 										th:value="${end}" placeholder="AU">
-										<button id="print" class="btn btn-secondary" type="button">Imprimer</button>
+										
+										<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 										
 									</div>
 									
@@ -185,23 +239,56 @@
 					
 					<hr>
 					
-					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					<div class="details_global details" >
 					
-						<thead class="thead-dark">
+						<div class="dd" th:each="art,i : ${arts}">
 							
-							<tr>
+							<h5 th:text="${art}"></h5>
+							<hr>
 							
-								<th>Code</th>
-								<th>Article</th>
-								<th>Quantite</th>
-								<th>Montant HT</th>
-								<th>Montant TTC</th>	
+							<table class="table table-dark table-hover">
+							
+								<thead>
 								
-							</tr>
+									<tr>
+									
+										<th class="cc">N° Fact</th>
+										<th class="cc">Date</th>
+										<th class="cc">Qte</th>
+										<th class="cc">PU</th>
+										<th class="cc">Montant HT</th>
+										<th class="cc">TVA</th>
+										<th class="cc">Montant TTC</th>
+										<th class="cc">Matricule</th>
+									
+									</tr>
+								
+								</thead>
+								
+								<tbody>
+								 
+									<tr th:each="det : ${list.get(i.index).get(art)}">
+									
+										<td class="cc" th:text="${det[0]}"></td>
+										<td class="cc" th:text="${det[1]}"></td>
+										<td class="cc" th:text="${det[2]}"></td>
+										<td class="cc" th:text="${#numbers.formatDecimal(det[3], 3, 'WHITESPACE', 2,'COMMA')}"></td>
+										<td class="cc" th:text="${#numbers.formatDecimal(det[4], 3, 'WHITESPACE', 2,'COMMA')}"></td>
+										<td class="cc" th:text="${det[5]}"></td>
+										<td class="cc" th:text="${#numbers.formatDecimal(det[6], 3, 'WHITESPACE', 2,'COMMA')}"></td>
+										<td class="cc" th:text="${det[7]}"></td>
+									
+									</tr>
+								
+								</tbody>
+								
+							</table>
 							
-						</thead>
-						
-					</table>
+							<hr>
+							
+						</div>
+					
+					</div>
 				
 				</div>
 			
@@ -212,7 +299,7 @@
 	</div>
 	
 	<div id="display_details" class="modal" tabindex="-1" role="dialog">
-	  <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered" role="document">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <i id="icone" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title" class="modal-title" > </h5>
@@ -220,16 +307,12 @@
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
-	      
-	      <div class="modal-body" >
 	         
-	         <div id="print_content">
+	         <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
 	         
 	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
 	         
 	         </div>
-	         
-	      </div>
 	      
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

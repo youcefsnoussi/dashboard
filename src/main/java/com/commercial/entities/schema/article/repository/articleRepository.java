@@ -20,6 +20,8 @@ public interface articleRepository extends JpaRepository<article, Long>{
 	
 	public article  if_code_art_exist(@Param("code") String code_art);
 	
+	//------------------------------------------------------------------------------
+	
 	@Query( " FROM article art "
 			
 			+ " WHERE art.produit = :produit "
@@ -31,6 +33,8 @@ public interface articleRepository extends JpaRepository<article, Long>{
 	public article  if_art_same_spec_exist(@Param("produit") produit produit, @Param("emb_produit") emballage_produit emb_produit,
 											@Param("pes_produit") pesage_produit pes_produit, @Param("code_comptable") String code_comptable,
 											@Param("sub") boolean subvension);
+	
+	//------------------------------------------------------------------------------
 	
 	@Query( " FROM article art "
 			+ " WHERE code != '800' "

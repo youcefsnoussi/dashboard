@@ -18,7 +18,7 @@ public interface magasin_articleRepository extends JpaRepository<magasin_article
 	
 	public List<magasin_article> list_magasin_by_article(@Param("article") article article);
 	
-	@Query( " SELECT magasin "
+	@Query(   " SELECT magasin "
 			
 			+ " FROM magasin_article mag_art"
 			
