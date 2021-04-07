@@ -29,37 +29,7 @@
 		<script type="text/javascript">
 		
 		$(document).ready(function() {
-			/*
-			var getUrlParameter = function getUrlParameter(sParam) {
-			    var sPageURL = window.location.search.substring(1),
-			        sURLVariables = sPageURL.split('&'),
-			        sParameterName,
-			        i;
-
-			    for (i = 0; i < sURLVariables.length; i++) {
-			        sParameterName = sURLVariables[i].split('=');
-
-			        if (sParameterName[0] === sParam) {
-			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-			        }
-			    }
-			};
 			
-			var ret = getUrlParameter('ret');
-			
-			if(ret!=null){
-				
-				$("#title").text("Information");
-				$("#icone").attr("class","far fa-info-circle");
-				
-				$("#text").text("Annulation effectuer avec succes ");
-				
-				$("#error").modal('show');
-					
-			}
-			
-			$('[data-toggle="tooltip"]').tooltip()
-			*/
 			var datatable_config = {
 					"language": {
 				            "url": "resources/Plugins/datatable/lang/French.json"
@@ -70,7 +40,7 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([1]).every( function () {
+			            this.api().columns([0,1]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value=""></option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -96,12 +66,44 @@
 					      $( api.column( 2, {page:'current'} ).footer() ).html(
 					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
+					      $( api.column( 3, {page:'current'} ).footer() ).html(
+					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      $( api.column( 4, {page:'current'} ).footer() ).html(
+					        api.column( 4, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
 					      
 					 },
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
 			
+			$("#afficher").click(function(){
+				
+				var start = $("#start").val();
+				
+				var end = $("#end").val();
+				
+				var id_rc = $("#rc").val();
+				
+				if(start=="" || end=="" || id_rc==0){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone_error").attr("class","far fa-exclamation-triangle");
+					$("#title_error").text("Erreur");
+					$("#text").html("<span> Veuillez selectionner les dates !!! et un RC !!!<span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					//console.log("start = "+start+" / end = "+end);
+					window.location.replace("vente_client?start="+start+"&end="+end+"&id_rc="+id_rc);
+					
+				}
+				
+			});
+		 	
 			$("#print").click(function(){
 				
 				var id_rc = $("#rc").val();
@@ -110,26 +112,45 @@
 				
 				var end = $("#end").val();
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
 											'src="print_vente_client?id_rc='+id_rc+'&start='+start+'&end='+end+'"></iframe>');
 				
-				$("#title_fact").text("Imprimer");
+				$("#title").text("Imprimer");
 				
-				$("#icone_fact").attr("class","far fa-print");
+				$("#icone").attr("class","far fa-print");
 				
 				$("#display_details").modal("show");
 				
 			});
 			
+			//$("#rc").val($("#id_rc").val());
+			
+			$("#rc").selectpicker('val',$("#id_rc").val());
+			
 		});
-		
+		/*
 		function ifrhgh(){
 		    var iframehght =  $("#frame").contents().height();
 		    $("#frame").height(iframehght);
 		}
-		
+		*/
 		</script>
 		
+		<style type="text/css">
+		
+			.cc{
+			
+				text-align: center;
+			
+			}
+			
+			.rr{
+			
+				text-align: right;
+			
+			}
+			
+		</style>
 		
 </head>
 <body>
@@ -148,15 +169,17 @@
 					<div class="row">
 					
 						<div class="col-md-3" >
-						
+							
+							<input type="hidden" id="id_rc" th:value="${id_rc}">
+							
 							<label>Registre Commerce</label>
 							<select class="selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
 																								name="rc" id="rc" data-size="5">
-								<option  value="0" th:if="${id_rc}==0" selected>RC</option>
-								<option  value="0" th:unless="${id_rc}==0" >RC</option>
+								
+								<option  value="0" >RC</option>
 								
 								<option th:each="rc:${list_rc}" th:value="${rc.id}" th:text="${rc.code}"  
-										th:attr="data-subtext=${rc.nom}+' '+${rc.prenom}" ></option>
+										th:attr="data-subtext=${rc.nom}+' '+${rc.prenom}"></option>
 								
 							</select>
 							
@@ -167,13 +190,16 @@
 							<div class="input-group">
 								
 									<div class="input-group-append">
-									
+										
+										<button id="print" class="btn btn-secondary" type="button">Imprimer</button>
+										
 										<input id="start" type="date" name="start"  class="form-control date" style="width:100%;" 
 										th:value="${start}" placeholder="DU">
 										<span class="input-group-text declaration far fa-calendar-alt"> </span>
 										<input id="end" type="date" name="end"  class="form-control date" style="width:100%;" 
 										th:value="${end}" placeholder="AU">
-										<button id="print" class="btn btn-secondary" type="button">Imprimer</button>
+										
+										<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 										
 									</div>
 									
@@ -201,6 +227,35 @@
 							
 						</thead>
 						
+						<tbody>
+						
+							<tr th:each="lst:${list}" >
+								
+								<td class="cc"  th:text="${lst[0]}"></td>
+								<td th:text="${lst[3]}"></td>
+								
+								<td class="cc"  th:text="${#numbers.formatDecimal(lst[4], 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td class="rr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td class="rr"  th:text="${#numbers.formatDecimal(lst[8], 3, 'WHITESPACE', 2,'POINT')}"></td>
+								
+							</tr>
+						
+						</tbody>
+						
+						<tfoot class="thead-dark">
+							
+							<tr>
+								
+								<th class="cc" ></th>
+								<th></th>
+								<th class="cc" ></th>
+								<th class="rr" ></th>
+								<th class="rr" ></th>
+								
+							</tr>
+							
+						</tfoot>
+						
 					</table>
 				
 				</div>
@@ -212,7 +267,7 @@
 	</div>
 	
 	<div id="display_details" class="modal" tabindex="-1" role="dialog">
-	  <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered" role="document">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <i id="icone" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title" class="modal-title" > </h5>
@@ -220,16 +275,11 @@
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
-	      
-	      <div class="modal-body" >
 	         
-	         <div id="print_content">
-	         
-	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         <div id="print_content" class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;">
 	         
 	         </div>
 	         
-	      </div>
 	      
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

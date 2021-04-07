@@ -44,6 +44,8 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.commande;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_detail;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement_facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.prof_cmd_bl_fact_client_rc_avoir;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
@@ -52,6 +54,8 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.commande_de
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.cumule_facture_laiterieRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
@@ -169,6 +173,12 @@ public class list_bl_encoursController {
 	
 	@Autowired
 	MagasinRepository magasinRepo;
+	
+	@Autowired
+	paiementRepository payRepo;
+	
+	@Autowired
+	paiement_factureRepository pay_factRepo;
 	
 	@Autowired
 	track_operations trk;
@@ -318,7 +328,17 @@ public class list_bl_encoursController {
 		
 		model.addAttribute("etat_liv", bon_lRepo.getOne(id_bl).getEtat_livraison());
 		
-		model.addAttribute("detail_bl", bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl)));
+		if(!user.getRole().getNom_role().equals("Expédition")) {
+			
+			model.addAttribute("detail_bl", bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl)));
+			
+		}
+		else {
+			
+			model.addAttribute("detail_bl", bon_l_dRepo.get_bl_detail_magasin(bon_lRepo.getOne(id_bl), user.getMagasin()));
+			
+		}
+		
 		
 		client clt = bon_lRepo.getOne(id_bl).getClient();
 		
@@ -658,7 +678,7 @@ public class list_bl_encoursController {
 				
 				//--------------------------------------insert to facture table ------
 				
-				facture  last_fact = factRepo.findFirst1ByOrderByIdDesc();
+				facture  last_fact = factRepo.findFirst1ByOrderByNumeroDesc();
 				
 				String last_number = "";
 				
@@ -672,9 +692,10 @@ public class list_bl_encoursController {
 				
 				String numero_fact = nby.return_num_facture(last_number, user.getUnite().getId());
 				
-				facture fact = new facture(bl.getClient(), bl.getRegistre_commerce(), bl.getCommande().getClient_registrecommerce(), today, time, numero_fact, 
-						bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), "", bl, bl.getCommande().getMode_paiement(),
-						bl.getCommande().getUsers(), false,  bl.getMontant_ttc(), false, false, bl.getCommande().getPourcentage_reduction());
+				facture fact = new facture(bl.getClient(), bl.getRegistre_commerce(), bl.getCommande().getClient_registrecommerce(), today, time,
+						numero_fact, bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), "", bl, 
+						bl.getCommande().getMode_paiement(), bl.getCommande().getUsers(), false,  bl.getMontant_ttc(), false, false, 
+						bl.getCommande().getPourcentage_reduction());
 				
 				factRepo.save(fact);factRepo.flush();
 				
@@ -698,8 +719,8 @@ public class list_bl_encoursController {
 					
 					bon_livraison_detail bld = bld_list.get(i);
 					
-					facture_detail fct_d = new facture_detail(fact, bld.getArticle(), bld.getQuantite(), bld.getPrix_u_ht(), bld.getMontant_ht(), bld.getTva(),
-							bld.getMontant_tva(), (bld.getMontant_ht() + bld.getMontant_tva()), bld.getUnite_mesure());
+					facture_detail fct_d = new facture_detail(fact, bld.getArticle(), bld.getQuantite(), bld.getPrix_u_ht(), bld.getMontant_ht(),
+							bld.getTva(), bld.getMontant_tva(), (bld.getMontant_ht() + bld.getMontant_tva()), bld.getUnite_mesure());
 					
 					fact_detRepo.save(fct_d);fact_detRepo.flush();
 					
@@ -707,7 +728,8 @@ public class list_bl_encoursController {
 				
 				//------------------------------------------------ insert into mouvement table
 				
-				mouvement mvm = new mouvement(clt, rc, bl.getMontant_ttc(), "Facture", fact.getId(), gtd.get_date(), gtd.get_time(), "", sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
+				mouvement mvm = new mouvement(clt, rc, bl.getMontant_ttc(), "Facture", fact.getId(), gtd.get_date(), gtd.get_time(), "", 
+												sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
 				
 				mvmRepo.save(mvm);mvmRepo.flush();
 				
@@ -725,33 +747,108 @@ public class list_bl_encoursController {
 				
 				cmdRepo.save(cmd); cmdRepo.flush();
 				
-				//------------------------------------------------ Create QR Code img
-				
-				
-				//------------------------------------------------ prepare and create PDF fact
-				
-				
-				//------------------------------------------------ END
+				//--------------------------
 				
 				bl.setEtat_livraison(1);
 				
 				bon_lRepo.save(bl); bon_lRepo.flush();
 				
-				//---------------	
+				//-------------------------	
 				
 				//------------------------- insert into MY SQL Peseur IF AIN ROMANA------------
 				
 				if(user.getUnite().getIdentifiant()==1) {
-				
+					
 					Connection_peseur cp = new Connection_peseur();
 					
 					cp.insert_fct_to_peseur(numero_fact, today);
 					
 					cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
-				
+					
 				}
 				
 				//------------------------- END INSERT into MY SQL Peseur ---------------------------------------
+				
+				//------------ update sold factures AND sold paiement ----------------------------------
+				
+				List<paiement> list_pais = payRepo.get_paiements_not_solde_by_rc(rc);
+				
+				int watch_dog_out = 0;
+				
+				int i =0;
+				
+				double montant_buf = fact.getMontant_ttc();
+				
+				if(list_pais.size()==0) {
+					
+					watch_dog_out = 1;
+					
+				}
+				
+				while(watch_dog_out==0) {
+					
+					paiement pai = list_pais.get(i);
+					  
+					if(montant_buf <= pai.getSold_rest()) {
+						
+						double new_sold_restant = pai.getSold_rest() - montant_buf;
+						
+						pai.setSold_rest(new_sold_restant);
+						
+						fact.setSold_rest(0);
+						
+						fact.setEtat_sold(true);
+						
+						factRepo.save(fact);factRepo.flush();
+						
+						if(new_sold_restant==0) {
+							
+							pai.setEtat_sold(true);
+							
+						}
+						
+						payRepo.save(pai);payRepo.flush();
+						
+						paiement_facture pay_fac = new paiement_facture(pai, fact, montant_buf);
+						
+						pay_factRepo.save(pay_fac);pay_factRepo.flush();
+						
+						watch_dog_out = 1;
+						
+					}
+					else {
+						
+						montant_buf = montant_buf - pai.getSold_rest();
+						
+						fact.setSold_rest(montant_buf);
+						factRepo.save(fact);factRepo.flush();
+						
+						double sold_rest_pay = pai.getSold_rest();
+						
+						pai.setSold_rest(0);
+						pai.setEtat_sold(true);
+						payRepo.save(pai);payRepo.flush();
+						
+						paiement_facture pay_fac = new paiement_facture(pai, fact, sold_rest_pay);
+						
+						pay_factRepo.save(pay_fac);pay_factRepo.flush();
+						
+						if((i+1)<list_pais.size()) {
+							
+							i++;
+							
+						}
+						else {
+							
+							watch_dog_out = 1;
+							
+						}
+						
+					}
+					
+				}
+			
+				//--------------- END ----------------------
 				
 			}
 		

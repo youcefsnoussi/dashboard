@@ -159,7 +159,8 @@ public class list_facture_avoirController {
 				if(date_debut.contains("/")) {
 					
 					model.addAttribute("list_facture_avoir", 
-							fact_avoirRepo.date_between_facture_avoir(conv.convertion_from_my_date(date_debut), conv.convertion_from_my_date(date_fin)));
+							fact_avoirRepo.date_between_facture_avoir(conv.convertion_from_my_date(date_debut), 
+									conv.convertion_from_my_date(date_fin)));
 					
 					model.addAttribute("selected_year",date_debut.substring(6));
 					
@@ -171,7 +172,8 @@ public class list_facture_avoirController {
 				else {
 					
 					model.addAttribute("list_facture_avoir", 
-							fact_avoirRepo.date_between_facture_avoir(conv.convertion_from_InputDate(date_debut), conv.convertion_from_InputDate(date_fin)));
+							fact_avoirRepo.date_between_facture_avoir(conv.convertion_from_InputDate(date_debut), 
+									conv.convertion_from_InputDate(date_fin)));
 					
 					date_d = date_debut;
 					

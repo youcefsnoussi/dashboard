@@ -70,7 +70,7 @@
 	                       ], */
 	                       
 			        initComplete: function () {
-			            this.api().columns([1]).every( function () {
+			            this.api().columns([0,1]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -130,7 +130,6 @@
 				}
 				else{
 					
-					//console.log("start = "+start+" / end = "+end);
 					window.location.replace("historic_ventes_val?start="+start+"&end="+end);
 					
 				}
@@ -306,7 +305,7 @@
 						
 						</tbody>
 						
-						<tfoot>
+						<tfoot class="thead-dark">
 							
 							<tr>
 								

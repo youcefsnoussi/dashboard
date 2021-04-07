@@ -6,6 +6,6 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.BonCommande;
 
 public interface BonCommandeRepository  extends JpaRepository<BonCommande, Long> {
 	
-	public BonCommande  findFirst1ByOrderByIdDesc();
+	public BonCommande  findFirst1ByOrderByNumeroDesc();
 	
 }

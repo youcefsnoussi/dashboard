@@ -103,7 +103,7 @@ public class bon_transfertController {
 		
 		numerotation_by_year nby = new numerotation_by_year();
 		
-		bon_transfert last_ble = btRepo.findFirst1ByOrderByIdDesc();
+		bon_transfert last_ble = btRepo.findFirst1ByOrderByNumeroDesc();
 		
 		String last_number = "";
 		

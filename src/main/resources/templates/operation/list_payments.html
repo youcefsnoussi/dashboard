@@ -6,7 +6,6 @@
 		<title>Application Commercial</title>
 		
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
 		
 		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
@@ -370,7 +369,7 @@
 		
 </head>
 <body>
-	
+	<br>
 	<div class="container-fluid h-100"> <!-- h-100 -->
 		
 		<div class="card">
@@ -561,7 +560,7 @@
 	</div>
 	
 	<div id="new_payment_modal" class="modal" tabindex="-1" role="dialog">
-	  <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered" role="document">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <i id="icone_pay" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title_pay" class="modal-title" > </h5>
@@ -570,13 +569,7 @@
 	        </button>
 	      </div>
 	      
-	      <div class="modal-body" >
-	         
-	         <div id="print_content">
-	         
-	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
-	         
-	         </div>
+	      <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content" >
 	         
 	      </div>
 	      

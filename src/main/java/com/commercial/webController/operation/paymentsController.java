@@ -118,7 +118,7 @@ public class paymentsController {
 		
 		model.addAttribute("mode_payement", mode_payRepo.findAll());
 		
-		model.addAttribute("bank", banqueRepo.findAll());
+		model.addAttribute("bank", banqueRepo.get_banks_displayed());
 		
 		//model.addAttribute("client", clientRepo.findAll());
 		
@@ -299,6 +299,8 @@ public class paymentsController {
 			@RequestParam("num_piece") String num_piece,
 			@RequestParam("montant") double montant,
 			@RequestParam("date_piece") String date,
+			@RequestParam("observation") String obs,
+			@RequestParam("info_supp_bank") String info_supp_bank,
 			@Valid @RequestParam("img_piece") MultipartFile img_piece,
 			
 			@SessionAttribute("user") users user){
@@ -363,10 +365,11 @@ public class paymentsController {
 			long id_pay = 0;
 			
 			if(p.size()==0) {
-			
+				
 				paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
 											cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),
-						banque, user, num_piece, img_path, false);
+						banque, user, num_piece, img_path, false, obs, info_supp_bank, false, montant);
+				
 				
 				payRepo.save(pay);payRepo.flush();
 				
@@ -427,9 +430,9 @@ public class paymentsController {
 				
 				mvmRepo.save(mvm);mvmRepo.flush();
 				
-				//------------ update sold factures
+				//------------ update sold factures AND sold paiement
 				
-				List<facture> list_fact = factRepo.client_active_only(clt);
+				List<facture> list_fact = factRepo.get_factures_not_solde_by_rc(rc);
 				
 				int watch_dog_out = 0;
 				
@@ -446,12 +449,18 @@ public class paymentsController {
 				while(watch_dog_out==0) {
 					
 					facture fct = list_fact.get(i);
-					
+					  
 					if(montant_buf <= fct.getSold_rest()) {
 						
 						double new_sold_restant = fct.getSold_rest() - montant_buf;
 						
 						fct.setSold_rest(new_sold_restant);
+						
+						pay.setSold_rest(0);
+						
+						pay.setEtat_sold(true);
+						
+						payRepo.save(pay);payRepo.flush();
 						
 						if(new_sold_restant==0) {
 							
@@ -472,11 +481,16 @@ public class paymentsController {
 						
 						montant_buf = montant_buf - fct.getSold_rest();
 						
+						pay.setSold_rest(montant_buf);
+						payRepo.save(pay);payRepo.flush();
+						
+						double sold_rest_fct = fct.getSold_rest();
+						
 						fct.setSold_rest(0);
 						fct.setEtat_sold(true);
 						factRepo.save(fct);factRepo.flush();
 						
-						paiement_facture pay_fac = new paiement_facture(pay, fct, montant_buf);
+						paiement_facture pay_fac = new paiement_facture(pay, fct, sold_rest_fct);
 						
 						pay_factRepo.save(pay_fac);pay_factRepo.flush();
 						

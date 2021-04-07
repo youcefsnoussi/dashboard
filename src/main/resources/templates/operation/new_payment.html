@@ -6,7 +6,6 @@
 		<title>Application Commercial</title>
 		
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
 		
 		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
@@ -132,25 +131,27 @@
 			
 				var m = $(this).val();
 				$(this).attr("type","text");
-				m = ( parseFloat(m) ).formatMoney(2, '.', ' ');
-				$(this).val(m);
+				var m1 = ( parseFloat(m) ).formatMoney(2, '.', ' ');
+				$(this).val(m1);
+				
+				var sold = parseFloat($("#current_sold").val().replace(/ /g, ""));
+				
+				var new_sold = sold - parseFloat(m);
+				
+				$("#new_sold").val(new_sold.formatMoney(2, '.', ' '));
 				
 			})
 			
-			$("#montant").keyup(function () {
+			$("#client").change(function () {
 				
+				var sold = $("#client option:selected").attr("sold");
 				
+				$("#current_sold").val(parseFloat(sold).formatMoney(2, '.', ' '));
 				
+				$("#new_sold").val(0);
 				
-				/*
-				var val = $(this).val();
+				$("#montant").val(0);
 				
-				if(val >= '0' && val <= '9'){
-					
-					$(this).val();
-					
-				}
-				*/
 			})
 			/*
 			var inputs = [];
@@ -227,7 +228,7 @@
 		
 </head>
 <body>
-	
+	<br>
 	<div class="container-fluid h-100">
 		
 		<div class="card">
@@ -256,27 +257,32 @@
 								<select id="client" name="rc_client" class="selectpicker show-tick jump" data-live-search="true" 
 									data-style="btn-outline-dark" title="RC" required>
 								
-									<option th:each="clt_rc:${clt_rc}" th:value="${clt_rc.id}" th:text="${clt_rc.registre_commerce.nom}+' '+${clt_rc.registre_commerce.prenom}"
-											th:attr="data-subtext=${clt_rc.registre_commerce.code}"></option>
+									<option th:each="clt_rc:${clt_rc}" th:value="${clt_rc.id}" 
+											th:text="${clt_rc.registre_commerce.nom}+' '+${clt_rc.registre_commerce.prenom}"
+											th:attr="data-subtext=${clt_rc.registre_commerce.code}, 
+													 sold=${clt_rc.registre_commerce.sold_encours}"></option>
 								
 								</select>
 								
 							</div>
 							
-							<!--  
-							<div class="col-md-3 offset-md-2">
 							
-								<label>Registre Commerce</label>
+							<div class="col-md-3 offset-md-1">
+							
+								<label>Sold Encours</label>
 								
-								<select id="rc" name="rc" class="selectpicker show-tick" data-live-search="true" data-style="btn-outline-dark" required>
-								
-									
-								
-								</select>
+								<input type="text" class="form-control" id="current_sold" disabled>
 								
 							</div>
 							
-							-->
+							<div class="col-md-3 offset-md-1">
+							
+								<label>Nouveau Sold</label>
+								
+								<input type="text" class="form-control" id="new_sold" disabled>
+								
+							</div>
+							
 						</div>
 						
 						<hr>
@@ -306,6 +312,14 @@
 									<option th:each="bank:${bank}" th:value="${bank.id}" th:text="${bank.nom_banque}"></option>
 								
 								</select>
+								
+							</div>
+							
+							<div class="col-md-3">
+							
+								<label>Info supplémentaire Banque</label>
+								
+								<input type="text" id="info_supp_bank" name="info_supp_bank" class="form-control" >
 								
 							</div>
 							
@@ -345,6 +359,14 @@
 								<label>Date de la piece</label>
 								
 								<input type="date" id="date_piece" name="date_piece" class="form-control jump" required>
+								
+							</div>
+							
+							<div class="col-md-4">
+							
+								<label>Observation</label>
+								
+								<textarea class="form-control" id="observation" name="observation" rows="" cols=""></textarea>
 								
 							</div>
 							

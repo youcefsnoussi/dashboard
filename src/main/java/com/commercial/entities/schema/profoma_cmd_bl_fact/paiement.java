@@ -1,7 +1,6 @@
 package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -68,17 +66,27 @@ public class paiement implements Serializable{
 	@Column(columnDefinition="boolean default true")
 	private boolean validation = true;
 	
+	private String observation;
+	
+	private String info_supp_banque;
+	
+	@Column(columnDefinition="boolean default false")
+	private boolean etat_sold;
+	
+	@Column(columnDefinition="numeric default 0")
+	private double sold_rest;
+	
 	public paiement() {
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	public paiement(com.commercial.entities.schema.client.client client,
 			com.commercial.entities.schema.client.registre_commerce registre_commerce, double montant, String date,
 			String date_saisie, String time_saisie,
 			com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
 			com.commercial.entities.schema.static_data.banque banque,
-			com.commercial.entities.schema.user_menu.users users, String numero_piece, String path_img,
-			boolean cancel) {
+			com.commercial.entities.schema.user_menu.users users, String numero_piece, String path_img, boolean cancel,
+			String observation, String info_supp_banque, boolean etat_sold, double sold_rest) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;
@@ -92,10 +100,12 @@ public class paiement implements Serializable{
 		this.numero_piece = numero_piece;
 		this.path_img = path_img;
 		this.cancel = cancel;
-		this.verification = false;
-		this.validation = true;
+		this.observation = observation;
+		this.info_supp_banque = info_supp_banque;
+		this.etat_sold = etat_sold;
+		this.sold_rest = sold_rest;
 	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -214,6 +224,38 @@ public class paiement implements Serializable{
 
 	public void setValidation(boolean validation) {
 		this.validation = validation;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
+	public String getInfo_supp_banque() {
+		return info_supp_banque;
+	}
+
+	public void setInfo_supp_banque(String info_supp_banque) {
+		this.info_supp_banque = info_supp_banque;
+	}
+
+	public boolean isEtat_sold() {
+		return etat_sold;
+	}
+
+	public void setEtat_sold(boolean etat_sold) {
+		this.etat_sold = etat_sold;
+	}
+
+	public double getSold_rest() {
+		return sold_rest;
+	}
+
+	public void setSold_rest(double sold_rest) {
+		this.sold_rest = sold_rest;
 	}
 
 	

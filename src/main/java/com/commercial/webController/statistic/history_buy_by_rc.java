@@ -45,20 +45,26 @@ public class history_buy_by_rc {
 		
 		List <Object[]> list = new ArrayList<Object[]>();
 		
-		if(date_debut.equals("0") && date_fin.equals("0")) {
+		if(date_debut.equals("0")) {
 			
 			list = factRepo.get_rc_buy(gtd.get_date(), gtd.get_date());
+			
+			model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+			
+			model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 			
 		}
 		else {
 			
 			list =  factRepo.get_rc_buy(conv.convertion_InputDate_to_MyDate(date_debut), conv.convertion_InputDate_to_MyDate(date_fin));
 			
+			model.addAttribute("start", date_debut);
+			
+			model.addAttribute("end", date_fin);
+			
 		}
 		
-		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 		
-		model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 		
 		model.addAttribute("list", list);
 		

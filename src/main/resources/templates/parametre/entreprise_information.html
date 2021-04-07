@@ -61,7 +61,7 @@
 									
 										<label> Capitale (DA)</label>
 										
-										<input type="number" step="any" id="capitale" class="form-control" name="capitale" th:value="${info.capitale}" required/>
+										<input type="text" step="any" id="capitale" class="form-control" name="capitale" th:value="${#numbers.formatDecimal(info.capitale, 3, 'WHITESPACE', 2,'POINT')}" required/>
 										
 									</div>
 									

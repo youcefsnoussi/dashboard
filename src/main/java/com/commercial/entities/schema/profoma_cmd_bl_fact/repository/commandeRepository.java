@@ -6,6 +6,6 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.commande;
 
 public interface commandeRepository extends JpaRepository<commande, Long> {
 	
-	public commande findFirst1ByOrderByIdDesc();
+	public commande findFirst1ByOrderByNumeroDesc();
 	
 }

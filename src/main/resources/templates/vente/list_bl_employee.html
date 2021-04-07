@@ -120,7 +120,7 @@
 				
 				num_bl = $(this).attr("num_bl");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
 						'src="info_ble?id_ble='+id_bl+'"></iframe>');
 				
 				$("#title_bl").text("Détail BL N° "+num_bl);
@@ -137,7 +137,7 @@
 				
 				num_bl = $(this).attr("num_bl");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
 						'src="print_ble?id_bl='+id_bl+'"></iframe>');
 				
 				$("#title_bl").text("Détail BL N° "+num_bl);
@@ -154,7 +154,7 @@
 				
 				var end = $("#fin").val();
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
 						'src="print_etat_ble?start='+start+'&end='+end+' "></iframe>');
 				
 				$("#title_bl").text("Imprimer Ventes au Personnel");
@@ -204,7 +204,7 @@
 				}
 				else{
 					
-					$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
+					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
 							'src="facture_ble?start='+start+'&end='+end+'"></iframe>');
 					
 					$("#title_bl").text("Facture des Bon de sorties employées du "+start+" au "+end);
@@ -216,6 +216,43 @@
 				}
 				
 			});
+			
+			var id_ble;
+			
+			$(".cancel").click(function(){
+				
+				id_ble = $(this).attr("id_ble");
+				var num_ble = $(this).attr("num_ble");
+				var mat_emp = $(this).attr("employee");
+				var montant = $(this).attr("montant");
+				
+				$("#text_confirmation").html("Etes vous sure d'annuler le Bon de Livraison N°<b>"+num_ble+"</b> avec le monatant <b>"
+												+montant+" DA TTC</b> de l'employée avec le Matricule <b>"+mat_emp+"</b> ?");
+				
+				$("#confirmation").modal('show');
+				
+			});
+			
+			$("#confirm").click(function(){
+				
+				$.ajax({
+					url : 'cancel_ble',
+					data : {
+						id_ble : id_ble
+					},
+					success : function(responseJson) {
+						
+						location.reload();/*
+						var url = new URL(window.location.href);
+						url.searchParams.set('ret','ok');
+						window.location.href = url.href;*/
+						
+					}
+					
+				});
+				
+			});
+			
 			/*
 			$("#refresh").click(function(){
 				
@@ -241,17 +278,6 @@
 			*/
 		});
 
-		$(function () {
-		    $('#fact_detail_modal').on('shown.bs.modal', function () {
-		        /* $('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" 
-		        		frameborder="0" src="/add_client"></iframe>'); */
-		    });
-		});
-
-		function ifrhgh(){
-		    var iframehght =  $("#frame").contents().height();
-		    $("#frame").height(iframehght);
-		}
 		
 		</script>
 		
@@ -353,19 +379,28 @@
 								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:if="${bl.factured}==true" th:text="OUI"></td>
 								<td th:unless="${bl.factured}==true" th:text="NON"></td>
-								<td style="text-align: center;"> <button type="button" class="btn btn-info info" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
-																						<i class="far fa-eye"></i>
-																 </button> 
-																 <button type="button" class="btn btn-info print" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
-																						<i class="far fa-print"></i>
-																 </button>
+								<td style="text-align: center;width: 10%;"> 
+															 <button type="button" class="btn btn-warning info" 
+															 	th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
+																<i class="far fa-eye"></i>
+															 </button> 
+															 <button type="button" class="btn btn-primary print" 
+															 	th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
+																<i class="far fa-print"></i>
+															 </button>
+															 <button th:if="${cancel_ble}==true and ${bl.factured}==false" type="button" 
+															 	class="btn btn-danger cancel" th:attr="id_ble=${bl.id},num_ble=${bl.numero},
+																employee=${bl.matricule_employee},
+																montant=${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"> 
+																<i class="far fa-trash"></i>
+															 </button> 
 								</td>
 								
 							</tr>
 						
 						</tbody>
 						
-						<tfoot>
+						<tfoot class="thead-dark">
 						
 							<tr>
 							
@@ -425,15 +460,11 @@
 	      	
 	      </div>
 	      
-	      <div class="modal-body" >
-	         
-	         <div id="print_content">
+	         <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
 	         
 	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
 	         
 	         </div>
-	         
-	      </div>
 	      
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

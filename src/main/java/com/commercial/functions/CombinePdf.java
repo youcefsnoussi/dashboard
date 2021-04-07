@@ -11,6 +11,7 @@ public class CombinePdf {
 		// TODO Auto-generated constructor stub
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void combine(ArrayList<String> datas,String destination){
 		
 		PDFMergerUtility ut = new PDFMergerUtility();

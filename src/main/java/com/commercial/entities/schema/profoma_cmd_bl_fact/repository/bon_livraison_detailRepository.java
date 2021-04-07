@@ -40,4 +40,6 @@ public interface bon_livraison_detailRepository extends JpaRepository<bon_livrai
 		 
 	public List<Object[]> get_bl_bls_danon_by_id(@Param("bls") List<bon_livraison>  bls);
 	
+	
+	
 }

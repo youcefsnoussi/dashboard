@@ -50,6 +50,7 @@ import com.commercial.functions.generateQRcode;
 import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
+import com.commercial.functions.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -132,6 +133,9 @@ public class list_factureController {
 	
 	@Autowired
 	causes_facture_avoirRepository causeRepo;
+	
+	@Autowired
+	track_operations trk;
 	
 	public list_factureController() {
 		// TODO Auto-generated constructor stub
@@ -330,7 +334,7 @@ public class list_factureController {
 			
 			@SessionAttribute("user") users user){
 			
-			facture_avoir  last_fact_av = fact_avoirRepo.findFirst1ByOrderByIdDesc();
+			facture_avoir  last_fact_av = fact_avoirRepo.findFirst1ByOrderByNumeroDesc();
 			
 			String last_number = "";
 			
@@ -392,7 +396,7 @@ public class list_factureController {
 			for(int i=0;i<article.length;i++) {
 				
 				//if(quantite[i]!=0) {
-					
+				
 				facture_avoir_detail fact_avoir_d = new facture_avoir_detail(fact_av, artRepo.getOne(article[i]), quantite[i],
 							prix_u_ht[i], montant_ht_art[i], tva_art[i], (montant_ht_art[i]*(tva_art[i]/100)), (montant_ht_art[i] + (montant_ht_art[i]*(tva_art[i]/100))) );
 				
@@ -416,11 +420,9 @@ public class list_factureController {
 			
 			mvmRepo.save(mvm);mvmRepo.flush();
 			
-			//------------------------------------------------ Create QR Code img
+			//------------------------------- Track operation
 			
-			
-			//------------------------------------------------ prepare and create PDF fact
-			
+			trk.add_track("facture_avoir", "creation facture avoir", fact_av.getId(), user);
 			
 			//------------------------------------------------ END
 			

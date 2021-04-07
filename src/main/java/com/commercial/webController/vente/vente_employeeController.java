@@ -195,7 +195,7 @@ public class vente_employeeController {
 		
 		numerotation_by_year nby = new numerotation_by_year();
 		
-		bon_livraison_employee last_ble = bleRepo.findFirst1ByOrderByIdDesc();
+		bon_livraison_employee last_ble = bleRepo.findFirst1ByOrderByNumeroDesc();
 		
 		String last_number = "";
 		
@@ -337,6 +337,17 @@ public class vente_employeeController {
 		model.addAttribute("date_d", date_d);
 		
 		model.addAttribute("date_f", date_f);
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		boolean cancel_ble = false;
+		
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("cancel_ble")) 
+		{ cancel_ble = true; }
+		
+		model.addAttribute("cancel_ble", cancel_ble);
+		
+		//----------------------------------------------------------------
 		
 		return ret;
 		
@@ -529,7 +540,7 @@ public class vente_employeeController {
 		
 		//--------------------------------------insert to facture table ------
 		
-		facture  last_fact = factRepo.findFirst1ByOrderByIdDesc();
+		facture  last_fact = factRepo.findFirst1ByOrderByNumeroDesc();
 		
 		String last_number = "";
 		

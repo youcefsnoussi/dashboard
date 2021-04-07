@@ -49,4 +49,28 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	public List<paiement> if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece, @Param("date") String date, 
 			@Param("montant") double montant, @Param("rc") registre_commerce rc);
 	
+	//------------------------------------------------------------------
+	
+	@Query(   " FROM paiement pay "
+			
+			+ " WHERE pay.cancel = 'false' "
+			
+			+ " AND date_saisie = :date AND registre_commerce = :rc "
+			
+			+ " ORDER BY id ASC")
+	
+	public List<paiement> get_payments_date_rc(@Param("date") String date, @Param("rc") registre_commerce rc); 
+	
+	//----------------------------------------------------------
+	
+	@Query( " FROM paiement pai "
+			
+				+ " WHERE pai.etat_sold = 'false' "
+				+ " AND pai.registre_commerce = :rc "
+				+ " ORDER BY pai.id")
+		 
+		public List<paiement> get_paiements_not_solde_by_rc(@Param("rc") registre_commerce rc);
+	
+	//----------------------------------------------------------
+	
 }

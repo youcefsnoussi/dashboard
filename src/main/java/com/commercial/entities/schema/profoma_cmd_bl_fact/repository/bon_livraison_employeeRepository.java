@@ -10,7 +10,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_employee
 
 public interface bon_livraison_employeeRepository extends JpaRepository<bon_livraison_employee, Long>{
 	
-	public bon_livraison_employee findFirst1ByOrderByIdDesc();
+	public bon_livraison_employee findFirst1ByOrderByNumeroDesc();
 	
 	//---------------------------------------------------------------
 	

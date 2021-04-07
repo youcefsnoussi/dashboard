@@ -31,7 +31,7 @@
 	$(document).ready(function() {
 		
 			console.log($("#plafond").val());	
-		
+			
 			if($("#plafond").val()=="true"){
 				
 				$("#title").text("Erreur !!!");
@@ -43,12 +43,79 @@
 			
 			$("#subsub").click(function () {
 				
-				$("#frm").submit();
+				var art_selected = [];
+				
+				$(".art").each(function() {
+					
+					if($(this).val() == "" || $(this).val() == "0"){}
+					else{
+						
+						art_selected.push($(this).val());
+						
+					}
+					
+				});
+				
+				console.log(art_selected)
+				
+				var test = 0;
+				
+				var msg = "";
+				
+				if(if_duplicate_value(art_selected)==true){
+					
+					test++;
+					msg = msg+"<b>- Article Dupliqué. </b><br>";
+					$("#code_client").css("border-color","red");
+					
+				}
+				
+				if($("#matricule").val()=="" ){
+					
+					test++;
+					msg = msg+"<b>- Matricule Vide. </b><br>";
+					$("#matricule").css("border-color","red");
+					
+				}
+				
+				if(test==0){
+				
+					$("#frm").submit();
+				
+				}
+				else{
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html(msg);
+					$("#error").modal('show');
+					
+				}
 				
 			});
 			
 		
 	});
+	
+	function if_duplicate_value (arr){
+		
+		for(i=0;i<arr.length-1;i++){
+			
+			for(j=i+1;j<arr.length;j++){
+				
+				if(arr[i]==arr[j]){
+					
+					return true;
+					
+				}
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
 	
 	</script>
 	      
@@ -62,7 +129,7 @@
 	<script type='text/javascript'> spin_it('on'); </script>
 	
 	<!-- ---------------------------------------- -->
-	
+	<br>
 	<div class="container-fluid h-100">
 	
 		<div class="card">
@@ -294,7 +361,7 @@
 								
 								<td> 
 									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="art">
-										<option value="">Selection</option>
+										<option value="0"  id_um="0" pu="0" tva="0">Selection</option>
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},
 												 tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
@@ -316,8 +383,8 @@
 										<input type="hidden" id="qte_init" class="qte_init" th:value="${bl_det.quantite}"> </td>
 									
 								<td> 
-										<select class="form-control id_magasin" id="id_magasin" name="id_magasin" >
-										<option value="">Selection</option>
+									<select class="form-control id_magasin" id="id_magasin" name="id_magasin" >
+										<option value="0">Selection</option>
 										
 										<option  th:value="${bl_det.magasin.id}" th:text="${bl_det.magasin.name}"  selected></option>
 										
@@ -339,7 +406,7 @@
 								
 								<td> 
 									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="art">
-										<option value="0">Selection</option>
+										<option value="0" id_um="0" pu="0" tva="0" >Selection</option>
 												 
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},

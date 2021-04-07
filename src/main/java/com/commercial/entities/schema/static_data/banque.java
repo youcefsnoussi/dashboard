@@ -23,6 +23,9 @@ public class banque implements Serializable{
 	private String nom_banque;
 	private String numero_compte_entreprise;
 	
+	@Column(columnDefinition="boolean default true")
+	private boolean display;
+	
 	public banque() {
 		// TODO Auto-generated constructor stub
 	}
@@ -64,6 +67,14 @@ public class banque implements Serializable{
 
 	public void setNumero_compte_entreprise(String numero_compte_entreprise) {
 		this.numero_compte_entreprise = numero_compte_entreprise;
+	}
+
+	public boolean isDisplay() {
+		return display;
+	}
+
+	public void setDisplay(boolean display) {
+		this.display = display;
 	}
 
 	

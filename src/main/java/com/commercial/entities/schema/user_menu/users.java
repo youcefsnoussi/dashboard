@@ -2,7 +2,6 @@ package com.commercial.entities.schema.user_menu;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,18 +9,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 //import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 //import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
+import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.static_data.unite;
 
 @Entity
 
 @Table(name="users" , schema = "user_menu")
-
 
 public class users implements Serializable{
 	
@@ -44,14 +40,18 @@ public class users implements Serializable{
 	private unite unite;
 	
 	private String matricule;
-
+	
+	@ManyToOne
+	@JoinColumn(name = "magasin")
+	private Magasin magasin;
+	
 	public users() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public users(String username, String password, String nom, String prenom, String image, boolean active, roles role,
-			com.commercial.entities.schema.static_data.unite unite, String matricule) {
+			com.commercial.entities.schema.static_data.unite unite, String matricule, Magasin magasin) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -62,6 +62,7 @@ public class users implements Serializable{
 		this.role = role;
 		this.unite = unite;
 		this.matricule = matricule;
+		this.magasin = magasin;
 	}
 
 	public Long getId() {
@@ -144,6 +145,12 @@ public class users implements Serializable{
 		this.matricule = matricule;
 	}
 
-	
-	
+	public Magasin getMagasin() {
+		return magasin;
+	}
+
+	public void setMagasin(Magasin magasin) {
+		this.magasin = magasin;
+	}
+
 }

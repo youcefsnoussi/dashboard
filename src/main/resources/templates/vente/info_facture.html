@@ -52,7 +52,7 @@
 	<script type='text/javascript'> spin_it('on'); </script>
 	
 	<!-- ---------------------------------------- -->
-	
+	<br>
 	<div class="container-fluid h-100">
 	
 		<div class="card">
@@ -194,7 +194,11 @@
 										<label>Observation</label>
 										
 										<textarea rows="3" cols="" id="observation" class="form-control" name="observation" 
-													th:text="${facture.bon_livraison.commande.observation}" disabled></textarea>
+											th:if="${facture.bon_livraison}!=null" th:text="${facture.bon_livraison.commande.observation}" 
+												disabled></textarea>
+												
+										<textarea rows="3" cols="" id="observation" class="form-control" name="observation" 
+											th:unless="${facture.bon_livraison}!=null" disabled></textarea>		
 										
 								</div>
 								

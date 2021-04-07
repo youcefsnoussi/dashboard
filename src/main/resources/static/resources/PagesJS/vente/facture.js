@@ -43,7 +43,8 @@ $(document).ready(function() {
 	
 	if(id_bl!=null){
 		
-		$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" src="'+t+'?id_bl='+id_bl+'"></iframe>');
+		$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+				'src="'+t+'?id_bl='+id_bl+'"></iframe>');
 		
 		$("#title_bl").text("Détail BL N° "+num_bl);
 		
@@ -80,6 +81,26 @@ $(document).ready(function() {
 	});
 	
 	//-------------------------------------------------------------------------------
+	
+	$("#new_payment").click(function(){
+		
+		$('#print_content_pay').html('<iframe id="frame" width="100%" height="900" frameborder="0" src="new_payment"></iframe>');
+		
+		$("#title_pay").text("Nouveau paiement");
+		
+		$("#icone_pay").attr("class","far fa-cash-register");
+		
+		$("#new_payment_modal").modal("show");
+		
+	});
+	
+	//----------------------------------------------------------------------
+	
+	$(".close_pay").click(function() {
+		
+		window.location.reload();
+		
+	});
 	
 	//----------------------------------------------------------------------
 	
@@ -119,14 +140,19 @@ $(document).ready(function() {
 		
 		console.log("art attr before= "+$(this).attr("name"))
 		
-		if($(this).val()!=""){
+		if($(this).val()!="0"){
 			
 			$(this).attr("name","art");
+			parrent.find('#id_magasin').attr("name","id_magasin");
 			
 		}
 		else{
 			
 			$(this).attr("name","");
+			
+			parrent.find(".prix_unitaire").val(0);
+			
+			//parrent.find('#id_magasin').attr("name","");
 			
 		}
 		
@@ -490,16 +516,39 @@ $(document).ready(function() {
 	*/
 	$("#sub").click(function(){
 		
-		console.log("select val -> "+$("#select_mat").val())
+		//console.log("select val -> "+$("#select_mat").val())
+		
+		var art_selected = [];
+		
+		$(".art").each(function() {
+			
+			if($(this).val() == "" || $(this).val() == "0"){}
+			else{
+				
+				art_selected.push($(this).val());
+				
+			}
+			
+		});
+		
+		console.log(art_selected)
 		
 		var test = 0;
 		
 		var msg = "";
 		
+		if(if_duplicate_value(art_selected)==true){
+			
+			test++;
+			msg = msg+"<b>- Article Dupliqué. </b><br>";
+			$("#code_client").css("border-color","red");
+			
+		}
+		
 		if($("#code_client").val()==""){
 			
 			test++;
-			msg = msg+"- Code client incorrect. <br>";
+			msg = msg+"<b>- Code client incorrect. </b><br>";
 			$("#code_client").css("border-color","red");
 			
 		}
@@ -516,7 +565,7 @@ $(document).ready(function() {
 		if($("#select_mat").val()=="" && $("#input_mat").val()=="" ){
 			
 			test++;
-			msg = msg+"- Matricule Vide. <br>";
+			msg = msg+"<b>- Matricule Vide. </b><br>";
 			$("#matricule").css("border-color","red");
 			
 		}
@@ -524,7 +573,7 @@ $(document).ready(function() {
 		if($("#rc").val()==""){
 			
 			test++;
-			msg = msg+"- Selectionner un Registre de commerce. <br>";
+			msg = msg+"<b>- Selectionner un Registre de commerce. </b><br>";
 			//$("#rc").css("border-color","red");
 			$(".bs-placeholder").find('[data-id=rc]').css("border-color","red");
 			
@@ -533,7 +582,7 @@ $(document).ready(function() {
 		if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
 			
 			test++;
-			msg = msg+"- Veuillez faire une commande. <br>";
+			msg = msg+"<b>- Veuillez faire une commande. </b><br>";
 			$("#total_ttc").css("border-color","red");
 			
 		}
@@ -622,4 +671,24 @@ $(document).ready(function() {
 	});
 	
 });
+
+function if_duplicate_value (arr){
+	
+	for(i=0;i<arr.length-1;i++){
+		
+		for(j=i+1;j<arr.length;j++){
+			
+			if(arr[i]==arr[j]){
+				
+				return true;
+				
+			}
+			
+		}
+		
+	}
+	
+	return false;
+	
+}
 		

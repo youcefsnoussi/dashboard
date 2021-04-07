@@ -11,7 +11,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
 
 public interface facture_avoirRepository extends JpaRepository<facture_avoir, Long> {
 	
-	public facture_avoir  findFirst1ByOrderByIdDesc();
+	public facture_avoir  findFirst1ByOrderByNumeroDesc();
 	
 	//-----------------------------------------------------------
 	

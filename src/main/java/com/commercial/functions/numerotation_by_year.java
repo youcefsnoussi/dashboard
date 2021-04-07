@@ -427,6 +427,65 @@ public class numerotation_by_year {
 		return numero;
 	}
 	
+	//--------------------------------
+	
+	public String return_num_facture_ristourne (String num, Long long1){ //assm la rebrique numero 
+		
+		
+		String numero ="",resnum="",year_encours="",month_encours="";
+		
+		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+		String y = df.format(Calendar.getInstance().getTime());
+		
+		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
+		String m = dff.format(Calendar.getInstance().getTime());
+		
+		
+		
+			if(!num.equals("")){
+				
+					resnum= num;
+					year_encours = num.substring(6, 8);
+					
+					month_encours= num.substring(9, 11);
+					
+					System.out.println("year_encours == "+year_encours);
+					
+					System.out.println("month_encours == "+month_encours);
+					
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
+						
+						String n = resnum.substring(13);
+						System.out.println(n);
+						int nn = Integer.parseInt(n);
+						System.out.println(nn);
+						nn++;
+							if( nn < 10 ){ numero = long1+"FCTRS"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = long1+"FCTRS"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = long1+"FCTRS"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = long1+"FCTRS"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = long1+"FCTRS"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = long1+"FCTRS"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = long1+"FCTRS"+y+"/"+m+"/0"+nn;}
+					}
+					
+					else{
+						
+						numero = long1+"FCTRS"+y+"/"+m+"/00000001"; 
+						
+					}
+			}
+			
+			else{
+				
+				numero = long1+"FCTRS"+y+"/"+m+"/00000001";
+				
+			}
+			
+		
+		return numero;
+	}
+	
 	//------------------------------------------------------------------------------------------------------------
 	
 	public String return_num_BonTransfert (String num, Long unite){ //assm la rebrique numero 

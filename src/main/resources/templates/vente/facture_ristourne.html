@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Insert title here</title>
+	
+	
+	<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+	<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="resources\Plugins\jAlert-master\dist\jAlert.css">
+	<link rel="stylesheet" href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css">
+	<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css"> 
+	
+	<script type="text/javascript" src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+	
+	<script type="text/javascript" src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+	
+	<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap.min.js"></script>
+	
+	<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+	
+	<script type="text/javascript" src="resources\additionalJS\jquery-spin.js"></script>
+	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
+	
+	<script type="text/javascript" src="resources\PagesJS\vente\facture.js"></script>
+	    
+	<script type="text/javascript">
+	
+	$(document).ready(function() {
+		
+		$("#client").change(function() {
+			
+			var des = $("#client option:selected").attr("data-subtext");
+			
+			$("#nom").val(des);
+			
+		})
+		
+		
+		$("#sub_ris").click(function() {
+			
+			$("#frm").submit();
+			
+		})
+		
+	});
+	
+	</script>
+	      
+	      
+	</head>
+
+	<body >
+	
+	<!-- ---------------------------------------- -->
+	
+	<script type='text/javascript'> spin_it('on'); </script>
+	
+	<!-- ---------------------------------------- -->
+	
+	<div class="container-fluid h-100">
+	
+		<div class="card">
+	
+			<h3 class="card-header  text-center">
+				<i class="far fa-file-invoice"></i> Facture Ristourne <button type="button" id="sub_ris" class="btn btn-success">Valider</button>
+			</h3>
+			
+			<br>
+	
+			<div class="card-body">
+	
+	
+				<form id="frm" th:action="@{/new_facture_ristourne}" method="post" style="height: 100%" autocomplete="off">
+	
+	
+					<div class="card">
+	
+	
+						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
+						<br>
+	
+						<div class="card-body">
+						
+							<div class="row">
+	
+								<div class="col-md-4 ">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration" style=" text-align: left;">Client </span>
+										</div>
+										<select id="client" name="rc_client" class="selectpicker show-tick jump" data-live-search="true" 
+											data-style="btn-outline-dark" title="RC" data-width="80%" required>
+										
+											<option th:each="clt_rc:${clt_rc}" th:value="${clt_rc.id}" th:text="${clt_rc.registre_commerce.code}"
+													th:attr="data-subtext=${clt_rc.registre_commerce.nom}+' '+${clt_rc.registre_commerce.prenom}"></option>
+										
+										</select>
+										
+									</div>
+								</div>
+	
+								<div class="col-md-4 column">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration">Désignation</span>
+										</div>
+										<input type="text" name="np" id="nom" class="form-control " readonly="readonly">
+	
+									</div>
+								</div>
+	
+							</div>
+	
+							<hr>
+							
+							<div class="row">
+								
+								<div class="col-md-4  offset-md-8">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
+										</div>
+										<input type="hidden" id="total_ht_hidden" value="0">
+										<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
+												value="0" readonly="readonly">
+									</div>
+								</div>
+							
+							</div>
+							<hr>
+							<div class="row">
+								
+								<div class="col-md-4 offset-md-8">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration">Montant TVA</span>
+										</div>
+										<input type="hidden" id="total_tva_hidden" value="0">
+										<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
+												value="0" readonly="readonly">
+									</div>
+								</div>
+							
+							</div>
+							
+							<div class="row">
+								
+								<div class="col-md-4 offset-md-8">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration">Montant TTC </span>
+										</div>
+										<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" 
+												value="0" readonly="readonly">
+									</div>
+								</div>
+	
+							</div>
+							
+						</div>
+						
+					</div>
+					
+					<hr>
+	
+					<table class="table" id="table" width="100%">
+						<thead class="thead-dark">
+							<tr>
+								<th align="center"  width="8%">Art</th>
+								<th  align="center" >Libellé</th>
+								<th  align="center"  width="8%">Um</th>
+								<th  align="center" >Qte</th>
+								<th  align="center" >PU</th>
+								<th  align="center" >TVA</th>
+								<th  align="center" >MONTANT HT</th>
+							</tr>
+						</thead>
+	
+						<tbody>
+	
+							<tr th:each="i : ${#numbers.sequence( 1, 20, 1)}" th:attr="id='tr'+${i}" >
+	
+								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
+								
+								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" 
+																		data-size="8" data-live-search="true" name="art_ris">
+										<option value="0" >Selection</option>
+										
+										<option th:each="art:${articles}" th:value="${art.article.id}" th:text="${art.article.libelle}"
+										th:attr="code=${art.article.code}, data-subtext=${art.article.code}, 
+										um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix}, tva=${art.tva.taux_tva},
+										id_um=${art.article.unite_mesure_vente.id} "></option>
+										
+									 </select> 
+								</td>
+								
+								<td> <input class="form-control unite_mesure" id="unite_mesure" type="text" value="" style="text-align: center;" readonly> 
+										<input type="hidden" id="id_um" name="id_um" value="0" > </td>
+								
+								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="0" style="text-align: right;" > </td>
+								
+								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
+								
+								<td> <input class="form-control tva" id="tva_art" name="tva_art" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
+								
+								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" type="text" style="text-align: right;" value="0" readonly> </td>
+	
+							</tr>
+	
+						</tbody>
+	
+					</table>
+	
+				</form>
+	
+			</div>
+		</div>
+	
+	</div>
+	
+	<script type='text/javascript'> spin_it('off'); </script>
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" id="fermer" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<div id="bl_detail_modal" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	      		
+	      		<input type="hidden" id="id_facture">
+	      		
+	      		<div class="col-md-6">
+	      			
+	      			<div class="input-group">
+	      				<div class="input-group-prepend">
+	      					<i id="icone_bl" class="far fa-file-invoice" style="font-size:30px;margin-right:10px;" ></i>
+	      				</div>	
+	      					<h5 id="title_bl" class="modal-title" > </h5>
+			        </div>	
+	      		</div>
+	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      	
+	      </div>
+	      
+	      <div class="modal-body" >
+	         
+	         <div id="print_content">
+	         
+	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         
+	         </div>
+	         
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	</body>
+	
+</html>

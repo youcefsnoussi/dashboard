@@ -13,7 +13,7 @@ import com.commercial.entities.schema.user_menu.users;
 
 public interface bon_livraisonRepository extends JpaRepository<bon_livraison, Long> {
 	
-	public bon_livraison findFirst1ByOrderByIdDesc();
+	public bon_livraison findFirst1ByOrderByNumeroDesc();
 	
 	//____________________________________________________
 	
