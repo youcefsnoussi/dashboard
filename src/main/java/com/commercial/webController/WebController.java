@@ -212,6 +212,12 @@ public class WebController {
 			
 		}
 		
+		if(role.getNom_role().equals("Admin") || role.getNom_role().equals("Gérant")) {
+			
+			ret = "redirect:/dashboard?start=0&end=0&nbr_days=0";
+			
+		}
+		
 		return ret;
 		
 	}

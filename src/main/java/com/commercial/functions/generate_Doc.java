@@ -1,6 +1,11 @@
 package com.commercial.functions;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 //import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,12 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.category_produit;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.dynamic_data.repository.mouvementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_employee;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture_detail;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_transfert;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_transfert_interne;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
@@ -33,6 +42,8 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_employeeRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_factureRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfert_interneRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfert_interne_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
@@ -41,6 +52,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_ristourne_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
+import com.commercial.entities.schema.static_data.repository.information_entrepriseRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 
 /*
@@ -108,6 +120,15 @@ public class generate_Doc {
 	
 	@Autowired
 	paiementRepository paiRepo;
+	
+	@Autowired
+	information_entrepriseRepository infoeRepo;
+	
+	@Autowired
+	bon_livraison_factureRepository blfRepo;
+	
+	@Autowired
+	bon_livraison_facture_detailRepository blfdRepo;
 	
 	public generate_Doc() {
 		// TODO Auto-generated constructor stub
@@ -256,7 +277,8 @@ public class generate_Doc {
 				mp.put("id_facture", fact.getId());
 				mp.put("num_client", fact.getRegistre_commerce().getCode());
 				mp.put("matricule", fact.getMatricule_camion());
-				mp.put("nom_client", fact.getRegistre_commerce().getNom()+" "+fact.getRegistre_commerce().getPrenom());
+				mp.put("nom_client", fact.getRegistre_commerce().getNom()+" "+fact.getRegistre_commerce().getPrenom()+
+						" "+fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("adresse", fact.getRegistre_commerce().getAdresse());
 				mp.put("rc", fact.getRegistre_commerce().getNumero_rc());
 				mp.put("nif", fact.getRegistre_commerce().getNumero_nif());
@@ -264,7 +286,7 @@ public class generate_Doc {
 				mp.put("user", fact.getUsers().getMatricule());
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", fact.getDate());
-				mp.put("mode_reg", fact.getMode_paiement().getDesignation());
+				//mp.put("mode_reg", fact.getMode_paiement().getDesignation());
 				
 				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
@@ -331,12 +353,30 @@ public class generate_Doc {
 						
 						if(pay.getInfo_supp_banque()!=null) {info_supp = pay.getInfo_supp_banque();}
 						
-						reglem = pay.getBanque().getNom_banque()+" "+info_supp+" "+pay.getNumero_piece();
+						reglem = pay.getBanque().getNom_banque()+" "+info_supp+" "+pay.getNumero_piece()+" "+df.format(pay.getMontant())+" DA";
 						
 					}
 					
 				}
 				
+				//mp.put("mode_reg", fact.getMode_paiement().getDesignation());
+				
+				String mode_pay = "";
+				
+				List<paiement> lst_pay = paiRepo.get_paiements_not_canceled_by_rc(fact.getRegistre_commerce());
+				
+				if(lst_pay.size()==0) {
+					
+					mode_pay = fact.getRegistre_commerce().getMode_paiement().getDesignation();
+					
+				}
+				else {
+					
+					mode_pay = lst_pay.get(0).getMode_paiement().getDesignation();
+					
+				}
+				
+				mp.put("mode_reg", mode_pay);
 				
 				mp.put("reglem", reglem);
 				
@@ -1147,9 +1187,19 @@ public class generate_Doc {
 				mp.put("start", start);
 				mp.put("end", end);
 				mp.put("id_rc", rc.getId());
-				mp.put("sold_start", df.format( mvmRepo.sold_debut_periode(rc, start, end).get(0).getOld_sold_rc() ));
-				mp.put("sold_end", df.format( mvmRepo.sold_fin_periode(rc, start, end).get(0).getNew_sold_rc() ));
 				
+				if( mvmRepo.sold_debut_periode(rc, start, end).size()==0) {
+					
+					mp.put("sold_start", df.format(rc.getSold_encours()) );
+					mp.put("sold_end", df.format(rc.getSold_encours()) );
+					
+				}
+				else {
+					
+					mp.put("sold_start", df.format( mvmRepo.sold_debut_periode(rc, start, end).get(0).getOld_sold_rc() ));
+					mp.put("sold_end", df.format( mvmRepo.sold_fin_periode(rc, start, end).get(0).getNew_sold_rc() ));
+					
+				}
 				
 				try {
 					
@@ -1282,7 +1332,776 @@ public class generate_Doc {
 	
 	//------------------------------------------------------------------------------
 	
+	public String generate_etat_vente_client(String start, String end, category_produit cp, String unite) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/EVC.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\etat_ventes_client.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("start", start);
+				mp.put("end", end);
+				mp.put("id_category", cp.getId());
+				mp.put("category_produit", cp.getNom_category());
+				mp.put("unite", unite);
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint = JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\EVC.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
 	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_etat_sortie() {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/ES.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\etat_stock.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				List <String> col = new ArrayList<String>();
+				
+				List <String> row = new ArrayList<String>();
+				
+				col.add("aaa");col.add("bbb");
+				
+				row.add("aaa");row.add("bbb");
+				
+				mp.put("ColumnsHeader", col );
+				mp.put("Rows", row);
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint = JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\ES.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	//------------------------------ PRINT BLF ------------------------------------
+	
+	public String generate_blf(bon_livraison_facture blf, String qr_code) {
+		
+		 JasperDesign jdesign; 
+			try {
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("num_blf", blf.getNumero());
+				mp.put("id_blf", blf.getId());
+				mp.put("num_client", blf.getRegistre_commerce().getCode());
+				mp.put("matricule", blf.getMatricule());
+				mp.put("nom_client", blf.getRegistre_commerce().getNom()+" "+blf.getRegistre_commerce().getPrenom()+" "+
+						blf.getRegistre_commerce().getCategory().getNom_category());
+				mp.put("adresse_client", blf.getRegistre_commerce().getAdresse());
+				mp.put("rc", blf.getRegistre_commerce().getNumero_rc());
+				mp.put("nif", blf.getRegistre_commerce().getNumero_nif());
+				mp.put("nis", blf.getRegistre_commerce().getNumero_art());
+				mp.put("user", blf.getUsers().getMatricule());
+				mp.put("cat_rc", blf.getRegistre_commerce().getCategory().getNom_category());
+				mp.put("date", blf.getDate());
+				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation());
+				mp.put("chauffeur", blf.getChauffeur());
+				
+				DecimalFormat df = new DecimalFormat("# ###,##0.00");
+				
+				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
+				mp.put("total_ht", df.format(blf.getMontant_ht()) );
+				mp.put("total_tva", df.format(blf.getMontant_tva()) );
+				mp.put("total_ttc", df.format(blf.getMontant_ttc()) );
+				mp.put("timbre", df.format(0) );
+				mp.put("total_ht_net", df.format(blf.getMontant_ht_net()) );
+				mp.put("total_remise", df.format(blf.getMontant_remise()) );
+				
+				mp.put("qr_path", qr_code );
+				
+				//---------------------- Entreprise INFO -------------------------------
+				
+				mp.put("Nom_entreprise", infoeRepo.getOne((long)1 ).getNom_entreprise() );
+				mp.put("capitale", df.format(infoeRepo.getOne((long)1 ).getCapitale()) );
+				mp.put("adresse", infoeRepo.getOne((long)1 ).getAdresse_facturation() );
+				mp.put("tel", infoeRepo.getOne((long)1 ).getTelephone() );
+				mp.put("num_rc", infoeRepo.getOne((long)1 ).getNum_rc() );
+				mp.put("num_art", infoeRepo.getOne((long)1 ).getNum_art() );
+				mp.put("num_nif", infoeRepo.getOne((long)1 ).getNum_nif() );
+				
+				mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
+				
+				//----------------------- ajout virgule f lettre ta3 shkoupi ------------------
+				
+				String m_ttc1 = df.format(blf.getMontant_ttc());
+				
+				System.out.println("---TTC1 -->"+m_ttc1);
+				
+				String m_ttc = m_ttc1.replaceAll(" ", "");
+				
+				System.out.println("---TTC -->"+m_ttc);
+				
+				String m [] = m_ttc.split(",");
+				
+				char  chkoupi [] = m[1].toCharArray();
+				
+				String virgule = "";
+				
+				if(chkoupi[0]=='0' && chkoupi[1]!='0') {
+					
+					String chk = ""+chkoupi[0], chk1 = ""+chkoupi[1]; 
+					
+					virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+FrenchNumberToWords.convert(Double.parseDouble(chk1));
+					
+				}
+				else {
+					
+					virgule = FrenchNumberToWords.convert(Double.parseDouble(m[1]));
+					
+				}
+				
+				mp.put("total_ttc_lettre", FrenchNumberToWords.convert(Double.parseDouble(m[0]))+" Virgule "+
+				virgule+" Dinars Algérien");
+				
+				String cumule_tva = "";
+				
+				List <bon_livraison_facture_detail> list_blf_det = blfdRepo.get_detail_by_blf(blf);
+				
+				Map<String, Double> cuml = new HashMap<String, Double>();
+				
+				for(int i=0;i<list_blf_det.size();i++) {
+					
+					bon_livraison_facture_detail blfd = list_blf_det.get(i);
+					
+					if(cuml.containsKey(""+blfd.getTva())) {
+						
+						double val = cuml.get(""+blfd.getTva());
+						
+						cuml.put(""+blfd.getTva(), val + ( blfd.getMontant_ht() * (blfd.getTva()/100) ) );
+						
+					}
+					else {
+						
+						cuml.putIfAbsent(""+blfd.getTva(), blfd.getMontant_ht() * (blfd.getTva()/100));
+						
+					}
+					
+				}
+				
+				for (Map.Entry<String, Double> entry : cuml.entrySet()) {
+				    String key = entry.getKey();
+				    Double value = entry.getValue();
+				    
+				    cumule_tva = cumule_tva + key + "% \t"+ df.format(value)+"\n";
+				    
+				}
+				
+				//----------------------- +++++++++++++++++++ --------------------------
+				
+				mp.put("cumule_tva", cumule_tva);
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\Bon Livraison\\BLF.jrxml");
+					
+				
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				try {
+					
+					Connection con = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\BL");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BL\\BLF.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return "D:/Commercial/Doc/BL/BLF.pdf";
+	
+	}	
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_blfs(List<bon_livraison_facture> blfs) throws IOException {
+		
+		ArrayList<String> allPdfs = new ArrayList<String>();
+		
+		for(int i=0; i<blfs.size(); i++) {
+			
+			String qr_code = generateQRcode.createQRcode(blfs.get(i).getNumero(), "BL");
+			
+			String pdf = generate_blq(blfs.get(i), qr_code);
+			
+		    Path source = Paths.get(pdf);
+
+		    Path newDir = Paths.get("D:\\Commercial\\Doc\\Combination");
+
+		    //create the target directories, if directory exits, no effect
+		    Files.createDirectories(newDir);
+		    
+		    String fp = source.getFileName().toString();
+		    
+		    fp = fp.replaceAll(".pdf", i+".pdf");
+		    
+		    Files.move(source, newDir.resolve(fp), StandardCopyOption.REPLACE_EXISTING);
+		    
+		    String newPath = "D:\\Commercial\\Doc\\Combination\\"+fp;
+		    
+		    allPdfs.add(newPath);
+		    
+		}
+		
+		CombinePdf.combine(allPdfs, "D:\\Commercial\\Doc\\BL\\BLFS.pdf");
+		
+		return "D:/Commercial/Doc/BL/BLFS.pdf";
+	
+	}	
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_bts(List<bon_transfert> bts) throws IOException {
+		
+		ArrayList<String> allPdfs = new ArrayList<String>();
+		
+		for(int i=0; i<bts.size(); i++) {
+			
+			String pdf = generate_bt(bts.get(i));
+			
+		    Path source = Paths.get(pdf);
+
+		    Path newDir = Paths.get("D:\\Commercial\\Doc\\Combination");
+
+		    //create the target directories, if directory exits, no effect
+		    Files.createDirectories(newDir);
+		    
+		    String fp = source.getFileName().toString();
+		    
+		    fp = fp.replaceAll(".pdf", i+".pdf");
+		    
+		    Files.move(source, newDir.resolve(fp), StandardCopyOption.REPLACE_EXISTING);
+		    
+		    String newPath = "D:\\Commercial\\Doc\\Combination\\"+fp;
+		    
+		    allPdfs.add(newPath);
+		    
+		}
+		
+		CombinePdf.combine(allPdfs, "D:\\Commercial\\Doc\\BL\\BTS.pdf");
+		
+		return "D:/Commercial/Doc/BL/BTS.pdf";
+	
+	}	
+	
+	//------------------------------------------------------------------------------
+	
+	//------------------------------ PRINT BLF BT------------------------------------
+	
+	public String generate_blf_bt(bon_livraison_facture blf, String qr_code) {
+		
+		 JasperDesign jdesign; 
+			try {
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("num_blf", blf.getNumero().replaceAll("L", "T"));
+				mp.put("id_blf", blf.getId());
+				mp.put("num_client", blf.getRegistre_commerce().getCode());
+				mp.put("matricule", blf.getMatricule());
+				mp.put("nom_client", blf.getRegistre_commerce().getNom()+" "+blf.getRegistre_commerce().getPrenom()+" "+
+						blf.getRegistre_commerce().getCategory().getNom_category());
+				mp.put("adresse_client", blf.getRegistre_commerce().getAdresse());
+				mp.put("rc", blf.getRegistre_commerce().getNumero_rc());
+				mp.put("nif", blf.getRegistre_commerce().getNumero_nif());
+				mp.put("nis", blf.getRegistre_commerce().getNumero_art());
+				mp.put("user", blf.getUsers().getMatricule());
+				mp.put("cat_rc", blf.getRegistre_commerce().getCategory().getNom_category());
+				mp.put("date", blf.getDate());
+				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation());
+				mp.put("chauffeur", blf.getChauffeur());
+				
+				DecimalFormat df = new DecimalFormat("# ###,##0.00");
+				
+				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
+				mp.put("total_ht", df.format(blf.getMontant_ht()) );
+				mp.put("total_tva", df.format(blf.getMontant_tva()) );
+				mp.put("total_ttc", df.format(blf.getMontant_ttc()) );
+				mp.put("timbre", df.format(0) );
+				mp.put("total_ht_net", df.format(blf.getMontant_ht_net()) );
+				mp.put("total_remise", df.format(blf.getMontant_remise()) );
+				
+				mp.put("qr_path", qr_code );
+				
+				//---------------------- Entreprise INFO -------------------------------
+				
+				mp.put("Nom_entreprise", infoeRepo.getOne((long)1 ).getNom_entreprise() );
+				mp.put("capitale", df.format(infoeRepo.getOne((long)1 ).getCapitale()) );
+				mp.put("adresse", infoeRepo.getOne((long)1 ).getAdresse_facturation() );
+				mp.put("tel", infoeRepo.getOne((long)1 ).getTelephone() );
+				mp.put("num_rc", infoeRepo.getOne((long)1 ).getNum_rc() );
+				mp.put("num_art", infoeRepo.getOne((long)1 ).getNum_art() );
+				mp.put("num_nif", infoeRepo.getOne((long)1 ).getNum_nif() );
+				
+				mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
+				
+				//----------------------- ajout virgule f lettre ta3 shkoupi ------------------
+				
+				String m_ttc1 = df.format(blf.getMontant_ttc());
+				
+				System.out.println("---TTC1 -->"+m_ttc1);
+				
+				String m_ttc = m_ttc1.replaceAll(" ", "");
+				
+				System.out.println("---TTC -->"+m_ttc);
+				
+				String m [] = m_ttc.split(",");
+				
+				char  chkoupi [] = m[1].toCharArray();
+				
+				String virgule = "";
+				
+				if(chkoupi[0]=='0' && chkoupi[1]!='0') {
+					
+					String chk = ""+chkoupi[0], chk1 = ""+chkoupi[1]; 
+					
+					virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+FrenchNumberToWords.convert(Double.parseDouble(chk1));
+					
+				}
+				else {
+					
+					virgule = FrenchNumberToWords.convert(Double.parseDouble(m[1]));
+					
+				}
+				
+				mp.put("total_ttc_lettre", FrenchNumberToWords.convert(Double.parseDouble(m[0]))+" Virgule "+
+				virgule+" Dinars Algérien");
+				
+				//---------------- reglement 
+				/*
+				String reglem = "";
+				
+				if(fact.getRegistre_commerce().getType_reglement().getDesignation().equals("A Terme")) {
+					
+					reglem = "A Terme";
+					
+				}
+				else {
+					
+					List<paiement> lst_pay = paiRepo.get_payments_date_rc(fact.getDate(), fact.getRegistre_commerce());
+					
+					if(lst_pay.size()==0) {
+						
+						reglem = "A Compte";
+						
+					}
+					else {
+						
+						paiement pay = lst_pay.get(lst_pay.size()-1);
+						
+						String info_supp = "";
+						
+						if(pay.getInfo_supp_banque()!=null) {info_supp = pay.getInfo_supp_banque();}
+						
+						reglem = pay.getBanque().getNom_banque()+" "+info_supp+" "+pay.getNumero_piece();
+						
+					}
+					
+				}
+				
+				
+				mp.put("reglem", reglem);
+				*/
+				//----------------------- calcule Cumule TVA --------------------------
+				
+				String cumule_tva = "";
+				
+				List <bon_livraison_facture_detail> list_blf_det = blfdRepo.get_detail_by_blf(blf);
+				
+				Map<String, Double> cuml = new HashMap<String, Double>();
+				
+				for(int i=0;i<list_blf_det.size();i++) {
+					
+					bon_livraison_facture_detail blfd = list_blf_det.get(i);
+					
+					if(cuml.containsKey(""+blfd.getTva())) {
+						
+						double val = cuml.get(""+blfd.getTva());
+						
+						cuml.put(""+blfd.getTva(), val + ( blfd.getMontant_ht() * (blfd.getTva()/100) ) );
+						
+					}
+					else {
+						
+						cuml.putIfAbsent(""+blfd.getTva(), blfd.getMontant_ht() * (blfd.getTva()/100));
+						
+					}
+					
+				}
+				
+				for (Map.Entry<String, Double> entry : cuml.entrySet()) {
+				    String key = entry.getKey();
+				    Double value = entry.getValue();
+				    
+				    cumule_tva = cumule_tva + key + "% \t"+ df.format(value)+"\n";
+				    
+				}
+				
+				//----------------------- +++++++++++++++++++ --------------------------
+				
+				mp.put("cumule_tva", cumule_tva);
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\Bon Livraison\\BT.jrxml");
+					
+				
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				try {
+					
+					Connection con = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\BL");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BL\\BT.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return "D:/Commercial/Doc/BL/BT.pdf";
+	
+	}	
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_bt(bon_transfert bt) {
+		
+		 JasperDesign jdesign; 
+			try {
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("num_bt", bt.getNumero());
+				mp.put("id_bt", bt.getId());
+				mp.put("num_client", bt.getUnite_interne().getCode());
+				mp.put("matricule", bt.getMatricule_vehicule());
+				mp.put("nom_client", bt.getUnite_interne().getDesignation());
+				mp.put("adresse_client", bt.getUnite_interne().getAdresse());
+				mp.put("rc",  bt.getUnite_interne().getNumero_rc());
+				mp.put("nif",  bt.getUnite_interne().getNumero_nif());
+				mp.put("nis",  bt.getUnite_interne().getNumero_art());
+				mp.put("user", bt.getUsers().getMatricule());
+				mp.put("date", bt.getDate());
+				mp.put("chauffeur", bt.getChauffeur());
+				
+				DecimalFormat df = new DecimalFormat("# ###,##0.00");
+				
+				//---------------------- Entreprise INFO -------------------------------
+				
+				mp.put("Nom_entreprise", infoeRepo.getOne((long)1 ).getNom_entreprise() );
+				mp.put("capitale", df.format(infoeRepo.getOne((long)1 ).getCapitale()) );
+				mp.put("adresse", infoeRepo.getOne((long)1 ).getAdresse_facturation() );
+				mp.put("tel", infoeRepo.getOne((long)1 ).getTelephone() );
+				mp.put("num_rc", infoeRepo.getOne((long)1 ).getNum_rc() );
+				mp.put("num_art", infoeRepo.getOne((long)1 ).getNum_art() );
+				mp.put("num_nif", infoeRepo.getOne((long)1 ).getNum_nif() );
+				
+				mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\Bon Livraison\\BonTransfert.jrxml");
+					
+				
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				try {
+					
+					Connection con = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\BT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BT\\BonTransfert.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return "D:/Commercial/Doc/BT/BonTransfert.pdf";
+	
+	}	
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_blq(bon_livraison_facture blf, String qr_code) {
+		
+		 JasperDesign jdesign; 
+			try {
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("num_blf", blf.getNumero());
+				mp.put("id_blf", blf.getId());
+				mp.put("num_client", blf.getRegistre_commerce().getCode());
+				mp.put("matricule", blf.getMatricule());
+				mp.put("nom_client", blf.getRegistre_commerce().getNom()+" "+blf.getRegistre_commerce().getPrenom()+" "+
+						blf.getRegistre_commerce().getCategory().getNom_category());
+				mp.put("adresse_client", blf.getRegistre_commerce().getAdresse());
+				mp.put("rc", blf.getRegistre_commerce().getNumero_rc());
+				mp.put("nif", blf.getRegistre_commerce().getNumero_nif());
+				mp.put("nis", blf.getRegistre_commerce().getNumero_art());
+				mp.put("user", blf.getUsers().getMatricule());
+				mp.put("cat_rc", blf.getRegistre_commerce().getCategory().getNom_category());
+				mp.put("date", blf.getDate());
+				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation());
+				mp.put("chauffeur", blf.getChauffeur());
+				
+				DecimalFormat df = new DecimalFormat("# ###,##0.00");
+				
+				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
+				mp.put("total_ht", df.format(blf.getMontant_ht()) );
+				mp.put("total_tva", df.format(blf.getMontant_tva()) );
+				mp.put("total_ttc", df.format(blf.getMontant_ttc()) );
+				mp.put("timbre", df.format(0) );
+				mp.put("total_ht_net", df.format(blf.getMontant_ht_net()) );
+				mp.put("total_remise", df.format(blf.getMontant_remise()) );
+				
+				mp.put("qr_path", qr_code );
+				
+				//---------------------- Entreprise INFO -------------------------------
+				
+				mp.put("Nom_entreprise", infoeRepo.getOne((long)1 ).getNom_entreprise() );
+				mp.put("capitale", df.format(infoeRepo.getOne((long)1 ).getCapitale()) );
+				mp.put("adresse", infoeRepo.getOne((long)1 ).getAdresse_facturation() );
+				mp.put("tel", infoeRepo.getOne((long)1 ).getTelephone() );
+				mp.put("num_rc", infoeRepo.getOne((long)1 ).getNum_rc() );
+				mp.put("num_art", infoeRepo.getOne((long)1 ).getNum_art() );
+				mp.put("num_nif", infoeRepo.getOne((long)1 ).getNum_nif() );
+				
+				mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
+				
+				//----------------------- ajout virgule f lettre ta3 shkoupi ------------------
+				
+				String m_ttc1 = df.format(blf.getMontant_ttc());
+				
+				System.out.println("---TTC1 -->"+m_ttc1);
+				
+				String m_ttc = m_ttc1.replaceAll(" ", "");
+				
+				System.out.println("---TTC -->"+m_ttc);
+				
+				String m [] = m_ttc.split(",");
+				
+				char  chkoupi [] = m[1].toCharArray();
+				
+				String virgule = "";
+				
+				if(chkoupi[0]=='0' && chkoupi[1]!='0') {
+					
+					String chk = ""+chkoupi[0], chk1 = ""+chkoupi[1]; 
+					
+					virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+FrenchNumberToWords.convert(Double.parseDouble(chk1));
+					
+				}
+				else {
+					
+					virgule = FrenchNumberToWords.convert(Double.parseDouble(m[1]));
+					
+				}
+				
+				mp.put("total_ttc_lettre", FrenchNumberToWords.convert(Double.parseDouble(m[0]))+" Virgule "+
+				virgule+" Dinars Algérien");
+				
+				//---------------- reglement 
+				/*
+				String reglem = "";
+				
+				if(fact.getRegistre_commerce().getType_reglement().getDesignation().equals("A Terme")) {
+					
+					reglem = "A Terme";
+					
+				}
+				else {
+					
+					List<paiement> lst_pay = paiRepo.get_payments_date_rc(fact.getDate(), fact.getRegistre_commerce());
+					
+					if(lst_pay.size()==0) {
+						
+						reglem = "A Compte";
+						
+					}
+					else {
+						
+						paiement pay = lst_pay.get(lst_pay.size()-1);
+						
+						String info_supp = "";
+						
+						if(pay.getInfo_supp_banque()!=null) {info_supp = pay.getInfo_supp_banque();}
+						
+						reglem = pay.getBanque().getNom_banque()+" "+info_supp+" "+pay.getNumero_piece();
+						
+					}
+					
+				}
+				
+				
+				mp.put("reglem", reglem);
+				*/
+				//----------------------- calcule Cumule TVA --------------------------
+				
+				String cumule_tva = "";
+				
+				List <bon_livraison_facture_detail> list_blf_det = blfdRepo.get_detail_by_blf(blf);
+				
+				Map<String, Double> cuml = new HashMap<String, Double>();
+				
+				for(int i=0;i<list_blf_det.size();i++) {
+					
+					bon_livraison_facture_detail blfd = list_blf_det.get(i);
+					
+					if(cuml.containsKey(""+blfd.getTva())) {
+						
+						double val = cuml.get(""+blfd.getTva());
+						
+						cuml.put(""+blfd.getTva(), val + ( blfd.getMontant_ht() * (blfd.getTva()/100) ) );
+						
+					}
+					else {
+						
+						cuml.putIfAbsent(""+blfd.getTva(), blfd.getMontant_ht() * (blfd.getTva()/100));
+						
+					}
+					
+				}
+				
+				for (Map.Entry<String, Double> entry : cuml.entrySet()) {
+				    String key = entry.getKey();
+				    Double value = entry.getValue();
+				    
+				    cumule_tva = cumule_tva + key + "% \t"+ df.format(value)+"\n";
+				    
+				}
+				
+				//----------------------- +++++++++++++++++++ --------------------------
+				
+				mp.put("cumule_tva", cumule_tva);
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\Bon Livraison\\BLQ.jrxml");
+					
+				
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				try {
+					
+					Connection con = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\BL");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint,"D:\\Commercial\\Doc\\BL\\BLQ.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return "D:/Commercial/Doc/BL/BLQ.pdf";
+	
+	}	
 	
 	//_____________________________________________________________ EXPORT EXCEL =========================
 	/*

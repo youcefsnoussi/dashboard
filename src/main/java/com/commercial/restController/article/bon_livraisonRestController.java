@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_employee;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_transfert;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_employeeRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_factureRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfertRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.track_operations;
 
@@ -87,5 +91,56 @@ public class bon_livraisonRestController {
 	
 	//____________________________________________________________________________________________________
 	
+	@Autowired
+	bon_livraison_factureRepository blfRepo;
+	
+	@RequestMapping(value="/cancel_blf")
+	public String cancel_blf(
+		@RequestParam("id_bl") long id_blf,
+		@SessionAttribute("user") users user) throws IOException, ParseException{
+		
+		String ret  = "";
+		
+		bon_livraison_facture blf = blfRepo.getOne(id_blf);
+		
+		if(blf.getEtat_livraison()==0) {
+			
+			blf.setCancel(true);
+			
+			blfRepo.save(blf); blfRepo.flush();
+			
+			trk.add_track("bon_livraison_facture", "Annulation Bon de Livraison", blf.getId(), user);
+			
+		}
+		
+		return ret;
+		
+	}
+	
+	//____________________________________________________________________________________________________
+	
+	@Autowired
+	bon_transfertRepository btRepo;
+	
+	@RequestMapping(value="/cancel_bt")
+	public String cancel_bt(
+		@RequestParam("id_bt") long id_bt,
+		@SessionAttribute("user") users user) throws IOException, ParseException{
+		
+		String ret  = "";
+		
+		bon_transfert bt = btRepo.getOne(id_bt);
+			
+		bt.setCancel(true);
+		
+		btRepo.save(bt); btRepo.flush();
+		
+		trk.add_track("bon_transfert", "Annulation Bon de Transfert", bt.getId(), user);
+		
+		return ret;
+		
+	}
+	
+	//____________________________________________________________________________________________________
 	
 }

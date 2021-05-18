@@ -120,6 +120,7 @@ public class get_time_date {
 		
 	}
 		
+	//-------------------------------------------------------------------------------------
 		
 	public String get_date_before(int nbr, String date){
 		
@@ -130,7 +131,7 @@ public class get_time_date {
 		
 		try {
 			
-			System.out.println("date == "+date);
+			//System.out.println("date == "+date);
 			
 			c.setTime(sdf.parse(date));
 		} catch (ParseException e) {
@@ -243,7 +244,7 @@ public class get_time_date {
 			
 			get_time_date tt  = new get_time_date();
 			
-			System.out.println(tt.convert_input_date_date("2019-04-07"));
+			System.out.println(tt.get_date_before(-1, "19/04/2021"));
 
 		}
 

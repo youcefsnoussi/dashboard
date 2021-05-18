@@ -260,8 +260,8 @@
 							<hr>
 							
 							<input type="text" class="form-control" th:each="price:${prices}" th:value="${price.category_client.nom_category}" style="margin-bottom:5px" disabled>
-							<input type="hidden" name="cat_client" th:each="price:${prices}" th:value="${price.id}" >
-							
+							<input type="hidden" name="cat_client" th:each="price:${prices}" th:value="${price.category_client.id}" >
+							<input type="hidden" name="id_prix_u" th:each="price:${prices}" th:value="${price.id}" >
 						</div>
 						
 						<div class="col-md-3">

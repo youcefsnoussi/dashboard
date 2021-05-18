@@ -230,6 +230,7 @@ public boolean if_grise(String now){
 	}
 
 //___________________________________________________________________________________________________________________________
+	
 	public String get_day_before_today(String today){
 		
 		String ret="";
@@ -388,6 +389,39 @@ public boolean if_grise(String now){
 		
 		
 	}
+	
+//___________________________________________________________________________________________________________________________
+
+
+	public boolean if_before_or_equal(String date1, String date2){
+		
+		boolean ret = false;
+		
+		String[] parts = date1.split("/");
+		
+		Calendar date_1 = Calendar.getInstance();
+		date_1.set(Calendar.DAY_OF_MONTH, Integer.parseInt(parts[0]));
+		date_1.set(Calendar.MONTH, Integer.parseInt(parts[1])-1);
+		date_1.set(Calendar.YEAR, Integer.parseInt(parts[2]));
+		
+		String[] parts1 = date2.split("/");
+		
+		Calendar date_2 = Calendar.getInstance();
+		date_2.set(Calendar.DAY_OF_MONTH, Integer.parseInt(parts1[0]));
+		date_2.set(Calendar.MONTH, Integer.parseInt(parts1[1])-1);
+		date_2.set(Calendar.YEAR, Integer.parseInt(parts1[2]));
+		
+		if(date_1.before(date_2) || date_1.equals(date_2)) {
+			
+			ret = true;
+			
+		}
+		
+		return ret;
+		
+		
+	}	
+	
 //___________________________________________________________________________________________________________________________
 	
 	public boolean if_after_2(String date1, String date2){

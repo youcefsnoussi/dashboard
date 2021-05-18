@@ -21,12 +21,12 @@ import com.commercial.functions.get_time_date;
 @Controller
 @SessionAttributes("user")
 
-public class history_buy_by_rc {
+public class history_buy_by_rcController {
 	
 	@Autowired
 	factureRepository factRepo;
 	
-	public history_buy_by_rc() {
+	public history_buy_by_rcController() {
 		// TODO Auto-generated constructor stub
 	}
 	

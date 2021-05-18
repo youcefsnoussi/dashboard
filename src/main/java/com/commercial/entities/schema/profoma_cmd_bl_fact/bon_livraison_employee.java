@@ -1,5 +1,7 @@
 package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,7 +17,7 @@ import com.commercial.entities.schema.user_menu.users;
 
 @Table(name="bon_livraison_employee" , schema = "proforma_cmd_bl_fact")
 
-public class bon_livraison_employee {
+public class bon_livraison_employee  implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

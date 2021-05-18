@@ -97,13 +97,13 @@ $(document).ready(function() {
 			$(this).val(val+"/")
 			
 		}
-		
+		/*
 		if(val.length>16){
 			
 			$(this).val(val.slice(0,-1));
 			
 		}
-		
+		*/
 		/*
 		if(val.length==2){
 			

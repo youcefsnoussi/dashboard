@@ -17,7 +17,9 @@ import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
+import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
+import com.commercial.entities.schema.static_data.repository.tva_Repository;
 
 @Controller
 @SessionAttributes("user")
@@ -37,6 +39,9 @@ public class list_articleController {
 	@Autowired
 	prixUnitaire_article_categoryClient_Repository prixRepo;
 	
+	@Autowired
+	tva_Repository tvaRepo;
+	
 	@RequestMapping(value="/list_art")
 	public String client(HttpServletRequest request,
 						 Model model){
@@ -55,13 +60,34 @@ public class list_articleController {
 		
 		List <article> list_art = artRepo.select_articles_ordered();
 		
+		List <category_client> list_cat_c = cat_cltRepo.select_category_ordered();
+		
 		model.addAttribute("articles", list_art);
 		
 		List <List <prixUnitaire_article_categoryClient> > list_prix = new ArrayList< List <prixUnitaire_article_categoryClient> >();
 		
 		for(int i=0; i<list_art.size() ; i++) {
 			
-			List <prixUnitaire_article_categoryClient> lp = prixRepo.listing_prices(list_art.get(i));
+			//List <prixUnitaire_article_categoryClient> lp = prixRepo.listing_prices(list_art.get(i));
+			
+			List <prixUnitaire_article_categoryClient> lp = new ArrayList<prixUnitaire_article_categoryClient>();
+			
+			for (category_client cat_c : list_cat_c) {
+				
+				prixUnitaire_article_categoryClient price = prixRepo.get_instance_by_art_and_catClient(list_art.get(i), cat_c);
+				
+				if(price!=null) {
+					
+					lp.add(price);
+					
+				}
+				else {
+					
+					lp.add(new prixUnitaire_article_categoryClient(list_art.get(i), cat_c, -1, tvaRepo.getOne((long)1)));
+					
+				}
+				
+			}
 			
 			list_prix.add(lp);
 			

@@ -22,7 +22,7 @@ import com.commercial.functions.get_time_date;
 @Controller
 @SessionAttributes("user")
 
-public class history_article_selled {
+public class history_article_selledController {
 	
 	@Autowired
 	facture_detailRepository fact_detRepo;
@@ -30,7 +30,7 @@ public class history_article_selled {
 	@Autowired
 	facture_avoir_detailRepository fact_av_dRepo;
 	
-	public history_article_selled() {
+	public history_article_selledController() {
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -55,8 +55,12 @@ public class doc_app {
 	 * 				- facture_av => yakder idir facture avoir
 	 * 				--------------------------------------------------------------------------------
 	 * 	
-	 * 				PS : PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
-	 * 				
+	 * 				PS : -> PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
+	 * 					 
+	 * 					 -> Table registre_commerce column multiple_bon_livraison if true => client yedi b BL omba3ed ifacturiw kemel les bl li dahom
+	 * 																					  table ( bon_livraison_facture )
+	 * 																			  false => kol bl yetvalida tokhredj alih facture 
+	 * 
 
 	 * 				////////////////////////////////----------------------------------
 	 * 

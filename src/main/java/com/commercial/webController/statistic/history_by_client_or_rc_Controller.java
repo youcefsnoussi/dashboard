@@ -298,10 +298,20 @@ public class history_by_client_or_rc_Controller {
 				model.addAttribute("id_rc",rc);
 				model.addAttribute("rc",rcRepo.findAll());
 				model.addAttribute("history",mvml);
-				//model.addAttribute("sold_debut_clt",sold_debut_clt);
-				model.addAttribute("sold_debut_rc",sold_debut_rc);
-				//model.addAttribute("sold_fin_clt",sold_fin_clt);
-				model.addAttribute("sold_fin_rc",sold_fin_rc);
+				
+				if(mvml.size()==0) {
+					
+					model.addAttribute("sold_debut_rc",rcRepo.getOne(rc).getSold_encours());
+					model.addAttribute("sold_fin_rc",rcRepo.getOne(rc).getSold_encours());
+					
+				}
+				else {
+					
+					model.addAttribute("sold_debut_rc",sold_debut_rc);
+					model.addAttribute("sold_fin_rc",sold_fin_rc);
+					
+				}
+				
 				model.addAttribute("start",conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 				model.addAttribute("end",conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 				
@@ -333,11 +343,9 @@ public class history_by_client_or_rc_Controller {
 				
 				if(mvml.size()==0) {
 					
-					//sold_debut_clt = 0;
-					sold_debut_rc = 0;
+					sold_debut_rc = rcRepo.getOne(rc).getSold_encours();
 					
-					//sold_fin_clt = 0;
-					sold_fin_rc = 0;
+					sold_fin_rc = rcRepo.getOne(rc).getSold_encours();
 					
 				}
 				else {

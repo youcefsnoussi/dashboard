@@ -98,6 +98,19 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	
 	//----------------------------------------------------------
 	
+	@Query( /*" SELECT fct.registre_commerce.code, CONCAT(fct.registre_commerce.nom, ' ', fct.registre_commerce.prenom),"
+			
+			+ " fct.numero "
+			
+			+*/ " FROM facture fct"
+			
+			+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"
+			
+			+ " ORDER BY registre_commerce.code" )
+	 
+	public List<facture> get_code_rc_num_date(@Param("start") String start, @Param("end") String end);
+	
+	
 	
 	
 }

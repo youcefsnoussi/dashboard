@@ -26,6 +26,10 @@
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
 		
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
+		
 		<script type="text/javascript">
 		
 		$(document).ready(function() {
@@ -70,10 +74,10 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        "columnDefs": [
-			            { "width": "7%", "targets": 8 }
+			            { "width": "7%", "targets": 10 }
 			          ],
 			        initComplete: function () {
-			            this.api().columns([4,5,6]).every( function () {
+			            this.api().columns([3,4,5,6,7]).every( function () {
 			                var column = this;
 			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+
 			                				'.data-live-search="true" data-container="body"><option value="">Tout</option></select>')
@@ -94,27 +98,89 @@
 			            } );
 			        },
 					 drawCallback: function () {
-						 
-						 var api = this.api();
-						 
-						 $( api.column( 8, {page:'current'} ).footer() ).html(
+						
+					      var api = this.api();
+					      
+					      $( api.column( 8, {page:'current'} ).footer() ).html(
 					        api.column( 8, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
 					      );
+					      
+					      $( api.column( 9, {page:'current'} ).footer() ).html(
+					        api.column( 9, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					      $( api.column( 10, {page:'current'} ).footer() ).html(
+					        api.column( 10, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      $( api.column( 11, {page:'current'} ).footer() ).html(
+					        api.column( 11, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
 					 },
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
+		 	/*
+			$(".info").click(function(){
+				
+				var id_bl = $(this).attr("id_bl");
+				
+				num_bl = $(this).attr("num_bl");
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+											'src="edit_bl?id_bl='+id_bl+'"></iframe>');
+				
+				$("#title_bl").text("Détail BL N° "+num_bl);
+				
+				$("#icone_bl").attr("class","far fa-file-invoice");
+				
+				$("#bl_detail_modal").modal("show");
+				
+			});*/
+				
+			$("#fct_blf").click(function(){
+				
+				var start = $("#debut").val();
+				
+				var end = $("#fin").val();
+				
+				var rc_clt = $("#rc").val();
+				
+				if(rc_clt==null){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner UN RC !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+							'src="facture_blf?start='+start+'&end='+end+'&id_rel_rc_clt='+rc_clt+'"></iframe>');
+					
+					$("#title_bl").text("Facture des Bon de Livraison du "+start+" au "+end);
+					
+					$("#icone_bl").attr("class","far fa-file-invoice");
+					
+					$("#bl_detail_modal").modal("show");;
+					
+				}
+				
+			});
 			
 			$(".print").click(function(){
 				
-				var id_bt = $(this).attr("id_bt");
+				var id_blf = $(this).attr("id_blf");
 				
-				var num_bt = $(this).attr("num_bt");
+				var num_blf = $(this).attr("num_blf");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" style="height:75vh" onload="ifrhgh()" frameborder="0" '+
-						'src="print_bt?id_bt='+id_bt+'"></iframe>');
 				
-				$("#title_bl").text("Détail BT N° "+num_bt);
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+											'src="print_blq?id_bl='+id_blf+'"></iframe>');
+				
+				$("#title_bl").text("Imprimer BL N° "+num_blf);
 				
 				$("#icone_bl").attr("class","far fa-file-invoice");
 				
@@ -122,32 +188,22 @@
 				
 			});
 			
-			$("#printAll").click(function(){
+			$(".print_t").click(function(){
 				
-				var start = $("#debut").val();
+				var id_blf = $(this).attr("id_blf");
 				
-				var end = $("#fin").val();
+				var num_blf = $(this).attr("num_blf");
 				
-				if(start=="" || end==""){
-					
-					$("#title").text("Erreur !!!");
-					$("#icone").attr("class","far fa-exclamation-triangle");
-					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
-					$("#error").modal('show');
-					
-				}
-				else{
-					
-					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-												'src="print_bts?start='+start+'&end='+end+'"></iframe>');
-					
-					$("#title_bl").text("Imprimer ");
-					
-					$("#icone_bl").attr("class","far fa-file-invoice");
-					
-					$("#bl_detail_modal").modal("show");
-					
-				}
+				
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+											'src="print_blf_t?id_bl='+id_blf+'"></iframe>');
+				
+				$("#title_bl").text("Imprimer BL N° "+num_blf);
+				
+				$("#icone_bl").attr("class","far fa-file-invoice");
+				
+				$("#bl_detail_modal").modal("show");
 				
 			});
 			
@@ -168,23 +224,59 @@
 				else{
 					
 					//console.log("start = "+start+" / end = "+end);
-					window.location.replace("list_bon_transfert?start="+start+"&end="+end);
+					window.location.replace("list_blf_no_f?start="+start+"&end="+end);
 					
 				}
 				
 			});
 			
-			var id_bt;
+			$("#printAll").click(function(){
+				
+				var start = $("#debut").val();
+				
+				var end = $("#fin").val();
+				
+				if(start=="" || end==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+												'src="print_blfs?start='+start+'&end='+end+'"></iframe>');
+					
+					$("#title_bl").text("Imprimer ");
+					
+					$("#icone_bl").attr("class","far fa-file-invoice");
+					
+					$("#bl_detail_modal").modal("show");
+					
+				}
+				
+			});
+			
+			$("#refresh").click(function(){
+				
+				location.reload();
+				
+			});
+			
+			var id_bl;
 			
 			$(".cancel").click(function(){
 				
-				id_bt = $(this).attr("id_bt");
-				var num_bt = $(this).attr("num_bt");
+				id_bl = $(this).attr("id_bl");
+				var num_bl = $(this).attr("num_bl");
 				var code_client = $(this).attr("code_client");
 				var montant = $(this).attr("montant");
 				var factured = $(this).attr("etat_liv");
 				
-				$("#text_confirmation").html("Etes vous sure d'annuler le Bon de Transfert N°<b>"+num_bt+"</b>  ?");
+				$("#text_confirmation").html("Etes vous sure d'annuler le Bon de Livraison N°<b>"+num_bl+"</b> avec le monatant <b>"
+												+montant+" DA TTC</b> du client avec le code <b>"+code_client+"</b> ?");
 				
 				$("#confirmation").modal('show');
 				
@@ -193,9 +285,9 @@
 			$("#confirm").click(function(){
 				
 				$.ajax({
-					url : 'cancel_bt',
+					url : 'cancel_blf',
 					data : {
-						id_bt : id_bt
+						id_bl : id_bl
 					},
 					success : function(responseJson) {
 						
@@ -207,42 +299,39 @@
 				
 			});
 			
-			/*
-			$("#refresh").click(function(){
+			$("#generate").click(function(){
 				
-				location.reload();
-				
-			});*/
-			/*
-			$("#today").click(function(){
+				$(".nbr").each(function(){
 					
-				//console.log("start = "+start+" / end = "+end);
-				window.location.replace("/list_fact?date_debut=0&date_fin=0");
+					var s = $(this).text();
+					
+					$(this).text(s.replace(/ /g, ""));
+					
+				});
 				
+				var myExcel = new ExcelGen({
+					
+					  "src_id": "table",
+					
+					  "show_header": true
+					
+				});
 				
+				myExcel.generate();
+				/*
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.formatMoney(2, '.', ' '));
+					
+				});
+				*/
 			});
-			*//*
-			$("#all_sys").click(function(){
-				
-				//console.log("start = "+start+" / end = "+end);
-				//window.location.replace("/list_fact?date_debut=1&date_fin=1");
-				window.location.href = "/list_fact?date_debut=1&date_fin=1";
-				
-			});
-			*/
-		});
-
-		$(function () {
-		    $('#fact_detail_modal').on('shown.bs.modal', function () {
-		        /* $('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" 
-		        		frameborder="0" src="/add_client"></iframe>'); */
-		    });
-		});
-
-		function ifrhgh(){
-		    var iframehght =  $("#frame").contents().height();
-		    $("#frame").height(iframehght);
-		}
+			
+		}); //-------------------------------------------> END Document Ready <-------------------------------------//
+		
+		
 		
 		</script>
 		
@@ -268,39 +357,17 @@
 			
 				<div class="row">
 					
-					<div class="col-md-4 offset-md-1" >
-						
-						<div class="input-group">
-						
-							<div class="input-group-append">
-							
-								<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
-									style="width:100%;" placeholder="DU">
-									
-								<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
-								
-								<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
-								style="width:100%;" placeholder="AU">
-								
-								<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
-								
-							</div>
-							
-						</div>
-						
-					</div>
+					<div class="col-md-4 offset-md-4">
 					
-					<div class="col-md-1 offset-md-1" >
-						
-						<button id="printAll" name="afficher" class="btn btn-dark" type="button">Imprimer</button>
-						
-					</div>
-					
-					<div class="col-md-4 offset-md-1">
-					
-						<h3 class="text-center"> <i class="far fa-clipboard-list-check"></i>  List des Bons Transfert </h3>
+						<h3 class="text-center"> <i class="far fa-clipboard-list-check"></i>  List des BL Non facturé </h3>
 					
 					</div>
+					
+					<div class="col-md-1 offset-md-3">
+					
+						<button id="refresh" class="btn btn-primary"><i class="far fa-redo-alt"></i></button>
+						
+					</div>	
 					
 				</div>
 			
@@ -309,6 +376,71 @@
 			<div class="card-body">
 			
 				<div class="container-fluid">
+					
+					<div class="row">
+						
+						<div class="col-md-4 offset-md-1" >
+					
+							<div class="input-group">
+							
+								<div class="input-group-append">
+									
+									<input id="debut" type="date" name="start" th:value="${start}"  class="form-control date" 
+										style="width:100%;" placeholder="DU">
+										
+									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+									
+									<input id="fin" type="date" name="end" th:value="${end}" class="form-control date" 
+									style="width:100%;" placeholder="AU">
+									
+									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
+									
+								</div>
+								
+							</div>
+							
+						</div>
+						
+						<div class="col-md-3" >
+							
+							<div class="input-group">
+								
+								<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
+									name="id_rel_rc_clt" id="rc" data-size="5">
+									<option  disabled value="" selected>Registre Commerce</option>
+									
+									<option th:each="rc_clt:${rcs_clt}" th:value="${rc_clt.id}" th:text="${rc_clt.registre_commerce.code}" 
+											th:attr="data-subtext=${rc_clt.registre_commerce.nom}+' '+${rc_clt.registre_commerce.prenom},
+											code_clt=${rc_clt.registre_commerce.code}, nom=${rc_clt.registre_commerce.nom}, 
+											prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
+											plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
+											adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id},
+											is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}"
+											>
+									</option>
+									
+								</select>
+								
+								<button id="fct_blf" name="afficher" class="btn btn-dark" type="button">Facturé les BL</button>
+							
+							</div>
+								
+						</div>
+						
+						<div class="col-md-1" >
+						
+							<button class="btn btn-dark" id="generate">Excel</button>
+						
+						</div>
+						
+						<div class="col-md-1" >
+						
+							<button class="btn btn-dark" id="printAll">Imprimer</button>
+						
+						</div>
+						
+					</div>
+					
 					<table id="table" class="table table-bordered table-hover" style="width:100%">
 					
 						<thead class="thead-dark">
@@ -318,12 +450,16 @@
 								<th>N°</th>
 								<th>Date</th>
 								<th>Heure</th>
-								<th>Code</th>
-								<th>Unité interne</th>
-								<th>Matricule </th>
-								<th>Chauffeur</th>
-								<th>Article</th>
+								<th>Client</th>
+								<th >Code </th>
+								<th>RC</th>
+								<th>Mode Reglement</th>
+								<th>Matricule</th>
 								<th>Qunatite</th>
+								<th>Montant HT</th>
+								<th>Montant TVA</th>
+								<th>Montant TTC</th>
+								<th>Facturé ?</th>
 								<th></th>
 								
 							</tr>
@@ -332,33 +468,43 @@
 						
 						<tbody>
 						
-							<tr th:each="btd:${list_btd}">
+							<tr th:each="bl:${bls}">
 							
-								<td th:text="${btd.bon_transfert.numero}"></td>
-								<td th:text="${btd.bon_transfert.date}"></td>
-								<td th:text="${btd.bon_transfert.time}"></td>
-								<td th:text="${btd.bon_transfert.unite_interne.code}"></td>
-								<td th:text="${btd.bon_transfert.unite_interne.designation}"></td>
-								<td th:text="${btd.bon_transfert.matricule_vehicule}" ></td>
-								<td th:text="${btd.bon_transfert.chauffeur}" ></td>
-								<td th:text="${btd.article.libelle}" ></td>
-								<td th:text="${#numbers.formatDecimal(btd.quantite, 2, 'WHITESPACE', 3,'POINT')}" ></td>
-								<td style="text-align: center;"> <button type="button" class="btn btn-info print" 
-																	th:attr="id_bt=${btd.bon_transfert.id},num_bt=${btd.bon_transfert.numero}"> 
-																		<i class="far fa-print"></i>
-																 </button> 
-																 <button th:if="${cancel_bt}==true" type="button" class="btn btn-danger cancel" 
-																	th:attr="id_bt=${btd.bon_transfert.id},num_bt=${btd.bon_transfert.numero},
-																			 code_client=${btd.bon_transfert.unite_interne.code}"> 
-																		<i class="far fa-trash"></i>
-																 </button> 
+								<td th:text="${bl.numero}"></td>
+								<td th:text="${bl.date}"></td>
+								<td th:text="${bl.time}"></td>
+								<td th:text="${bl.client.nom}+' '+${bl.client.prenom}"></td>
+								<td th:text="${bl.registre_commerce.code}"></td>
+								<td th:text="${bl.registre_commerce.nom}+' '+${bl.registre_commerce.prenom}"></td>
+								<td th:text="${bl.commande.mode_paiement.designation}"></td>
+								<td th:text="${bl.matricule}"></td>
+								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
+									th:text="${#numbers.formatDecimal(bl_info.quantite, 2, 'WHITESPACE', 3,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:if="${bl.factured}==TRUE" th:text="Oui"></td>
+								<td th:unless="${bl.factured}==TRUE" th:text="Non"></td>
+								<td style="text-align: center;    width: 10%;"> 
+									 <button type="button" class="btn btn-primary print" th:attr="id_blf=${bl.id},num_blf=${bl.numero}"> 
+															<i class=""> BL</i>
+									 </button>
+									 <button type="button" class="btn btn-primary print_t" th:attr="id_blf=${bl.id},num_blf=${bl.numero}"> 
+															<i class=""> BT</i>
+									 </button> 
+									 <button th:if="${cancel_blf}==true" type="button" class="btn btn-danger cancel" 
+										th:attr="id_bl=${bl.id},num_bl=${bl.numero},
+												 code_client=${bl.registre_commerce.code},etat_liv=${bl.etat_livraison},
+												 montant=${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"> 
+											<i class="far fa-trash"></i>
+									 </button> 
 								</td>
 								
 							</tr>
 						
 						</tbody>
 						
-						<tfoot>
+						<tfoot class="thead-dark">
 						
 							<tr>
 							
@@ -370,6 +516,10 @@
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
 								<th></th>
 								<th></th>
 								
@@ -419,15 +569,11 @@
 	      	
 	      </div>
 	      
-	      <div class="modal-body" >
-	         
-	         <div id="print_content">
+	         <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
 	         
 	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
 	         
 	         </div>
-	         
-	      </div>
 	      
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

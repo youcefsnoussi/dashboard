@@ -252,6 +252,62 @@ public class numerotation_by_year {
 	
 	//------------------------------------------------------------------------------------------------------------
 	
+	public String return_num_BonLivraisonFacture (String num, Long unite){ //assm la rebrique numero 
+		
+		String numero ="",resnum="",year_encours="",month_encours="";
+		
+		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+		String y = df.format(Calendar.getInstance().getTime());
+		
+		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
+		String m = dff.format(Calendar.getInstance().getTime());
+		
+			if(!num.equals("")){
+				
+					resnum= num;
+					year_encours = num.substring(3, 5);
+					
+					month_encours= num.substring(6, 8);
+					
+					System.out.println("year_encours == "+year_encours);
+					
+					System.out.println("month_encours == "+month_encours);
+					
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
+						
+						String n = resnum.substring(10);
+						System.out.println(n);
+						int nn = Integer.parseInt(n);
+						System.out.println(nn);
+						nn++;
+							if( nn < 10 ){ numero = unite+"BL"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = unite+"BL"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = unite+"BL"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = unite+"BL"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = unite+"BL"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = unite+"BL"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = unite+"BL"+y+"/"+m+"/0"+nn;}
+					}
+					
+					else{
+						
+						numero = unite+"BL"+y+"/"+m+"/00000001"; 
+						
+					}
+			}
+			
+			else{
+				
+				numero = unite+"BL"+y+"/"+m+"/00000001";
+				
+			}
+			
+		
+		return numero;
+	}
+	
+	//------------------------------------------------------------------------------------------------------------
+	
 	public String return_num_BonCommande (String num){ //assm la rebrique numero 
 		
 		
@@ -677,9 +733,20 @@ public class numerotation_by_year {
 		// TODO Auto-generated method stub
 		
 		numerotation_by_year numero = new numerotation_by_year();
+		/*
+		System.out.println("Result BLF ->"+numero.return_num_BonLivraisonFacture("1BL21/04/00000001", (long) 3));
+		System.out.println("--------------------");
 		
-		System.out.println(numero.return_num_BonTransfertInterne("1BTI21/01/00000451", (long) 1)); //, (long) 1
-
+		System.out.println("Result BL ->"+numero.return_num_BonLivraison("BL_21/04/00000001"));
+		System.out.println("--------------------");
+		
+		System.out.println("Result FACT ->"+numero.return_num_facture("1FCT21/04/00000001", (long) 3));
+		System.out.println("--------------------");
+		*/
+		
+		System.out.println("Result BS ->"+numero.return_num_BonSortie("1BS21/04/00000001", (long) 1));
+		System.out.println("--------------------");
+		
 	}
 	
 	

@@ -87,6 +87,9 @@ public class registre_commerce implements Serializable{
 	 
 	 private String date_last_facture;
 	 
+	 @Column(columnDefinition="boolean default false")
+	 private boolean multiple_bon_livraison;
+	 
 	public registre_commerce() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -240,7 +243,7 @@ public class registre_commerce implements Serializable{
 	public double getTva() {
 		return tva;
 	}
-
+	
 	public void setTva(double tva) {
 		this.tva = tva;
 	}
@@ -315,6 +318,14 @@ public class registre_commerce implements Serializable{
 
 	public void setDate_last_facture(String date_last_facture) {
 		this.date_last_facture = date_last_facture;
+	}
+
+	public boolean isMultiple_bon_livraison() {
+		return multiple_bon_livraison;
+	}
+
+	public void setMultiple_bon_livraison(boolean multiple_bon_livraison) {
+		this.multiple_bon_livraison = multiple_bon_livraison;
 	}
 	 
 	

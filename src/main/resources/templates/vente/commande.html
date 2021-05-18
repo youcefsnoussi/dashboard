@@ -180,7 +180,9 @@
 													code_clt=${rc_clt.registre_commerce.code}, nom=${rc_clt.registre_commerce.nom}, 
 													prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
 													plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
-													adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id}">
+													adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id},
+													is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}"
+													>
 											</option>
 											
 										</select>
@@ -346,7 +348,15 @@
 									-->
 									<label>Observation</label>
 									
-									<textarea rows="3" cols="" id="observation" class="form-control" name="observation"></textarea>
+									<textarea rows="3" cols="" id="observation" class="form-control" name="observation"></textarea> 
+									
+									
+									
+									<div id="chauffeur" style="display:none">
+										<hr>
+										<label>Chauffeur</label>
+										<input type="text" id="chauffeur_inp" class="form-control" name="chauffeur" display="false">
+									</div>
 									
 								</div>
 								

@@ -3,6 +3,7 @@ package com.commercial.webController.vente;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,6 +58,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_det
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
+import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
@@ -394,6 +396,16 @@ public class list_bl_encoursController {
 		
 		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt.getCategory());
 		
+		if (bon_lRepo.getOne(id_bl).getRegistre_commerce().getTva()==0) {
+			
+			list_art.forEach(prix_art -> {
+				
+				prix_art.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()).get(0));
+				
+			});
+			
+		}
+		
 		model.addAttribute("articles", list_art);
 		
 		return "vente/edit_bl";
@@ -530,16 +542,6 @@ public class list_bl_encoursController {
 					bon_l_dRepo.flush();
 					
 				}
-				
-				System.out.println("mag length->"+id_magasin.length);
-				System.out.println("quant length->"+quantite.length);
-				System.out.println("article length->"+article.length);
-				System.out.println("id_unite_mesure, length->"+id_unite_mesure.length);
-				System.out.println("montant_ht_art, length->"+montant_ht_art.length);
-				System.out.println("tva_art, length->"+tva_art.length);
-				System.out.println("prix_u_ht, length->"+prix_u_ht.length);
-				System.out.println("montant_tva_art length->"+montant_tva_art.length);
-				System.out.println("-----------------------------");
 				
 				for(int i=0;i<quantite.length;i++) {
 					
@@ -757,7 +759,7 @@ public class list_bl_encoursController {
 				
 				//------------------------- insert into MY SQL Peseur IF AIN ROMANA------------
 				
-				if(user.getUnite().getIdentifiant()==1) {
+				//if(user.getUnite().getIdentifiant()==1) {
 					
 					Connection_peseur cp = new Connection_peseur();
 					
@@ -765,7 +767,7 @@ public class list_bl_encoursController {
 					
 					cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
 					
-				}
+				//}
 				
 				//------------------------- END INSERT into MY SQL Peseur ---------------------------------------
 				

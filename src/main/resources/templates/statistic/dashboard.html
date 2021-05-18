@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\canvas\canvasjs.min.js"></script>
+		
+		<script type="text/javascript">
+		
+		$(document).ready(function() {
+			
+			var chart = new CanvasJS.Chart("chartContainer",{  
+				animationEnabled: true,
+			/*	title: {
+			  	text: "Line Chart from Table Data"
+			  }, */
+				toolTip:{
+			  	shared: true
+			 },
+			  data: []
+			});
+			
+			var marks = [];
+			var rows = $('#tab tbody >tr');
+			var columns;
+			var header = $('#tab thead >tr');
+			
+			var head = $(header[0]).find('th');
+			
+			for (var i = 1; i < head.length; i++) {
+				
+				marks = [];
+				
+				for(var j=0; j< rows.length ; j++){
+					
+					row = $(rows[j]).find('td');
+					
+					//console.log("val->"+$(row[i]).html())
+					
+					if(typeof $(row[i]).html() === "undefined"){
+						
+						marks.push({label:$(row[0]).html(), y:0});
+						
+					}
+					else{
+						
+						marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+						
+					}
+					
+					//marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+					
+				}
+				
+				chart.options.data.push({
+				    type: "spline",
+				    name: ($(head[i]).html()), 
+				    showInLegend: true,
+				    legendText: ($(head[i]).html()),
+				    dataPoints: marks
+				  });
+				  chart.render();
+				
+			}
+			
+			//--------------------------------- INDIVIDUAL CHARTS ------------------
+			
+			for (var i = 1; i < head.length; i++) {
+				
+				var individual_chart = new CanvasJS.Chart($(head[i]).html(),{  
+					animationEnabled: true,
+				/*	title: {
+				  	text: "Line Chart from Table Data"
+				  }, */
+					toolTip:{
+				  	shared: true
+				 },
+				  data: []
+				});
+				
+				marks = [];
+				
+				for(var j=0; j< rows.length ; j++){
+					
+					row = $(rows[j]).find('td');
+					
+					if(typeof $(row[i]).html() === "undefined"){
+						
+						marks.push({label:$(row[0]).html(), y:0});
+						
+					}
+					else{
+						
+						marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+						
+					}
+					
+					//marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+					
+				}
+				
+				individual_chart.options.data.push({
+				    type: "spline",
+				    name: ($(head[i]).html()), 
+				    showInLegend: true,
+				    legendText: ($(head[i]).html()),
+				    dataPoints: marks
+				  });
+				individual_chart.render();
+				
+			}
+			
+				//------------------------------------------------------\\
+				
+			for (var i = 0; i < rows.length; i++) {
+				
+				row = $(rows[i]).find('td');
+				
+				if(row.length>0){
+				
+					var individual_chart = new CanvasJS.Chart($(row[0]).html(),{  
+						animationEnabled: true,
+						showInLegend: "true",
+						toolTip:{
+					  		shared: true
+					 	},
+					  	data: []
+					});
+					
+					marks = [];
+					
+					for(var j=1; j< head.length ; j++){
+						
+						if(typeof $(row[j]).html() === "undefined"){
+							
+							marks.push({y : 0 , label : $(head[j]).html() });
+							
+						}
+						else{
+							
+							marks.push({y : parseFloat($(row[j]).html().replace(/ /g, "")) , label : $(head[j]).html() });
+							
+						}
+						
+						//marks.push({y : parseFloat($(row[j]).html().replace(/ /g, "")) , label : $(head[j]).html() });
+						
+					}
+					
+					individual_chart.options.data.push({
+					    type: "pie",
+					    //name: "{label}",//($(row[i]).html()),  {label}
+					    showInLegend: true,
+					    toolTipContent: "<b>{label}</b>: {y}",
+					    legendText: "{label}",//($(row[i]).html()),
+					    indexLabelFontSize: 16,
+						indexLabel: "{label} - {y}",
+					    dataPoints: marks
+					  });
+					individual_chart.render();
+				
+				}
+				
+			}	
+			
+			//------------------------- END CHARTS ---------------------------------
+			
+			//---------------------------ZOOM BUTTON -------------------------------
+			
+			$(".zoom").click(function() {
+				
+				var t = $(this).attr("id_canva");
+				
+				//$('#print_content').html(c);
+
+				$("#title").text(t);
+				
+				$("#icone").attr("class","far fa-analytics");
+				
+				$("#display_details").modal("show");
+				
+				//------------
+				
+				for (var i = 1; i < head.length; i++) {
+					
+					if($(head[i]).html()==t){
+					
+						var detail_chart = new CanvasJS.Chart("canvaDetail",{  
+							animationEnabled: true,
+						/*	title: {
+						  	text: "Line Chart from Table Data"
+						  }, */
+							toolTip:{
+						  	shared: true
+						 },
+						  data: []
+						});
+						
+						marks = [];
+						
+						for(var j=0; j< rows.length ; j++){
+							
+							row = $(rows[j]).find('td');
+							
+							if(typeof $(row[i]).html() === "undefined"){
+								
+								marks.push({label:$(row[0]).html(), y:0});
+								
+							}
+							else{
+								
+								marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+								
+							}
+							
+							//marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+							
+						}
+						
+						detail_chart.options.data.push({
+						    type: "spline",
+						    name: ($(head[i]).html()), 
+						    showInLegend: true,
+						    legendText: ($(head[i]).html()),
+						    dataPoints: marks
+						  });
+						detail_chart.render();
+					
+					}
+					
+				}
+				
+				//------------
+				
+			});
+			
+			//----------------------//------------------Global Chart LINE/COLUMN ---------//---------------------------
+			
+			$("#global_g_line").click(function() {
+				
+				chart = new CanvasJS.Chart("chartContainer",{  
+					animationEnabled: true,
+					toolTip:{
+				  	shared: true
+				 },
+				  data: []
+				});
+				
+				for (var i = 1; i < head.length; i++) {
+					
+					marks = [];
+					
+					for(var j=0; j< rows.length ; j++){
+						
+						row = $(rows[j]).find('td');
+						
+						if(typeof $(row[i]).html() === "undefined"){
+							
+							marks.push({label:$(row[0]).html(), y:0});
+							
+						}
+						else{
+							
+							marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+							
+						}
+						
+						//marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+						
+					}
+					
+					chart.options.data.push({
+					    type: "spline",
+					    name: ($(head[i]).html()), 
+					    showInLegend: true,
+					    legendText: ($(head[i]).html()),
+					    dataPoints: marks
+					  });
+					  chart.render();
+					
+				}
+				
+			});
+			
+			$("#global_g_column").click(function() {
+				
+				chart = new CanvasJS.Chart("chartContainer",{  
+					animationEnabled: true,
+					toolTip:{
+				  	shared: true
+				 },
+				  data: []
+				});
+				
+				for (var i = 1; i < head.length; i++) {
+					
+					marks = [];
+					
+					for(var j=0; j< rows.length ; j++){
+						
+						row = $(rows[j]).find('td');
+						
+						if(typeof $(row[i]).html() === "undefined"){
+							
+							marks.push({label:$(row[0]).html(), y:0});
+							
+						}
+						else{
+							
+							marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+							
+						}
+						
+						//marks.push({label:$(row[0]).html(), y:parseFloat($(row[i]).html().replace(/ /g, ""))});
+						
+					}
+					
+					chart.options.data.push({
+					    type: "column",
+					    name: ($(head[i]).html()), 
+					    showInLegend: true,
+					    legendText: ($(head[i]).html()),
+					    dataPoints: marks
+					  });
+					  chart.render();
+					
+				}
+				
+			});
+			
+			//--------------------------------------------------------------------------------
+			
+			$("#afficher").click(function(){
+				
+				var start = $("#start").val();
+				
+				var end = $("#end").val();
+				
+				var nbr_days = $("#nbr_days").val();
+				
+				var type_val = $("#type_val").val();
+				
+				var list_category = $("#list_category").val();
+				
+				if(start=="" || end==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone_error").attr("class","far fa-exclamation-triangle");
+					$("#title_error").text("Erreur");
+					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					window.location.replace("dashboard?start="+start+"&end="+end+"&nbr_days="+nbr_days+"&type_val="+type_val+"&list_category="
+							+list_category);
+					
+				}
+				
+			});
+			
+		});
+		
+		</script>
+		
+		<style type="text/css">
+		
+			.cc{
+			
+				text-align: center;
+			
+			}
+			
+			.rr{
+			
+				text-align: right;
+			
+			}
+			
+		</style>
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100"> <!-- h-100 -->
+		
+		<div class="card">
+		
+			<h3 class="card-header  text-center"> <i class="far fa-analytics"></i> Tableau de bord </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<div class="row">
+						
+						<div class="col-md-3" >
+						
+							<div class="input-group">
+								
+									<div class="input-group-append">
+										
+										<input id="start" type="date" name="start"  class="form-control date" style="width:100%;" 
+										th:value="${start}" placeholder="DU">
+										<span class="input-group-text declaration far fa-calendar-alt"> </span>
+										<input id="end" type="date" name="end"  class="form-control date"  
+										th:value="${end}" placeholder="AU">
+										
+										<button id="afficher" class="btn btn-secondary" type="button">Afficher</button>
+										
+									</div>
+									
+							</div>
+						
+						</div>
+						
+						<div class="col-md-2 offset-md-1" > 
+						
+							<select class="form-control" id="nbr_days" name="nbr_days">
+							
+								<option th:each="i : ${#numbers.sequence( 0, 30, 1)}" th:value="${i}" th:text="${i}+' Jour(S)'"
+									th:if="${i}==${nbr_days}" selected></option>
+								
+								<option th:each="i : ${#numbers.sequence( 0, 30, 1)}" th:value="${i}" th:text="${i}+' Jour(S)'"
+									th:unless="${i}==${nbr_days}" ></option>
+									
+							</select>
+						
+						</div>
+						
+						<div class="col-md-2" > <!-- offset-md-1 -->
+						
+							<select class="form-control" id="type_val" name="type_val">
+							
+								<option value="1" th:if="${type_val}==1" selected>Quantité</option>
+								<option value="1" th:unless="${type_val}==1" >Quantité</option>
+								<option value="2" th:if="${type_val}==2" selected>Valeur</option>
+								<option value="2" th:unless="${type_val}==2" >Valeur</option>
+									
+							</select>
+						
+						</div>
+						
+						<div class="col-md-2" > <!-- offset-md-1 -->
+						
+							<select class="selectpicker btn btn-outline-secondary" id="list_category" name="list_category" multiple>
+							
+								<option th:each="c : ${cat_prod}" th:value="${c.id}" th:text="${c.nom_category}" 
+										th:if="${#lists.contains(cat_selected,c.id)}" selected></option>
+								<option th:each="c : ${cat_prod}" th:value="${c.id}" th:text="${c.nom_category}" 
+										th:unless="${#lists.contains(cat_selected,c.id)}" ></option>	
+							</select>
+						
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<div id="accordion">
+				
+					  <div class="card">
+					  
+					    <div class="card-header" id="headingOne">
+					    
+					      <h5 class="mb-0">
+					      
+					        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+					          Tableau
+					        </button>
+					        
+					      </h5>
+					      
+					    </div>
+					
+					    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+					    
+					      <div class="card-body">
+					      	
+					      	<table id="tab" class="table table-bordered table-hover">
+				
+								<thead>
+									
+									<tr>
+										<th>Quantite</th>
+										<th th:each="cat : ${cats}" th:text="${cat}"></th>
+									</tr>
+									
+								</thead>
+								
+								<tbody>
+									
+									<tr th:each="lst : ${list}" >
+										
+										<td th:if="${not #lists.isEmpty(lst)}" th:text="${lst[0][0]}"></td>
+										<td th:each=" qte : ${lst}" th:text="${#numbers.formatDecimal(qte[1], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										
+									</tr>
+									
+								</tbody>
+								
+							</table>
+					      	
+					      </div>
+					      
+					    </div>
+					    
+					</div>
+				</div> 
+					
+					<hr>
+					
+					<div class="row">
+					
+						<div th:each="cat : ${cats}" class="col-md-4 overflow"><br>
+						
+							<div class="card" >
+							  <div class="card-body">
+							  
+							    <div class="row card-title">
+							     	
+							     	<div class="col-md-5">
+							     	
+							     		<h5 class="card-title" th:text="${cat}"></h5>
+							     	
+							     	</div>
+							     	<div class="col-md-1 offset-md-5">
+							     	
+							     		<button class="btn btn-dark zoom" th:attr="id_canva=${cat}"><span class="far fa-search-plus"></span>
+							     		</button>
+							     	
+							    	</div>
+							    	
+							    </div>
+							     
+							    	
+							    <div th:attr="id=${cat}" style="height: 20vh;"></div>
+							    	
+							  </div>
+							</div>
+						
+						</div>
+						
+						<div  class="col-md-12 overflow"> <br>
+						
+							<div class="card overflow" >
+							  <div class="card-body">
+							    <div class="row card-title">
+							     	
+							     	<div class="col-md-5">
+							     	
+							     		<h5 class="card-title" >Global</h5>
+							     	
+							     	</div>
+							     	<div class="col-md-1 offset-md-6">
+							     	
+							     		<div class="btn-group" role="group" aria-label="Basic example">
+							     			
+							     			<button id="global_g_line" class="btn btn-dark"> Line</button>
+							     			<button id="global_g_column" class="btn btn-dark"> Column</button>
+							     			
+							     		</div>
+							     	
+							    	</div>
+							    	
+							    </div>
+							    	
+							    	<div id="chartContainer" style="height: 40vh;"></div>
+							    	
+							  </div>
+							</div>
+						
+						</div>
+						
+						<div th:each="week : ${weeks}" class="col-md-4 overflow"><br>
+						
+							<div class="card" >
+							  <div class="card-body">
+							  
+							    <div class="row card-title">
+							     	
+							     	<div class="col-md-10">
+							     	
+							     		<h5 class="card-title" th:text="${week}"></h5>
+							     	
+							     	</div> <!--
+							     	<div class="col-md-1 ">  offset-md-5 
+							     	
+							     		<button class="btn btn-dark zoom" th:attr="id_canva=${lst[0][0]}"><span class="far fa-search-plus"></span>
+							     		</button>
+							     	
+							    	</div> -->
+							    	
+							    </div>
+							     
+							    	
+							    <div th:attr="id=${week}" style="height: 20vh;"></div>
+							    	
+							  </div>
+							</div>
+						
+						</div>
+						
+					</div>
+					
+					
+					
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<!----------------------------------------------------------------------------------------------------------------------------->
+	
+	<div id="display_details" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title" class="modal-title" > </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	         
+	         <div id="print_content" class="modal-body " style="overflow-y:hidden;">
+	         
+	         	<div id="canvaDetail" style="height: 50vh;"></div>
+	         
+	         </div>
+	         
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone_error" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title_error"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	
+</body>
+</html>
