@@ -15,6 +15,8 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	
 	public paiement  findFirst1ByOrderByIdDesc();
 	
+	//------------------------------------------------------------------
+	
 	@Query( " FROM paiement pay "
 			
 			+ " WHERE pay.cancel = 'false' ")
@@ -66,10 +68,24 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	@Query( " FROM paiement pai "
 			
 				+ " WHERE pai.etat_sold = 'false' "
+				
 				+ " AND pai.registre_commerce = :rc "
+				
 				+ " ORDER BY pai.id")
 		 
-		public List<paiement> get_paiements_not_solde_by_rc(@Param("rc") registre_commerce rc);
+	public List<paiement> get_paiements_not_solde_by_rc(@Param("rc") registre_commerce rc);
+	
+	//----------------------------------------------------------
+	
+	@Query( " FROM paiement pai "
+			
+				+ " WHERE pai.cancel = 'false' "
+				
+				+ " AND pai.registre_commerce = :rc "
+				
+				+ " ORDER BY pai.id DESC")
+		 
+	public List<paiement> get_paiements_not_canceled_by_rc(@Param("rc") registre_commerce rc);
 	
 	//----------------------------------------------------------
 	

@@ -38,7 +38,11 @@ $(document).ready(function() {
 		case "ble" : { t="print_ble"; } break;
 		
 		case "bti" : { t="print_bti"; } break;
-	
+		
+		case "blf" : { t="print_blf"; } break;
+		
+		case "blq" : { t="print_blq"; } break;
+		
 	}
 	
 	if(id_bl!=null){
@@ -237,11 +241,41 @@ $(document).ready(function() {
 		 $("#tv").val($("#rc option:selected").attr("tva"));
 		 $("#mode_reg").val( $("#rc option:selected").attr("mode_pay") );
 		 
+		 if( $("#rc option:selected").attr("is_blf")=="true" ){
+			 
+			 $("#frm").prop("action","new_commande_bl_fact_post");
+			 
+		 	 $("#select_mat").attr("name","");
+			 $("#select_mat").val("");
+			 $("#select_mat").attr('disabled',true);
+			 $("#select_mat").selectpicker('refresh');
+			 
+			 $("#input_mat").attr("name","matricule");
+			 $("#input_mat").attr('disabled',false);
+		     $("#radio_input").attr("checked","checked");
+		     $("#radio_select").attr("disabled",true);
+		     
+		     $("#chauffeur").css("display","block");
+		     $("#chauffeur_inp").attr("display","true");
+		 }
+		 else{
+			 
+			 $("#frm").prop("action","new_commande_post");
+			 
+			 $("#radio_select").attr("disabled",false);
+			 
+			 $("#chauffeur").css("display","none");
+			 $("#chauffeur_inp").attr("display","false");
+			 
+		 }
+		 
 		 var id_rc_clt = $(this).val();
 		 
 		 var exo = $("#rc option:selected").attr("tva");
 		 
-		 if(exo=="0"){
+		 console.log("exo ->"+exo)
+		 
+		 if(exo==0){
 			 
 			 $("#exo").attr("class","badge badge-warning");
 			 $("#exo").text("oui");
@@ -570,6 +604,14 @@ $(document).ready(function() {
 			
 		}
 		
+		if($("#chauffeur_inp").attr("display")=="true" && $("#chauffeur_inp").val()=="" ){
+			
+			test++;
+			msg = msg+"<b>- Chauffeur Vide. </b><br>";
+			$("#matricule").css("border-color","red");
+			
+		}
+		
 		if($("#rc").val()==""){
 			
 			test++;
@@ -645,6 +687,8 @@ $(document).ready(function() {
 			if(client_plafond==0 && rc_plafond==0){
 				
 				console.log("-----------------> SUBMIT")
+				
+				$("#sub").prop("disabled","true");
 				
 				$("#frm").submit();
 				

@@ -157,11 +157,11 @@ public class add_clientController {
 		
 		category_client cat_clt = cat_clientRepo.getOne(cat_client);
 		
-		String code_client = un.getId()+cat_clt.getLettre()+new_number_code_client();
+		//String code_client = un.getId()+cat_clt.getLettre()+new_number_code_client();
 		
 		wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 		
-		client clt = new client(nom, prenom, adresse, wilaya, code_postal, email, telephone, fax, code_client, gtd.get_date(), cat_clt, 
+		client clt = new client(nom, prenom, adresse, wilaya, code_postal, email, telephone, fax, "", gtd.get_date(), cat_clt, 
 				banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg), un, sold, plafond, false, false, "");
 		
 		clientRepo.save(clt);clientRepo.flush();

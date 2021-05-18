@@ -146,6 +146,14 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 	public List<client_registreCommerce>  RC_employee();
 	
+	//-----------------------------------------------------
+	
+	@Query( "FROM client_registreCommerce crc " + 
+	
+			"WHERE crc.registre_commerce.multiple_bon_livraison = 'TRUE' ")
+	
+	public List<client_registreCommerce>  RC_bls_facture();
+	
 	//------------------------------------------------------
 	/*
 	@Query( "FROM client_registreCommerce crc " + 

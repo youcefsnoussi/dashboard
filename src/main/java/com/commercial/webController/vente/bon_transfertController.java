@@ -1,5 +1,8 @@
 package com.commercial.webController.vente;
 
+import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfe
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
+import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 import com.commercial.functions.track_operations;
@@ -130,8 +134,8 @@ public class bon_transfertController {
 			
 			if(quantite[i]!=0) {
 				
-				bon_transfert_detail bt_d = new bon_transfert_detail(bt, artRepo.getOne(article[i]), quantite[i], umRepo.getOne(id_unite_mesure[i]), 
-						magasinRepo.getOne(id_magasin[i]));
+				bon_transfert_detail bt_d = new bon_transfert_detail(bt, artRepo.getOne(article[i]), quantite[i], 
+						umRepo.getOne(id_unite_mesure[i]), magasinRepo.getOne(id_magasin[i]));
 				
 				bt_dRepo.save(bt_d);bt_dRepo.flush();
 				
@@ -139,7 +143,7 @@ public class bon_transfertController {
 			
 		}
 		
-		return ""; //"redirect:/bon_transfert?id_bl="+bt.getId()+"&num_bl="+bt.getNumero()+"&type=bt";
+		return "redirect:/bon_transfert?id_bt="+bt.getId()+"&num_bt="+bt.getNumero()+"&type=bt";
 		
 	}
 	
@@ -162,7 +166,7 @@ public class bon_transfertController {
 		
 		if(start.equals("0") && end.equals("0")) {
 			
-			model.addAttribute("list_bt", btRepo.date_between_bt(gtd.get_date(), gtd.get_date()));
+			model.addAttribute("list_btd", bt_dRepo.date_between_bt_detail(gtd.get_date(), gtd.get_date()));
 			
 			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
@@ -173,7 +177,7 @@ public class bon_transfertController {
 			date_d = conv.convertion_InputDate_to_MyDate(start);
 			date_f = conv.convertion_InputDate_to_MyDate(end);
 			
-			model.addAttribute("list_bt", btRepo.date_between_bt(date_d, date_f));
+			model.addAttribute("list_btd", bt_dRepo.date_between_bt_detail(date_d, date_f));
 			
 			date_d = start; date_f = end;
 			
@@ -184,7 +188,64 @@ public class bon_transfertController {
 		
 		model.addAttribute("date_f", date_f);
 		
+		boolean cancel_bt = false;
+
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("cancel_bt")) 
+		{ cancel_bt = true; }
+		
+		model.addAttribute("cancel_bt", cancel_bt);
+		
 		return ret;
+		
+	}
+	
+	//---------------------------------------------------------------
+	
+	@Autowired
+	generate_Doc gd;
+	
+	@RequestMapping(value="/print_bt")
+	public String print_bt(HttpServletRequest request,
+						 @RequestParam("id_bt") long id_bt,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		bon_transfert bt = btRepo.getOne(id_bt);
+		
+		//String qr_code = generateQRcode.createQRcode(blf.getNumero(), "BL");
+		
+		String pdf = "";
+		
+		
+		pdf = gd.generate_bt(bt);
+			
+		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	//---------------------------------------------------------------
+	
+	@RequestMapping(value="/print_bts")
+	public String print_bts(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @SessionAttribute("user") users user,
+						 Model model) throws IOException{
+		
+		List<bon_transfert> bts = btRepo.date_between_bt(start, end);
+		
+		//String qr_code = generateQRcode.createQRcode(blf.getNumero(), "BL");
+		
+		String pdf = "";
+		
+		
+		pdf = gd.generate_bts(bts);
+			
+		
+		return "redirect:/display_pdf?file="+pdf;
 		
 	}
 	

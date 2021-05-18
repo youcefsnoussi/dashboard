@@ -33,6 +33,40 @@
 	
 	$(document).ready(function() {
 		
+		var getUrlParameter = function getUrlParameter(sParam) {
+		    var sPageURL = window.location.search.substring(1),
+		        sURLVariables = sPageURL.split('&'),
+		        sParameterName,
+		        i;
+
+		    for (i = 0; i < sURLVariables.length; i++) {
+		        sParameterName = sURLVariables[i].split('=');
+
+		        if (sParameterName[0] === sParam) {
+		            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+		        }
+		    }
+		};
+		
+		var id_bt = getUrlParameter('id_bt');
+		
+		var num_bt = getUrlParameter('num_bt');
+		
+		if(id_bt!=null){
+			
+			$('#print_content').html('<iframe id="frame" width="100%" style="height:75vh" frameborder="0" '+
+					'src="print_bt?id_bt='+id_bt+'"></iframe>');
+			
+			$("#title_bl").text("Détail BT N° "+num_bt);
+			
+			$("#icone_bl").attr("class","far fa-file-invoice");
+			
+			$("#bl_detail_modal").modal("show");
+				
+		}
+		
+		//------------------------------------------
+		
 		$("#sub_bt").click(function() {
 			
 			var wd = 0;
@@ -47,9 +81,17 @@
 				
 			});
 			
+			console.log("mat_c->"+$("#matricule_vehicule").val()+"< / chauff->"+$("#chauffeur").val()+"<")
+			
+			if($("#matricule_vehicule").val()=="" || $("#chauffeur").val()==""){
+				
+				wd = 0;
+				
+			}
+			
 			if(wd==0){
 				
-				alert("Veillez Selectioner des produit et leurs quantité !!!")
+				alert("Veillez Selectioner des produit et leurs quantité !!! \n Veillez Saisir le Chauffeur et le matricule du vehicule !!!")
 				
 			}
 			else{

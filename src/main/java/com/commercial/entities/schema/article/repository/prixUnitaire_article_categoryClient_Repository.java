@@ -59,4 +59,15 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 	
 	public List<prixUnitaire_article_categoryClient>  get_articles_ristourne(@Param("cat_prod") category_produit cat_prod);
 	
+	//-------------------------------------------------------------------
+	
+	@Query(   " FROM prixUnitaire_article_categoryClient prix_u_c "
+			
+			+ " WHERE article = :article AND category_client = :cat_c "
+			
+			+ " AND prix_u_c.article.diplay_listing = 'true'")
+	
+	public prixUnitaire_article_categoryClient  get_instance_by_art_and_catClient(@Param("article") article article, 
+			@Param("cat_c") category_client cat_c);
+	
 }

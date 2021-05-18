@@ -144,7 +144,46 @@ public class create_articleController {
 		//----------------------------------------------------------------
 		
 		model.addAttribute("article", artRepo.getOne(id_art));
-		model.addAttribute("prices", prix_u_art_catcRepo.get_prices_by_CatClient(artRepo.getOne(id_art)));
+		
+		//----------------------< GET PRICES BY CATEGORY >-------------------------------------------
+		
+		List<category_client> list_ct = catclientRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
+		
+		List<prixUnitaire_article_categoryClient> list_prix = prix_u_art_catcRepo.get_prices_by_CatClient(artRepo.getOne(id_art));
+		
+		for(int i=0;i<list_ct.size();i++) {
+			
+			boolean wd = false;
+			
+			article art = null;
+			
+			for(int j=0; j<list_prix.size(); j++ ) {
+				
+				if(list_ct.get(i).equals(list_prix.get(j).getCategory_client())) {
+					
+					wd = true;
+					
+				}
+				
+				art = list_prix.get(j).getArticle();
+				
+			}
+			
+			if(wd==false) {
+				
+				prixUnitaire_article_categoryClient pip = new prixUnitaire_article_categoryClient(art, list_ct.get(i), -1, tvaRepo.getOne( (long)-1 ) );
+				
+				pip.setId((long)0);
+				
+				list_prix.add(pip );
+				
+			}
+			
+		}
+		
+		model.addAttribute("prices", list_prix);
+		
+		//---------------------------------< END -- GET PRICES BY CATEGORY >------------------------------------------------------
 		
 		List <Magasin> list_mag = mag_artRepo.get_magasin_by_article(artRepo.getOne(id_art));
 		
@@ -312,10 +351,11 @@ public class create_articleController {
 		@RequestParam("code_art") String code_art,
 		//@RequestParam("code_comptable") String code_comptable,
 		@RequestParam("tva") long [] id_tva,
-		@RequestParam("cat_client") long [] cat_client,
+		@RequestParam("id_prix_u") long [] id_prix_u,
 		@RequestParam("prix_category") double [] prix_category,
 		@RequestParam("subvention") String check,
 		@RequestParam("lib") String lib,
+		@RequestParam("cat_client") long [] cat_client,
 		
 		@SessionAttribute("user") users user){
 		
@@ -403,17 +443,31 @@ public class create_articleController {
 					
 				}
 				
-				for(int i=0;i<cat_client.length;i++) {
+				for(int i=0;i<id_prix_u.length;i++) {
 					
-					prixUnitaire_article_categoryClient prix_u_c = prix_u_art_catcRepo.getOne(cat_client[i]);
+					prixUnitaire_article_categoryClient prix_u_c = null;
 					
-					prix_u_c.setPrix(prix_category[i]);
-					
-					tva tva = tvaRepo.getOne(id_tva[i]);
-					
-					prix_u_c.setTva(tva);
-					
-					prix_u_art_catcRepo.save(prix_u_c);prix_u_art_catcRepo.flush();
+					if(id_prix_u[i]==0) {
+						
+						prix_u_c = new prixUnitaire_article_categoryClient(art, 
+								catclientRepo.getOne(cat_client[i]), prix_category[i], tvaRepo.getOne(id_tva[i]));
+						
+						prix_u_art_catcRepo.save(prix_u_c);prix_u_art_catcRepo.flush();
+						
+					}
+					else {
+						
+						prix_u_c = prix_u_art_catcRepo.getOne(id_prix_u[i]);
+						
+						prix_u_c.setPrix(prix_category[i]);
+						
+						tva tva = tvaRepo.getOne(id_tva[i]);
+						
+						prix_u_c.setTva(tva);
+						
+						prix_u_art_catcRepo.save(prix_u_c);prix_u_art_catcRepo.flush();
+						
+					}
 					
 					//-------------------- tracking operation + back up -----------------------------------
 					

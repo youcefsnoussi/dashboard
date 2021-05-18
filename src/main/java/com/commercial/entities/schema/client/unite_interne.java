@@ -44,15 +44,15 @@ public class unite_interne implements Serializable{
 	@JoinColumn(name = "wilaya")
 	private wilaya wilaya;
 	
-	private String etat_blockage = "active";
+	@Column(columnDefinition="boolean default false")
+	private boolean etat_blockage = false;
 	
 	public unite_interne() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public unite_interne(String designation, String numero_rc, String numero_art, String numero_nif, String code,
-			String adresse, String comune, com.commercial.entities.schema.static_data.wilaya wilaya,
-			String etat_blockage) {
+			String adresse, String comune, com.commercial.entities.schema.static_data.wilaya wilaya) {
 		super();
 		this.designation = designation;
 		this.numero_rc = numero_rc;
@@ -62,7 +62,6 @@ public class unite_interne implements Serializable{
 		this.adresse = adresse;
 		this.comune = comune;
 		this.wilaya = wilaya;
-		this.etat_blockage = etat_blockage;
 	}
 
 	public Long getId() {
@@ -137,12 +136,14 @@ public class unite_interne implements Serializable{
 		this.wilaya = wilaya;
 	}
 
-	public String getEtat_blockage() {
+	public boolean isEtat_blockage() {
 		return etat_blockage;
 	}
 
-	public void setEtat_blockage(String etat_blockage) {
+	public void setEtat_blockage(boolean etat_blockage) {
 		this.etat_blockage = etat_blockage;
 	}
+
+	
 	
 }

@@ -18,7 +18,9 @@ public interface bon_transfertRepository extends JpaRepository<bon_transfert, Lo
 			
   			" WHERE CAST(date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +
   			
-			" AND cancel = 'false' " )
+			" AND cancel = 'false' " +
+			
+			" ORDER BY numero" )
 
 	public List<bon_transfert> date_between_bt(@Param("start") String start, @Param("end") String end);
 	

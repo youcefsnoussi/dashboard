@@ -18,9 +18,12 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.category_produit;
 import com.commercial.entities.schema.article.repository.articleRepository;
+import com.commercial.entities.schema.article.repository.category_produitRepository;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoirRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoir_detailRepository;
@@ -52,6 +55,9 @@ public class vente_statistiqueController {
 	
 	@Autowired
 	articleRepository artRepo;
+	
+	@Autowired
+	category_produitRepository cat_prodRepo;
 	
 	public vente_statistiqueController() {
 		// TODO Auto-generated constructor stub
@@ -339,6 +345,172 @@ public class vente_statistiqueController {
 		return "statistic/declaration_tva";		
 	}
 	
+	//-----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/etat_vente_client")
+	public String etat_vente_client(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="id_category", defaultValue="0") Long id_category,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		//List <Object[]> list = new ArrayList<Object[]>();
+		
+		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+		
+		model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+		
+		model.addAttribute("cat_prod", cat_prodRepo.findAll());
+		
+		return "statistic/etat_vente_par_client";		
+	}
+	
+	//-----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/etat_sortie_article")
+	public String etat_sortie_article(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		List <Object[]> rows = new ArrayList<Object[]>();
+		
+		List<article> lst_art = new ArrayList<article>();
+		
+		if(start.equals("0")) {
+			
+			start = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+			end = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+		}
+		
+		lst_art = fact_dRepo.get_all_articles_ordered_by_libelle(start, end);
+		
+		List<facture> facts = factRepo.get_code_rc_num_date(start, end);
+		
+		for (facture fct : facts) {
+			
+			Object [] obj = new Object [lst_art.size()+3];
+			
+			obj [0] = fct.getRegistre_commerce().getCode();
+			obj [1] = fct.getRegistre_commerce().getNom()+" "+fct.getRegistre_commerce().getPrenom();
+			obj [2] = fct.getNumero();
+			
+			for (int i = 0; i<lst_art.size(); i++) {
+				
+				Object quant = 0;
+				
+				quant = fact_dRepo.get_quantite_by_article_facture(fct, lst_art.get(i));
+				
+				//System.out.println("-->"+quant);
+				
+				if(quant!=null) {
+					
+					obj[i+3] = quant;
+					
+				}
+				else {
+					
+					obj[i+3] = 0;
+					
+				}
+				
+			}
+			
+			rows.add(obj);
+			
+		}
+		
+		model.addAttribute("articles", lst_art);
+		model.addAttribute("rows", rows);
+		model.addAttribute("start",start);
+		model.addAttribute("end",end);
+		model.addAttribute("unite",user.getUnite().getNom_unite());
+		
+		return "statistic/etat_sortie_article";		
+	}
+	
+	//-----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/etat_sortie_category")
+	public String etat_sortie_categorie(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		List <Object[]> rows = new ArrayList<Object[]>();
+		
+		List<category_produit> lst_art = new ArrayList<category_produit>();
+		
+		if(start.equals("0")) {
+			
+			start = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+			end = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+		}
+		
+		lst_art = fact_dRepo.get_all_category_articles_ordered_by_libelle(start, end);
+		
+		List<facture> facts = factRepo.get_code_rc_num_date(start, end);
+		
+		for (facture fct : facts) {
+			
+			Object [] obj = new Object [lst_art.size()+3];
+			
+			obj [0] = fct.getRegistre_commerce().getCode();
+			obj [1] = fct.getRegistre_commerce().getNom()+" "+fct.getRegistre_commerce().getPrenom();
+			obj [2] = fct.getNumero();
+			
+			for (int i = 0; i<lst_art.size(); i++) {
+				
+				Object quant = 0;
+				
+				quant = fact_dRepo.get_quantite_by_category_article_facture(fct, lst_art.get(i));
+				
+				//System.out.println("-->"+quant);
+				
+				if(quant!=null) {
+					
+					obj[i+3] = quant;
+					
+				}
+				else {
+					
+					obj[i+3] = 0;
+					
+				}
+				
+			}
+			
+			rows.add(obj);
+			
+		}
+		
+		model.addAttribute("articles", lst_art);
+		model.addAttribute("rows", rows);
+		model.addAttribute("start",start);
+		model.addAttribute("end",end);
+		model.addAttribute("unite",user.getUnite().getNom_unite());
+		
+		return "statistic/etat_sortie_category_article";		
+	}
 	
 	//___________________________________________/°=-PRINT FUNCTIONS-=°\_______________________________
 	
@@ -501,6 +673,39 @@ public class vente_statistiqueController {
 		
 		pdf = gd.generate_declaration_tva(start, end);
 			
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	//----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/print_etat_vente_client")
+	public String print_etat_vente_client(HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @RequestParam("id_category") long id_cat_prod,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String pdf = "";
+		
+		//String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
+		/*
+		category_produit cat_prod = cat_prodRepo.getOne(id_cat_prod);
+		
+		
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start  = conv.convertion_InputDate_to_MyDate(start);
+		
+		end  = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_etat_vente_client(start, end, cat_prod, user.getUnite().getNom_unite());
+		*/
+		
+		pdf = gd.generate_etat_vente_client(start, end, cat_prodRepo.getOne(id_cat_prod), user.getUnite().getNom_unite());
+		
 		return "redirect:/display_pdf?file="+pdf;
 		
 	}

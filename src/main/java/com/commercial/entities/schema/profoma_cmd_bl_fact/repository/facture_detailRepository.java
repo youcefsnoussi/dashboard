@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.category_produit;
+import com.commercial.entities.schema.article.sous_category_produit;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_detail;
@@ -178,4 +180,91 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 													, @Param("art") article art);	
 	
 	//----------------------------------------------------------------------
+	
+	@Query( " SELECT fct_d.article.produit.sous_category_produit.category_produit.nom_category,"+
+			
+			" SUM(quantite), SUM(montant_ht)" + 
+	
+			" FROM facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +
+			
+			" AND fct_d.article.produit.sous_category_produit.category_produit = :cat_p" +  
+			
+			" GROUP BY fct_d.article.produit.sous_category_produit.category_produit, fct_d.article.produit.sous_category_produit.category_produit.nom_category" +
+			
+			" ORDER BY fct_d.article.produit.sous_category_produit.category_produit.id ")
+		 
+	public List<Object[]> get_info_sold_fact_by_category(@Param("start") String start, @Param("end") String end, 
+														 @Param("cat_p") category_produit cat_p);
+	
+	//----------------------------------------------------------------------
+	
+	@Query( " SELECT CONCAT(fct_d.article.produit.sous_category_produit.category_produit.nom_category, ' ', " +
+			
+				"fct_d.article.produit.sous_category_produit.nom_sous_category), "+
+			
+			" SUM(quantite), SUM(montant_ht)" + 
+	
+			" FROM facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +
+			
+			" AND fct_d.article.produit.sous_category_produit = :scat_p" +  
+			
+			" GROUP BY fct_d.article.produit.sous_category_produit.category_produit, " +
+			
+				"fct_d.article.produit.sous_category_produit.category_produit.nom_category, " +
+				
+				"fct_d.article.produit.sous_category_produit.nom_sous_category " +
+			
+			" ORDER BY fct_d.article.produit.sous_category_produit.category_produit.id ")
+		 
+	public List<Object[]> get_info_sold_fact_by_sous_category(@Param("start") String start, @Param("end") String end, 
+														 @Param("scat_p") sous_category_produit scat_p);
+	
+	//----------------------------------------------------------------------
+	
+	@Query( " SELECT  DISTINCT(fct_d.article) " + 
+			
+			" FROM facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"+
+			
+			" ORDER BY fct_d.article.libelle ")
+		 
+	public List<article> get_all_articles_ordered_by_libelle(@Param("start") String start, @Param("end") String end);
+	
+	//----------------------------------------------------------------------
+	
+	@Query( " SELECT  DISTINCT(fct_d.article.produit.sous_category_produit.category_produit) " + 
+			
+			" FROM facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"+
+			
+			" ORDER BY fct_d.article.produit.sous_category_produit.category_produit.nom_category ")
+		 
+	public List<category_produit> get_all_category_articles_ordered_by_libelle(@Param("start") String start, @Param("end") String end);
+	
+	//----------------------------------------------------------------------
+	
+	@Query( " SELECT  quantite " + 
+			
+			" FROM facture_detail fct_d" +
+			
+			" WHERE facture = :fct AND article = :art")
+		 
+	public Object get_quantite_by_article_facture(@Param("fct") facture fact, @Param("art") article art);
+	
+	//----------------------------------------------------------------------
+	
+	@Query( " SELECT  SUM(quantite) " + 
+			
+			" FROM facture_detail fct_d" +
+			
+			" WHERE facture = :fct AND article.produit.sous_category_produit.category_produit = :cat_prod")
+		 
+	public Object get_quantite_by_category_article_facture(@Param("fct") facture fact, @Param("cat_prod") category_produit cat_prod);
+	
 }

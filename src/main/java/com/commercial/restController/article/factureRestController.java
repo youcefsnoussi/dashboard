@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,8 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livrais
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
+import com.commercial.entities.schema.static_data.tva;
+import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
@@ -162,6 +165,9 @@ public class factureRestController {
 	
 	//------------------------------------------------------------------
 	
+	@Autowired
+	tva_Repository tvaRepo;
+	
 	@RequestMapping(value="/ajax_get_art_by_rc_cat")
 	public List<prixUnitaire_article_categoryClient> get_art_by_rc_cat(
 		@RequestParam("id_rc_clt") long id_rc_clt) throws IOException, ParseException{
@@ -173,8 +179,6 @@ public class factureRestController {
 		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt_rc.getRegistre_commerce().getCategory());
 		
 		//------------------------- get reduction if existe -----------------------
-		
-		
 		
 		for(int i=0;i<list_art.size();i++) {
 			
@@ -189,6 +193,14 @@ public class factureRestController {
 				pu.setId((long) -1);
 				
 				list_art.set(i, pu);
+				
+			}
+			
+			if(clt_rc.getRegistre_commerce().getTva()==0) {
+				
+				System.out.println("-----<>-- "+tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()));
+				
+				pu.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()).get(0) );
 				
 			}
 			

@@ -191,12 +191,10 @@ public class list_rcController {
 		rc.setBanque(banqueRepo.getOne(id_banque));
 		rc.setMode_paiement(mpRepo.getOne(mode_paiement));
 		
-		float ttva = 0;
-		System.out.println("--->"+tva);
+		double ttva = 0;
+		
 		if(tva.equals("on")) {
-			
 			ttva = 1;
-			
 		}
 		
 		rc.setTva(ttva);

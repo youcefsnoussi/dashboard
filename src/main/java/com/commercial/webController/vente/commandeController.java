@@ -344,13 +344,13 @@ public class commandeController {
 			
 			//-------------------------------------- INSERT F TABLE NKHALA MYSQL --------------------<
 			
-			if(if_son==true && user.getUnite().getIdentifiant()==1) {
+			//if(if_son==true && user.getUnite().getIdentifiant()==1) {
 				
 				Connection_peseur cp = new Connection_peseur();
 				
 				cp.function_son_bl(bl.getNumero(), bl.getDate());
 				
-			}
+			//}
 			
 			//---------------------------------------------------------------------------------------
 			

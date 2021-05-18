@@ -56,6 +56,9 @@ public class article implements Serializable{
 	
 	private String libelle;
 	
+	@Column(columnDefinition="boolean default true")
+	private boolean diplay_listing = true;
+	
 	public article() {
 		// TODO Auto-generated constructor stub
 	}
@@ -173,6 +176,14 @@ public class article implements Serializable{
 
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
+	}
+
+	public boolean isDiplay_listing() {
+		return diplay_listing;
+	}
+
+	public void setDiplay_listing(boolean diplay_listing) {
+		this.diplay_listing = diplay_listing;
 	}
 
 }

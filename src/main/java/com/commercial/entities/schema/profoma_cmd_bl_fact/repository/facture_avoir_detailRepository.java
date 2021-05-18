@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.category_produit;
+import com.commercial.entities.schema.article.sous_category_produit;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir_detail;
@@ -147,5 +149,49 @@ public interface facture_avoir_detailRepository extends JpaRepository<facture_av
 	public List<Object[]> get_sum_declaration_tva(@Param("start") String start, @Param("end") String end);
 	
 	//----------------------------------------------------------------------
-		
+	
+	@Query( " SELECT fct_av_d.article.produit.sous_category_produit.category_produit.nom_category, "+
+			
+			" SUM(quantite)*(-1), SUM(montant_ht)*(-1)" + 
+	
+			" FROM facture_avoir_detail fct_av_d" +
+			
+			" WHERE CAST(fct_av_d.facture_avoir.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +
+			
+			" AND fct_av_d.article.produit.sous_category_produit.category_produit = :cat_p" + 
+			
+			" GROUP BY fct_av_d.article.produit.sous_category_produit.category_produit, fct_av_d.article.produit.sous_category_produit.category_produit.nom_category" +
+			
+			" ORDER BY fct_av_d.article.produit.sous_category_produit.category_produit.id " )
+		 
+	public List<Object[]> get_info_sold_fact_av_by_category(@Param("start") String start, @Param("end") String end, 
+															@Param("cat_p") category_produit cat_p);
+	
+	//----------------------------------------------------------------------
+	
+	@Query( " SELECT CONCAT(fct_av_d.article.produit.sous_category_produit.category_produit.nom_category, ' ', " + 
+	
+				" fct_av_d.article.produit.sous_category_produit.nom_sous_category), "+
+				
+			" SUM(quantite)*(-1), SUM(montant_ht)*(-1)" + 
+	
+			" FROM facture_avoir_detail fct_av_d" +
+			
+			" WHERE CAST(fct_av_d.facture_avoir.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +
+			
+			" AND fct_av_d.article.produit.sous_category_produit = :scat_p" + 
+			
+			" GROUP BY fct_av_d.article.produit.sous_category_produit.category_produit, " +
+			
+				"fct_av_d.article.produit.sous_category_produit.category_produit.nom_category, " +
+				
+				"fct_av_d.article.produit.sous_category_produit.nom_sous_category" +
+			
+			" ORDER BY fct_av_d.article.produit.sous_category_produit.category_produit.id " )
+			 
+		public List<Object[]> get_info_sold_fact_av_by_sous_category(@Param("start") String start, @Param("end") String end, 
+																@Param("scat_p") sous_category_produit scat_p);
+	
+	//----------------------------------------------------------------------
+	
 }
