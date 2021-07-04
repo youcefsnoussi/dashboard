@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
 import com.commercial.entities.schema.user_menu.users;
 
 public interface factureRepository extends JpaRepository<facture, Long> {
@@ -110,7 +111,25 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	 
 	public List<facture> get_code_rc_num_date(@Param("start") String start, @Param("end") String end);
 	
+	//----------------------------------------------------------
 	
+	@Query(   " FROM facture fct"
+			
+			+ " WHERE id IN (:id_facts) AND facture_avoir IS NULL"
+			
+			+ " ORDER BY registre_commerce.code" )
+	 
+	public List<facture> get_facts_by_ids(@Param("id_facts") List<Long> facts);
+	
+	//----------------------------------------------------------
+	
+	@Query(   " FROM facture fct"
+			
+			+ " WHERE facture_avoir = :fact_av"
+			
+			+ " ORDER BY registre_commerce.code" )
+	 
+	public List<facture> get_facts_by_fact_avoir(@Param("fact_av") facture_avoir fact_av);
 	
 	
 }

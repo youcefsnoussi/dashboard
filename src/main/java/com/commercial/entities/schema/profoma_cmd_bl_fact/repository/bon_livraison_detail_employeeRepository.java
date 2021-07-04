@@ -35,4 +35,14 @@ public interface bon_livraison_detail_employeeRepository extends JpaRepository<b
 	
 	//---------------------------------------------------------------------
 	
+	@Query( " SELECT SUM(montant_ht) AS mnt_ht, SUM(montant_tva) AS mnt_tva, SUM(montant_ht+montant_tva) AS mnt_ttc " +
+			
+			" FROM bon_livraison_detail_employee ble_det " + 
+			
+			" WHERE CAST( ble_det.bon_livraison_employee.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date) " +
+			
+			" AND ble_det.bon_livraison_employee.cancel = 'false' AND ble_det.bon_livraison_employee.factured = 'false' ")
+		 
+	public List<Object []> get_total_facture_ble(@Param("start") String start, @Param("end") String end);
+	
 }

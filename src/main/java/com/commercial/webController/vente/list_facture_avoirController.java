@@ -1,6 +1,7 @@
 package com.commercial.webController.vente;
 
 import java.text.ParseException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,6 +24,7 @@ import com.commercial.entities.schema.client.repository.category_clientRepositor
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
 import com.commercial.entities.schema.dynamic_data.repository.mouvementRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoirRepository;
@@ -39,6 +41,7 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
+import com.commercial.services.FactureAvoirFromMultipleFactService;
 
 @Controller
 @SessionAttributes("user")
@@ -119,6 +122,9 @@ public class list_facture_avoirController {
 	@Autowired
 	mouvementRepository mvmRepo;
 	
+	@Autowired
+	FactureAvoirFromMultipleFactService factAvServ;
+	
 	public list_facture_avoirController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -128,7 +134,7 @@ public class list_facture_avoirController {
 						 @SessionAttribute("user") users user,
 						 @RequestParam("date_debut") String date_debut,
 						 @RequestParam("date_fin") String date_fin,
-						 Model model){
+						 Model model) throws ParseException{
 		
 		String ret = "vente/list_facture_avoir";
 		
@@ -140,7 +146,9 @@ public class list_facture_avoirController {
 		
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
-			model.addAttribute("list_facture_avoir", fact_avoirRepo.today_facture_avoir(gtd.get_date()));
+			//model.addAttribute("list_facture_avoir", fact_avoirRepo.today_facture_avoir(gtd.get_date()));
+			
+			model.addAttribute("list_facture_avoir", factAvServ.get_fact_avoir_list(gtd.get_date(), gtd.get_date()));
 			
 			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
@@ -156,11 +164,10 @@ public class list_facture_avoirController {
 			
 			try {
 				
-				if(date_debut.contains("/")) {
+				//if(date_debut.contains("/")) {
 					
-					model.addAttribute("list_facture_avoir", 
-							fact_avoirRepo.date_between_facture_avoir(conv.convertion_from_my_date(date_debut), 
-									conv.convertion_from_my_date(date_fin)));
+					model.addAttribute("list_facture_avoir", factAvServ.get_fact_avoir_list(conv.convertion_InputDate_to_MyDate(date_debut),
+							conv.convertion_InputDate_to_MyDate(date_fin)));
 					
 					model.addAttribute("selected_year",date_debut.substring(6));
 					
@@ -168,8 +175,8 @@ public class list_facture_avoirController {
 					
 					date_f = date_fin;
 					
-				}
-				else {
+				//}
+				/*else {
 					
 					model.addAttribute("list_facture_avoir", 
 							fact_avoirRepo.date_between_facture_avoir(conv.convertion_from_InputDate(date_debut), 
@@ -179,7 +186,7 @@ public class list_facture_avoirController {
 					
 					date_f = date_fin;
 					
-				}
+				} */
 				
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
@@ -255,9 +262,19 @@ public class list_facture_avoirController {
 		
 		//String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
 		
+		List<facture> lst_fct = factRepo.get_facts_by_fact_avoir(fact_av);
+		
+		String facts = "";
+		
+		for (facture fct : lst_fct) {
+			
+			facts += fct.getNumero()+", ";
+			
+		}
+		
 		String pdf = "";
 		
-		pdf = gd.generate_Fact_avoir(fact_av);
+		pdf = gd.generate_Fact_avoir(fact_av, facts);
 			
 		return "redirect:/display_pdf?file="+pdf;
 		

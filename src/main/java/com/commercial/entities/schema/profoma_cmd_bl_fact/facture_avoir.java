@@ -71,7 +71,6 @@ public class facture_avoir implements Serializable{
 	public facture_avoir(com.commercial.entities.schema.client.client client,
 			com.commercial.entities.schema.client.registre_commerce registre_commerce, String date, String time,
 			String numero, double montant_ht, double tva, double montant_ttc, String link_pdf,
-			com.commercial.entities.schema.profoma_cmd_bl_fact.facture facture,
 			com.commercial.entities.schema.user_menu.users users, String etat_sold, double sold_rest,
 			causes_facture_avoir cause) {
 		super();
@@ -84,7 +83,6 @@ public class facture_avoir implements Serializable{
 		this.tva = tva;
 		this.montant_ttc = montant_ttc;
 		this.link_pdf = link_pdf;
-		this.facture = facture;
 		this.users = users;
 		this.etat_sold = etat_sold;
 		this.sold_rest = sold_rest;

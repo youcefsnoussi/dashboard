@@ -37,7 +37,8 @@ public interface articleRepository extends JpaRepository<article, Long>{
 	//------------------------------------------------------------------------------
 	
 	@Query( " FROM article art "
-			+ " WHERE code != '800' "
+			
+			+ " WHERE display_listing = 'TRUE' "
 			
 			+ " ORDER BY art.produit.designation ASC ")
 	

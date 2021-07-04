@@ -259,7 +259,7 @@
 								
 									<option th:each="clt_rc:${clt_rc}" th:value="${clt_rc.id}" 
 											th:text="${clt_rc.registre_commerce.nom}+' '+${clt_rc.registre_commerce.prenom}"
-											th:attr="data-subtext=${clt_rc.registre_commerce.code}, 
+											th:attr="data-subtext=${clt_rc.registre_commerce.code}+' ('+${clt_rc.client.nom}+')', 
 													 sold=${clt_rc.registre_commerce.sold_encours}"></option>
 								
 								</select>

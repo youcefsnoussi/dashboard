@@ -18,6 +18,7 @@ public class Connection_peseur {
 		
 		Connection appcon = null;
 		try {
+			
 			Class.forName("com.mysql.jdbc.Driver"); // oracle.jdbc.driver.OracleDriver
 			
 						
@@ -36,13 +37,13 @@ public class Connection_peseur {
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("non");
+			//e.printStackTrace();
+			System.out.println("===> Class JDBC MYSQL Not Found !!!");
 			System.out.println(e);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("nooooooooooooooooon");
+			//e.printStackTrace();
+			System.out.println("No Connection Serveur MYSQL PESEUR");
 		}
 
 		return appcon;
@@ -67,7 +68,8 @@ public class Connection_peseur {
 				state = con.createStatement();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("===> NO Connection to Server MYSQL !!!");
 			}
 			
 			get_time_date gtd = new get_time_date();
@@ -93,7 +95,8 @@ public class Connection_peseur {
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("===> NO matricules CAUSE No Connection to MYSQL DB SERVER !!!");
 			}
 		
 		}
@@ -116,7 +119,8 @@ public class Connection_peseur {
 			state = con.createStatement();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("===> NO Connection to Server MYSQL !!!");
 		}
 		
 		
@@ -134,6 +138,7 @@ public class Connection_peseur {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("===> Can't insert TO DB DUE to NO Connection to Server MYSQL !!!");
 		}
 		
 		
@@ -143,7 +148,8 @@ public class Connection_peseur {
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("===> No Close for NO Connection to Server MYSQL !!!");
 		}
 		
 	}

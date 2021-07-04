@@ -55,6 +55,12 @@ public class facture implements Serializable{
 	
 	private double montant_tva;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ht_net;
+	
 	private String link_pdf;
 	
 	@ManyToOne
@@ -80,6 +86,10 @@ public class facture implements Serializable{
 	@Column(columnDefinition = "double precision default 0")
 	private double pourcentage_reduction;
 	
+	@ManyToOne
+	@JoinColumn(name = "facture_avoir")
+	private facture_avoir facture_avoir;
+	
 	public facture() {
 		// TODO Auto-generated constructor stub
 	}
@@ -87,7 +97,8 @@ public class facture implements Serializable{
 	public facture(com.commercial.entities.schema.client.client client,
 			com.commercial.entities.schema.client.registre_commerce registre_commerce,
 			client_registreCommerce client_registrecommerce, String date, String time, String numero, double montant_ht,
-			double tva, String matricule_camion, double montant_ttc, double montant_tva, String link_pdf,
+			double tva, String matricule_camion, double montant_ttc, double montant_tva, double montant_remise,
+			double montant_ht_net, String link_pdf,
 			com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison bon_livraison,
 			com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
 			com.commercial.entities.schema.user_menu.users users, boolean etat_sold, double sold_rest, Boolean printed,
@@ -104,6 +115,8 @@ public class facture implements Serializable{
 		this.matricule_camion = matricule_camion;
 		this.montant_ttc = montant_ttc;
 		this.montant_tva = montant_tva;
+		this.montant_remise = montant_remise;
+		this.montant_ht_net = montant_ht_net;
 		this.link_pdf = link_pdf;
 		this.bon_livraison = bon_livraison;
 		this.mode_paiement = mode_paiement;
@@ -211,6 +224,22 @@ public class facture implements Serializable{
 		this.montant_tva = montant_tva;
 	}
 
+	public double getMontant_remise() {
+		return montant_remise;
+	}
+
+	public void setMontant_remise(double montant_remise) {
+		this.montant_remise = montant_remise;
+	}
+
+	public double getMontant_ht_net() {
+		return montant_ht_net;
+	}
+
+	public void setMontant_ht_net(double montant_ht_net) {
+		this.montant_ht_net = montant_ht_net;
+	}
+
 	public String getLink_pdf() {
 		return link_pdf;
 	}
@@ -283,4 +312,12 @@ public class facture implements Serializable{
 		this.pourcentage_reduction = pourcentage_reduction;
 	}
 
+	public facture_avoir getFacture_avoir() {
+		return facture_avoir;
+	}
+
+	public void setFacture_avoir(facture_avoir facture_avoir) {
+		this.facture_avoir = facture_avoir;
+	}
+	
 }

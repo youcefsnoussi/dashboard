@@ -127,7 +127,6 @@ public class add_clientController {
 	}
 	
 	
-	
 	@RequestMapping(value="/add_client",method=RequestMethod.POST, consumes = {"multipart/form-data"})
 	public String inster_client_DB(HttpServletRequest req,
 		@RequestParam("nom") String nom,

@@ -32,8 +32,6 @@ public class convert_string_to_date_util {
 	
 	public String convertion_InputDate_to_MyDate(String date){
 		
-		System.out.println("==>"+date);
-		
 		String [] sp = date.split("-");
 		
 		String result = sp[2]+"/"+sp[1]+"/"+sp[0];

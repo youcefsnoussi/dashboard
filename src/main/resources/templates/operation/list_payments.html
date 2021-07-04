@@ -127,7 +127,7 @@
 	                           ,'colvis'
 	                       ], */
 			        initComplete: function () {
-			            this.api().columns([1,2,5,6]).every( function () {
+			            this.api().columns([1,2,5,6,12,13]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -470,9 +470,15 @@
 					<table id="table" class="table table-bordered table-hover" style="width:100%">
 					
 						<thead class="thead-dark">
-						
+							
 							<tr>
 							
+								<td colspan="12" style="text-align: center">Commercial</td>
+								<td colspan="2" style="text-align: center">Comptabilité</td>
+							
+							</tr>
+							
+							<tr>
 								<th width="5%">ID</th>
 								<th width="5%">Client</th>
 								<th width="5%">Code RC</th>
@@ -485,7 +491,8 @@
 								<th>N° de la piece</th>
 								<th>Image</th>
 								<th>Annuler</th>
-								
+								<th>Vérification</th>
+								<th>Etat</th>
 							</tr>
 						
 						</thead>
@@ -523,7 +530,10 @@
 																												<i class="far fa-trash"></i>
 																										 </button> 
 								</td>
-								
+								<td th:if="${pay.verification}==true" style="color: green;"> Términer </td>
+								<td th:unless="${pay.verification}==true" style="color: orange;"> En cours </td>
+								<td th:if="${pay.validation}==true" style="color: green;"> Payé </td>
+								<td th:unless="${pay.validation}==true" style="color: red;">Impayé</td>
 							</tr>
 						
 						</tbody>
@@ -532,6 +542,8 @@
 						
 							<tr>
 							
+								<th></th>
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

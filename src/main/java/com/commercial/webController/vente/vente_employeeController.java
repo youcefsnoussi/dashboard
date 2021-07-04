@@ -1,7 +1,5 @@
 package com.commercial.webController.vente;
 
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +58,6 @@ import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 import com.commercial.functions.track_operations;
-
 
 @Controller
 @SessionAttributes("user")
@@ -395,7 +392,11 @@ public class vente_employeeController {
 		
 		List<Map<String, Object>> ret_all_details_ble = new ArrayList<Map<String, Object>>();
 		
-		double montant_ht=0, montant_tva=0, montant_ttc=0;
+		List<Object []> total = ble_dRepo.get_total_facture_ble(date_d, date_f);
+		
+		System.out.println(total.get(0).length+", ");
+		
+		double montant_ht = (double)total.get(0)[0], montant_tva = (double)total.get(0)[1], montant_ttc = (double)total.get(0)[2];
 		
 		for(int i=0; i<sample_all_detail_ble.size(); i++) {
 			
@@ -412,21 +413,15 @@ public class vente_employeeController {
 			info.put("montant_ht",(double)obj[6]);
 			info.put("montant_tva",(double)obj[7]);
 			info.put("montant_ttc",(double)obj[8]);
-			
+			/*
 			montant_ht += (double)obj[6];
 			montant_tva += (double)obj[7];
 			montant_ttc += (double)obj[8];
-			
+			*/
 			ret_all_details_ble.add(info);
 			
 		}
-		/*
-		System.out.println("montant HT -> "+montant_ht);
 		
-		System.out.println("montant TVA -> "+montant_tva);
-		
-		System.out.println("montant TTC -> "+montant_ttc);
-		*/
 		model.addAttribute("cumule_ble", ret_all_details_ble);
 		
 		model.addAttribute("montant_ht", montant_ht);
@@ -554,10 +549,8 @@ public class vente_employeeController {
 		
 		String numero_fact = nby.return_num_facture(last_number, user.getUnite().getId());
 		
-		
-		
 		facture fact = new facture(clt, rc, clt_rc, today, time, numero_fact, 
-				montant_ht, 0, " ", montant_ttc, montant_tva, "", null, rc.getMode_paiement(),
+				montant_ht, 0, " ", montant_ttc, montant_tva, 0, montant_ht, "", null, rc.getMode_paiement(),
 				user, false,  montant_ttc, false, false, 0);
 		
 		
@@ -578,7 +571,8 @@ public class vente_employeeController {
 			facture_detail fct_d = new facture_detail(fact, (article)ret_all_details_ble.get(i).get("article"), (double)ret_all_details_ble.get(i).get("quantite"), 
 					(double)ret_all_details_ble.get(i).get("prix_u_ht"), (double)ret_all_details_ble.get(i).get("montant_ht"), (double)ret_all_details_ble.get(i).get("tva"), 
 					(double)ret_all_details_ble.get(i).get("montant_tva"), 
-					((double)ret_all_details_ble.get(i).get("montant_ht") + (double)ret_all_details_ble.get(i).get("montant_tva")), 
+					((double)ret_all_details_ble.get(i).get("montant_ht") + (double)ret_all_details_ble.get(i).get("montant_tva")), 0, 0, 
+					(double)ret_all_details_ble.get(i).get("montant_ht"),  
 					(unite_mesure)ret_all_details_ble.get(i).get("unite_mesure"));
 			
 			fact_detRepo.save(fct_d);fact_detRepo.flush();

@@ -267,4 +267,23 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 		 
 	public Object get_quantite_by_category_article_facture(@Param("fct") facture fact, @Param("cat_prod") category_produit cat_prod);
 	
+	//-----------------------------------------------------------------------
+	
+	@Query( "SELECT fact_det.article.id, fact_det.unite_mesure.id, fact_det.prix_u_ht, SUM(fact_det.quantite), "+
+			
+			"SUM(fact_det.montant_ht), SUM(fact_det.montant_tva), SUM(fact_det.montant_ttc), fact_det.tva "+ 
+			
+			"FROM facture_detail fact_det " + 
+			
+			"WHERE fact_det.facture IN (:fcts) " + 
+			
+			//"AND blf_det.bon_livraison_facture.factured = 'false' " + 
+			
+			"GROUP BY article.id, unite_mesure.id, prix_u_ht, fact_det.tva " +
+			 
+			"ORDER BY article.id" )
+	
+	public List<Object[]> get_cumule_detail_facture(@Param("fcts") List<facture> facts);
+	//---------------------------------------------------------------------
+	
 }

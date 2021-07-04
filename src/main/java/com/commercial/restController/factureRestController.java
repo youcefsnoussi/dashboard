@@ -1,4 +1,4 @@
-package com.commercial.restController.article;
+package com.commercial.restController;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -198,7 +198,7 @@ public class factureRestController {
 			
 			if(clt_rc.getRegistre_commerce().getTva()==0) {
 				
-				System.out.println("-----<>-- "+tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()));
+				//System.out.println("-----<>-- "+tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()));
 				
 				pu.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()).get(0) );
 				
@@ -234,12 +234,11 @@ public class factureRestController {
 		
 		//JSONArray arr_obj = new JSONArray();
 		
-		System.out.println("******---------------- ENTER TEST PLAFOND -----------------***");
+		//System.out.println("******---------------- ENTER TEST PLAFOND -----------------***");
 		
 		HashMap<String, Integer> map = new HashMap<>();
 		
 		client_registreCommerce rc_clt = clt_rcRepo.getOne(id_relation_rc_client);
-		
 		
 		client clt = rc_clt.getClient();
 		
@@ -262,7 +261,7 @@ public class factureRestController {
 		
 		//double balance_clt = clt.getSold_encours();
 		
-		System.out.println("SOLD CLT -> "+sold_encours+"/ plafond CLT -> "+clt.getPlafond());
+		//System.out.println("SOLD CLT -> "+sold_encours+"/ plafond CLT -> "+clt.getPlafond());
 		
 		/**************      TEST CLIENT FACTHER **********/
 		/*
@@ -292,15 +291,15 @@ public class factureRestController {
 			
 		}
 		
-		System.out.println("montant all bls ->"+montant);
+		//System.out.println("montant all bls ->"+montant);
 		
 		sold_encours = rc.getSold_encours();
 		
-		System.out.println("TTC ---------> = "+montant_ttc);
+		//System.out.println("TTC ---------> = "+montant_ttc);
 		
 		sold_encours = sold_encours + montant + montant_ttc;
 		
-		System.out.println("SOLD RC -> "+sold_encours+"/ plafond RC -> "+rc.getPlafond());
+		//System.out.println("SOLD RC -> "+sold_encours+"/ plafond RC -> "+rc.getPlafond());
 		
 		//double balance_rc = rc.getSold_encours();
 		

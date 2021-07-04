@@ -65,7 +65,7 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 			
 			+ " WHERE article = :article AND category_client = :cat_c "
 			
-			+ " AND prix_u_c.article.diplay_listing = 'true'")
+			+ " AND prix_u_c.article.display_listing = 'true'")
 	
 	public prixUnitaire_article_categoryClient  get_instance_by_art_and_catClient(@Param("article") article article, 
 			@Param("cat_c") category_client cat_c);
