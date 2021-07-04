@@ -24,25 +24,106 @@
 	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
 	
+	    
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
 		
-		var info = $("#info_av").val();
+		$(".qte").keyup(function(){
+			
+			var qte = $(this).val();
+			
+			var parent = $(this).parent().parent();
+			
+			var pu = parent.find("#prix_unitaire").val();
+			
+			if(pu!=""){
+				
+				parent.find("#montant_ht").val((pu*qte).formatMoney(2, '.', ' '));
+				
+			}
+			else{
+				
+				$("#title").text("Erreur !!!");
+				$("#icone").attr("class","far fa-exclamation-triangle");
+				$("#text").text("Veuillez selectionner un Article ");
+				$("#error").modal('show');
+				
+				$(this).val(0);
+			}
+			
+			var montant_ht = 0;
+			
+			var montant_tva = 0;
+			
+			$(".montant_ht").each(function(){
+				
+				if($(this).val()!=""){
+					
+					var v = $(this).val();
+					
+					v = v.replace(/ /g,"");
+					
+					montant_ht = montant_ht + parseFloat(v);
+					
+					var tva = $(this).parent().parent().find("#tva_art").val()/100;
+					
+					montant_tva = montant_tva + ( parseFloat(v) * tva )
+					
+				}
+				
+			});
+			
+			var montant_ttc = montant_ht + montant_tva;
+			
+			$("#total_ht").val((montant_ht).formatMoney(2, '.', ' '));
+			$("#total_tva").val((montant_tva).formatMoney(2, '.', ' '));
+			$("#total_ttc").val((montant_ttc).formatMoney(2, '.', ' '));
+			
+		});
 		
-		if(info=="true"){
+		$("#sub").click(function(){
 			
-			$("#title").text("Erreur !!!");
-			$("#icone").attr("class","far fa-exclamation-triangle");
-			$("#text").text("Une facture d'avoire est déja établie !!!");
-			$("#error").modal('show');
+			var test = 0;
 			
-		}
+			$(".qte").each(function(){
+				
+				var current_val = parseFloat($(this).val());
+				
+				var old_val = parseFloat($(this).parent().find("#qte_init").val());
+				
+				if(current_val>old_val){
+					
+					test = 1;
+					
+					$(this).css("border-color","red");
+					
+				}
+				
+			});
+			
+			if(test==1){
+				
+				$("#title").text("Erreur !!!");
+				$("#icone").attr("class","far fa-exclamation-triangle");
+				$("#text").html("La quantité saisie doit être inferieur a la quantité initial ");
+				$("#error").modal('show');
+				
+			}
+			else{
+				
+				$(this).prop("disabled",true);
+				$("#frm").submit();
+				
+			}
+			
+		});
 		
 	});
 	
 	</script>
-	
+	      
+	      
 	</head>
 
 	<body >
@@ -52,7 +133,9 @@
 	<script type='text/javascript'> spin_it('on'); </script>
 	
 	<!-- ---------------------------------------- -->
+	
 	<br>
+	
 	<div class="container-fluid h-100">
 	
 		<div class="card">
@@ -64,16 +147,44 @@
 			<br>
 			-->
 			<div class="card-body">
-					
-					<input type="hidden" id="info_av" th:value="${avoir}">
-					
+			
+			<form id="frm" th:action="@{/facture_avoir_post}" method="post" autocomplete="off">
+			
 					<div class="card" >
-	
+						
+						<input type="hidden" id="tva_general" name="tva" value="0.19">
+						
+						<input type="hidden" id="id_fact" name="id_fact" th:value="${id_facts}">
+						
 						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
 						<br>
 	
 						<div class="card-body">
+							
+							<div class="row">
+							
+								<div class="col-md-4">
+								
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration"
+												style="min-width: 76px; text-align: left;">Cause </span>
+										</div>
+										
+										<select id="cause" class="form-control" name="cause" required>
+										
+											<option th:each="cause:${causes}" th:text="${cause.designation}" th:value="${cause.id}">  </option>
+										
+										</select>
 	
+									</div>
+								
+								</div>
+							
+							</div>
+							
+							<br>
+							
 							<div class="row">
 	
 								<div class="col-md-4 column">
@@ -83,7 +194,7 @@
 												style="min-width: 76px; text-align: left;">Code </span>
 										</div>
 										<input type="text" class="form-control  code_client"
-											name="code_rc" id="code_rc" th:value="${facture.registre_commerce.code}" disabled>
+											name="code_client" id="code_client" th:value="${facture.client.code}" disabled>
 	
 									</div>
 								</div>
@@ -101,18 +212,19 @@
 	
 									</div>
 								</div>
-								
+	
+	
 								<div class="col-md-4 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Date</span>
+											<span class="input-group-text declaration"
+												style="min-width: 76px; text-align: left;">Adresse </span>
 										</div>
-										<input type="text" name="date" id="date" class="form-control " 
-												th:value="${facture.date}" disabled>
-	
+										<input type="text" class="form-control " name="adresse"
+											id="adresse" th:value="${facture.client.adresse}" disabled>
 									</div>
 								</div>
-								
+	
 							</div>
 	
 							<hr>
@@ -125,11 +237,8 @@
 											<span class="input-group-text declaration"
 												style="min-width: 130px; text-align: left;">Mode règelment </span>
 										</div>
-										<input th:if="${facture.mode_paiement}!=null" type="text" class="form-control " name="mode_reg" id="mode_reg"
-											th:value="${facture.mode_paiement.designation}"  disabled>
-										
-										<input th:unless="${facture.mode_paiement}!=null" type="text" class="form-control " name="mode_reg" id="mode_reg"
-											th:value="''"  disabled>
+										<input type="text" class="form-control " name="mode_reg" id="mode_reg"
+											th:value="${facture.client.adresse}"  disabled>
 										
 									</div>
 								</div>
@@ -160,7 +269,8 @@
 												style="min-width: 130px; text-align: left;">RC </span>
 										</div>
 										
-										<input type="text" class="form-control" name="num_rc" id="num_rc" th:value="${facture.registre_commerce.numero_rc}" disabled > 
+										<input type="text" class="form-control" name="num_rc" id="num_rc" 
+												th:value="${facture.registre_commerce.numero_rc}" disabled > 
 										
 									</div>
 								</div>
@@ -192,87 +302,51 @@
 	
 							<hr>
 							
-							<div class="row">
-							
-								<div class="col-md-7 ">
-										<!--  
-										<div class="input-group">
-							
-											<h5>Réduction sur les articles :</h5><h5 id="redux">  </h5>
-										
-										</div>
-										-->
-										<label>Observation</label>
-										
-										<textarea rows="3" cols="" id="observation" class="form-control" name="observation" 
-											th:if="${facture.bon_livraison}!=null" th:text="${facture.bon_livraison.commande.observation}" 
-												disabled></textarea>
-												
-										<textarea rows="3" cols="" id="observation" class="form-control" name="observation" 
-											th:unless="${facture.bon_livraison}!=null" disabled></textarea>		
-										
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
+									</div>
+									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
+										th:value="${#numbers.formatDecimal(totaux.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 								</div>
-								
-								<div class="col-md-4 offset-md-1">
-								
-									<div class="row">
-									
-										<div class="col-md-12">
-											<div class="input-group">
-												<div class="input-group-prepend">
-													<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
-												</div>
-												<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
-													th:value="${#numbers.formatDecimal(facture.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
-											</div>
-										</div>
-									
-									</div>
-									
-									<div class="row">
-									
-										<div class="col-md-12">
-											<div class="input-group">
-												<div class="input-group-prepend">
-													<span class="input-group-text declaration">Montant TVA</span>
-												</div>
-												<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
-													th:value="${#numbers.formatDecimal(facture.montant_tva, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
-											</div>
-										</div>
-									
-									</div>
-									
-									<div class="row">
-									
-										<div class="col-md-12">
-											<div class="input-group">
-												<div class="input-group-prepend">
-													<span class="input-group-text declaration">Montant TTC </span>
-												</div>
-												<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" 
-													th:value="${#numbers.formatDecimal(facture.montant_ttc, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
-											</div>
-										</div>	
-									
-									</div>
-								
-								</div>
-								
 							</div>
-								
+	
+	
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration">Montant TVA</span>
+									</div>
+									<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
+										th:value="${#numbers.formatDecimal(totaux.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+								</div>
+							</div>
+	
+	
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration">Montant TTC </span>
+									</div>
+									<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" 
+										th:value="${#numbers.formatDecimal(totaux.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+								</div>
+							</div>
+	
+	
 						</div>
 					</div>
 	
 					<hr />
 	
 	
-					<table class="table" id="table" >
+					<table class="table" id="table" width="100%">
 						<thead class="thead-dark">
 							<tr>
 								<th align="center"  width="8%">Art</th>
-								<th  align="center" width="40%">Libellé</th>
-								<th  align="center" >Um</th>
+								<th  align="center" >Libellé</th>
+								<th  align="center"  width="8%">Um</th>
 								<th  align="center" >Qte</th>
 								<th  align="center" >PU</th>
 								<th  align="center" >TVA</th>
@@ -288,27 +362,39 @@
 								
 								<td> 
 									<input class="form-control nom_art" type="text" id="art" name="art" disabled
-										th:value="${fact_det.article.libelle}" > 
+										th:value="${fact_det.article.libelle}" >
+										<input type="hidden" id="id_art" name="id_art" th:value="${fact_det.article.id}"> 
 								</td>
 								
 								<td> <input class="form-control unite_mesure" id="unite_mesure" type="text" value="" style="text-align: center;"
 												th:value="${fact_det.article.unite_mesure_vente.nom_unite_mesure}" disabled> 
+									 <input type="hidden" id="id_um" name="id_um" th:value="${fact_det.article.pesage_produit.id}" >		
 								</td>
 								
-								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${fact_det.quantite}" style="text-align: right;" disabled> </td>
+								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${fact_det.quantite}" style="text-align: right;" > 
+										<input type="hidden" id="qte_init" class="qte_init" th:value="${fact_det.quantite}"> </td>
 								
-								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${fact_det.prix_u_ht}" type="number" step="any" style="text-align: right;" disabled> </td>
+								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${fact_det.prix_u_ht}" type="number" step="any" style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control tva" id="tva" name="tva_art" type="number" th:value="${fact_det.tva}" step="any" value="" style="text-align: right;" disabled> </td>
+								<td><input class="form-control tva_art" id="tva_art" name="tva_art" type="number" th:value="${fact_det.tva}" step="any" value="" style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(fact_det.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
+								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(fact_det.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" type="text" style="text-align: right;" readonly> </td>
 	
 							</tr>
 	
 						</tbody>
 	
 					</table>
-	
+					
+					<hr>
+					
+					<div class="d-flex justify-content-center">
+					
+						<button type="button" id="sub" class="btn btn-success">Valider</button>
+					
+					</div>
+		</form>	
+		
 			</div>
 		</div>
 	
@@ -317,7 +403,7 @@
 	<script type='text/javascript'> spin_it('off'); </script>
 	
 	<div id="error" class="modal" tabindex="-1" role="dialog">
-	  <div class="modal-dialog" role="document">
+	  <div class="modal-dialog modal-dialog-centered" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>

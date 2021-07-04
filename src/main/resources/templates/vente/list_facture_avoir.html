@@ -157,7 +157,8 @@
 				
 				var num_fact = $(this).attr("num_fact");
 				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" src="print_fact_av?id_fact='+id_fact+'"></iframe>');
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+											'src="print_fact_av?id_fact='+id_fact+'"></iframe>');
 				
 				$("#title_fact").text("Détail Facture N° "+num_fact);
 				
@@ -291,7 +292,7 @@
 								<th>Montant TTC</th>
 								<th>Détail</th>
 								<th>Facture</th>
-								<th>Date fct</th>
+								<!--  <th>Date fct</th> -->
 								
 							</tr>
 						
@@ -301,29 +302,36 @@
 						
 							<tr th:each="list_fact:${list_facture_avoir}">
 							
-								<td th:text="${list_fact.numero}"></td>
-								<td th:text="${list_fact.date}"></td>
-								<td th:text="${list_fact.registre_commerce.code}"></td>
-								<td th:text="${list_fact.client.nom}+' '+${list_fact.client.prenom}"></td>
-								<td th:text="${list_fact.registre_commerce.numero_rc}"></td>
-								<td th:text="${list_fact.registre_commerce.nom}+' '+${list_fact.registre_commerce.prenom}"></td>
+								<td th:text="${list_fact.facture_avoir.numero}"></td>
+								<td th:text="${list_fact.facture_avoir.date}"></td>
+								<td th:text="${list_fact.facture_avoir.registre_commerce.code}"></td>
+								<td th:text="${list_fact.facture_avoir.client.nom}+' '+${list_fact.facture_avoir.client.prenom}"></td>
+								<td th:text="${list_fact.facture_avoir.registre_commerce.numero_rc}"></td>
+								<td th:text="${list_fact.facture_avoir.registre_commerce.nom}+' '+${list_fact.facture_avoir.registre_commerce.prenom}"></td>
 								<!--  <td th:text="${list_fact.mode_paiement.designation}"></td>
 								<td th:text="${list_fact.matricule_camion}"></td> -->
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.tva, 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td style="text-align: center;width: 8%;"> <button type="button" class="btn btn-info info" th:attr="id_fact_a=${list_fact.id},num_fact_a=${list_fact.numero}"> 
-																						<i class="far fa-info-square"></i>
-																 </button>
-																 <button type="button" class="btn btn-info print" th:attr="id_fact=${list_fact.id},num_fact=${list_fact.numero}"> 
-																						<i class="far fa-print"></i>
-																 </button>   
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ht, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.tva, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								
+								<td style="text-align: center;width: 8%;"> 
+										<button type="button" class="btn btn-info info" th:attr="id_fact_a=${list_fact.facture_avoir.id},
+										 		num_fact_a=${list_fact.facture_avoir.numero}"> 
+												<i class="far fa-info-square"></i>
+										</button>
+										<button type="button" class="btn btn-info print" th:attr="id_fact=${list_fact.facture_avoir.id},
+										 		num_fact=${list_fact.facture_avoir.numero}"> 
+												<i class="far fa-print"></i>
+										</button>   
 								</td>								 
-								<td style="text-align: center;"> <button type="button" class="btn btn-info fact" th:attr="id_fact=${list_fact.facture.id},num_fact=${list_fact.facture.numero}"> 
-																						<i class="far fa-info-square"></i>
-																 </button> 								 
+								<td style="text-align: center;"> 
+										<button th:each="fact:${list_fact.lst_facture}" type="button" class="btn btn-info fact" 
+											th:attr="id_fact=${fact.id},num_fact=${fact.numero},title=${fact.numero}" data-toggle="tooltip" 
+											data-placement="top"> 
+												<i class="far fa-info-square"></i>
+										</button> 								 
 								</td>
-								<td th:text="${list_fact.facture.date}"></td>
+								<!--  <td th:text="${list_fact.facture.date}"></td> -->
 								
 							</tr>
 						
@@ -344,7 +352,7 @@
 								<th></th>
 								<th></th>
 								<th></th>
-								<th></th>
+								<!--  <th></th> -->
 								
 							</tr>
 						

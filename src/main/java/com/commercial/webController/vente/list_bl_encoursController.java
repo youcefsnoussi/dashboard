@@ -415,7 +415,7 @@ public class list_bl_encoursController {
 	//-----------------------------------------------------------------------------
 	
 	@RequestMapping(value="/edit_bl_post",method=RequestMethod.POST)
-	public String edit_bl(HttpServletRequest req,
+	public String edit_bl_Post(HttpServletRequest req,
 			@RequestParam("id_bl") long id_bl,
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
@@ -693,9 +693,9 @@ public class list_bl_encoursController {
 				numerotation_by_year nby = new numerotation_by_year();
 				
 				String numero_fact = nby.return_num_facture(last_number, user.getUnite().getId());
-				
+
 				facture fact = new facture(bl.getClient(), bl.getRegistre_commerce(), bl.getCommande().getClient_registrecommerce(), today, time,
-						numero_fact, bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), "", bl, 
+						numero_fact, bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), 0, bl.getMontant_ht(), "", bl, 
 						bl.getCommande().getMode_paiement(), bl.getCommande().getUsers(), false,  bl.getMontant_ttc(), false, false, 
 						bl.getCommande().getPourcentage_reduction());
 				
@@ -722,7 +722,8 @@ public class list_bl_encoursController {
 					bon_livraison_detail bld = bld_list.get(i);
 					
 					facture_detail fct_d = new facture_detail(fact, bld.getArticle(), bld.getQuantite(), bld.getPrix_u_ht(), bld.getMontant_ht(),
-							bld.getTva(), bld.getMontant_tva(), (bld.getMontant_ht() + bld.getMontant_tva()), bld.getUnite_mesure());
+							bld.getTva(), bld.getMontant_tva(), (bld.getMontant_ht() + bld.getMontant_tva()), 0,
+							0, bld.getMontant_ht(), bld.getUnite_mesure());
 					
 					fact_detRepo.save(fct_d);fact_detRepo.flush();
 					

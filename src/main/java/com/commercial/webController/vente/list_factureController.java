@@ -1,6 +1,9 @@
 package com.commercial.webController.vente;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,6 +54,7 @@ import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 import com.commercial.functions.track_operations;
+import com.commercial.services.FactureAvoirFromMultipleFactService;
 
 @Controller
 @SessionAttributes("user")
@@ -134,6 +138,11 @@ public class list_factureController {
 	@Autowired
 	causes_facture_avoirRepository causeRepo;
 	
+	//---------------------------------------@SERVICES-------------
+	
+	@Autowired
+	FactureAvoirFromMultipleFactService get_details;
+	
 	@Autowired
 	track_operations trk;
 	
@@ -214,7 +223,6 @@ public class list_factureController {
 		
 	}
 	
-	
 	//--------------------------------------------------------------------------------
 	
 	@RequestMapping(value="info_fact")
@@ -245,7 +253,7 @@ public class list_factureController {
 	generate_Doc gd;
 	
 	@RequestMapping(value="/print_fact")
-	public String print_bl(HttpServletRequest request,
+	public String print_fact(HttpServletRequest request,
 						 @RequestParam("id_fact") long id_fact,
 						 @SessionAttribute("user") users user,
 						 Model model){
@@ -265,7 +273,7 @@ public class list_factureController {
 	//--------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/fact_avoir")
-	public String fact_avoir(HttpServletRequest request,
+	public String fact_avoir_single(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
 						 
 						 @RequestParam("id_fact") long id_facture,
@@ -311,13 +319,92 @@ public class list_factureController {
 		return ret;
 		
 	}
-
-
+	
+	//--------------------------------------------------------------------------------
+	
+	@RequestMapping(value="/fact_avoir_list")
+	public String fact_avoir_multiple(HttpServletRequest request,
+						 @SessionAttribute("user") users user,
+						 
+						 @RequestParam("id_facts") String id_factures,
+						 
+						 Model model){
+		
+		List<Long> idsFacts = new ArrayList<Long>();
+		
+		if(!id_factures.isEmpty()) {
+			
+			String [] ids = id_factures.split("-");
+			
+			for (String str : ids) {
+				
+				idsFacts.add(Long.parseLong(str));
+				
+			}
+			
+		}
+		
+		List<facture> facts = factRepo.get_facts_by_ids(idsFacts);
+		
+		String ret = "vente/facture_avoir_multiple";
+		
+		if(!facts.isEmpty()) {
+			
+			String id_facts = "";
+			
+			for (facture f : facts) {
+				
+				id_facts += f.getId()+"-";
+				
+			}
+			
+			facture fct_info = facts.get(0);
+			
+			fct_info.setMatricule_camion("");
+			
+			model.addAttribute("facture", fct_info);
+			
+			model.addAttribute("totaux", get_details.get_totals_montant(get_details.getDetailFactAvFromMultipleFact(facts)));
+			
+			model.addAttribute("id_facts", id_facts);
+			
+			model.addAttribute("causes", causeRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+			
+			model.addAttribute("detail_facture", get_details.getDetailFactAvFromMultipleFact(facts));
+			
+		}
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("facture_av"))) 
+		{ ret = "vente/facture_avoir_multiple"; }
+		else { ret = "403"; }
+		
+		//----------------------------------------------------------------
+		
+		/*
+		else {
+			
+			model.addAttribute("facture_avoir", grp.getFacture_avoir());
+			
+			model.addAttribute("avoir","true");
+			
+			model.addAttribute("detail_facture_avoir", fact_avoir_detRepo.get_facture_avoir_detail(grp.getFacture_avoir()));
+			
+			ret = "vente/info_facture_avoir";
+			
+		}*/
+		
+		return ret;
+		
+	}
+	
 	//__________________________________________POST____________________________________________________________________
 	
 	@RequestMapping(value="/facture_avoir_post",method=RequestMethod.POST)
 	public String fact_avoir_post(HttpServletRequest req,
-			@RequestParam("id_fact") long id_fact,
+			@RequestParam("id_fact") String id_fact,
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
@@ -356,11 +443,33 @@ public class list_factureController {
 			
 			//--------------- 
 			
-			facture fct = factRepo.getOne(id_fact);
+			List<facture> lst_fact = new ArrayList<>();
+			
+			
+			
+			if(id_fact.contains("-")) {
+				
+				id_fact = Optional.ofNullable(id_fact)
+						   .filter(sStr -> sStr.length() != 0)
+						   .map(sStr -> sStr.substring(0, sStr.length() - 1))
+						   .orElse(id_fact);
+				
+				for (String s : id_fact.split("-")) {
+					
+					lst_fact.add(factRepo.getOne(Long.parseLong(s)));
+					
+				}
+				
+			}
+			else {
+				
+				lst_fact.add(factRepo.getOne(Long.parseLong(id_fact)));
+				
+			}
 			
 			//-------------- update sold client
 			
-			client clt = fct.getClient();
+			client clt = lst_fact.get(0).getClient();
 			
 			double sold_encours_clt = clt.getSold_encours();
 			
@@ -372,7 +481,7 @@ public class list_factureController {
 			
 			//-------------- update sold RC
 			
-			registre_commerce rc = fct.getRegistre_commerce();
+			registre_commerce rc = lst_fact.get(0).getRegistre_commerce();
 			
 			double sold_encours_rc = rc.getSold_encours();
 			
@@ -384,7 +493,7 @@ public class list_factureController {
 			
 			//--------------------------------------insert to facture avoir table ------
 			
-			facture_avoir fact_av = new facture_avoir(clt, rc, today, time, numero, montant_ht, montant_tva, montant_ttc, "", fct, user, "", 0, 
+			facture_avoir fact_av = new facture_avoir(clt, rc, today, time, numero, montant_ht, montant_tva, montant_ttc, "", user, "", 0, 
 														causeRepo.getOne(cause));
 			
 			//new facture(client, registre_commerce, date, time, numero, montant_ht, tva, matricule_camion, montant_ttc, montant_tva, link_pdf, bon_livraison, mode_paiement, users, etat_sold, sold_rest)
@@ -408,11 +517,19 @@ public class list_factureController {
 			
 			//------------------------------------------------ insert table regroupment
 			
-			prof_cmd_bl_fact_client_rc_avoir grp = grpRepo.get_relation_by_facture(fct);
-			
-			grp.setFacture_avoir(fact_av);
-			
-			grpRepo.save(grp); grpRepo.flush();
+			for (facture fct : lst_fact) {
+				
+				prof_cmd_bl_fact_client_rc_avoir grp = grpRepo.get_relation_by_facture(fct);
+				
+				grp.setFacture_avoir(fact_av);
+				
+				grpRepo.save(grp); grpRepo.flush();
+				
+				fct.setFacture_avoir(fact_av);
+				
+				factRepo.save(fct); factRepo.flush();
+				
+			}
 			
 			//------------------------------------------------ insert into mouvement table
 			
@@ -426,8 +543,8 @@ public class list_factureController {
 			
 			//------------------------------------------------ END
 			
-			return "redirect:/fact_avoir?id_fact="+id_fact;
-		
+			//return "redirect:/fact_avoir?id_fact="+id_fact;
+			return "redirect:/print_fact_av?id_fact="+fact_av.getId();
 	}
 		
 	

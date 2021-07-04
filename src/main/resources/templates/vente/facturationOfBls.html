@@ -74,12 +74,13 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        "columnDefs": [
-			            { "width": "7%", "targets": 10 }
+			            { "width": "7%", "targets": 9 }
 			          ],
 			        initComplete: function () {
-			            this.api().columns([3,4,5,6,7,8,13]).every( function () {
+			            this.api().columns([7]).every( function () {
 			                var column = this;
-			                var select = $('<select class="form-control "  ><option value="">Tout</option></select>')
+			                var select = $('<select  class="form-control" '+ 
+									'><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -100,19 +101,8 @@
 						
 					      var api = this.api();
 					      
-					      $( api.column( 9, {page:'current'} ).footer() ).html(
-					        api.column( 9, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
-					      );
-					      
-					      $( api.column( 10, {page:'current'} ).footer() ).html(
-					        api.column( 10, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      
-					      $( api.column( 11, {page:'current'} ).footer() ).html(
-					        api.column( 11, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      $( api.column( 12, {page:'current'} ).footer() ).html(
-					        api.column( 12, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 8, {page:'current'} ).footer() ).html(
+					        api.column( 8, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
 					      );
 					      
 					 },
@@ -139,13 +129,11 @@
 				
 			$("#fct_blf").click(function(){
 				
-				var start = $("#debut").val();
-				
-				var end = $("#fin").val();
-				
 				var rc_clt = $("#rc").val();
 				
-				if(rc_clt==null){
+				var bls = $("#bls_f").val();
+				
+				if(rc_clt=="0"){
 					
 					$("#title").text("Erreur !!!");
 					$("#icone").attr("class","far fa-exclamation-triangle");
@@ -156,9 +144,9 @@
 				else{
 					
 					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-							'src="facture_blf?start='+start+'&end='+end+'&id_rel_rc_clt='+rc_clt+'"></iframe>');
+							'src="facture_blf_list?id_rel_rc_clt='+rc_clt+'&bls_f='+bls+'"></iframe>');
 					
-					$("#title_bl").text("Facture des Bon de Livraison du "+start+" au "+end);
+					$("#title_bl").text("Facture des Bon des Livraisons" );
 					
 					$("#icone_bl").attr("class","far fa-file-invoice");
 					
@@ -168,115 +156,58 @@
 				
 			});
 			
-			$(".print").click(function(){
-				
-				var id_blf = $(this).attr("id_blf");
-				
-				var num_blf = $(this).attr("num_blf");
-				
-				
-				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-												'src="print_blf?id_bl='+id_blf+'"></iframe>'); //'src="print_blq?id_bl='+id_blf+'"></iframe>');
-				
-				$("#title_bl").text("Imprimer BL N° "+num_blf);
-				
-				$("#icone_bl").attr("class","far fa-file-invoice");
-				
-				$("#bl_detail_modal").modal("show");
-				
-			});
-			/*
-			$(".print_t").click(function(){
-				
-				var id_blf = $(this).attr("id_blf");
-				
-				var num_blf = $(this).attr("num_blf");
-				
-				
-				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-											'src="print_blf_t?id_bl='+id_blf+'"></iframe>');
-				
-				$("#title_bl").text("Imprimer BL N° "+num_blf);
-				
-				$("#icone_bl").attr("class","far fa-file-invoice");
-				
-				$("#bl_detail_modal").modal("show");
-				
-			});
-			*/
-			
-			
-			$(".edit").click(function(){
-				
-				var id_blf = $(this).attr("id_blf");
-				
-				var num_blf = $(this).attr("num_blf");
-				
-				
-				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-											'src="edit_blf?id_blf='+id_blf+'"></iframe>');
-				
-				$("#title_bl").text("Modifier BL N° "+num_blf);
-				
-				$("#icone_bl").attr("class","far fa-edit");
-				
-				$("#bl_detail_modal").modal("show");
-				
-			});
-			
-			
 			$("#afficher").click(function(){
 				
 				var start = $("#debut").val();
 				
 				var end = $("#fin").val();
 				
-				if(start=="" || end==""){
+				var clt_rc = $("#rc").val();
+				
+				if(start=="" || end=="" || clt_rc=="0"){
 					
 					$("#title").text("Erreur !!!");
 					$("#icone").attr("class","far fa-exclamation-triangle");
-					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
+					$("#text").html("<span> Veuillez selectionner les dates et un registre commerce !!! <span>");
 					$("#error").modal('show');
 					
 				}
 				else{
 					
 					//console.log("start = "+start+" / end = "+end);
-					window.location.replace("list_blf_no_f?start="+start+"&end="+end);
+					window.location.replace("list_blf_by_rc?start="+start+"&end="+end+"&rc_clt="+clt_rc);
 					
 				}
 				
 			});
 			
-			$("#printAll").click(function(){
+			$("#changeRc").click(function(){
 				
-				var start = $("#debut").val();
+				var c = $("#rc").clone();
 				
-				var end = $("#fin").val();
+				$("#title").text("Changement de Registre commerce ");
+				$("#icone").attr("class","far fa-exchange");
+				c.attr("id", "newRc");
+				$("#text").html(c);
+				c.selectpicker();
+				$("#text").append(" <hr> <div class='d-flex justify-content-center'> <input type='button' id='validateChangeRc' "+
+						"class='btn btn-success' value='Validé' /> </div> ");
+				$("#error").modal('show');
 				
-				if(start=="" || end==""){
-					
-					$("#title").text("Erreur !!!");
-					$("#icone").attr("class","far fa-exclamation-triangle");
-					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
-					$("#error").modal('show');
-					
-				}
-				else{
-					
-					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-												'src="print_blfs_val?start='+start+'&end='+end+'"></iframe>');
-					
-					$("#title_bl").text("Imprimer ");
-					
-					$("#icone_bl").attr("class","far fa-file-invoice");
-					
-					$("#bl_detail_modal").modal("show");
-					
-				}
+				validateChangeRcBls();
+				
+			});
+			
+			$("#changeDate").click(function(){
+				
+				$("#title").text("Changement de Date ");
+				$("#icone").attr("class","far fa-calendar");
+				$("#text").html("<input type='date' id='newDate' class='form-control' />");
+				$("#text").append(" <hr> <div class='d-flex justify-content-center'> <input type='button' id='validateChangeDate' "+
+						"class='btn btn-success' value='Validé' /> </div> ");
+				$("#error").modal('show');
+				
+				validateChangeDate();
 				
 			});
 			
@@ -288,24 +219,25 @@
 			
 			var id_bl;
 			
-			$(".cancel").click(function(){
+			$(".cbox").click(function() {
 				
-				id_bl = $(this).attr("id_bl");
-				var num_bl = $(this).attr("num_bl");
-				var code_client = $(this).attr("code_client");
-				var montant = $(this).attr("montant");
-				var factured = $(this).attr("etat_liv");
-				
-				$("#text_confirmation").html("Etes vous sure d'annuler le Bon de Livraison N°<b>"+num_bl+"</b> avec le monatant <b>"
-												+montant+" DA TTC</b> du client avec le code <b>"+code_client+"</b> ?");
-				
-				$("#confirmation").modal('show');
+				calculate();
 				
 			});
 			
-			$(".cbox").click(function() {
+			$("#select_all").click(function() {
 				
-				console.log($(this).prop("checked"));
+				$(".cbox").prop("checked", true);
+				
+				calculate();
+				
+			});
+			
+			$("#deselect_all").click(function() {
+				
+				$(".cbox").prop("checked", false);
+				
+				calculate();
 				
 			});
 			
@@ -345,20 +277,136 @@
 				});
 				
 				myExcel.generate();
-				/*
-				$(".nbr").each(function(){
-					
-					var s = $(this).text();
-					
-					$(this).text(s.formatMoney(2, '.', ' '));
-					
-				});
-				*/
+				
 			});
 			
 		}); //-------------------------------------------> END Document Ready <-------------------------------------//
 		
+		function calculate(){
+			
+			var quant = 0;
+			
+			var bls = "";
+			
+			$(".cbox:checked").each(function() {
+				
+				bls += $(this).attr("id_bl")+"-";
+				
+				quant += parseFloat($(this).attr("quant")); 
+				
+			});
+			
+			var total_ht = quant * parseFloat($("#pu_general").val());
+			
+			var total_tva = total_ht * ( parseFloat($("#taux_tva_general").val()) / 100);
+			
+			var total_ttc = total_ht + total_tva;
+			
+			$("#quant_general").val(quant.formatMoney(3, '.', ' '));
+			
+			$("#ht_general").val(total_ht.formatMoney(3, '.', ' '));
+			
+			$("#tva_general").val(total_tva.formatMoney(3, '.', ' '));
+			
+			$("#ttc_general").val(total_ttc.formatMoney(3, '.', ' '));
+			
+			$("#bls_f").val(bls);
+			
+		}
 		
+		//-----------------
+		
+		function validateChangeRcBls(){
+			
+			$("#validateChangeRc").click(function(){
+				
+				var blfs = $("#bls_f").val();
+				var id_rc_clt = $("#newRc").val();
+				
+				if(blfs=="" || id_rc_clt=="0"){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner des BLs et un RC !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					$.ajax({
+						url: 'changeRcBls',
+						//type: 'POST',
+						dataType: 'text',
+						data : {
+							rc_clt : id_rc_clt,
+							blfs : blfs
+				        },
+				        success : function(responseText) {
+							
+							if (responseText != "null") {
+
+								$("#title").text("Information !!!");
+								$("#icone").attr("class","far fa-thumbs-up");
+								$("#text").html("<span> Changement effectuée  <span>");
+								$("#error").modal('show');
+								
+							}
+							
+						}
+					});
+					
+				}
+				
+			});
+			
+		}
+		
+		//-----------------
+		
+		function validateChangeDate(){
+			
+			$("#validateChangeDate").click(function(){
+				
+				var blfs = $("#bls_f").val();
+				var date = $("#newDate").val();
+				
+				if(blfs=="" || date==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner des BLs et une Date !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					$.ajax({
+						url: 'changeDateBls',
+						//type: 'POST',
+						dataType: 'text',
+						data : {
+							date : date,
+							blfs : blfs
+				        },
+				        success : function(responseText) {
+							
+							if (responseText != "null") {
+
+								$("#title").text("Information !!!");
+								$("#icone").attr("class","far fa-thumbs-up");
+								$("#text").html("<span> Changement effectuée  <span>");
+								$("#error").modal('show');
+								
+							}
+							
+						}
+					});
+					
+				}
+				
+			});
+			
+		}
 		
 		</script>
 		
@@ -386,7 +434,7 @@
 					
 					<div class="col-md-4 offset-md-4">
 					
-						<h3 class="text-center"> <i class="far fa-clipboard-list-check"></i>  List des Bons de Livraison  </h3> <!-- Non facturé --> 
+						<h3 class="text-center"> <i class="far fa-file-invoice"></i>  Facturation des Bons de livraisons </h3>
 					
 					</div>
 					
@@ -408,10 +456,43 @@
 					
 					<div class="row">
 						
-						<div class="col-md-4 offset-md-1" >
+						<div class="col-md-5 " > <!-- offset-md-1 -->
 					
 							<div class="input-group">
-							
+								
+								<div class="input-group-prepend">
+								
+									<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
+										name="id_rel_rc_clt" id="rc" data-size="5">
+										<option  value="0" >Registre Commerce</option>
+										
+										<option th:each="rc_clt:${rcs_clt}" th:value="${rc_clt.id}" th:text="${rc_clt.registre_commerce.code}" 
+												th:attr="data-subtext=${rc_clt.registre_commerce.nom}+' '+${rc_clt.registre_commerce.prenom},
+												code_clt=${rc_clt.registre_commerce.code}, nom=${rc_clt.registre_commerce.nom}, 
+												prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
+												plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
+												adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id},
+												is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}"
+												th:if="${rc_clt}==${rc_clt_selcted}" selected
+												>
+										</option>
+										
+										<option th:each="rc_clt:${rcs_clt}" th:value="${rc_clt.id}" th:text="${rc_clt.registre_commerce.code}" 
+												th:attr="data-subtext=${rc_clt.registre_commerce.nom}+' '+${rc_clt.registre_commerce.prenom},
+												code_clt=${rc_clt.registre_commerce.code}, nom=${rc_clt.registre_commerce.nom}, 
+												prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
+												plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
+												adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id},
+												is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}"
+												th:unless="${rc_clt}==${rc_clt_selcted}"
+												>
+										</option>
+										
+										
+									</select>
+								
+								</div>
+								
 								<div class="input-group-append">
 									
 									<input id="debut" type="date" name="start" th:value="${start}"  class="form-control date" 
@@ -429,44 +510,89 @@
 							</div>
 							
 						</div>
-						<!--  
-						<div class="col-md-3" >
-							
-							<div class="input-group">
+						
+						<div class="col-md-2" >
 								
-								<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
-									name="id_rel_rc_clt" id="rc" data-size="5">
-									<option  disabled value="" selected>Registre Commerce</option>
-									
-									<option th:each="rc_clt:${rcs_clt}" th:value="${rc_clt.id}" th:text="${rc_clt.registre_commerce.code}" 
-											th:attr="data-subtext=${rc_clt.registre_commerce.nom}+' '+${rc_clt.registre_commerce.prenom},
-											code_clt=${rc_clt.registre_commerce.code}, nom=${rc_clt.registre_commerce.nom}, 
-											prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
-											plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
-											adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id},
-											is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}"
-											>
-									</option>
-									
-								</select>
-								
-								<button id="fct_blf" name="afficher" class="btn btn-dark" type="button">Facturé les BL</button>
+							<button id="fct_blf" name="afficher" class="btn btn-dark" type="button">Facturé les BL Selectioner</button>
 							
-							</div>
 								
 						</div>
-						-->
+						
 						<div class="col-md-1" >
 						
 							<button class="btn btn-dark" id="generate">Excel</button>
 						
 						</div>
 						
-						<div class="col-md-1" >
+						<div class="col-md-2" >
+							
+							<div class="btn-group" role="group" aria-label="Basic example">
+							
+								<button class="btn btn-dark" id="changeRc">Changement RC</button>
+								<button class="btn btn-secondary" id="changeDate">Changement Date</button>
+							
+							</div>
+							
+						</div>
 						
-							<button class="btn btn-dark" id="printAll">Imprimer</button>
+						<div class="col-md-2" >
+						
+							<div class="btn-group" role="group" aria-label="Basic example">
+							  <button type="button" class="btn btn-dark" id="select_all">Sélectionner Tout</button>
+							  <button type="button" class="btn btn-secondary" id="deselect_all">Désélectionner Tout</button>
+							</div>
 						
 						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<div class="row">
+					
+						<div class="col-md-2 ">
+							
+							<label>Quanitité</label>
+							<input type="text" class="form-control" id="quant_general" value="0" disabled>
+						
+						</div>
+						<!--  
+						<div class="col-md-2 ">
+							
+							<label>Prix unitaire</label>
+							<input type="text" class="form-control" id="pu_general" th:value="${price.prix}?: '0'" disabled>
+						
+						</div>
+						
+						<div class="col-md-2 ">
+							
+							<label>Taux TVA (%)</label>
+							<input type="text" class="form-control" id="taux_tva_general" th:value="${price.tva!=null}?${price.tva.taux_tva}:'0'" disabled>	
+						
+						</div>
+						
+						<div class="col-md-2 ">
+							
+							<label>TOTAL HT</label>
+							<input type="text" class="form-control" id="ht_general" value="0" disabled>
+						
+						</div>
+						
+						<div class="col-md-2 ">
+							
+							<label>TOTAL TVA</label>
+							<input type="text" class="form-control" id="tva_general" value="0" disabled>
+						
+						</div>
+						
+						<div class="col-md-2 ">
+							
+							<label>TOTAL TTC</label>
+							<input type="text" class="form-control" id="ttc_general" value="0" disabled>
+						
+						</div>
+						-->
+						<input type="hidden" id="bls_f" name="bls_f">
 						
 					</div>
 					
@@ -484,15 +610,10 @@
 								<th>Client</th>
 								<th >Code </th>
 								<th>RC</th>
-								<th>Mode Reglement</th>
 								<th>Matricule</th>
 								<th>Dépot</th>
 								<th>Qunatite</th>
-								<th>Montant HT</th>
-								<th>Montant TVA</th>
-								<th>Montant TTC</th>
-								<th>Facturé ?</th>
-								<th></th>
+								<th>Selection</th>
 								
 							</tr>
 						
@@ -508,32 +629,15 @@
 								<td th:text="${bl.client.nom}+' '+${bl.client.prenom}"></td>
 								<td th:text="${bl.registre_commerce.code}"></td>
 								<td th:text="${bl.registre_commerce.nom}+' '+${bl.registre_commerce.prenom}"></td>
-								<td th:text="${bl.registre_commerce.mode_paiement.designation}"></td>
 								<td th:text="${bl.matricule}"></td>
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
 									th:text="${bl_info.magasin.name}"></td>	
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
-									th:text="${#numbers.formatDecimal(bl_info.quantite, 2, 'WHITESPACE', 3,'POINT')}"></td>
-								<td th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(bl.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:if="${bl.factured}==TRUE" th:text="Oui"></td>
-								<td th:unless="${bl.factured}==TRUE" th:text="Non"></td>
-								<td style="text-align: center;    width: 10%;"> 
-									 <button type="button" class="btn btn-primary print" th:attr="id_blf=${bl.id},num_blf=${bl.numero}"> 
-															<i class="far fa-print"></i>
-									 </button>
-									 
-									 <button th:if="${edit_blf}==true" type="button" class="btn btn-primary edit" 
-									 	th:attr="id_blf=${bl.id},num_blf=${bl.numero}"> <i class="far fa-edit"></i>
-									 </button>
-									  
-									 <button th:if="${cancel_blf}==true" type="button" class="btn btn-danger cancel" 
-										th:attr="id_bl=${bl.id},num_bl=${bl.numero},
-												 code_client=${bl.registre_commerce.code},etat_liv=${bl.etat_livraison},
-												 montant=${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"> 
-											<i class="far fa-trash"></i>
-									 </button> 
+									th:text="${bl_info.quantite}" id="qunatite">
+								</td>
+									<!-- th:text="${#numbers.formatDecimal(bl_info.quantite, 2, 'WHITESPACE', 3,'POINT')}" -->
+								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}">
+									<input  type="checkbox" th:attr="id_bl=${bl.id}, quant=${bl_info.quantite}" class="cbox form-control"> 
 								</td>
 								
 							</tr>
@@ -543,7 +647,7 @@
 						<tfoot class="thead-dark">
 						
 							<tr>
-							
+								
 								<th></th>
 								<th></th>
 								<th></th>
@@ -552,11 +656,6 @@
 								<th></th>
 								<th></th>
 								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th class="rr"></th>
-								<th class="rr"></th>
 								<th class="rr"></th>
 								<th></th>
 								

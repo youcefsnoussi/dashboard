@@ -54,7 +54,11 @@ public class doc_app {
 	 * 				- cancel_ble => yakder yanuli BL emlpoyée
 	 * 				- facture_av => yakder idir facture avoir
 	 * 				--------------------------------------------------------------------------------
-	 * 	
+	 * 				- cancel_blq => annuler bon_livraison_facture
+	 * 				- edit_blq => edit bon_livraison_facture
+	 * 				- cancel_bt => annuler bon_transfert
+	 * 				- fact_blfs => facturé les bls
+	 * 				--------------------------------------------------------------------------------
 	 * 				PS : -> PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
 	 * 					 
 	 * 					 -> Table registre_commerce column multiple_bon_livraison if true => client yedi b BL omba3ed ifacturiw kemel les bl li dahom

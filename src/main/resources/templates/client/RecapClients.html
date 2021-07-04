@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title> </title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\js_additional\buttons.dataTables.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\dataTables.buttons.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.html5.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.print.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\pdfmake.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\vfs_fonts.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" >
+		
+		
+		$(document).ready(function() {
+			
+			
+			
+			var h = window.innerHeight;
+			
+			var datatable_config = {
+					"language": {
+				            "url": "resources/Plugins/datatable/lang/French.json"
+				    },
+					//"ordering": true,
+			    	"bPaginate": false,
+					"scrollY":h-350,
+					"scrollX": "auto",
+			        "deferRender": true,
+	                       
+			        initComplete: function () {/*
+			            this.api().columns([0]).every( function () {
+			                var column = this;
+			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                        var val = $.fn.dataTable.util.escapeRegex(
+			                            $(this).val()
+			                        );
+			 
+			                        column
+			                            .search( val ? '^'+val+'$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option value="'+d+'">'+d+'</option>' )
+			                } );
+			            } );*/
+			        },
+					 drawCallback: function () {
+						
+					      var api = this.api();
+					      /*
+					      $( api.column( 2, {page:'current'} ).footer() ).html(
+					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					      $( api.column( 3, {page:'current'} ).footer() ).html(
+					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      */
+					 },
+		    };
+		 		
+		 	var table = $('#table').DataTable(datatable_config);
+			
+			$("#add_art").click(function(){
+				
+				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="add_art"></iframe>');
+				
+				$("#title").text("Nouveau Article");
+				
+				$("#icone").attr("class","far fa-bread-slice");
+				             
+				$("#new_art").modal("show");
+				
+			});
+			
+			$("#add_redux_prix").click(function(){ 
+				
+				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="new_reduction"></iframe>');
+				
+				$("#title").text("Nouvelle Réduction");
+				
+				$("#icone").attr("class","far fa-user-tag");
+				             
+				$("#new_art").modal("show");
+				
+			});
+			
+			$(".edit").click(function(){
+				
+				var id_art = $(this).attr("id_art");
+				
+				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="edit_art?id_art='+id_art+' "></iframe>');
+				
+				$("#title").text("Détail Article");
+				
+				$("#icone").attr("class","far fa-file-edit");
+				
+				$("#new_art").modal("show");
+				
+			});
+			
+			$("#closee").click(function () {
+				
+				location.reload();
+				
+			})
+			
+			/////////////////------------- END ----------------- 
+		});
+		
+		</script>
+		
+		<style type="text/css">
+		
+			.cc{
+			
+				text-align: center;
+			
+			}
+		
+		</style>
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100">
+		
+		<div class="card">
+		
+			
+			<h3 class="card-header  text-center"> <i class="far fa-list-alt"></i>  List des Articles </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					
+						<thead class="thead-dark">
+							
+							<tr>
+							
+								<th class="cc" colspan="1">Client Pere</th>
+								<th class="cc" colspan="4">Client Fils</th>
+							
+							</tr>
+							
+							<tr>
+								
+								<th class="cc">Client </th>
+								<th class="cc">Code RC</th>
+								<th class="cc">RC</th>
+								<th class="cc">Date Création</th>
+								<th class="cc">Date Dérniere Facture</th>
+								
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="val : ${info}">
+							
+								<td th:text="${val.client.nom}" rowspan="1"></td>
+								<td>
+								
+									<table class="table table-stripped">
+									
+										<tr th:each="rc : ${val.rcs}">
+										
+											<td th:text="${rc.code}"></td>
+										
+										</tr>
+									
+									</table>
+								
+								</td>
+								<td>
+								
+									<table>
+									
+										<tr th:each="rc : ${val.rcs}">
+										
+											<td th:text="${rc.nom}+' '+${rc.prenom}"></td>
+										
+										</tr>
+									
+									</table>
+								
+								</td>
+								<td>
+								
+									<table>
+									
+										<tr th:each="rc : ${val.rcs}">
+										
+											<td th:if="${rc.comune}!=null" th:text="${rc.comune}"></td>
+											<td th:unless="${rc.comune}!=null" >-</td>
+										
+										</tr>
+									
+									</table>
+								
+								</td>
+								<td>
+								
+									<table>
+									
+										<tr th:each="rc : ${val.rcs}">
+										
+											<td th:if="${rc.date_last_facture}!=null" th:text="${rc.date_last_facture}"></td>
+											<td th:unless="${rc.date_last_facture}!=null" >-</td>
+										
+										</tr>
+									
+									</table>
+								
+								</td>
+							</tr>
+							<!--  
+							<tr>
+							
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							
+							</tr>
+							
+							  
+							<tr th:each="val : ${info}" th:each="rc : ${val.rcs}">
+							
+								<td th:text="${rc.code}" ></td>
+								<td th:text="${rc.nom}" ></td>
+								<td th:text="${rc.comune}" ></td>
+								<td th:text="${rc.date_last_facture}" ></td>
+								
+							</tr>
+							-->
+						</tbody>
+						
+					</table>
+				
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<div id="new_art" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i class="far fa-user-alt" style="font-size:30px;margin-right:10px;" id="icone"></i> <h5 class="modal-title" id="title"> Nouveau Client </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
+	        
+	         <!--  <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>  -->
+	        
+	      </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" id="closee" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	<!-- <tr th:each="art, i:${articles}" >
+								
+								<td th:text="${art.code}" class="cc"></td>
+								<td th:text="${art.libelle}" class="cc"></td>
+								
+								<td th:each="prix:${list_prix[i.index]}"  class="cc">
+									<span th:if="${prix.prix}!=(-1)" th:text="${prix.prix}"></span>
+									<span th:unless="${prix.prix}!=(-1)" th:text="'/'"></span> 
+								</td>
+								
+							</tr> -->
+	
+	
+</body>
+</html>

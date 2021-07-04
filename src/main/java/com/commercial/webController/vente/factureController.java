@@ -239,42 +239,45 @@ public class factureController {
 				clt_rcRepo.save(clt_rc);clt_rcRepo.flush();
 				
 				//--------------------------------------insert to facture table ------
-				
+				/*
 				facture fact = new facture(clt, rc, clt_rc, today, time, numero_fact, 
-										montant_ht, tva, matricule_camion, montant_ttc, montant_tva, ""
+										montant_ht, tva, matricule_camion, montant_ttc, montant_tva, 0, montant_ht, ""
 										, null, mode_payRepo.getOne(id_mode_reg), user, false, montant_ttc, true, false, pourc_reduction);
 				
 				//new facture(client, registre_commerce, client_registrecommerce, date, time, numero, montant_ht, tva, matricule_camion, montant_ttc, montant_tva, link_pdf, bon_livraison, mode_paiement, users, etat_sold, sold_rest)
 				
 				factRepo.save(fact);fact_detRepo.flush();
-				
+				*/
 				//------------------------------------------------- insert details facture table
-				
+				/*
 				for(int i=0;i<article.length;i++) {
 					
 					if(quantite[i]!=0) {
 						
-						facture_detail fact_d = new facture_detail(fact, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], tva_art[i],
-								montant_tva_art[i], 0, umRepo.getOne(id_unite_mesure[i]));
+						new facture_detail(facture, article, quantite, prix_u_ht, montant_ht, tva, montant_tva, montant_ttc, pourcentage_remise,
+								montant_remise, montant_ht_net, unite_mesure)
+						
+						facture_detail fact_d = new facture_detail(fact, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i],
+								tva_art[i], montant_tva_art[i], 0, umRepo.getOne(id_unite_mesure[i]));
 						
 						fact_detRepo.save(fact_d);fact_detRepo.flush();
 						
 					}
 					
 				}
-				
+				*/
 				//------------------------------------------------ insert table regroupment
-				
+				/*
 				prof_cmd_bl_fact_client_rc_avoir grp = new prof_cmd_bl_fact_client_rc_avoir(clt_rc, null, null, null, fact, null);
 				
 				grpRepo.save(grp); grpRepo.flush();
-				
+				*/
 				//------------------------------------------------ insert into mouvement table
-				
+				/*
 				mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture", fact.getId(), gtd.get_date(), gtd.get_time(), "", sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
 				
 				mvmRepo.save(mvm);mvmRepo.flush();
-				
+				*/
 				//------------------------------------------------ Create QR Code img
 				
 				

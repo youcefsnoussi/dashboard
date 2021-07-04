@@ -1,4 +1,4 @@
-package com.commercial.restController.article;
+package com.commercial.restController;
 
 import java.io.IOException;
 import java.text.ParseException;

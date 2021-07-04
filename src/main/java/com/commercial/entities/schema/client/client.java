@@ -39,7 +39,7 @@ public class client implements Serializable{
 	
 	private String fax;
 	
-	@Column(unique = true)
+	//@Column(unique = true)
 	private String code;
 	
 	private String date_creation;

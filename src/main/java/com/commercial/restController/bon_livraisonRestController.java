@@ -1,7 +1,9 @@
-package com.commercial.restController.article;
+package com.commercial.restController;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.client.registre_commerce;
+import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_employee;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture;
@@ -19,6 +23,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livrais
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfertRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.track_operations;
 
 @RestController
@@ -94,6 +99,9 @@ public class bon_livraisonRestController {
 	@Autowired
 	bon_livraison_factureRepository blfRepo;
 	
+	@Autowired
+	client_registreCommerceRepository clt_rcRepo;
+	
 	@RequestMapping(value="/cancel_blf")
 	public String cancel_blf(
 		@RequestParam("id_bl") long id_blf,
@@ -112,6 +120,86 @@ public class bon_livraisonRestController {
 			trk.add_track("bon_livraison_facture", "Annulation Bon de Livraison", blf.getId(), user);
 			
 		}
+		
+		return ret;
+		
+	}
+	
+	//------------------------------
+	
+	@RequestMapping(value="/changeRcBls")
+	public String changeRcBls(
+		@RequestParam("rc_clt") long rc_clt,
+		@RequestParam("blfs") String blfs,
+		@SessionAttribute("user") users user) throws IOException, ParseException{
+		
+		String ret  = "change";
+		
+		registre_commerce newRc = clt_rcRepo.getOne(rc_clt).getRegistre_commerce();
+		
+		String [] ids = blfs.split("-");
+		
+		List<Long> idsBlfs = new ArrayList<Long>();
+		
+		if(!blfs.isEmpty()) {
+			
+			for (String str : ids) {
+				
+				idsBlfs.add(Long.parseLong(str));
+				
+			}
+			
+		}
+		
+		idsBlfs.forEach(l ->{
+			
+			bon_livraison_facture blf = blfRepo.getOne(l);
+			
+			blf.setRegistre_commerce(newRc);
+			
+			blfRepo.save(blf); blfRepo.flush();
+			
+		});
+		
+		return ret;
+		
+	}
+	
+	//-------------------------------- 
+	
+	@RequestMapping(value="/changeDateBls")
+	public String changeDateBls(
+		@RequestParam("date") String date,
+		@RequestParam("blfs") String blfs,
+		@SessionAttribute("user") users user) throws IOException, ParseException{
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		String ret  = "change";
+		
+		String [] ids = blfs.split("-");
+		
+		List<Long> idsBlfs = new ArrayList<Long>();
+		
+		if(!blfs.isEmpty()) {
+			
+			for (String str : ids) {
+				
+				idsBlfs.add(Long.parseLong(str));
+				
+			}
+			
+		}
+		
+		idsBlfs.forEach(l ->{
+			
+			bon_livraison_facture blf = blfRepo.getOne(l);
+			
+			blf.setDate(conv.convertion_InputDate_to_MyDate(date));
+			
+			blfRepo.save(blf); blfRepo.flush();
+			
+		});
 		
 		return ret;
 		

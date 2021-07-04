@@ -35,6 +35,16 @@ public interface bon_livraison_factureRepository extends JpaRepository<bon_livra
 	
 	@Query( " FROM bon_livraison_facture blf "
 			
+		  + " WHERE blf.factured = 'True' "
+		  
+		  + " AND CAST(date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date) ")
+		 
+	public List<bon_livraison_facture> get_blf_factured_date(@Param("start") String start, @Param("end") String end);
+	
+	//-----------------------------------------------------------
+	
+	@Query( " FROM bon_livraison_facture blf "
+			
 		  + " WHERE blf.cancel = 'FALSE' AND blf.factured = 'FALSE' "
 		  
 		  + " AND blf.registre_commerce = :rc "

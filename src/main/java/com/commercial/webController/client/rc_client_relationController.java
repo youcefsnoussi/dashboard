@@ -1,10 +1,14 @@
 package com.commercial.webController.client;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +23,7 @@ import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
+import com.commercial.entities.schema.dynamic_data.repository.track_operation_userRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.track_operations;
@@ -36,6 +41,9 @@ public class rc_client_relationController {
 	
 	@Autowired
 	client_registreCommerceRepository crcRepo;
+	
+	@Autowired
+	track_operation_userRepository trackRepo;
 	
 	@Autowired
 	track_operations trk;
@@ -144,5 +152,44 @@ public class rc_client_relationController {
 		
 	}
 	
+	@RequestMapping(value="/recap_clients",method=RequestMethod.GET)
+	public String recap_clients(HttpServletRequest req,
+		Model model,
+		@SessionAttribute("user") users user){
+		
+		List<Map<String, Object>> values = new ArrayList<>();
+		
+		List<client> clts = cltRepo.findAll(Sort.by(Sort.Direction.ASC, "nom"));
+		
+		for (client clt : clts) {
+			
+			List<registre_commerce> rcs = crcRepo.rc_by_client(clt);
+			
+			for (registre_commerce rc : rcs) {
+				
+				String date_creataion = trackRepo.get_date_creation_rc(rc.getId(), "Ajout d'un RC");
+				
+				rc.setComune(date_creataion);
+				
+			}
+			
+			Map<String, Object> map = new HashMap<String, Object>();
+			
+			map.put("client", clt);
+			map.put("rcs", rcs);
+			
+			//System.out.println(map);
+			
+			values.add(map);
+			
+		}
+		
+		//System.out.println(values);
+		
+		model.addAttribute("info", values);
+		
+		return "client/RecapClients";
+		
+	}
 	
 }
