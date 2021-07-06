@@ -36,7 +36,7 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 			
 		  + " WHERE mvm.registre_commerce = :rc "
 		  
-		  + " ORDER BY mvm.id ASC ")
+		  + " ORDER BY CAST(mvm.date AS date), mvm.id ASC ")
 	
 	public List<mouvement>  mouvement_by_rc(@Param("rc") registre_commerce rc); //_intervall
 	
@@ -46,7 +46,7 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 			
 		  + " WHERE mvm.registre_commerce = :rc "
 		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end) "
-		  + " ORDER BY mvm.id ASC")
+		  + " ORDER BY CAST(mvm.date AS date), mvm.id ASC")
 	
 	public List<mouvement>  mouvement_by_rc_intervall(@Param("rc") registre_commerce rc,@Param("start") Date start, @Param("end") Date end); 
 	
@@ -56,7 +56,7 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 			
 		  + " WHERE mvm.registre_commerce = :rc "
 		  + " AND CAST(date as date) BETWEEN CAST(:start as date) AND CAST(:end as date)"
-		  + " ORDER BY mvm.id ASC")
+		  + " ORDER BY CAST(mvm.date AS date), mvm.id ASC")
 	
 	public List<mouvement> sold_debut_periode(@Param("rc") registre_commerce rc, @Param("start") String start, @Param("end") String end);
 	
@@ -66,7 +66,7 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 			
 		  + " WHERE mvm.registre_commerce = :rc "
 		  + " AND CAST(date as date) BETWEEN CAST(:start as date) AND CAST(:end as date)"
-		  + " ORDER BY mvm.id DESC")
+		  + " ORDER BY CAST(mvm.date AS date), mvm.id DESC")
 	
 	public List<mouvement> sold_fin_periode(@Param("rc") registre_commerce rc, @Param("start") String start, @Param("end") String end);
 	
