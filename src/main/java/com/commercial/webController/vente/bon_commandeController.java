@@ -137,9 +137,13 @@ public class bon_commandeController {
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
+		get_time_date gtd = new get_time_date();
+		
 		String ret = "vente/bon_commande";
 		
-		model.addAttribute("clients", clientRepo.client_active_only());
+		//model.addAttribute("clients", clientRepo.client_active_only());
+		
+		model.addAttribute("clients", clt_rcRepo.ListRCwithCLIENT_active(gtd.get_date()));
 		
 		//model.addAttribute("articles", artRepo.findAll());
 		
@@ -201,7 +205,8 @@ public class bon_commandeController {
 				
 				String date_fin = ccs.convertion_InputDate_to_MyDate(date_f);
 				
-				BonCommande bon_cmd = new BonCommande(today, time, date_debut, date_fin, numero_bon_cmd, clt_rc, "", user);
+				BonCommande bon_cmd = new BonCommande(today, time, date_debut, date_fin, numero_bon_cmd, clt_rc.getClient(),
+														clt_rc.getRegistre_commerce(), "", user);
 				
 				bon_cmdRepo.save(bon_cmd);
 				bon_cmdRepo.flush();

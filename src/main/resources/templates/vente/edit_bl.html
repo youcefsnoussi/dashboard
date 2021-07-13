@@ -411,8 +411,7 @@
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},
 												 tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
-												 th:text="${art.article.produit.designation}+' '+${art.article.emballage_produit.nom_emballage}+' '+
-												 ${art.article.pesage_produit.pesage}" ></option>
+												 th:text="${art.article.libelle}" ></option>
 									 </select> 
 								</td>
 								

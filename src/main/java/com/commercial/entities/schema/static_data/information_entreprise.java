@@ -56,6 +56,8 @@ public class information_entreprise implements Serializable{
 	
 	private String chemain_logo = "";
 	
+	private String BankAccounts;
+	
 	public information_entreprise() {
 		// TODO Auto-generated constructor stub
 	}
@@ -219,6 +221,12 @@ public class information_entreprise implements Serializable{
 		this.chemain_logo = chemain_logo;
 	}
 
-	
+	public String getBankAccounts() {
+		return BankAccounts;
+	}
+
+	public void setBankAccounts(String bankAccounts) {
+		BankAccounts = bankAccounts;
+	}
 
 }

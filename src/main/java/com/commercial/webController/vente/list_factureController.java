@@ -264,7 +264,9 @@ public class list_factureController {
 		
 		String pdf = "";
 		
-		pdf = gd.generate_Fact(fact, qr_code);
+		//pdf = gd.generate_Fact(fact, qr_code);
+		
+		pdf = gd.generate_Fact_A4(fact, qr_code);
 			
 		return "redirect:/display_pdf?file="+pdf;
 		

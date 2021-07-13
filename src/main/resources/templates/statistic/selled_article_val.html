@@ -114,6 +114,8 @@
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
 			
+		 	var table1 = $('#table1').DataTable(datatable_config);
+		 	
 			$("#afficher").click(function(){
 				
 				var start = $("#debut").val();
@@ -268,62 +270,146 @@
 					</div>
 					<hr>
 					
-					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
 					
-						<thead class="thead-dark">
+					  <li class="nav-item">
+					    <a class="nav-link active" data-toggle="tab" href="#Quant_Fact" role="tab" aria-controls="info" 
+					    	aria-selected="true">Quantité Facturé</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#Quant_BL" role="tab" aria-controls="info" aria-selected="true">
+					    	Quantité Bls</a>
+					  </li>
+					
+					</ul>
+					
+					<div class="tab-content" id="nav-tabContent">
 						
-							<tr>
+						<div class="tab-pane fade show active" id="Quant_Fact" role="tabpanel" aria-labelledby="nav_Quant_Fact">
 							
-								<th class="cc" >Code</th>
-								<th>Category</th>
-								<th>Désignation</th>
-								<th class="cc" >Quantité (Q)</th>
-								<th class="cc" >Prix U</th>
-								<th class="rr" >Montant HT (DA)</th>
-								<th class="rr" >Montant TVA (DA)</th>
-								<th class="rr" >Montant TTC (DA)</th>
-								
-							</tr>
-						
-						</thead>
-						
-						<tbody>
-						
-							<tr th:each="lst:${list}" >
-								
-								<td class="cc"  th:text="${lst[0]}"></td>
-								<td th:text="${lst[1]}+' '+${lst[2]}"></td>
-								<td th:text="${lst[3]}"></td>
-								
-								<td class="cc"  th:text="${#numbers.formatDecimal(lst[4], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td class="rr"  th:text="${#numbers.formatDecimal(lst[5], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td class="rr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td class="rr"  th:text="${#numbers.formatDecimal(lst[7], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td class="rr"  th:text="${#numbers.formatDecimal(lst[8], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								
-							</tr>
-						
-						</tbody>
-						
-						<tfoot class="thead-dark">
+							<br>
+							<table id="table" class="table table-bordered table-hover" style="width:100%">
 							
-							<tr>
+								<thead class="thead-dark">
 								
-								<th class="cc" ></th>
-								<th></th>
-								<th></th>
-								<th class="cc" ></th>
-								<th class="cc" ></th>
-								<th class="rr" ></th>
-								<th class="rr" ></th>
-								<th class="rr" ></th>
+									<tr>
+									
+										<th class="cc" >Code</th>
+										<th>Category</th>
+										<th>Désignation</th>
+										<th class="cc" >Quantité (Q)</th>
+										<th class="cc" >Prix U</th>
+										<th class="rr" >Montant HT (DA)</th>
+										<th class="rr" >Montant TVA (DA)</th>
+										<th class="rr" >Montant TTC (DA)</th>
+										
+									</tr>
 								
-							</tr>
+								</thead>
+								
+								<tbody>
+								
+									<tr th:each="lst:${list}" >
+										
+										<td class="cc"  th:text="${lst[0]}"></td>
+										<td th:text="${lst[1]}+' '+${lst[2]}"></td>
+										<td th:text="${lst[3]}"></td>
+										
+										<td class="cc"  th:text="${#numbers.formatDecimal(lst[4], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[5], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[7], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[8], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										
+									</tr>
+								
+								</tbody>
+								
+								<tfoot class="thead-dark">
+									
+									<tr>
+										
+										<th class="cc" ></th>
+										<th></th>
+										<th></th>
+										<th class="cc" ></th>
+										<th class="cc" ></th>
+										<th class="rr" ></th>
+										<th class="rr" ></th>
+										<th class="rr" ></th>
+										
+									</tr>
+									
+								</tfoot>
+								
+							</table>
 							
-						</tfoot>
+						</div>
 						
-					</table>
-				
+						<div class="tab-pane fade" id="Quant_BL" role="tabpanel" aria-labelledby="nav_Quant_BL">
+							
+							<br>
+							<table id="table1" class="table table-bordered table-hover" style="width:100%">
+							
+								<thead class="thead-dark">
+								
+									<tr>
+									
+										<th class="cc" >Code</th>
+										<th>Category</th>
+										<th>Désignation</th>
+										<th class="cc" >Quantité (Q)</th>
+										<th class="cc" >Prix U</th>
+										<th class="rr" >Montant HT (DA)</th>
+										<th class="rr" >Montant TVA (DA)</th>
+										<th class="rr" >Montant TTC (DA)</th>
+										
+									</tr>
+								
+								</thead>
+								
+								<tbody>
+								
+									<tr th:each="lst:${list1}" >
+										
+										<td class="cc"  th:text="${lst[0]}"></td>
+										<td th:text="${lst[1]}+' '+${lst[2]}"></td>
+										<td th:text="${lst[3]}"></td>
+										
+										<td class="cc"  th:text="${#numbers.formatDecimal(lst[4], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[5], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[7], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[8], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										
+									</tr>
+								
+								</tbody>
+								
+								<tfoot class="thead-dark">
+									
+									<tr>
+										
+										<th class="cc" ></th>
+										<th></th>
+										<th></th>
+										<th class="cc" ></th>
+										<th class="cc" ></th>
+										<th class="rr" ></th>
+										<th class="rr" ></th>
+										<th class="rr" ></th>
+										
+									</tr>
+									
+								</tfoot>
+								
+							</table>
+						
+						</div>
+						
+					</div>
+					
 				</div>
 			
 			</div>

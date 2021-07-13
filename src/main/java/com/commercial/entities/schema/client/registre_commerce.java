@@ -90,6 +90,8 @@ public class registre_commerce implements Serializable{
 	 @Column(columnDefinition="boolean default false")
 	 private boolean multiple_bon_livraison;
 	 
+	 private String ArticleLoieExoneration;
+	 
 	public registre_commerce() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -326,6 +328,14 @@ public class registre_commerce implements Serializable{
 
 	public void setMultiple_bon_livraison(boolean multiple_bon_livraison) {
 		this.multiple_bon_livraison = multiple_bon_livraison;
+	}
+
+	public String getArticleLoieExoneration() {
+		return ArticleLoieExoneration;
+	}
+
+	public void setArticleLoieExoneration(String articleLoieExoneration) {
+		ArticleLoieExoneration = articleLoieExoneration;
 	}
 	 
 	
