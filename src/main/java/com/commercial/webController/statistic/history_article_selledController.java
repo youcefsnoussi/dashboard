@@ -98,12 +98,16 @@ public class history_article_selledController {
 		
 		List <Object[]> list = new ArrayList<Object[]>();
 		
+		List <Object[]> list1 = new ArrayList<Object[]>();
+		
 		//System.out.println("start = "+date_debut+" / end = "+date_fin);
 		
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
 			list = fact_detRepo.get_quantite_sold_val_fact(gtd.get_date(), gtd.get_date());
 			list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av(gtd.get_date(), gtd.get_date()));
+			
+			list1 = fact_detRepo.get_quantite_sold_val_bl(gtd.get_date(), gtd.get_date());
 			
 			date_debut = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
@@ -117,6 +121,9 @@ public class history_article_selledController {
 			list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av(conv.convertion_InputDate_to_MyDate(date_debut), 
 					conv.convertion_InputDate_to_MyDate(date_fin)));
 			
+			list1 = fact_detRepo.get_quantite_sold_val_bl(conv.convertion_InputDate_to_MyDate(date_debut), 
+					conv.convertion_InputDate_to_MyDate(date_fin));
+			
 		}
 		
 		model.addAttribute("start", date_debut);
@@ -125,6 +132,7 @@ public class history_article_selledController {
 		
 		model.addAttribute("list", list);
 		
+		model.addAttribute("list1", list1);
 		
 		return ret;
 		

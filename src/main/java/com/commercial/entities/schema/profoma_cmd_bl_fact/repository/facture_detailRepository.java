@@ -57,6 +57,28 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 	
 	//----------------------------------------------------------------------
 	
+	@Query( " SELECT fct_d.article.code, fct_d.article.produit.sous_category_produit.category_produit.nom_category, "+
+			
+			" fct_d.article.produit.sous_category_produit.nom_sous_category, "+
+			
+			" fct_d.article.libelle, "+
+			
+			" SUM(quantite), prix_u_ht, SUM(montant_ht), SUM(montant_tva), SUM(montant_ttc)" + 
+			
+			" FROM bon_livraison_facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.bon_livraison_facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"+
+			
+			" AND fct_d.bon_livraison_facture.factured = 'false' AND fct_d.bon_livraison_facture.cancel = 'false' " + 
+			
+			" GROUP BY code, nom_category, nom_sous_category, libelle, prix_u_ht")
+		 
+	public List<Object[]> get_quantite_sold_val_bl(@Param("start") String start, @Param("end") String end);
+	
+	
+	
+	//----------------------------------------------------------------------
+	
 	@Query( " SELECT fct_d.article.code, fct_d.article.libelle, "+
 			
 			" SUM(quantite), SUM(montant_ht), SUM(montant_tva), SUM(montant_ttc)" + 

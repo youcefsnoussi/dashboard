@@ -364,8 +364,6 @@ public class bon_livraison_factureController {
 		
 		blfs.forEach(blf -> {
 			
-			//System.out.println("quant -> "+blfdRepo.get_detail_by_blf(blf).get(0).getQuantite());
-			
 			blfs_details.add(blfdRepo.get_detail_by_blf(blf).get(0));
 			
 		});

@@ -285,7 +285,7 @@ public class generate_Doc {
 				mp.put("user", fact.getUsers().getMatricule());
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", fact.getDate());
-				//mp.put("mode_reg", fact.getMode_paiement().getDesignation());
+				mp.put("ArticleLoieExoneration", fact.getRegistre_commerce().getArticleLoieExoneration());
 				
 				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
@@ -420,20 +420,13 @@ public class generate_Doc {
 				
 				if(fact.getPrinted()==false) {
 					
-					jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture.jrxml");
-					
 					fact.setPrinted(true);
 					//------------------------------------------- hedi li tred facture Duplicata
 					factRepo.save(fact);factRepo.flush();
 					
 				}
-				else {
-					
-					//jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture_dup.jrxml"); //--- JRXML duplicata
-					
-					jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture.jrxml");
-					
-				}
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture.jrxml");
 				
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 				
@@ -487,8 +480,9 @@ public class generate_Doc {
 				mp.put("user", fact.getUsers().getMatricule());
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", fact.getDate());
-				//mp.put("mode_pay", fact.getMode_paiement().getDesignation());
-				//mp.put("type_reg", fact.getRegistre_commerce().getType_reglement().getDesignation());
+				mp.put("ArticleLoieExoneration", fact.getRegistre_commerce().getArticleLoieExoneration());
+				mp.put("time", fact.getTime());
+				mp.put("user", fact.getUsers().getMatricule());
 				
 				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
@@ -508,9 +502,12 @@ public class generate_Doc {
 				mp.put("capitale", df.format(infoeRepo.getOne((long)1 ).getCapitale()) );
 				mp.put("adresse", infoeRepo.getOne((long)1 ).getAdresse_facturation() );
 				mp.put("tel", infoeRepo.getOne((long)1 ).getTelephone() );
+				mp.put("fax", infoeRepo.getOne((long)1 ).getFax() );
 				mp.put("num_rc", infoeRepo.getOne((long)1 ).getNum_rc() );
 				mp.put("num_art", infoeRepo.getOne((long)1 ).getNum_art() );
 				mp.put("num_nif", infoeRepo.getOne((long)1 ).getNum_nif() );
+				mp.put("num_nis", infoeRepo.getOne((long)1 ).getNum_nis() );
+				mp.put("BankAccounts", infoeRepo.getOne((long)1 ).getBankAccounts() );
 				
 				mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
 				
@@ -644,8 +641,15 @@ public class generate_Doc {
 				
 				mp.put("cumule_tva", cumule_tva);
 				
-				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture_A4.jrxml");
+				if(fact.getPrinted()==false) {
 					
+					fact.setPrinted(true);
+					//------------------------------------------- hedi li tred facture Duplicata
+					factRepo.save(fact);factRepo.flush();
+					
+				}
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture_A4.jrxml");
 				
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 				
@@ -1738,6 +1742,8 @@ public class generate_Doc {
 				mp.put("date", blf.getDate());
 				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation());
 				mp.put("chauffeur", blf.getChauffeur());
+				mp.put("user", blf.getUsers().getMatricule());
+				mp.put("time", blf.getTime());
 				
 				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				

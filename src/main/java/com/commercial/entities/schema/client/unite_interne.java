@@ -39,7 +39,7 @@ public class unite_interne implements Serializable{
 	
 	private String adresse;
 	private String comune;
-	 
+	
 	@ManyToOne
 	@JoinColumn(name = "wilaya")
 	private wilaya wilaya;

@@ -11,7 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
+import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.user_menu.users;
 
 @Entity
@@ -35,8 +37,12 @@ public class BonCommande implements Serializable {
 	private String numero;
 	
 	@ManyToOne
-	@JoinColumn(name = "client_registrecommerce")
-	private client_registreCommerce client_registrecommerce;
+	@JoinColumn(name = "client")
+	private client client;
+	
+	@ManyToOne
+	@JoinColumn(name = "registre_commerce")
+	private registre_commerce registre_commerce;
 	
 	private String image;
 	
@@ -49,7 +55,8 @@ public class BonCommande implements Serializable {
 	}
 
 	public BonCommande(String date_insert, String time, String date_debut, String date_fin, String numero,
-			client_registreCommerce client_registrecommerce, String image,
+			com.commercial.entities.schema.client.client client,
+			com.commercial.entities.schema.client.registre_commerce registre_commerce, String image,
 			com.commercial.entities.schema.user_menu.users users) {
 		super();
 		this.date_insert = date_insert;
@@ -57,7 +64,8 @@ public class BonCommande implements Serializable {
 		this.date_debut = date_debut;
 		this.date_fin = date_fin;
 		this.numero = numero;
-		this.client_registrecommerce = client_registrecommerce;
+		this.client = client;
+		this.registre_commerce = registre_commerce;
 		this.image = image;
 		this.users = users;
 	}
@@ -110,12 +118,20 @@ public class BonCommande implements Serializable {
 		this.numero = numero;
 	}
 
-	public client_registreCommerce getClient_registrecommerce() {
-		return client_registrecommerce;
+	public client getClient() {
+		return client;
 	}
 
-	public void setClient_registrecommerce(client_registreCommerce client_registrecommerce) {
-		this.client_registrecommerce = client_registrecommerce;
+	public void setClient(client client) {
+		this.client = client;
+	}
+
+	public registre_commerce getRegistre_commerce() {
+		return registre_commerce;
+	}
+
+	public void setRegistre_commerce(registre_commerce registre_commerce) {
+		this.registre_commerce = registre_commerce;
 	}
 
 	public String getImage() {
@@ -134,7 +150,4 @@ public class BonCommande implements Serializable {
 		this.users = users;
 	}
 
-	
-	
-	
 }
