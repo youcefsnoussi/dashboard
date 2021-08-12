@@ -221,9 +221,7 @@
 				
 				var url = $(this).attr("src");
 				
-				$("#img_preview").attr("src",url);
 				
-				$("#img_display").modal('show');
 				
 			});
 			
@@ -237,25 +235,52 @@
 				var montant = $(this).attr("montant");
 				var num_piece = $(this).attr("num_piece");
 				
-				
-				
 				$("#text_confirmation").html("Etes vous sure d'annuler le paiement N°<b>"+num_piece+"</b> avec le monatant <b>"+montant+" DA</b>"+ 
 												" du client <b>"+nom_client+"</b> avec le code <b>"+code_client+"</b> ?");
 				
 				$("#confirmation").modal('show');
 				
-				/*
-				
-				*/
 			})
+			
+			$(".edit").click(function(){
+				
+				var id_pay = $(this).attr("id_payment");
+				
+				var num_pay = $(this).attr("num_piece");
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" '+
+						'frameborder="0" src="edit_payment/'+id_pay+'"></iframe>');
+				
+				$("#title_pay").text("Modification Paiement ID : "+id_pay+" avec N° "+num_pay);
+				
+				$("#icone_pay").attr("class","far fa-edit");
+				
+				$("#new_payment_modal").modal("show");
+				
+			});
 			
 			$(".add_img").click(function(){
 			
 				var id_pay = $(this).attr("id_payment");
 				
-				$("#id-payment").val(id_pay);
+				var path_pay = $(this).attr("path_img");
 				
-				$("#add_image").modal('show');
+				console.log("->"+path_pay)
+				
+				if(typeof path_pay === "undefined"){
+					
+					$("#id-payment").val(id_pay);
+					
+					$("#add_image").modal('show');
+					
+				}
+				else{
+					
+					$("#img_preview").attr("src","/display_img?link="+path_pay);
+					
+					$("#img_display").modal('show');
+					
+				}
 				
 			})
 			
@@ -471,7 +496,7 @@
 					
 						<thead class="thead-dark">
 							
-							<tr>
+							<tr style="background-color: rgb(52, 58, 64);color: white;">
 							
 								<td colspan="12" style="text-align: center">Commercial</td>
 								<td colspan="2" style="text-align: center">Comptabilité</td>
@@ -480,17 +505,17 @@
 							
 							<tr>
 								<th width="5%">ID</th>
-								<th width="5%">Client</th>
+								<th width="10%">Client</th>
 								<th width="5%">Code RC</th>
-								<th width="40%">RC</th>
+								<th width="20%">RC</th>
 								<th width="10%">Montant</th>
 								<th>Mode de paiement</th>
 								<th>Banque</th>
 								<th>Date piece</th>
 								<th>Date Saisie</th>
 								<th>N° de la piece</th>
-								<th>Image</th>
-								<th>Annuler</th>
+								<th width="20%">Observation</th>
+								<th width="20%">Opération</th>
 								<th>Vérification</th>
 								<th>Etat</th>
 							</tr>
@@ -512,23 +537,29 @@
 								<td th:text="${pay.date}"></td>
 								<td th:text="${pay.date_saisie}"></td>
 								<td th:text="${pay.numero_piece}"></td>
+								<td th:text="${pay.observation}"></td>
 								<td style="text-align: center;">
-									<button th:if="${pay.path_img}==''" class="btn btn-info add_img" th:attr="id_payment=${pay.id}"><i class="far fa-paperclip"></i></button> 
+								
+									<button class="btn btn-success add_img" th:attr="id_payment=${pay.id},path_img=${pay.path_img}">
+										<i th:if="${pay.path_img}==''" class="far fa-paperclip"></i>
+										<i th:unless="${pay.path_img}==''" class="far fa-image"></i>
+									</button> 
 									
-									<a th:unless="${pay.path_img}==''" href="#">
-										<img alt="" class="img" height="50" width="100"  
-										th:attr="src='/display_img?link='+${pay.path_img}" > 
-									</a>
+									<button th:if="${edit_pay}==true" type="button" class="btn btn-warning edit" 
+																	th:attr="id_payment=${pay.id},
+																			 num_piece=${pay.numero_piece}"> 
+																				<i class="far fa-edit"></i>
+									</button>
 									
-								</td>
-								<td style="text-align: center;"> <button th:if="${cancel_pay}==true" type="button" class="btn btn-danger cancel" 
+									<button th:if="${cancel_pay}==true" type="button" class="btn btn-danger cancel" 
 																	th:attr="id_payment=${pay.id},
 																			 nom_client=${pay.client.nom}+' '+${pay.client.prenom},
 																			 code_client=${pay.client.code},
 																			 montant=${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')},
 																			 num_piece=${pay.numero_piece}"> 
-																												<i class="far fa-trash"></i>
-																										 </button> 
+																				<i class="far fa-trash"></i>
+									</button>
+									
 								</td>
 								<td th:if="${pay.verification}==true" style="color: green;"> Términer </td>
 								<td th:unless="${pay.verification}==true" style="color: orange;"> En cours </td>
@@ -538,7 +569,7 @@
 						
 						</tbody>
 						
-						<tfoot>
+						<tfoot class="thead-dark">
 						
 							<tr>
 							

@@ -348,7 +348,11 @@ public class commandeController {
 				
 				Connection_peseur cp = new Connection_peseur();
 				
-				cp.function_son_bl(bl.getNumero(), bl.getDate());
+				if(cp.getconnection()!=null) {
+					
+					cp.function_son_bl(bl.getNumero(), bl.getDate());
+					
+				}
 				
 			//}
 			

@@ -442,11 +442,12 @@
 						
 							<select class="form-control" id="nbr_days" name="nbr_days">
 							
-								<option th:each="i : ${#numbers.sequence( 0, 30, 1)}" th:value="${i}" th:text="${i}+' Jour(S)'"
-									th:if="${i}==${nbr_days}" selected></option>
-								
-								<option th:each="i : ${#numbers.sequence( 0, 30, 1)}" th:value="${i}" th:text="${i}+' Jour(S)'"
-									th:unless="${i}==${nbr_days}" ></option>
+								<option th:if="${nbr_days}=='m'" value="m" selected>Mois</option>
+								<option th:unless="${nbr_days}=='m'" value="m" >Mois</option>
+								<option th:if="${nbr_days}=='6'" value="6" selected>Semaine</option>
+								<option th:unless="${nbr_days}=='6'" value="6" >Semaine</option>
+								<option th:if="${nbr_days}=='14'" value="14" selected>Quinzaine</option>
+								<option th:unless="${nbr_days}=='14'" value="14" >Quinzaine</option>
 									
 							</select>
 						

@@ -13,7 +13,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture_
 
 public interface bon_livraison_facture_detailRepository extends JpaRepository<bon_livraison_facture_detail, Long>{
 	
-	@Query( " SELECT blf_det.prix_u_ht, blf_det.tva, blf_det.article.id, blf_det.magasin.id, blf_det.unite_mesure.id, " +
+	@Query( " SELECT blf_det.prix_u_ht, blf_det.tva, blf_det.article.id, blf_det.unite_mesure.id, " +
 			
 			" SUM(quantite), SUM(montant_ht), SUM(montant_tva), SUM(montant_ht+montant_tva) " +
 			
@@ -25,7 +25,7 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 			
 			" AND blf_det.bon_livraison_facture.registre_commerce = :rc " +
 			
-			" GROUP BY blf_det.article.id, blf_det.prix_u_ht, blf_det.tva, blf_det.magasin.id, blf_det.unite_mesure.id")
+			" GROUP BY blf_det.article.id, blf_det.prix_u_ht, blf_det.tva, blf_det.unite_mesure.id")
 		 
 	public List<Object []> get_cumule_facture_blf(@Param("start") String start, @Param("end") String end, @Param("rc") registre_commerce rc);
 	
@@ -75,7 +75,7 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 	public List<Object[]> get_article_cumuleQuant_from_detail_blfs(@Param("blfs") List<Long> blfs);
 	//---------------------------------------------------------------------
 	
-	@Query( "SELECT blf_det.article.id, blf_det.magasin.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva,"+
+	@Query( "SELECT blf_det.article.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva,"+
 			
 			"SUM(blf_det.quantite), SUM(blf_det.montant_ht), SUM(blf_det.montant_tva), SUM(blf_det.montant_ttc), "+
 			 
@@ -87,7 +87,7 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 			
 			"AND blf_det.bon_livraison_facture.factured = 'false' " + 
 			
-			"GROUP BY blf_det.article.id, blf_det.magasin.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva, "+
+			"GROUP BY blf_det.article.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva, "+
 			
 			"blf_det.article.code "+
 			

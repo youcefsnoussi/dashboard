@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -13,6 +14,10 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -164,6 +169,73 @@ public class paymentsController {
 	
 	//-------------------------------------------------------------------------------
 	
+	@GetMapping("/edit_payment/{id}")
+	public String edit_paiement_get(HttpServletRequest request,
+						 @PathVariable("id") long id_payement,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		String ret = "";
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_payment"))) 
+		{ ret = "operation/edit_payment"; }
+		else { return "403"; }
+		
+		//----------------------------------------------------------------
+		
+		paiement pay =  payRepo.findById(id_payement).orElseThrow(() -> new IllegalArgumentException("ID Paiement Invalid:" + id_payement));
+		
+		pay.setDate(conv.convertion_MyDate_to_InputDate(pay.getDate()));
+		
+		//model.addAttribute("paiement", new paiement()); 
+		
+		model.addAttribute("paiement", pay);
+		
+		//model.addAttribute("pay", pay);
+		
+		model.addAttribute("mode_payement", mode_payRepo.findAll());
+		
+		model.addAttribute("bank", banqueRepo.get_banks_displayed());
+		
+		return ret;
+		
+	}
+	
+	//-------------------------------------------------------------------------------
+	
+	@PostMapping("/update_payement/{id}")
+	public String updatePayment(
+							 @PathVariable("id") long id, 
+							 @Valid paiement pay,  
+							 @SessionAttribute("user") users user,
+							  BindingResult result, 
+							  Model model) {
+	    
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+	    Optional<paiement> pp = payRepo.findById(id);
+		
+	    paiement p = pp.get();
+	    
+	    p.setBanque(pay.getBanque());
+	    p.setMode_paiement(pay.getMode_paiement());
+	    p.setDate(conv.convertion_InputDate_to_MyDate(pay.getDate()));
+	    p.setNumero_piece(pay.getNumero_piece());
+	    p.setInfo_supp_banque(pay.getInfo_supp_banque());
+	    p.setObservation(pay.getObservation());
+	    
+	    payRepo.save(p); payRepo.flush();
+	    
+	    return "redirect:/edit_payment/"+pay.getId();
+	}
+	
+	//-------------------------------------------------------------------------------
+	
 	@Autowired
 	generate_Doc gd;
 	
@@ -202,15 +274,17 @@ public class paymentsController {
 		
 		String ret = "operation/list_payments";
 		
-		boolean cancel_pay = false;
+		boolean cancel_pay = false, edit_pay = false;
 		
 		//----------------------ROLE TEST---------------------------------
-		
-		System.out.println(user.getId());
 		
 		if(user.getRole().getNom_role().equals("Admin") || 
 				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("cancel_payment"))) 
 		{ cancel_pay = true; }
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_payment"))) 
+		{ edit_pay = true; }
 		
 		//----------------------------------------------------------------
 		
@@ -280,6 +354,8 @@ public class paymentsController {
 		//----------------------------------------------------------------
 		
 		model.addAttribute("cancel_pay", cancel_pay);
+		
+		model.addAttribute("edit_pay", edit_pay);
 		
 		model.addAttribute("mode_payement", mode_payRepo.findAll());
 		

@@ -512,6 +512,35 @@ public class vente_statistiqueController {
 		return "statistic/etat_sortie_category_article";		
 	}
 	
+	//-----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/etat_sortie_subvension")
+	public String etat_sortie_subvnsion(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		if(start.equals("0")) {
+			
+			start = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			end = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+		}
+		
+		model.addAttribute("start",start);
+		model.addAttribute("end",end);
+		
+		return "statistic/etat_sortie_subvension";		
+	}
+	
+	//-----------------------------------------------------------------------------
+	
+	
 	//___________________________________________/°=-PRINT FUNCTIONS-=°\_______________________________
 	
 	@Autowired
@@ -705,6 +734,21 @@ public class vente_statistiqueController {
 		*/
 		
 		pdf = gd.generate_etat_vente_client(start, end, cat_prodRepo.getOne(id_cat_prod), user.getUnite().getNom_unite());
+		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	//----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/print_quant_sub")
+	public String print_print_quant_sub(HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String pdf = gd.generate_quantite_sub_vendu(start, end);
 		
 		return "redirect:/display_pdf?file="+pdf;
 		

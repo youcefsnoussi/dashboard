@@ -33,12 +33,12 @@ public class doc_app {
 	 * 
 	 * 				____________________________________________________________________________________________
 	 * 
-	 * 				------------------------------  Client -------------------------------------
+	 * 				------------------------------  RC -------------------------------------
 	 *				- add_rc => mayakderch yajouti rc (makach button + page inaccessible)
 	 *				- edit_rc => edit client previlege
 	 *				- rc_client =>yakder yarbet bin rc + client
 	 *				
-	 *				------------------------------  RC -------------------------------------
+	 *				------------------------------  Client -------------------------------------
 	 *				- add_client => manafichich button ta3 add client ma3endoch plafond (=10da) + blocké
 	 *				- add_client_admin => add client normal b plafond
 	 *				- edit_client => yakder edition client
@@ -47,6 +47,7 @@ public class doc_app {
 	 *				- add_payment =>  yajouti payement
 	 *				- cancel_payment => anuuler payment
 	 *				- add_remboursement => yakder idir remboursement
+	 *				- edit_payment => edit payement
 	 *
 	 *				------------------------------  VENTE -------------------------------------
 	 *				- change_user_cmd =>  ibedel user li khdem commande 

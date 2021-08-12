@@ -74,7 +74,7 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([3,4,6,8]).every( function () {
+			            this.api().columns([3,4,5,7,9]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control "  ><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -97,8 +97,11 @@
 						
 					      var api = this.api();
 					      
-					      $( api.column( 7, {page:'current'} ).footer() ).html(
-					        api.column( 7, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
+					      $( api.column( 6, {page:'current'} ).footer() ).html(
+					        api.column( 6, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
+					      );
+					      $( api.column( 8, {page:'current'} ).footer() ).html(
+					        api.column( 8, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
 					      );
 					      
 					 },
@@ -313,9 +316,10 @@
 								<th>Heure</th>
 								<th >Code </th>
 								<th>RC</th>
-								<th>Mode Reglement</th>
 								<th>Matricule</th>
 								<th>Qunatite</th>
+								<th>PU</th>
+								<th>Montant HT</th>
 								<th>N° Facture</th>
 								<th>Détail Facture</th>
 								
@@ -332,10 +336,14 @@
 								<td th:text="${bl.time}"></td>
 								<td th:text="${bl.registre_commerce.code}"></td>
 								<td th:text="${bl.registre_commerce.nom}+' '+${bl.registre_commerce.prenom}"></td>
-								<td th:text="${bl.commande.mode_paiement.designation}"></td>
+								<!-- <td th:text="${bl.commande.mode_paiement.designation}"></td> -->
 								<td th:text="${bl.matricule}"></td>
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
 									th:text="${#numbers.formatDecimal(bl_info.quantite, 2, 'WHITESPACE', 3,'POINT')}"></td>
+								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
+									th:text="${#numbers.formatDecimal(bl_info.prix_u_ht, 2, 'WHITESPACE', 3,'POINT')}"></td>
+								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
+									th:text="${#numbers.formatDecimal(bl_info.montant_ht, 2, 'WHITESPACE', 3,'POINT')}"></td>
 								<td th:text="${bl.facture.numero}"></td>	
 								<td style="text-align: center;    width: 10%;"> 
 									 <button type="button" class="btn btn-primary info_fact" 
@@ -351,6 +359,7 @@
 						
 							<tr>
 							
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

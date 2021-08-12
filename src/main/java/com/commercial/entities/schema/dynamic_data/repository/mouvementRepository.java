@@ -26,7 +26,7 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 			
 		  + " WHERE mvm.client = :clt "
 		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end)"
-		  + " ORDER BY mvm.id ASC ")
+		  + " ORDER BY CAST(mvm.date AS date), mvm.id ASC ")
 	
 	public List<mouvement>  mouvement_by_client_intervall(@Param("clt") client clt,@Param("start") Date start, @Param("end") Date end); 
 	
@@ -45,10 +45,10 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	@Query( " FROM mouvement mvm "
 			
 		  + " WHERE mvm.registre_commerce = :rc "
-		  + " AND CAST(mvm.date AS date) BETWEEN (:start) AND (:end) "
+		  + " AND CAST(mvm.date AS date) BETWEEN CAST(:start as date) AND CAST(:end AS date) "
 		  + " ORDER BY CAST(mvm.date AS date), mvm.id ASC")
 	
-	public List<mouvement>  mouvement_by_rc_intervall(@Param("rc") registre_commerce rc,@Param("start") Date start, @Param("end") Date end); 
+	public List<mouvement>  mouvement_by_rc_intervall(@Param("rc") registre_commerce rc,@Param("start") String start, @Param("end") String end); 
 	
 	//---------------------------------------------------------------------------------
 	
