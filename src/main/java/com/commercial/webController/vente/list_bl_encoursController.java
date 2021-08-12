@@ -764,9 +764,13 @@ public class list_bl_encoursController {
 					
 					Connection_peseur cp = new Connection_peseur();
 					
-					cp.insert_fct_to_peseur(numero_fact, today);
-					
-					cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
+					if(cp.getconnection()!=null) {
+						
+						cp.insert_fct_to_peseur(numero_fact, today);
+						
+						cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
+						
+					}
 					
 				//}
 				

@@ -1,5 +1,7 @@
 package com.commercial.webController.statistic;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,8 +28,6 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avo
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.get_time_date;
-import com.commercial.functions.time_between;
 
 @Controller
 @SessionAttributes("user")
@@ -64,7 +64,7 @@ public class dashboardController {
 	
 	@RequestMapping(value="/dashboard")
 	public String dashboard(HttpServletRequest request,
-						 @RequestParam("nbr_days") int intervalle,
+						 @RequestParam("nbr_days") String intervalle,
 						 @RequestParam(name = "type_val", defaultValue = "1") int type_val,
 						 @RequestParam(name = "list_category", defaultValue = "") long[] list_category,
 						 @RequestParam(name = "test_category", defaultValue = "") String test_category,
@@ -101,46 +101,68 @@ public class dashboardController {
 		
 		convert_string_to_date_util conv = new convert_string_to_date_util();
 		
-		get_time_date gtd = new get_time_date();
-		
-		time_between tb = new time_between();
+		LocalDate s, e;
 		
 		if(start.equals("0")) {
 			
-			start = gtd.get_date();
+			s = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
 			
-			end = gtd.get_date();
+			e = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());;
+			
+			intervalle = "6";
 			
 		}
 		else {
 			
-			start = conv.convertion_InputDate_to_MyDate(start);
+			s = LocalDate.parse(start);
 			
-			end = conv.convertion_InputDate_to_MyDate(end);
+			e = LocalDate.parse(end);
 			
 		}
 		
-		
-		
 		List <List<Object[]>> list = new ArrayList<List<Object[]>>();
 		
-		String jump_date_start = start;
-		
-		String jump_date = gtd.get_date_before(intervalle*(-1), start);
+		LocalDate tmp = s;
 		
 		List <String> categories  = new ArrayList<String>();
 		
 		List <String> weeks  = new ArrayList<String>();
 		
 		int k = 1;
-		
-		while(tb.if_before_or_equal(jump_date, end)){
+		/*
+		if(!intervalle.equals("m")) {
+			
+			e = LocalDate.parse(tmp.toString()).with(TemporalAdjusters.lastDayOfMonth());
+			
+		}
+		*/
+		while(tmp.isBefore(e)){
 			
 			//System.out.println("-period "+k+" = "+jump_date_start+" -> "+jump_date);
 			
+			LocalDate firstDayOfMonth = LocalDate.parse(tmp.toString());
+			
+			LocalDate lastDayOfMonth;
+			
+			if(intervalle.equals("m")) {
+				
+				lastDayOfMonth = LocalDate.parse(tmp.toString()).with(TemporalAdjusters.lastDayOfMonth());
+				
+			}
+			else {
+				
+				//lastDayOfMonth = LocalDate.parse(tmp.toString()).plusWeeks(Long.parseLong(intervalle));
+				lastDayOfMonth = LocalDate.parse(tmp.toString()).plusDays(Long.parseLong(intervalle)).isBefore(
+						LocalDate.parse(tmp.toString()).with(TemporalAdjusters.lastDayOfMonth()).minusDays(3)) 
+						? LocalDate.parse(tmp.toString()).plusDays(Long.parseLong(intervalle))
+						: LocalDate.parse(tmp.toString()).with(TemporalAdjusters.lastDayOfMonth());
+				
+			}
+			
 			List <Object[]> list_temp = new ArrayList<Object[]>();
 			
-			weeks.add("Période "+k+" = "+jump_date_start+" "+jump_date);
+			weeks.add("Période "+k+" = "+conv.convertion_InputDate_to_MyDate(firstDayOfMonth.toString())+" "+
+							conv.convertion_InputDate_to_MyDate(lastDayOfMonth.toString()));
 			
 			for(int c=0;c<list_category.length;c++) {
 				
@@ -154,9 +176,9 @@ public class dashboardController {
 				
 				if(!cat_p.getNom_category().equals("Pates")) {
 					
-					sum_fct = fact_dRepo.get_info_sold_fact_by_category(jump_date_start, jump_date, cat_p);
+					sum_fct = fact_dRepo.get_info_sold_fact_by_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), cat_p);
 					
-					sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_category(jump_date_start, jump_date, cat_p);
+					sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), cat_p);
 					
 					for(int i=0;i<sum_fct.size();i++) {
 						
@@ -182,7 +204,9 @@ public class dashboardController {
 					
 					Object[] obj = new Object [2];
 					
-					obj[0] = "Période "+k+" = "+jump_date_start+" "+jump_date; obj[1] = qte;
+					obj[0] = "Période "+k+" = "+conv.convertion_InputDate_to_MyDate(firstDayOfMonth.toString())+" "+
+							conv.convertion_InputDate_to_MyDate(lastDayOfMonth.toString());
+					obj[1] = qte;
 					
 					list_temp.add(obj);
 					
@@ -193,9 +217,9 @@ public class dashboardController {
 					
 					for(sous_category_produit scat :l_scat) {
 						
-						sum_fct = fact_dRepo.get_info_sold_fact_by_sous_category(jump_date_start, jump_date, scat);
+						sum_fct = fact_dRepo.get_info_sold_fact_by_sous_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), scat);
 						
-						sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_sous_category(jump_date_start, jump_date, scat);
+						sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_sous_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), scat);
 						
 						for(int i=0;i<sum_fct.size();i++) {
 							
@@ -221,7 +245,9 @@ public class dashboardController {
 						
 						Object[] obj = new Object [2];
 						
-						obj[0] = "Période "+k+" = "+jump_date_start+" "+jump_date; obj[1] = qte;
+						obj[0] = "Période "+k+" = "+conv.convertion_InputDate_to_MyDate(firstDayOfMonth.toString())+" "+
+								conv.convertion_InputDate_to_MyDate(lastDayOfMonth.toString());
+						obj[1] = qte;
 						
 						list_temp.add(obj);
 						
@@ -235,125 +261,24 @@ public class dashboardController {
 			
 			list.add(list_temp);
 			
-			jump_date_start = gtd.get_date_before(-1, jump_date);
-			
-			jump_date = gtd.get_date_before(intervalle*(-1), jump_date_start);
+			if(intervalle.equals("m")) {
+				
+				tmp = lastDayOfMonth.plusDays(1);
+				
+			}
+			else {
+				
+				tmp = lastDayOfMonth.plusDays(1);
+				
+			}
 			
 			k++;
 			
 		}
 		
-		if(tb.if_after_2(jump_date, end) && tb.if_before_2(jump_date_start, end)) {
-			
-			//System.out.println("period "+k+" = "+jump_date_start+" -> "+end);
-			
-			List <Object[]> list_temp = new ArrayList<Object[]>();
-			
-			weeks.add("Période "+k+" = "+jump_date_start+" "+end);
-			
-			for(int c=0;c<list_category.length;c++) {
-				
-				category_produit cat_p = cat_pRepo.getOne(list_category[c]);
-				
-				List <Object[]> sum_fct = new ArrayList<Object[]>();
-				
-				List <Object[]> sum_fct_av = new ArrayList<Object[]>();
-				
-				double qte = 0;
-				
-				if(!cat_p.getNom_category().equals("Pates")) {
-					
-					sum_fct = fact_dRepo.get_info_sold_fact_by_category(jump_date_start, end, cat_p);
-					
-					sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_category(jump_date_start, end, cat_p);
-					
-					for(int i=0;i<sum_fct.size();i++) {
-						
-						String name = (String) sum_fct.get(i)[0];
-							
-						categories.add(name);
-						
-						qte = (Double) sum_fct.get(i)[type_val];
-						
-						for(int j=0; j<sum_fct_av.size();j++ ) {
-							
-							if(name.equals(sum_fct_av.get(j)[0])) {
-								
-								qte = qte + (Double) sum_fct_av.get(j)[type_val];
-								
-							}
-							
-						}
-						
-						//double qte = (Double) sum_fct.get(i)[1] + (Double) sum_fct_av.get(i)[1];
-						
-						System.out.println("QTE -------> "+qte);
-						
-						
-						
-						
-						
-					}
-					
-					Object[] obj = new Object [2];
-					
-					obj[0] = "Période "+k+" = "+jump_date_start+" "+end; obj[1] = qte;
-					
-					list_temp.add(obj);
-					
-				}
-				else {
-					
-					List<sous_category_produit> l_scat = scat_pRepo.get_sousCat_by_cat(cat_p);
-					
-					for(sous_category_produit scat :l_scat) {
-						
-						sum_fct = fact_dRepo.get_info_sold_fact_by_sous_category(jump_date_start, end, scat);
-						
-						sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_sous_category(jump_date_start, end, scat);
-						
-						for(int i=0;i<sum_fct.size();i++) {
-							
-							String name = (String) sum_fct.get(i)[0];
-							
-							categories.add(name);
-							
-							qte = (Double) sum_fct.get(i)[type_val];
-							
-							for(int j=0; j<sum_fct_av.size();j++ ) {
-								
-								if(name.equals(sum_fct_av.get(j)[0])) {
-									
-									qte = qte + (Double) sum_fct_av.get(j)[type_val];
-									
-								}
-								
-							}
-							
-							//double qte = (Double) sum_fct.get(i)[1] + (Double) sum_fct_av.get(i)[1];
-							
-						}
-						
-						Object[] obj = new Object [2];
-						
-						obj[0] = "Période "+k+" = "+jump_date_start+" "+end; obj[1] = qte;
-						
-						list_temp.add(obj);
-						
-					};
-					
-				}
-				
-				
-			
-			}
-			
-			list.add(list_temp);
-		}
+		model.addAttribute("start", s.toString());
 		
-		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(start));
-		
-		model.addAttribute("end", conv.convertion_MyDate_to_InputDate(end));
+		model.addAttribute("end", e.toString());
 		
 		model.addAttribute("nbr_days", intervalle);
 		

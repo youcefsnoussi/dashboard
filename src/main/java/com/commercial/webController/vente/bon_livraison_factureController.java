@@ -313,8 +313,12 @@ public class bon_livraison_factureController {
 				
 				Connection_peseur cp = new Connection_peseur();
 				
-				cp.insert_fct_to_peseur(numero_blf, today);
-				
+				if(cp.getconnection()!=null) {
+					
+					cp.insert_fct_to_peseur(numero_blf, today);
+					
+				}
+				//------------------- zyada
 				//cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
 				
 			//}
@@ -849,6 +853,8 @@ public class bon_livraison_factureController {
 		
 		model.addAttribute("bls_f", list_id_bls);
 		
+		model.addAttribute("mais",true);
+		
 		String ret = "";
 		
 		if(user.getRole().getNom_role().equals("Admin") || 
@@ -901,28 +907,28 @@ public class bon_livraison_factureController {
 			
 			article art = artRepo.getOne((long) obj[0]);
 			
-			Magasin mag = magasinRepo.getOne((long)obj[1]);
+			//Magasin mag = magasinRepo.getOne((long)obj[1]);
 			
-			unite_mesure um = unite_mesureRepo.getOne((long)obj[2]);
+			unite_mesure um = unite_mesureRepo.getOne((long)obj[1]);
 			
-			double price =(double)obj[3];
+			double price =(double)obj[2];
 			
-			double tva = (double)obj[4];
+			double tva = (double)obj[3];
 			
-			double quant = (double)obj[5];
+			double quant = (double)obj[4];
 			
-			double mnt_ht = (double)obj[6];
+			double mnt_ht = (double)obj[5];
 			
-			double mnt_tva = (double)obj[7];
+			double mnt_tva = (double)obj[6];
 			
-			double mnt_ttc = (double)obj[8];
+			double mnt_ttc = (double)obj[7];
 			
 			Map<String,Object> info = new  HashMap<String, Object>();
 			
 			info.put("prix_u_ht", price);
 			info.put("tva", tva);
 			info.put("article", art);
-			info.put("magasin", mag);
+			//info.put("magasin", mag);
 			info.put("unite_mesure", um);
 			info.put("quantite", quant);
 			info.put("montant_ht", mnt_ht);
@@ -998,16 +1004,16 @@ public class bon_livraison_factureController {
 			info.put("prix_u_ht",(double)obj[0]);
 			info.put("tva",(double)obj[1]);
 			info.put("article",artRepo.getOne((long)obj[2]));
-			info.put("magasin",magasinRepo.getOne((long)obj[3]));
-			info.put("unite_mesure",umRepo.getOne((long)obj[4]));
-			info.put("quantite",(double)obj[5]);
-			info.put("montant_ht",(double)obj[6]);
-			info.put("montant_tva",(double)obj[7]);
-			info.put("montant_ttc",(double)obj[8]);
+			//info.put("magasin",magasinRepo.getOne((long)obj[3]));
+			info.put("unite_mesure",umRepo.getOne((long)obj[3]));
+			info.put("quantite",(double)obj[4]);
+			info.put("montant_ht",(double)obj[5]);
+			info.put("montant_tva",(double)obj[6]);
+			info.put("montant_ttc",(double)obj[7]);
 			
-			montant_ht += (double)obj[6];
-			montant_tva += (double)obj[7];
-			montant_ttc += (double)obj[8];
+			montant_ht += (double)obj[5];
+			montant_tva += (double)obj[6];
+			montant_ttc += (double)obj[7];
 			
 			ret_all_details_blf.add(info);
 			
@@ -1178,28 +1184,28 @@ public class bon_livraison_factureController {
 			
 			article art = artRepo.getOne((long) obj[0]);
 			
-			Magasin mag = magasinRepo.getOne((long)obj[1]);
+			//Magasin mag = magasinRepo.getOne((long)obj[1]);
 			
-			unite_mesure um = unite_mesureRepo.getOne((long)obj[2]);
+			unite_mesure um = unite_mesureRepo.getOne((long)obj[1]);
 			
-			double price =(double)obj[3];
+			double price =(double)obj[2];
 			
-			double tva = (double)obj[4];
+			double tva = (double)obj[3];
 			
-			double quant = (double)obj[5];
+			double quant = (double)obj[4];
 			
-			double mnt_ht = (double)obj[6];
+			double mnt_ht = (double)obj[5];
 			
-			double mnt_tva = (double)obj[7];
+			double mnt_tva = (double)obj[6];
 			
-			double mnt_ttc = (double)obj[8];
+			double mnt_ttc = (double)obj[7];
 			
 			Map<String,Object> info = new  HashMap<String, Object>();
 			
 			info.put("prix_u_ht", price);
 			info.put("tva", tva);
 			info.put("article", art);
-			info.put("magasin", mag);
+			//info.put("magasin", mag);
 			info.put("unite_mesure", um);
 			info.put("quantite", quant);
 			info.put("montant_ht", mnt_ht);

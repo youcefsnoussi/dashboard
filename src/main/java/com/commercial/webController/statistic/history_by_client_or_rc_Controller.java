@@ -295,6 +295,8 @@ public class history_by_client_or_rc_Controller {
 				//double sold_fin_clt = mvml.get(mvml.size()-1).getNew_sold_client();
 				double sold_fin_rc = mvml.get(mvml.size()-1).getNew_sold_rc();
 				
+				System.out.println("--->"+mvml.get(mvml.size()-1).getNew_sold_rc());
+				
 				model.addAttribute("id_rc",rc);
 				model.addAttribute("rc",rcRepo.findAll());
 				model.addAttribute("history",mvml);
@@ -327,17 +329,8 @@ public class history_by_client_or_rc_Controller {
 				double sold_fin_rc = 0;
 				
 				//------------------------------------------------------
-				
-				try {
 					
-					mvml = mvmRepo.mouvement_by_rc_intervall(rcRepo.getOne(rc), 
-													conv.convertion_from_InputDate(date_debut), conv.convertion_from_InputDate(date_fin));
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				System.out.println("===========>size mvl > "+mvml.size());
+				mvml = mvmRepo.mouvement_by_rc_intervall(rcRepo.getOne(rc), date_debut, date_fin);
 				
 				List <String> nums = new ArrayList<String>();
 				

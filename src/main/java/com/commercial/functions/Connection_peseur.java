@@ -297,5 +297,15 @@ public class Connection_peseur {
 	
 	//---------------------------------------------------------------------------------------
 	
+	public boolean IfConxToDB() throws SQLException {
+		
+		
+		Connection_peseur db = new Connection_peseur();
+		Connection con = db.getconnection();
+
+		return con.isValid(0);
+  		
+		
+	}
 	
 }

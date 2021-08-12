@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" th:href="@{/resources/Plugins/bootstrap-4.3.1/css/bootstrap.min.css}">
+		<link rel="stylesheet" th:href="@{/resources/Plugins/bootstrap-select-1.13.7/dist/css/bootstrap-select.min.css}">
+		
+		<link rel="stylesheet" th:href="@{/resources/Plugins/datatable/css/dataTables.bootstrap4.min.css}" />  
+		
+		<link th:href="@{/resources/Plugins/Font-Awsom-Pro-5.8.2/css/all.css}" rel="stylesheet"> 
+		
+		<link rel="stylesheet" th:href="@{/resources/Plugins/kartik-v-bootstrap-fileinput/css/fileinput.min.css}"/>
+		
+		<script  th:src="@{/resources/additionalJS/jquery-3.2.1.min.js}"></script>
+		<script  th:src="@{/resources/Plugins/bootstrap-4.3.1/js/bootstrap.bundle.min.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/datatable/js/jquery.dataTables.min.js}"></script>
+		<script type="text/javascript" th:src="@{/resources/Plugins/datatable/js/dataTables.bootstrap4.min.js}"></script>
+		<script type="text/javascript" th:src="@{/resources/Plugins/datatable/js_additional/sum().js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/additionalJS/drahem.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/bootstrap-select-1.13.7/dist/js/bootstrap-select.min.js}"></script>
+		<script type="text/javascript" th:src="@{/resources/Plugins/bootstrap-select-1.13.7/dist/js/i18n/defaults-fr_FR.min.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/kartik-v-bootstrap-fileinput/js/fileinput.min.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/kartik-v-bootstrap-fileinput/js/plugins/piexif.js}"></script>
+		
+		<script type="text/javascript" >
+		
+		$(document).ready(function() {
+			
+			var datatable_config = {
+					"language": {
+				            "url": "resources/Plugins/datatable/lang/French.json"
+				    },
+					"ordering": true,
+			    	"bPaginate": false,
+					"scrollY":"400px",
+					"scrollX": "auto",
+			        "deferRender": true,
+			        initComplete: function () {
+			        	this.api().columns([2,4]).every( function () {
+			                var column = this;
+			                var select = $('<select class="selectpicker show-tick" data-width="100%" data-style="btn btn-outline-secondary" '+ 
+			                				'data-container="body" data-live-search="true" ><option title="T" value="" selected>Tout</option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                    	var vals = $('option:selected', this).map(function (index, element) {
+			                        	return $.fn.dataTable.util.escapeRegex($(element).val());
+			                        }).toArray().join('|');
+			 
+			                        column
+			                            .search( vals.length > 0 ? '^('+vals+')$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option title="'+d.slice(0,2)+'" value="'+d+'">'+d+'</option>' )
+			                } );
+			                $('.selectpicker').selectpicker('refresh');
+			            } );
+			        
+			        }, 
+		    };
+		 		
+		 	var table = $('#table').DataTable(datatable_config);
+			
+			$("#afficher").click(function(){
+				
+				var start = $("#debut").val();
+				
+				var end = $("#fin").val();
+				
+				var cat_c = $("#cat_c").val();
+				
+				if(start=="" || end==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					window.location.replace("GetClientsByCategory?start="+start+"&end="+end+"&cat_c="+cat_c);
+					
+				}
+				
+			});
+			
+			$("#print").click(function(){
+				
+				var start = $("#debut").val();
+				
+				var end = $("#fin").val();
+				
+				var cat_c = $("#cat_c").val();
+				
+				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+						'src="print_rc_buyer?start='+start+'&end='+end+'&cat_c='+cat_c+'"></iframe>');
+			
+				$("#title").text("Imprimer");
+				
+				$("#icone").attr("class","far fa-print");
+				
+				$("#display_details").modal("show");
+					
+			});
+			
+		});
+		
+		</script>
+		
+</head>
+<body>
+	<br>
+	<div class="container-fluid h-100">
+		
+		<div class="card">
+		
+			
+			<h3 class="card-header  text-center"> <i class="far fa-table"></i>  List des Clients Achteurs </h3>
+			
+			
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid h-100">
+					
+					<div class="row">
+					
+						<div class="col-md-4" >
+							
+							<div class="input-group">
+							
+								<div class="input-group-append">
+									
+									<button id="print" name="print" class="btn btn-dark" type="button">Imprimer</button>
+									
+									<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
+										style="width:100%;" placeholder="DU">
+										
+									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+									
+									<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
+									style="width:100%;" placeholder="AU">
+									
+									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
+									
+								</div>
+								
+							</div>
+							
+						</div>
+						
+						<div class="col-md-2 offset-md-2" >
+							
+							<select class="form-control" id="cat_c"  >
+								
+								<option value="0">Tout</option>
+								
+								<option th:each="c : ${CategoryClient}" th:if="${c.id}!=${cat_encours}" 
+									th:value="${c.id}" th:text="${c.nom_category}" ></option>
+								
+								<option th:each="c : ${CategoryClient}" th:unless="${c.id}!=${cat_encours}" 
+									th:value="${c.id}" th:text="${c.nom_category}" selected></option>
+								
+							</select>
+							
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<table class="table table-bordered table-hover" style="width:100%" id="table">
+					
+						<thead class="thead-dark">
+						
+							<tr>
+							
+								<th>Code</th>
+								<th>N°RC</th>
+								<th>Libelle</th>
+								<th>Adresse</th>
+								<th>Category</th>
+							
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="rc : ${ListClients}">
+							
+								<td th:text="${rc.code}"></td>
+								<td th:text="${rc.numero_rc}"></td>
+								<td th:text="${rc.nom}+' '+${rc.prenom}"></td>
+								<td th:text="${rc.adresse}"></td>
+								<td th:text="${rc.category.nom_category}"></td>
+							
+							</tr>
+						
+						</tbody>
+						
+						<tfoot class="thead-dark">
+						
+							<tr>
+							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							
+							</tr>
+						
+						</tfoot>
+						
+					</table>
+					
+				</div>
+					
+				
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------ -->
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------ -->
+	
+	<div id="display_details" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-user-alt" style="font-size:30px;margin-right:10px;" ></i> <h5 id="title" class="modal-title" > </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	         
+	         <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
+	         
+	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         
+	         </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------- ------ ----------- -->
+	
+	
+	
+</body>
+</html>

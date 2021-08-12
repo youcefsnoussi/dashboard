@@ -93,7 +93,13 @@ public class factureRestController {
 		
 		Connection_peseur con = new Connection_peseur();
 		
-		List <String> lm = con.get_matricule_from_peseur(user.getUnite().getId());
+		List <String> lm = new ArrayList<>();
+		
+		if(con.getconnection()!=null) {
+			
+			lm = con.get_matricule_from_peseur(user.getUnite().getId());
+			
+		}
 		
 		return lm;
 		
@@ -386,20 +392,18 @@ public class factureRestController {
 	//_____________________________________ hedi ta3 REST Controller article mabid dertha hna _____________
 	
 	@RequestMapping(value="/get_prix_by_client")
-	public Map<String, Double> get_prix_article_by_client(
-			@RequestParam("id_client") long id_client,
-			@RequestParam("id_article") long id_article
+	public Map<String, prixUnitaire_article_categoryClient> get_prix_article_by_client(
+			@RequestParam("id_rc") long id_rc,
+			@RequestParam("id_art") long id_art
 			) throws IOException, ParseException{
 		
-		double prix = 0;
+		category_client cat_client = rcRepo.getOne(id_rc).getCategory();
 		
-		category_client cat_client = clientRepo.getOne(id_client).getCategory();
+		article art = artRepo.getOne(id_art);
 		
-		article art = artRepo.getOne(id_article);
+		prixUnitaire_article_categoryClient prix = pu_a_ctRepo.get_prix_articles_by_CatClient_Object(cat_client, art);
 		
-		prix = pu_a_ctRepo.get_prix_articles_by_CatClient(cat_client, art);
-		
-		Map<String, Double> ret = new HashMap<>();
+		Map<String, prixUnitaire_article_categoryClient> ret = new HashMap<>();
 		
 		ret.put("prix", prix);
 		

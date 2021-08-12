@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
@@ -75,14 +76,14 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 
 	@Query( " SELECT DISTINCT SUBSTR(date, 7, 9) AS dates FROM facture "
 			
-			+ " WHERE date like '__/__/_%_%_%_%' "
+			+ " WHERE date LIKE '__/__/_%_%_%_%' "
 			
 			+ " ORDER BY dates ASC " )
 	 
 	public List<String> get_years_db();	
 	
 	//----------------------------------------------------------
-
+	
 	@Query( " SELECT fct.registre_commerce.code, fct.registre_commerce.numero_rc, fct.registre_commerce.nom, fct.registre_commerce.prenom,"
 			
 			+ " fct.registre_commerce.adresse, fct.registre_commerce.category.nom_category"
@@ -131,5 +132,27 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	 
 	public List<facture> get_facts_by_fact_avoir(@Param("fact_av") facture_avoir fact_av);
 	
+	//----------------------------------------------------------
+	
+	@Query(   " SELECT DISTINCT registre_commerce "
+			
+			+ " FROM facture fct "
+			
+			+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" 
+			
+			+ " AND fct.registre_commerce.category = :cat_c ")
+	 
+	public List<registre_commerce> GetClientsByCategory(@Param("start") String start, @Param("end") String end, 
+															@Param("cat_c") category_client cat_c);
+	
+	//----------------------------------------------------------
+	
+	@Query(   " SELECT DISTINCT registre_commerce "
+			
+			+ " FROM facture fct "
+			
+			+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)")
+	 
+	public List<registre_commerce> GetClients(@Param("start") String start, @Param("end") String end);
 	
 }

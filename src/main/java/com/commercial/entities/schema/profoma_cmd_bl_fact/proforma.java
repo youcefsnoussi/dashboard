@@ -1,6 +1,7 @@
 package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,15 +40,11 @@ public class proforma implements Serializable{
 	@Column(unique = true)
 	private String numero;
 	
-	private double montant_ht;
+	private double total_ht;
 	
-	private double tva;
+	private double total_tva=0;
 	
-	private double montant_ttc;
-	
-	private double montant_en_lettre;
-	
-	private String link_pdf;
+	private double total_ttc;
 	
 	@OneToOne
 	@JoinColumn(name = "commande")
@@ -61,23 +58,17 @@ public class proforma implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public proforma(com.commercial.entities.schema.client.client client,
-			com.commercial.entities.schema.client.registre_commerce registre_commerce, String date, String time,
-			String numero, double montant_ht, double tva, double montant_ttc, double montant_en_lettre, String link_pdf,
-			com.commercial.entities.schema.profoma_cmd_bl_fact.commande commande,
-			com.commercial.entities.schema.user_menu.users users) {
+	public proforma(client client, registre_commerce registre_commerce, String date, String time,
+			String numero, List<proforma_detail> pf_d, users users) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;
 		this.date = date;
 		this.time = time;
 		this.numero = numero;
-		this.montant_ht = montant_ht;
-		this.tva = tva;
-		this.montant_ttc = montant_ttc;
-		this.montant_en_lettre = montant_en_lettre;
-		this.link_pdf = link_pdf;
-		this.commande = commande;
+		this.total_ht = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_ht).sum();
+		this.total_tva = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_tva).sum();
+		this.total_ttc = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_ttc).sum();
 		this.users = users;
 	}
 
@@ -129,44 +120,28 @@ public class proforma implements Serializable{
 		this.numero = numero;
 	}
 
-	public double getMontant_ht() {
-		return montant_ht;
+	public double getTotal_ht() {
+		return total_ht;
 	}
 
-	public void setMontant_ht(double montant_ht) {
-		this.montant_ht = montant_ht;
+	public void setTotal_ht(double total_ht) {
+		this.total_ht = total_ht;
 	}
 
-	public double getTva() {
-		return tva;
+	public double getTotal_tva() {
+		return total_tva;
 	}
 
-	public void setTva(double tva) {
-		this.tva = tva;
+	public void setTotal_tva(double total_tva) {
+		this.total_tva = total_tva;
 	}
 
-	public double getMontant_ttc() {
-		return montant_ttc;
+	public double getTotal_ttc() {
+		return total_ttc;
 	}
 
-	public void setMontant_ttc(double montant_ttc) {
-		this.montant_ttc = montant_ttc;
-	}
-
-	public double getMontant_en_lettre() {
-		return montant_en_lettre;
-	}
-
-	public void setMontant_en_lettre(double montant_en_lettre) {
-		this.montant_en_lettre = montant_en_lettre;
-	}
-
-	public String getLink_pdf() {
-		return link_pdf;
-	}
-
-	public void setLink_pdf(String link_pdf) {
-		this.link_pdf = link_pdf;
+	public void setTotal_ttc(double total_ttc) {
+		this.total_ttc = total_ttc;
 	}
 
 	public commande getCommande() {
@@ -184,7 +159,5 @@ public class proforma implements Serializable{
 	public void setUsers(users users) {
 		this.users = users;
 	}
-
-	
 	
 }

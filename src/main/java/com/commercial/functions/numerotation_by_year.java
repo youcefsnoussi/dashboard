@@ -77,7 +77,7 @@ public class numerotation_by_year {
 		return numero;
 	}
 	
-	public String return_num_proforma (String num){ //assm la rebrique numero 
+	public String return_num_proforma (String num, Long unite){ //assm la rebrique numero 
 		
 		
 		String numero ="",resnum="",year_encours="",month_encours="";
@@ -97,36 +97,30 @@ public class numerotation_by_year {
 					
 					month_encours= num.substring(7, 9);
 					
-					System.out.println("year_encours == "+year_encours);
-					
-					System.out.println("month_encours == "+month_encours);
-					
-					if(year_encours.equals(y) && month_encours.equals(m)){
+					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(10);
-						System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
 						nn++;
-							if( nn < 10 ){ numero = "PRF_"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = "PRF_"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = "PRF_"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = "PRF_"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = "PRF_"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = "PRF_"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = "PRF_"+y+"/"+m+"/0"+nn;}
+							if( nn < 10 ){ numero = unite+"PRF"+y+"/"+m+"/0000000"+nn;} else
+							if( nn < 100 ){ numero = unite+"PRF"+y+"/"+m+"/000000"+nn;} else	
+							if( nn < 1000 ){ numero = unite+"PRF"+y+"/"+m+"/00000"+nn;} else
+							if( nn < 10000 ){ numero = unite+"PRF"+y+"/"+m+"/0000"+nn;} else
+							if( nn < 100000 ){ numero = unite+"PRF"+y+"/"+m+"/000"+nn;} else
+							if( nn < 1000000 ){ numero = unite+"PRF"+y+"/"+m+"/00"+nn;}else
+							if( nn < 10000000 ){ numero = unite+"PRF"+y+"/"+m+"/0"+nn;}
 					}
 					
 					else{
 						
-						numero = "PRF_"+y+"/"+m+"/00000001"; 
+						numero = unite+"PRF"+y+"/"+m+"/00000001"; 
 						
 					}
 			}
 			
 			else{
 				
-				numero = "PRF_"+y+"/"+m+"/00000001";
+				numero = unite+"PRF"+y+"/"+m+"/00000001";
 				
 			}
 			
@@ -504,10 +498,6 @@ public class numerotation_by_year {
 					year_encours = num.substring(6, 8);
 					
 					month_encours= num.substring(9, 11);
-					
-					System.out.println("year_encours == "+year_encours);
-					
-					System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
