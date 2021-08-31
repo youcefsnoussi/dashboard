@@ -1,4 +1,4 @@
-package com.commercial.functions;
+package com.commercial.services;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +59,9 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRep
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.proforma_detailRepository;
 import com.commercial.entities.schema.static_data.repository.information_entrepriseRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
+import com.commercial.functions.CombinePdf;
+import com.commercial.functions.FrenchNumberToWords;
+import com.commercial.functions.generateQRcode;
 
 /*
 import jxl.Workbook;

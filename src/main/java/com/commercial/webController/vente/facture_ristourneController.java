@@ -26,10 +26,10 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_ristourne_deta
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_ristourneRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_ristourne_detailRepository;
 import com.commercial.entities.schema.user_menu.users;
-import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
-import com.commercial.functions.track_operations;
+import com.commercial.services.generate_Doc;
+import com.commercial.services.track_operations;
 
 @Controller
 @SessionAttributes("user")

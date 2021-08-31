@@ -112,47 +112,11 @@
 							</select>
 			        	
 			        	</div>
-			        	
-			        	<div class="col-md-3">
-			        		
-			        		<label> Code postal </label>
-			        		
-			        		<input type="text" id="code_postal" name="code_postal" class="form-control ">
-			        	
-			        	</div>
 			        
 			        </div>
 					
 					<br>
 					
-					<div class="row">
-		        
-			        	<div class="col-md-3">
-			        		
-			        		<label> Telephone </label>
-			        		
-			        		<input id="telephone" name="telephone" class="form-control" >
-			        		
-			        	</div>
-			        	
-			        	<div class="col-md-3">
-			        		
-			        		<label> Fax </label>
-			        		
-			        		<input type="text" id="fax" name="fax" class="form-control" >
-			        	
-			        	</div>
-			        	
-			        	<div class="col-md-3">
-			        		
-			        		<label> Email </label>
-			        		
-			        		<input type="email" id="email" name="email" class="form-control " >
-			        	
-			        	</div>
-			        
-			        </div>
-			        
 					<hr>
 					
 					<div class="row">
@@ -168,34 +132,6 @@
 			        			<option th:each="cat_client:${cat_client}" th:value="${cat_client.id}" th:text="${cat_client.nom_category}"></option>
 			        		
 			        		</select>
-			        		
-			        	</div>
-			        	
-			        	<div class="col-md-3">
-			        		
-			        		<label> Banque </label>
-			        		
-			        		<select  id="banque" class="form-control" name="banque" >
-								 
-								 <option value="null">Séléctionner une Banque</option>
-								 		  
-								 <option th:each="banque:${banque}"  th:value="${banque.id}" th:text="${banque.nom_banque}" >  </option>	 
-							 	 
-							 </select>
-			        		
-			        	</div>
-			        	
-			        	<div class="col-md-3">
-			        		
-			        		<label> Type reglement </label>
-			        		
-			        		<select  id="type_reg" class="form-control" name="type_reg" >
-			        		
-								 <option value="null">Séléctionner une Type</option>	
-								 	  
-								 <option th:each="type_reg:${type_reg}"  th:value="${type_reg.id}" th:text="${type_reg.designation}" >  </option>	 
-							 	 
-							</select>
 			        		
 			        	</div>
 			        

@@ -32,7 +32,7 @@ import com.commercial.entities.schema.client.repository.registre_commerceReposit
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
 import com.commercial.entities.schema.user_menu.users;
-import com.commercial.functions.track_operations;
+import com.commercial.services.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -140,13 +140,13 @@ public class list_clientController {
 		@RequestParam("adresse") String adresse,
 		@RequestParam("etat_blockage") boolean etat_blockage,
 		@RequestParam("wilaya") long id_wilaya,
-		@RequestParam("code_postal") String code_postal,
-		@RequestParam("telephone") String telephone,
-		@RequestParam("fax") String fax,
-		@RequestParam("email") String email,
+		//@RequestParam("code_postal") String code_postal,
+		//@RequestParam("telephone") String telephone,
+		//@RequestParam("fax") String fax,
+		//@RequestParam("email") String email,
 		@RequestParam("cat_client") long cat_client,
-		@RequestParam("banque") long id_banque,
-		@RequestParam("type_reg") long type_reg,
+		//@RequestParam("banque") long id_banque,
+		//@RequestParam("type_reg") long type_reg,
 		@RequestParam("plafond") double plafond,
 		@Valid @RequestParam("img_client") MultipartFile img_client,
 		
@@ -203,20 +203,20 @@ public class list_clientController {
 			}
 			
 			clt.setAdresse(adresse);
-			clt.setBanque(banqueRepo.getOne(id_banque));
+			//clt.setBanque(banqueRepo.getOne(id_banque));
 			clt.setCategory(cat_clientRepo.getOne(cat_client));
 			//clt.setCode("");
-			clt.setCode_postal(code_postal);
-			clt.setEmail(email);
+			//clt.setCode_postal(code_postal);
+			//clt.setEmail(email);
 			clt.setEtat_blockage(etat_blockage); 
-			clt.setFax(fax);
+			//clt.setFax(fax);
 			//clt.setImg(img);
 			clt.setNom(nom);
 			clt.setPlafond(plafond);
 			clt.setPrenom(prenom);
 			//clt.setRemise(remise);
-			clt.setTelephone(telephone);
-			clt.setType_reglement(type_rRepo.getOne(type_reg));
+			//clt.setTelephone(telephone);
+			//clt.setType_reglement(type_rRepo.getOne(type_reg));
 			clt.setWilaya(wilayarepo.getOne(id_wilaya));
 			
 			clientRepo.save(clt);clientRepo.flush();

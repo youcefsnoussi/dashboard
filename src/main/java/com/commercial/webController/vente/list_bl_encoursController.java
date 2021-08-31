@@ -1,8 +1,6 @@
 package com.commercial.webController.vente;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
@@ -52,7 +49,6 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livrais
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.commandeRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.commande_detailRepository;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.cumule_facture_laiterieRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
@@ -68,10 +64,10 @@ import com.commercial.entities.schema.static_data.repository.unite_mesureReposit
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
-import com.commercial.functions.track_operations;
+import com.commercial.services.generate_Doc;
+import com.commercial.services.track_operations;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.generateQRcode;
-import com.commercial.functions.generate_Doc;
 
 @Controller
 @SessionAttributes("user")
@@ -234,89 +230,9 @@ public class list_bl_encoursController {
 	
 	//-----------------------------------------------------------------------
 	
-	@Autowired
-	cumule_facture_laiterieRepository cumRepo;
-	
-	@RequestMapping(value="/list_bl_laiterie_danon")
-	public String list_bls_for_commercial_laiterie_danon(HttpServletRequest request,
-						 @RequestParam("id_clt") long id_client,
-						 @SessionAttribute("user") users user,
-						 Model model){
-		
-		client clt = clientRepo.getOne(id_client);
-		
-		//System.out.println("<===>");
-		
-		List <bon_livraison> list_bls = cumRepo.get_bls_no_factured(clt);
-		/*
-		for(int i=0;i<list_bls.size();i++) {
-			
-			System.out.println(list_bls.get(i).getNumero());
-			
-		}
-		*/
-		model.addAttribute("bls", list_bls);
-		
-		model.addAttribute("clients", clientRepo.get_client_laiteries());
-		
-		return "vente/cumule_facture_laiterie_danon";
-		
-	}
 	
 	//-----------------------------------------------------------------------------
 	
-	@RequestMapping(value="/list_bl_laiterie_somam")
-	public String list_bls_for_commercial_laiterie_somam(HttpServletRequest request,
-						 @RequestParam("id_clt") long id_client,
-						 @SessionAttribute("user") users user,
-						 Model model){
-		
-		client clt = clientRepo.getOne(id_client);
-		
-		//System.out.println("<===>");
-		
-		List <bon_livraison> list_bls = cumRepo.get_bls_no_factured(clt);
-		
-		Map<article,Double> art_quant = new HashMap<article, Double>();
-		
-		for(int i=0;i<list_bls.size();i++) {
-			
-			bon_livraison bl = list_bls.get(i);
-			
-			//System.out.println("bl n° = "+bl.getNumero());
-			
-			List <bon_livraison_detail> list_bl_d = bon_l_dRepo.get_bl_detail(bl);
-			
-			for(int j=0;j<list_bl_d.size();j++) {
-				
-				bon_livraison_detail bl_d = list_bl_d.get(j);
-				
-				//System.out.println("=="+bl_d.getQuantite());
-				
-				if( art_quant.containsKey(bl_d.getArticle()) ) {
-					
-					double now_val = art_quant.get(bl_d.getArticle());
-					
-					art_quant.put(bl_d.getArticle(), now_val + bl_d.getQuantite());
-					
-				}
-				else {
-					
-					art_quant.put(bl_d.getArticle(), bl_d.getQuantite());
-					
-				}
-				
-			}
-			
-		}
-		
-		model.addAttribute("art_quant", art_quant);
-		
-		model.addAttribute("clients", clientRepo.get_client_laiteries());
-		
-		return "vente/cumule_facture_laiterie_somam";
-		
-	}
 	
 	//-----------------------------------------------------------------------------
 	

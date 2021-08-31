@@ -49,9 +49,9 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
-import com.commercial.functions.track_operations;
+import com.commercial.services.generate_Doc;
+import com.commercial.services.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -344,6 +344,10 @@ public class paymentsController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		model.addAttribute("count_impaye", payRepo.get_count_paiements_impaye());
+		
+		model.addAttribute("impayments", payRepo.get_paiements_impaye());
 		
 		model.addAttribute("years", factRepo.get_years_db());
 		

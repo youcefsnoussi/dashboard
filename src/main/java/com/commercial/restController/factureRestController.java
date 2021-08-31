@@ -106,7 +106,7 @@ public class factureRestController {
 	}
 	
 	//----------------------------------------------------------------
-	
+	/*
 	@RequestMapping(value="/ajax_get_client_by_code")
 	public client get_client_by_code(
 		@RequestParam("code") String code) throws IOException, ParseException{
@@ -115,7 +115,7 @@ public class factureRestController {
 		
 		return clt;
 	}
-	
+	*/
 	//----------------------------------------------------------------
 	
 	@RequestMapping(value="/ajax_get_rc_by_client_fact")
@@ -408,6 +408,14 @@ public class factureRestController {
 		ret.put("prix", prix);
 		
 		return ret;
+		
+	}
+	
+	//------------------------------------------TEST CONNECTION ------------------------>
+	
+	@RequestMapping(value="/TestCon")
+	public void testConnection() {
+		
 		
 	}
 	

@@ -14,7 +14,7 @@ $(document).ready(function() {
 			"scrollX": "auto",
 	        "deferRender": true,
 	        initComplete: function () {
-	            this.api().columns([2,5]).every( function () {
+	            this.api().columns([1,4]).every( function () {
 	                var column = this;
 	                var select = $('<select class="form-control" ><option value="">Tout</option></select>')
 	                    .appendTo( $(column.footer()).empty() )
@@ -37,8 +37,8 @@ $(document).ready(function() {
 				
 			      var api = this.api();
 			      
-			      $( api.column( 3, {page:'current'} ).footer() ).html(
-			        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+			      $( api.column( 2, {page:'current'} ).footer() ).html(
+			        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 			      );
 			      
 			 },

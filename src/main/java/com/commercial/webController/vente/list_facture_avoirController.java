@@ -39,9 +39,9 @@ import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.services.FactureAvoirFromMultipleFactService;
+import com.commercial.services.generate_Doc;
 
 @Controller
 @SessionAttributes("user")
