@@ -98,34 +98,13 @@
 			
 			var datatable_config = {
 					"language": {
-				            "url": "resources/Plugins/datatable/lang/French.json"
+			            "url": "resources/Plugins/datatable/lang/French.json"
 				    },
 					"ordering": true,
 			    	"bPaginate": false,
 					"scrollY":"400px",
 					"scrollX": "auto",
-			        "deferRender": true,/*
-			        dom: 'Bfrtip',
-	                buttons: [
-	                           {
-	                               extend: 'pdfHtml5',
-	                               orientation: 'portrait',
-	                               pageSize: 'A4',
-	                               title : 'SIM AGRO SPA'+'\n\n'+
-	                               		   'BORDEREAU DE REMISE DES PAIEMENTS'+'\n'+
-	                               		   'Du : '+$("#debut").val()+'       AU : '+$("#fin").val(),	
-	                               filename: 'BORDEREAU DE REMISE',
-	                               pageMargins: [ 0, 0, 0, 0 ],
-	                               exportOptions: {
-	                                   columns: [0, 2, 3, 4, 5, 6, 7, 8, 9],
-	                                   rows : ':visible'
-	                               },
-	                               customize : function(doc) {
-	                            	   doc.content[1].table.widths = [ '9%', '11%', '30%', '10%', '5%', '5%', '5%', '5%', '10%'];
-	                           	   }
-	                           }
-	                           ,'colvis'
-	                       ], */
+			        "deferRender": true,
 			        initComplete: function () {
 			            this.api().columns([1,2,5,6,12,13]).every( function () {
 			                var column = this;
@@ -179,7 +158,16 @@
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
+		 	var table_imp = $('#table_impaye').DataTable(datatable_config);
 			
+		 	//------------------- TO RENDER table header and footer between tabs
+		 	
+		 	$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+		        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+		    } );
+		 	
+		 	//------------------- ------------------------------------------------------
+		 	
 			$("#new_payment").click(function(){
 				
 				$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="new_payment"></iframe>');
@@ -445,30 +433,7 @@
 							
 						</div>
 						
-						<div class="col-md-2" >
-						
-							
-								<button id="today" name="today" class="btn btn-dark" type="button">Paiements d'aujourd'hui</button>
-								
-							
-						</div>
-						
-						<div class="col-md-2" >
-						
-								<select id="years" class="form-control">
-									<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:if="${y}==${selected_year}" selected></option>
-									<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:unless="${y}==${selected_year}"></option>
-								
-								</select>
-							
-						</div>
-						
-						
-					</div>
-					<br>
-					<div class="row">
-					
-						<div class="col-md-3" >
+						<div class="col-md-4" >
 						
 							<div class="input-group">
 						
@@ -487,113 +452,241 @@
 							</div>
 						
 						</div>
-					
+						
 					</div>
 					
 					<hr>
 					
-					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
 					
-						<thead class="thead-dark">
-							
-							<tr style="background-color: rgb(52, 58, 64);color: white;">
-							
-								<td colspan="12" style="text-align: center">Commercial</td>
-								<td colspan="2" style="text-align: center">Comptabilité</td>
-							
-							</tr>
-							
-							<tr>
-								<th width="5%">ID</th>
-								<th width="10%">Client</th>
-								<th width="5%">Code RC</th>
-								<th width="20%">RC</th>
-								<th width="10%">Montant</th>
-								<th>Mode de paiement</th>
-								<th>Banque</th>
-								<th>Date piece</th>
-								<th>Date Saisie</th>
-								<th>N° de la piece</th>
-								<th width="20%">Observation</th>
-								<th width="20%">Opération</th>
-								<th>Vérification</th>
-								<th>Etat</th>
-							</tr>
+					  <li class="nav-item">
+					    <a class="nav-link active" data-toggle="tab" href="#list_paye" role="tab" aria-controls="info" 
+					    	aria-selected="true">Liste des paiements</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#list_impaye" role="tab" aria-controls="info" aria-selected="true">
+					    	Liste des Imapyés  <span class="badge badge-danger" th:text="${count_impaye}"></span> </a> 
+					  </li>
+					
+					</ul>
+					
+					<div class="tab-content" id="nav-tabContent">
 						
-						</thead>
-						
-						<tbody>
-						
-							<tr th:each="pay:${payments}">
+						<div class="tab-pane fade show active" id="list_paye" role="tabpanel" aria-labelledby="nav_Quant_Fact">
+							<br>
+							<table id="table" class="table table-bordered table-hover" >
 							
-								<td th:text="${pay.id}"></td>
-								<td th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
-								<td th:text="${pay.registre_commerce.code}"></td>
-								<td th:text="${pay.registre_commerce.nom}+' '+${#strings.defaultString(pay.registre_commerce.prenom,'')}"></td>
-								<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td th:text="${pay.mode_paiement.designation}"></td>
-								<td th:if="${pay.banque}==null" ></td>
-								<td th:unless="${pay.banque}==null" th:text="${pay.banque.nom_banque}"></td>
-								<td th:text="${pay.date}"></td>
-								<td th:text="${pay.date_saisie}"></td>
-								<td th:text="${pay.numero_piece}"></td>
-								<td th:text="${pay.observation}"></td>
-								<td style="text-align: center;">
+								<thead class="thead-dark">
+									
+									<tr style="background-color: rgb(52, 58, 64);color: white;">
+									
+										<td colspan="12" style="text-align: center">Commercial</td>
+										<td colspan="2" style="text-align: center">Comptabilité</td>
+									
+									</tr>
+									
+									<tr>
+										<th width="5%">ID</th>
+										<th width="10%">Client</th>
+										<th width="5%">Code RC</th>
+										<th width="20%">RC</th>
+										<th width="10%">Montant</th>
+										<th>Mode de paiement</th>
+										<th>Banque</th>
+										<th>Date piece</th>
+										<th>Date Saisie</th>
+										<th>N° de la piece</th>
+										<th width="20%">Observation</th>
+										<th width="20%">Opération</th>
+										<th>Vérification</th>
+										<th>Etat</th>
+									</tr>
 								
-									<button class="btn btn-success add_img" th:attr="id_payment=${pay.id},path_img=${pay.path_img}">
-										<i th:if="${pay.path_img}==''" class="far fa-paperclip"></i>
-										<i th:unless="${pay.path_img}==''" class="far fa-image"></i>
-									</button> 
-									
-									<button th:if="${edit_pay}==true" type="button" class="btn btn-warning edit" 
-																	th:attr="id_payment=${pay.id},
-																			 num_piece=${pay.numero_piece}"> 
-																				<i class="far fa-edit"></i>
-									</button>
-									
-									<button th:if="${cancel_pay}==true" type="button" class="btn btn-danger cancel" 
-																	th:attr="id_payment=${pay.id},
-																			 nom_client=${pay.client.nom}+' '+${pay.client.prenom},
-																			 code_client=${pay.client.code},
-																			 montant=${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')},
-																			 num_piece=${pay.numero_piece}"> 
-																				<i class="far fa-trash"></i>
-									</button>
-									
-								</td>
-								<td th:if="${pay.verification}==true" style="color: green;"> Términer </td>
-								<td th:unless="${pay.verification}==true" style="color: orange;"> En cours </td>
-								<td th:if="${pay.validation}==true" style="color: green;"> Payé </td>
-								<td th:unless="${pay.validation}==true" style="color: red;">Impayé</td>
-							</tr>
-						
-						</tbody>
-						
-						<tfoot class="thead-dark">
-						
-							<tr>
-							
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
+								</thead>
 								
-							</tr>
+								<tbody>
+								
+									<tr th:each="pay:${payments}">
+									
+										<td th:text="${pay.id}"></td>
+										<td th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
+										<td th:text="${pay.registre_commerce.code}"></td>
+										<td th:text="${pay.registre_commerce.nom}+' '+${#strings.defaultString(pay.registre_commerce.prenom,'')}"></td>
+										<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td th:text="${pay.mode_paiement.designation}"></td>
+										<td th:if="${pay.banque}==null" ></td>
+										<td th:unless="${pay.banque}==null" th:text="${pay.banque.nom_banque}"></td>
+										<td th:text="${pay.date}"></td>
+										<td th:text="${pay.date_saisie}"></td>
+										<td th:text="${pay.numero_piece}"></td>
+										<td th:text="${pay.observation}"></td>
+										<td style="text-align: center;">
+										
+											<button class="btn btn-success add_img" th:attr="id_payment=${pay.id},path_img=${pay.path_img}">
+												<i th:if="${pay.path_img}==''" class="far fa-paperclip"></i>
+												<i th:unless="${pay.path_img}==''" class="far fa-image"></i>
+											</button> 
+											
+											<button th:if="${edit_pay}==true" type="button" class="btn btn-warning edit" 
+																			th:attr="id_payment=${pay.id},
+																					 num_piece=${pay.numero_piece}"> 
+																						<i class="far fa-edit"></i>
+											</button>
+											
+											<button th:if="${cancel_pay}==true" type="button" class="btn btn-danger cancel" 
+																			th:attr="id_payment=${pay.id},
+																					 nom_client=${pay.registre_commerce.nom}+' '+${pay.registre_commerce.prenom},
+																					 code_client=${pay.registre_commerce.code},
+																					 montant=${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')},
+																					 num_piece=${pay.numero_piece}"> 
+																						<i class="far fa-trash"></i>
+											</button>
+											
+										</td>
+										<td th:if="${pay.verification}==true" style="color: green;"> Términer </td>
+										<td th:unless="${pay.verification}==true" style="color: orange;"> En cours </td>
+										<td th:if="${pay.validation}==true" style="color: green;"> Payé </td>
+										<td th:unless="${pay.validation}==true" style="color: red;">Impayé</td>
+									</tr>
+								
+								</tbody>
+								
+								<tfoot class="thead-dark">
+								
+									<tr>
+									
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										
+									</tr>
+								
+								</tfoot>
+								
+							</table>
+							
+						</div>
 						
-						</tfoot>
+						<div class="tab-pane fade" id="list_impaye" role="tabpanel" aria-labelledby="nav_Quant_Fact">
+							<br>
+							<table id="table_impaye" class="table table-bordered table-hover" >
+							
+								<thead class="thead-dark">
+									
+									<tr style="background-color: rgb(52, 58, 64);color: white;">
+									
+										<td colspan="12" style="text-align: center">Commercial</td>
+										<td colspan="2" style="text-align: center">Comptabilité</td>
+									
+									</tr>
+									
+									<tr>
+										<th width="5%">ID</th>
+										<th width="10%">Client</th>
+										<th width="5%">Code RC</th>
+										<th width="20%">RC</th>
+										<th width="10%">Montant</th>
+										<th>Mode de paiement</th>
+										<th>Banque</th>
+										<th>Date piece</th>
+										<th>Date Saisie</th>
+										<th>N° de la piece</th>
+										<th width="20%">Observation</th>
+										<th width="20%">Opération</th>
+										<th>Vérification</th>
+										<th>Etat</th>
+									</tr>
+								
+								</thead>
+								
+								<tbody>
+								
+									<tr th:each="pay:${impayments}">
+									
+										<td th:text="${pay.id}"></td>
+										<td th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
+										<td th:text="${pay.registre_commerce.code}"></td>
+										<td th:text="${pay.registre_commerce.nom}+' '+${#strings.defaultString(pay.registre_commerce.prenom,'')}"></td>
+										<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td th:text="${pay.mode_paiement.designation}"></td>
+										<td th:if="${pay.banque}==null" ></td>
+										<td th:unless="${pay.banque}==null" th:text="${pay.banque.nom_banque}"></td>
+										<td th:text="${pay.date}"></td>
+										<td th:text="${pay.date_saisie}"></td>
+										<td th:text="${pay.numero_piece}"></td>
+										<td th:text="${pay.observation}"></td>
+										<td style="text-align: center;">
+										
+											<button class="btn btn-success add_img" th:attr="id_payment=${pay.id},path_img=${pay.path_img}">
+												<i th:if="${pay.path_img}==''" class="far fa-paperclip"></i>
+												<i th:unless="${pay.path_img}==''" class="far fa-image"></i>
+											</button> 
+											
+											<button th:if="${edit_pay}==true" type="button" class="btn btn-warning edit" 
+																			th:attr="id_payment=${pay.id},
+																					 num_piece=${pay.numero_piece}"> 
+																						<i class="far fa-edit"></i>
+											</button>
+											
+											<button th:if="${cancel_pay}==true" type="button" class="btn btn-danger cancel" 
+																			th:attr="id_payment=${pay.id},
+																					 nom_client=${pay.registre_commerce.nom}+' '+${pay.registre_commerce.prenom},
+																					 code_client=${pay.registre_commerce.code},
+																					 montant=${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')},
+																					 num_piece=${pay.numero_piece}"> 
+																						<i class="far fa-trash"></i>
+											</button>
+											
+										</td>
+										<td th:if="${pay.verification}==true" style="color: green;"> Términer </td>
+										<td th:unless="${pay.verification}==true" style="color: orange;"> En cours </td>
+										<td th:if="${pay.validation}==true" style="color: green;"> Payé </td>
+										<td th:unless="${pay.validation}==true" style="color: red;">Impayé</td>
+									</tr>
+								
+								</tbody>
+								
+								<tfoot class="thead-dark">
+								
+									<tr>
+									
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										
+									</tr>
+								
+								</tfoot>
+								
+							</table>
+							
+						</div>
 						
-					</table>
-				
+					</div>
+					
 				</div>
 			
 			</div>

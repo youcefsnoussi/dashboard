@@ -33,7 +33,7 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
-import com.commercial.functions.track_operations;
+import com.commercial.services.track_operations;
 
 @Controller
 @SessionAttributes("user")
@@ -84,9 +84,9 @@ public class add_clientController {
 		
 		//----------------------------------------------------------------	
 		
-		model.addAttribute("type_reg", type_rRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		//model.addAttribute("type_reg", type_rRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
-		model.addAttribute("banque", banqueRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		//model.addAttribute("banque", banqueRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
 		model.addAttribute("cat_client", cat_clientRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		
@@ -134,13 +134,13 @@ public class add_clientController {
 		@RequestParam("adresse") String adresse,
 		@RequestParam("unite") long unite,
 		@RequestParam("wilaya") long id_wilaya,
-		@RequestParam("code_postal") String code_postal,
-		@RequestParam("telephone") String telephone,
-		@RequestParam("fax") String fax,
-		@RequestParam("email") String email,
+		//@RequestParam("code_postal") String code_postal,
+		//@RequestParam("telephone") String telephone,
+		//@RequestParam("fax") String fax,
+		//@RequestParam("email") String email,
 		@RequestParam("cat_client") long cat_client,
-		@RequestParam("banque") long id_banque,
-		@RequestParam("type_reg") long type_reg,
+		//@RequestParam("banque") long id_banque,
+		//@RequestParam("type_reg") long type_reg,
 		@RequestParam("plafond") double plafond,
 		@Valid @RequestParam("img_client") MultipartFile img_client,
 		
@@ -160,8 +160,8 @@ public class add_clientController {
 		
 		wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 		
-		client clt = new client(nom, prenom, adresse, wilaya, code_postal, email, telephone, fax, "", gtd.get_date(), cat_clt, 
-				banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg), un, sold, plafond, false, false, "");
+		client clt = new client(nom, prenom, adresse, wilaya, /*code_postal, email, telephone, fax, "",*/ gtd.get_date(), cat_clt, 
+				/*banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),*/ un, sold, plafond, false, false, "");
 		
 		clientRepo.save(clt);clientRepo.flush();
 		
@@ -224,13 +224,13 @@ public class add_clientController {
 		@RequestParam("adresse") String adresse,
 		@RequestParam("unite") long unite,
 		@RequestParam("wilaya") long id_wilaya,
-		@RequestParam("code_postal") String code_postal,
-		@RequestParam("telephone") String telephone,
-		@RequestParam("fax") String fax,
-		@RequestParam("email") String email,
+		//@RequestParam("code_postal") String code_postal,
+		//@RequestParam("telephone") String telephone,
+		//@RequestParam("fax") String fax,
+		//@RequestParam("email") String email,
 		@RequestParam("cat_client") long cat_client,
-		@RequestParam("banque") long id_banque,
-		@RequestParam("type_reg") long type_reg,
+		//@RequestParam("banque") long id_banque,
+		//@RequestParam("type_reg") long type_reg,
 		//@RequestParam("plafond") double plafond,
 		@Valid @RequestParam("img_client") MultipartFile img_client,
 		
@@ -246,12 +246,12 @@ public class add_clientController {
 		
 		category_client cat_clt = cat_clientRepo.getOne(cat_client);
 		
-		String code_client = un.getId()+cat_clt.getLettre()+new_number_code_client();
+		//String code_client = un.getId()+cat_clt.getLettre()+new_number_code_client();
 		
 		wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 		
-		client clt = new client(nom, prenom, adresse, wilaya, code_postal, email, telephone, fax, code_client, gtd.get_date(), cat_clt, 
-				banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg), un, sold, 10, true, false, "");
+		client clt = new client(nom, prenom, adresse, wilaya, /*code_postal, email, telephone, fax, code_client,*/ gtd.get_date(), cat_clt, 
+				/*banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),*/ un, sold, 10, true, false, "");
 		
 		clientRepo.save(clt);clientRepo.flush();
 		
@@ -306,7 +306,7 @@ public class add_clientController {
 		return "redirect:/add_client";
 		
 	}
-	
+	/*
 	public String new_number_code_client() {
 		
 		String ret= "00001";
@@ -343,5 +343,5 @@ public class add_clientController {
 		return ret;
 		
 	}
-	
+	*/
 }

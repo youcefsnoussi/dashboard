@@ -20,31 +20,13 @@ public interface clientRepository extends JpaRepository<client, Long> {
 	public client  findFirst1ByOrderByIdDesc();
 	
 	//---------------------
-	
+	/*
 	@Query( " FROM client c "
 			
 			+ " WHERE c.code = :code ")
 	
 	public client get_client_by_code(String code);
-	
-	//---------------------
-	
-	@Query( " FROM client c "
-			
-			+ " WHERE c.etat_blockage = 'false' AND c.category.special_treatment = 'sanders' ")
-	
-	public List<client> get_client_laiteries();
-	
-	//-------------------------
-	
-	/*
-	@Query(   "SELECT client "
-			
-			+ "FROM client c,  category_client cc "
-			
-			+ "WHERE cc.special_treatment = :st ")
-	
-	public client get_client_by_category_Danon(@Param("st") String special_treatment);
 	*/
+	//---------------------
 	
 }

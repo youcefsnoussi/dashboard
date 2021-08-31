@@ -61,7 +61,6 @@
 						
 							<tr>
 							
-								<th>Code Client</th>
 								<th>Nom Prénom</th>
 								<th>Category</th>
 								<th>Sold encours</th>
@@ -77,7 +76,6 @@
 						
 							<tr th:each="client:${clients_info}">
 							
-								<td th:text="${client.code}"></td>
 								<td th:text="${client.nom}+' '+${client.prenom}"></td>
 								<td th:text="${client.category.nom_category}"></td>
 								<td th:text="${#numbers.formatDecimal(client.sold_encours, 3, 'WHITESPACE', 2,'POINT')}"></td>
@@ -97,7 +95,6 @@
 						
 							<tr>
 							
-								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

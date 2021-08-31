@@ -2,7 +2,6 @@ package com.commercial.entities.schema.backup_edit;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,8 +12,6 @@ import javax.persistence.Table;
 
 import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
-import com.commercial.entities.schema.static_data.banque;
-import com.commercial.entities.schema.static_data.type_reglement;
 import com.commercial.entities.schema.static_data.unite;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
@@ -40,28 +37,11 @@ public class client_backup implements Serializable{
 	@JoinColumn(name = "wilaya")
 	private wilaya wilaya;
 	
-	private String code_postal;
-	private String email;
-	
-	private String telephone;
-	
-	private String fax;
-	
-	private String code;
-	
 	private String date_creation;
 	
 	@ManyToOne
 	@JoinColumn(name = "category_client")
 	private category_client category;
-	
-	@ManyToOne
-	@JoinColumn(name = "banque")
-	private banque banque;
-	
-	@ManyToOne
-	@JoinColumn(name = "type_regelement_client")
-	private type_reglement type_reglement;
 	
 	@ManyToOne
 	@JoinColumn(name = "unite")
@@ -92,12 +72,8 @@ public class client_backup implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public client_backup(String nom, String prenom, String adresse, wilaya wilaya, String code_postal, String email,
-			String telephone, String fax, String code, String date_creation, category_client category,
-			com.commercial.entities.schema.static_data.banque banque,
-			com.commercial.entities.schema.static_data.type_reglement type_reglement,
-			com.commercial.entities.schema.static_data.unite unite, double sold_encours, double plafond,
-			boolean etat_blockage, boolean remise, String img, long id_client, users user) {
+	public client_backup(String nom, String prenom, String adresse, wilaya wilaya, String date_creation, category_client category,
+			unite unite, double sold_encours, double plafond, boolean etat_blockage, boolean remise, String img, long id_client, users user) {
 		
 		super();
 		
@@ -107,15 +83,8 @@ public class client_backup implements Serializable{
 		this.prenom = prenom;
 		this.adresse = adresse;
 		this.wilaya = wilaya;
-		this.code_postal = code_postal;
-		this.email = email;
-		this.telephone = telephone;
-		this.fax = fax;
-		this.code = code;
 		this.date_creation = date_creation;
 		this.category = category;
-		this.banque = banque;
-		this.type_reglement = type_reglement;
 		this.unite = unite;
 		this.sold_encours = sold_encours;
 		this.plafond = plafond;
@@ -139,15 +108,8 @@ public class client_backup implements Serializable{
 		this.prenom = clt.getPrenom();
 		this.adresse = clt.getAdresse();
 		this.wilaya = clt.getWilaya();
-		this.code_postal = clt.getCode_postal();
-		this.email = clt.getEmail();
-		this.telephone = clt.getTelephone();
-		this.fax = clt.getFax();
-		this.code = clt.getCode();
 		this.date_creation = clt.getDate_creation();
 		this.category = clt.getCategory();
-		this.banque = clt.getBanque();
-		this.type_reglement = clt.getType_reglement();
 		this.unite = clt.getUnite();
 		this.sold_encours = clt.getSold_encours();
 		this.plafond = clt.getPlafond();
@@ -201,46 +163,6 @@ public class client_backup implements Serializable{
 		this.wilaya = wilaya;
 	}
 
-	public String getCode_postal() {
-		return code_postal;
-	}
-
-	public void setCode_postal(String code_postal) {
-		this.code_postal = code_postal;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getTelephone() {
-		return telephone;
-	}
-
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-
-	public String getFax() {
-		return fax;
-	}
-
-	public void setFax(String fax) {
-		this.fax = fax;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public String getDate_creation() {
 		return date_creation;
 	}
@@ -255,22 +177,6 @@ public class client_backup implements Serializable{
 
 	public void setCategory(category_client category) {
 		this.category = category;
-	}
-
-	public banque getBanque() {
-		return banque;
-	}
-
-	public void setBanque(banque banque) {
-		this.banque = banque;
-	}
-
-	public type_reglement getType_reglement() {
-		return type_reglement;
-	}
-
-	public void setType_reglement(type_reglement type_reglement) {
-		this.type_reglement = type_reglement;
 	}
 
 	public unite getUnite() {

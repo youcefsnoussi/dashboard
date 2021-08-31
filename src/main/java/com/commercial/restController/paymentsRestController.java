@@ -2,9 +2,12 @@ package com.commercial.restController;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +29,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRep
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
-import com.commercial.functions.track_operations;
+import com.commercial.services.track_operations;
 
 @RestController
 @SessionAttributes("user")
@@ -72,6 +75,19 @@ public class paymentsRestController {
 		List <registre_commerce> rc_list = client_rcRepo.rc_by_client(clt);
 		
 		return rc_list;
+	}
+	
+	//----------------------------------------------------------------------------
+	
+	@GetMapping(value="/get_pay_impaye")
+	public Map<String,Integer> get_rc_by_client() {
+		
+		Map<String, Integer> mp = new HashMap<String, Integer>();
+		
+		mp.put("count", payRepo.get_count_paiements_impaye());
+		
+		return  mp;
+		
 	}
 	
 	//___________________________________________________________________________________________________

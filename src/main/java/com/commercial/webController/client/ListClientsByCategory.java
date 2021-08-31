@@ -18,8 +18,8 @@ import com.commercial.entities.schema.client.repository.category_clientRepositor
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
+import com.commercial.services.generate_Doc;
 
 @Controller
 @SessionAttributes("user")

@@ -61,15 +61,22 @@
     		
     		<li th:each="menu:${list_menu}" th:with="id_menu=${menu[0]}">
     		
-    			<div class="collapsible-header" > <span ><b th:text="${menu[1]}"></b></span></div>
+    			<div class="collapsible-header" > 
+    				<b th:text="${menu[1]}"></b> 
+    				<span th:attr="id=${menu[1]}" class="badge" style="color:red;"></span> 
+    			</div>
       			<div class="collapsible-body">
       			
       				<ul th:each="sub_menu:${list_submenu}" >
       				
       					<li class="" th:each="sub:${sub_menu}" th:object="${sub}" th:if="${sub[3]} == ${menu[0]}">
       					
-      						 <a class="sidenav-close li_drop" th:href="${sub[1]}" target="frame" >  <i th:attr="class='far fa-'+${sub[4]}+''" style="font-size: 25px;"></i> <label style="color:black;font-size: 13px;" th:text="${sub[0]}"></label> </a>
-      																								<!-- <i class="material-icons" >[[${sub[4]}]]</i> // [[${sub[0]}]]-->
+      						 <a class="sidenav-close li_drop" th:href="${sub[1]}" target="frame" >  
+      						 		<i th:attr="class='far fa-'+${sub[4]}+''" style="font-size: 25px;"></i> 
+      						 		<label style="color:black;font-size: 13px;" th:text="${sub[0]}"></label>
+      						 		<span class="badge" style="color:red;" th:attr="id=${#strings.replace(sub[0], ' ', '')}"></span> 
+      						 </a>
+      							<!-- <i class="material-icons" >[[${sub[4]}]]</i> // [[${sub[0]}]]-->
       					</li>
       					
       				</ul>

@@ -53,7 +53,7 @@
 				    },
 					"ordering": true,
 			    	"bPaginate": false,
-					"scrollY":h-350,
+					"scrollY":h-510,
 					"scrollX": "auto",
 			        "deferRender": true,
 			        //dom: '<"top"B l f>rt<"bottom"ip>',
@@ -115,6 +115,14 @@
 		 	var table = $('#table').DataTable(datatable_config);
 			
 		 	var table1 = $('#table1').DataTable(datatable_config);
+		 	
+			//------------------- TO RENDER table header and footer between tabs
+		 	
+		 	$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+		        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+		    } );
+		 	
+		 	//------------------- ------------------------------------------------------
 		 	
 			$("#afficher").click(function(){
 				

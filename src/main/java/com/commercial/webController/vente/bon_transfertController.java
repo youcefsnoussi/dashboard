@@ -26,10 +26,10 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfe
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
-import com.commercial.functions.generate_Doc;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
-import com.commercial.functions.track_operations;
+import com.commercial.services.generate_Doc;
+import com.commercial.services.track_operations;
 
 @Controller
 @SessionAttributes("user")

@@ -89,4 +89,26 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	
 	//----------------------------------------------------------
 	
+	@Query( " FROM paiement pai "
+			
+				+ " WHERE pai.cancel = 'false' "
+				
+				+ " AND pai.verification = 'true' AND pai.validation = 'false' "
+				
+				+ " ORDER BY pai.id DESC")
+		 
+	public List<paiement> get_paiements_impaye();
+	
+	//----------------------------------------------------------
+	
+	@Query( 	"SELECT COUNT(*) "
+			
+				+ " FROM paiement pai "
+			
+				+ " WHERE pai.cancel = 'false' "
+				
+				+ " AND pai.verification = 'true' AND pai.validation = 'false' ")
+		 
+	public Integer get_count_paiements_impaye();
+	
 }
