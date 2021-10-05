@@ -153,8 +153,9 @@ public class list_factureController {
 	@RequestMapping(value="/list_fact")
 	public String list_fact(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
-						 @RequestParam("date_debut") String date_debut,
-						 @RequestParam("date_fin") String date_fin,
+						 @RequestParam(value="date_debut", defaultValue="0") String date_debut,
+						 @RequestParam(value="date_fin", defaultValue="0") String date_fin,
+						 @RequestParam(value="id_rc", defaultValue="0") long id_rc,
 						 Model model){
 		
 		String ret = "vente/list_facture";
@@ -165,18 +166,15 @@ public class list_factureController {
 		
 		convert_string_to_date_util conv = new convert_string_to_date_util();
 		
+		List<facture> lst_fact = new ArrayList<>();
+		
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
-			model.addAttribute("list_facture", factRepo.today_facture(gtd.get_date()));
+			lst_fact = factRepo.today_facture(gtd.get_date());
 			
 			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
 			date_f = conv.convertion_MyDate_to_InputDate(gtd.get_date());
-		}
-		else if(date_debut.equals("1") && date_fin.equals("1")) {
-			
-			model.addAttribute("list_facture", factRepo.findAll());
-			
 		}
 		else {
 
@@ -184,8 +182,10 @@ public class list_factureController {
 				
 				if(date_debut.contains("/")) {
 					
-					model.addAttribute("list_facture", 
-							factRepo.date_between_facture(conv.convertion_from_my_date(date_debut), conv.convertion_from_my_date(date_fin)));
+					lst_fact = (id_rc==0) 
+							? factRepo.date_between_facture(conv.convertion_from_my_date(date_debut), conv.convertion_from_my_date(date_fin))
+							: factRepo.date_between_facture_rc(conv.convertion_from_my_date(date_debut), conv.convertion_from_my_date(date_fin),
+									rcRepo.getOne(id_rc));		
 					
 					model.addAttribute("selected_year",date_debut.substring(6));
 					
@@ -196,8 +196,11 @@ public class list_factureController {
 				}
 				else {
 					
-					model.addAttribute("list_facture", 
-							factRepo.date_between_facture(conv.convertion_from_InputDate(date_debut), conv.convertion_from_InputDate(date_fin)));
+					lst_fact = (id_rc==0)
+							? factRepo.date_between_facture(conv.convertion_from_InputDate(date_debut), conv.convertion_from_InputDate(date_fin))
+							: factRepo.date_between_facture_rc(conv.convertion_from_InputDate(date_debut), 
+									conv.convertion_from_InputDate(date_fin), rcRepo.getOne(id_rc));		
+					
 					
 					date_d = date_debut;
 					
@@ -213,11 +216,17 @@ public class list_factureController {
 			
 		}
 		
+		model.addAttribute("list_facture", lst_fact);
+		
 		model.addAttribute("years", factRepo.get_years_db());
 		
 		model.addAttribute("date_d", date_d);
 		
 		model.addAttribute("date_f", date_f);
+		
+		model.addAttribute("rcs", rcRepo.findAll(Sort.by(Sort.Direction.ASC,"code")));
+		
+		model.addAttribute("selected_rc", id_rc);
 		
 		return ret;
 		

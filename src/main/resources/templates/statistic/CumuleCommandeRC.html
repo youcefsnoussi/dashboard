@@ -22,9 +22,6 @@
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
-		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
@@ -32,37 +29,7 @@
 		<script type="text/javascript">
 		
 		$(document).ready(function() {
-			/*
-			var getUrlParameter = function getUrlParameter(sParam) {
-			    var sPageURL = window.location.search.substring(1),
-			        sURLVariables = sPageURL.split('&'),
-			        sParameterName,
-			        i;
-
-			    for (i = 0; i < sURLVariables.length; i++) {
-			        sParameterName = sURLVariables[i].split('=');
-
-			        if (sParameterName[0] === sParam) {
-			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-			        }
-			    }
-			};
 			
-			var ret = getUrlParameter('ret');
-			
-			if(ret!=null){
-				
-				$("#title").text("Information");
-				$("#icone").attr("class","far fa-info-circle");
-				
-				$("#text").text("Annulation effectuer avec succes ");
-				
-				$("#error").modal('show');
-					
-			}
-			
-			$('[data-toggle="tooltip"]').tooltip()
-			*/
 			var datatable_config = {
 					"language": {
 				            "url": "resources/Plugins/datatable/lang/French.json"
@@ -117,21 +84,21 @@
 				
 				var end = $("#end").val();
 				
-				var id_art = $("#art").val();
+				var id_rc = $("#rc").val();
 				
-				if(start=="" || end=="" || id_art==0){
+				if(start=="" || end=="" || id_rc==0){
 					
 					$("#title").text("Erreur !!!");
 					$("#icone_error").attr("class","far fa-exclamation-triangle");
 					$("#title_error").text("Erreur");
-					$("#text").html("<span> Veuillez selectionner les dates !!! et un Article !!!<span>");
+					$("#text").html("<span> Veuillez selectionner les dates !!! et un RC !!!<span>");
 					$("#error").modal('show');
 					
 				}
 				else{
 					
 					//console.log("start = "+start+" / end = "+end);
-					window.location.replace("vente_produit_val?start="+start+"&end="+end+"&id_art="+id_art);
+					window.location.replace("vente_client?start="+start+"&end="+end+"&id_rc="+id_rc);
 					
 				}
 				
@@ -139,14 +106,14 @@
 		 	
 			$("#print").click(function(){
 				
-				var id_art = $("#art").val();
+				var id_rc = $("#rc").val();
 				
 				var start = $("#start").val();
 				
 				var end = $("#end").val();
 				
 				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-											'src="print_vente_produit_val?id_art='+id_art+'&start='+start+'&end='+end+'"></iframe>');
+											'src="print_vente_client?id_rc='+id_rc+'&start='+start+'&end='+end+'"></iframe>');
 				
 				$("#title").text("Imprimer");
 				
@@ -156,43 +123,17 @@
 				
 			});
 			
-			$("#generate").click(function(){
-				
-				$(".nbr").each(function(){
-					
-					var s = $(this).text();
-					
-					$(this).text(s.replace(/ /g, ""));
-					
-				});
-				
-				var myExcel = new ExcelGen({
-					
-					  "src_id": "table",
-					
-					  "show_header": true
-					
-				});
-				
-				myExcel.generate();
-				/*
-				$(".nbr").each(function(){
-					
-					var s = $(this).text();
-					
-					$(this).text(s.formatMoney(2, '.', ' '));
-					
-				});
-				*/
-			});
+			//$("#rc").val($("#id_rc").val());
+			
+			$("#rc").selectpicker('val',$("#id_rc").val());
 			
 		});
-		
+		/*
 		function ifrhgh(){
 		    var iframehght =  $("#frame").contents().height();
 		    $("#frame").height(iframehght);
 		}
-		
+		*/
 		</script>
 		
 		<style type="text/css">
@@ -218,7 +159,7 @@
 		
 		<div class="card">
 		
-			<h3 class="card-header  text-center"> <i class="far fa-history"></i> Ventes Par Produit Valorisé</h3>
+			<h3 class="card-header  text-center"> <i class="far fa-history"></i> Vente Par Client </h3>
 			<br>
 			
 			<div class="card-body">
@@ -228,16 +169,17 @@
 					<div class="row">
 					
 						<div class="col-md-3" >
-						
-							<label>Article</label>
+							
+							<input type="hidden" id="id_rc" th:value="${id_rc}">
+							
+							<label>Registre Commerce</label>
 							<select class="selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
-																								name="art" id="art" data-size="5">
-								<option value="0"> Article </option>
-								<option th:each="art:${list_art}" th:value="${art.id}" th:text="${art.code}"  
-										th:attr="data-subtext=${art.libelle}" th:if="${art.id}!=${id_art}"></option>
+																								name="rc" id="rc" data-size="5">
 								
-								<option th:each="art:${list_art}" th:value="${art.id}" th:text="${art.code}"  
-										th:attr="data-subtext=${art.libelle}" th:unless="${art.id}!=${id_art}" selected></option>
+								<option  value="0" >RC</option>
+								
+								<option th:each="rc:${list_rc}" th:value="${rc.id}" th:text="${rc.code}"  
+										th:attr="data-subtext=${rc.nom}+' '+${rc.prenom}"></option>
 								
 							</select>
 							
@@ -247,14 +189,14 @@
 						
 							<div class="input-group">
 								
-									<div class="input-group-append">
-										
+									<div class="input-group-prepend">
+										<!--  
 										<button id="print" class="btn btn-secondary" type="button">Imprimer</button>
-										
-										<input id="start" type="date" name="start"  class="form-control date" style="width:50%;" 
+										-->
+										<input id="start" type="date" name="start"  class="form-control date" style="width:35%;" 
 										th:value="${start}" placeholder="DU">
 										<span class="input-group-text declaration far fa-calendar-alt"> </span>
-										<input id="end" type="date" name="end"  class="form-control date" style="width:50%;" 
+										<input id="end" type="date" name="end"  class="form-control date" style="width:35%;" 
 										th:value="${end}" placeholder="AU">
 										
 										<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
@@ -265,9 +207,16 @@
 						
 						</div>
 						
-						<div class="col-md-3 offset-md-2">
+						<div class="col-md-3 md-offset-1">
 						
-							<button class="btn btn-primary" id="generate">Excel</button>
+							<select id="type" name="type" class="form-control">
+							
+								<option value="0" th:if="${selected_type}==0" selected>Global</option>
+								<option value="0" th:unless="${selected_type}==0" >Global</option>
+								<option value="1" th:if="${selected_type}==1" selected>Par Journé</option>
+								<option value="1" th:unless ="${selected_type}==1" >Par Journé</option>
+							
+							</select>
 						
 						</div>
 						
@@ -282,10 +231,10 @@
 							<tr>
 							
 								<th>Code</th>
-								<th>Client</th>
+								<th>Article</th>
 								<th>Quantite</th>
-								<th>PU</th>
-								<th>Montant</th>	
+								<th>Montant HT</th>
+								<th>Montant TTC</th>	
 								
 							</tr>
 							
@@ -296,11 +245,11 @@
 							<tr th:each="lst:${list}" >
 								
 								<td class="cc"  th:text="${lst[0]}"></td>
-								<td th:text="${lst[1]}"></td>
+								<td th:text="${lst[3]}"></td>
 								
-								<td class="cc nbr"  th:text="${#numbers.formatDecimal(lst[2], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td class="rr nbr"  th:text="${#numbers.formatDecimal(lst[3], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td class="rr nbr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td class="cc"  th:text="${#numbers.formatDecimal(lst[4], 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td class="rr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td class="rr"  th:text="${#numbers.formatDecimal(lst[8], 3, 'WHITESPACE', 2,'POINT')}"></td>
 								
 							</tr>
 						
@@ -309,12 +258,12 @@
 						<tfoot class="thead-dark">
 							
 							<tr>
-							
+								
+								<th class="cc" ></th>
 								<th></th>
-								<th></th>
-								<th class="cc"></th>
-								<th class="rr"></th>
-								<th class="rr"></th>	
+								<th class="cc" ></th>
+								<th class="rr" ></th>
+								<th class="rr" ></th>
 								
 							</tr>
 							
@@ -340,11 +289,10 @@
 	        </button>
 	      </div>
 	         
-	         <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
-	         
-	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         <div id="print_content" class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;">
 	         
 	         </div>
+	         
 	      
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

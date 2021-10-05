@@ -156,7 +156,17 @@ public class vente_employeeController {
 		
 		String ret = "vente/vente_employee";
 		
-		model.addAttribute("list_emp", Connection_RH.get_employee(user.getUnite()));
+		List< Map<String,String> > emp =  Connection_RH.get_employee(user.getUnite());
+		
+		for (Map<String, String> map : emp) {
+			
+			boolean vente = (bleRepo.test_if_it_got_bl(map.get("matricule")).isEmpty()) ? false : true;
+			
+			map.put("vente", Boolean.toString(vente));
+			
+		}
+		
+		model.addAttribute("list_emp", emp);
 		
 		model.addAttribute("articles", pu_a_ctRepo.get_articles_by_CatClient(cat_clientRepo.get_category_by_name("Personnel")));
 		

@@ -35,5 +35,26 @@ $(document).ready(function() {
     };
  		
  	var table = $('#table').DataTable(datatable_config);
-
+ 	
+ 	$(".edit_end").click(function() {
+		
+ 		//console.log("id=>"+$(this).attr("id_relation"))
+ 		var id_rel = $(this).attr("id_relation");
+ 		var end = $(this).parent().find(".end").val();
+ 		
+ 		$.ajax({
+ 			url : 'update_date_end_relation',
+ 			data : {
+ 				id_relation : id_rel,
+ 				end : end
+ 			},
+ 			success : function(responseJson) {
+ 				
+ 				alert("modification effectuée ")
+ 				
+ 			}
+ 		});
+ 		
+	});
+ 	
 });

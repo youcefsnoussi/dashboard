@@ -29,4 +29,19 @@ $(document).ready(function() {
         $(this).next('.custom-file-label').html(fileName);
     })
 	
+    $("#checkVP").change(function() {
+		
+		if($(this).prop("checked")){
+			
+			$("#vente_palette").val("on");
+			
+		}
+		else{
+			
+			$("#vente_palette").val("off");
+			
+		}
+		
+	});
+    
 });	

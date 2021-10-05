@@ -2,6 +2,7 @@ package com.commercial.entities.schema.client;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
 
 import com.commercial.entities.schema.static_data.*;
 
@@ -51,13 +53,18 @@ public class client implements Serializable{
 	
 	private String img;
 	
+	@Column(columnDefinition="boolean default false")
+	private boolean ventePalette;
+	
+	@Column(columnDefinition="double precision default 0")
+	private long soldPalette;
+	
 	public client() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public client(String nom, String prenom, String adresse, wilaya wilaya, String date_creation, category_client category,
-			com.commercial.entities.schema.static_data.unite unite, double sold_encours, double plafond,
-			boolean etat_blockage, boolean remise, String img) {
+	public client(String nom, String prenom, String adresse, wilaya wilaya, String date_creation, category_client category, unite unite, 
+			double sold_encours, double plafond, boolean etat_blockage, boolean remise, String img, boolean ventePalette, long soldPalette) {
 		super();
 		this.nom = nom;
 		this.prenom = prenom;
@@ -71,6 +78,8 @@ public class client implements Serializable{
 		this.etat_blockage = etat_blockage;
 		this.remise = remise;
 		this.img = img;
+		this.ventePalette = ventePalette;
+		this.soldPalette = soldPalette;
 	}
 
 	public Long getId() {
@@ -175,6 +184,22 @@ public class client implements Serializable{
 
 	public void setImg(String img) {
 		this.img = img;
+	}
+
+	public boolean isVentePalette() {
+		return ventePalette;
+	}
+
+	public void setVentePalette(boolean ventePalette) {
+		this.ventePalette = ventePalette;
+	}
+
+	public long getSoldPalette() {
+		return soldPalette;
+	}
+
+	public void setSoldPalette(long soldPalette) {
+		this.soldPalette = soldPalette;
 	}
 	
 }

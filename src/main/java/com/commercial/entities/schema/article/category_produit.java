@@ -33,7 +33,13 @@ public class category_produit implements Serializable{
 		super();
 		this.nom_category = nom_category;
 	}
-
+	
+	public category_produit(Long id, String nom_category) {
+		super();
+		this.id = id;
+		this.nom_category = nom_category;
+	}
+	
 
 	public Long getId() {
 		return id;

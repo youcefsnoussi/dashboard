@@ -70,7 +70,15 @@
 								<td th:if="${rc_client.registre_commerce.category}!=null" th:text="${rc_client.registre_commerce.category.nom_category}"></td>
 								<td th:unless="${rc_client.registre_commerce.category}!=null" th:text="''"></td>
 								<td th:text="${rc_client.date_debut}"></td>
-								<td th:text="${rc_client.date_fin}"></td>
+								<td th:if="${edit_option}=='edit'" > 
+									<div class="input-group">
+										<input type="date" class="form-control end" 
+											th:value="${#strings.substring(rc_client.date_fin,6,10)}+'-'+${#strings.substring(rc_client.date_fin,3,5)}+'-'
+															+${#strings.substring(rc_client.date_fin,0,2)}"> 
+										<button class="btn btn-success edit_end" th:attr="id_relation=${rc_client.id}">Modifier</button>
+									</div>
+								</td>
+								<td th:unless="${edit_option}=='edit'" th:text="${rc_client.date_fin}"></td>
 								
 							</tr>
 						

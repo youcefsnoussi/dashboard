@@ -57,6 +57,21 @@ $(document).ready(function() {
 		
 	});
 	
+	$("#bl_check").change(function() {
+		
+		if($(this).prop("checked")){
+			
+			$("#MultipleBon").val("on");
+			
+		}
+		else{
+			
+			$("#MultipleBon").val("off");
+			
+		}
+		
+	});
+	
 	$(".n_nif").keyup(function(){
 		
 		var val = $(this).val();

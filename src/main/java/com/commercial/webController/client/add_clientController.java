@@ -142,6 +142,8 @@ public class add_clientController {
 		//@RequestParam("banque") long id_banque,
 		//@RequestParam("type_reg") long type_reg,
 		@RequestParam("plafond") double plafond,
+		@RequestParam(value = "ventePalette", required = false) String ventePalette,
+		@RequestParam(value = "soldPalette", defaultValue = "0") long soldPalette,
 		@Valid @RequestParam("img_client") MultipartFile img_client,
 		
 		@SessionAttribute("user") users user){
@@ -160,8 +162,12 @@ public class add_clientController {
 		
 		wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 		
+		boolean isVentePalette = (ventePalette.equals("on")) ? true : false;
+		
+		soldPalette = (isVentePalette == true) ? soldPalette : 0;
+		
 		client clt = new client(nom, prenom, adresse, wilaya, /*code_postal, email, telephone, fax, "",*/ gtd.get_date(), cat_clt, 
-				/*banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),*/ un, sold, plafond, false, false, "");
+				/*banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),*/ un, sold, plafond, false, false, "", isVentePalette, soldPalette);
 		
 		clientRepo.save(clt);clientRepo.flush();
 		
@@ -251,7 +257,7 @@ public class add_clientController {
 		wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 		
 		client clt = new client(nom, prenom, adresse, wilaya, /*code_postal, email, telephone, fax, code_client,*/ gtd.get_date(), cat_clt, 
-				/*banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),*/ un, sold, 10, true, false, "");
+				/*banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),*/ un, sold, 10, true, false, "", false, 0);
 		
 		clientRepo.save(clt);clientRepo.flush();
 		

@@ -64,6 +64,7 @@ import com.commercial.entities.schema.static_data.repository.unite_mesureReposit
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
+import com.commercial.services.PaletteService;
 import com.commercial.services.generate_Doc;
 import com.commercial.services.track_operations;
 import com.commercial.functions.Connection_peseur;
@@ -180,6 +181,9 @@ public class list_bl_encoursController {
 	
 	@Autowired
 	track_operations trk;
+	
+	@Autowired
+	PaletteService ps;
 	
 	public list_bl_encoursController() {
 		// TODO Auto-generated constructor stub
@@ -362,7 +366,7 @@ public class list_bl_encoursController {
 			
 			int t = 0;
 			
-			//client clt = bl.getClient();
+			client clt = bl.getClient();
 			
 			registre_commerce rc = bl.getRegistre_commerce();
 			
@@ -391,21 +395,42 @@ public class list_bl_encoursController {
 				
 			}
 			
+			//------------------------------------------------------- nA9ESS montant bl li rah encours mais avant modif hed test rah yesra
+			
 			if( list_bl.contains( bon_lRepo.getOne(id_bl) ) ) {
 				
 				montant_bls = montant_bls - bon_lRepo.getOne(id_bl).getMontant_ttc();
 				
 			}
 			
+			//----------------------------------------------------------------------------------------------
+				
+			//---------------------- TEST PALETTE + CACULE MONTANT PALETTE DJDID -----------
+			
+			double montant_p = 0;
+				
+			if(clt.isVentePalette()) {
+				
+				List <bon_livraison> tmp = bon_lRepo.get_bl_encours_by_clt(clt);
+				
+				tmp.remove(bl);
+				
+				if(ps.testPalettePlafond( tmp, clt, ps.getNombrePaletteFromInterface(article, quantite, clt)))  t=1;
+				
+				montant_p = ps.getMontantPaletteFromInterface(article, quantite, clt);
+				
+			}
+			System.out.println("prix total palette djdid------>"+montant_p);
+			
+			//---------------------------------------------------
+			
 			double balance_rc = rc.getSold_encours();
 			
-			if((balance_rc+montant_ttc+montant_bls)>rc.getPlafond()) {
+			if((balance_rc+montant_ttc+montant_bls+montant_p)>rc.getPlafond()) {
 				
 				t = 1;
 				
 			}
-			
-			//----------------------------------------------
 			
 			String ret;
 			
@@ -477,6 +502,16 @@ public class list_bl_encoursController {
 					}
 					
 				}
+				
+				//--------------------------- UPDATE PALETTE ---------------------
+				
+				if(clt.isVentePalette()) {
+					
+					ps.addingPaletteToBL(bl);
+					
+				}
+				
+				//----------------------------------------------------------------
 				
 				String qr_code = generateQRcode.createQRcode(bl.getNumero(), "BL");
 				
@@ -673,6 +708,15 @@ public class list_bl_encoursController {
 				bon_lRepo.save(bl); bon_lRepo.flush();
 				
 				//-------------------------	
+				
+				//-----------------Update SOLD PALETTE------------------
+				
+				if(clt.isVentePalette()) {
+					
+					ps.paletteOut(ps.getNbrPaletteFromBL(bl), fact);
+					
+				}
+				
 				
 				//------------------------- insert into MY SQL Peseur IF AIN ROMANA------------
 				

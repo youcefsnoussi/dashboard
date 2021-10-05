@@ -167,7 +167,8 @@ public class generate_Doc {
 				
 				for(int i=0; i<list_bld.size(); i++) {
 					
-					if(!magasins.contains(list_bld.get(i).getMagasin().getId())) {
+					if(!magasins.contains(list_bld.get(i).getMagasin().getId()) 
+							&& !list_bld.get(i).getMagasin().getName().equals("Dépot Palette")) {
 						
 						magasins.add(list_bld.get(i).getMagasin().getId());
 						
@@ -1823,6 +1824,71 @@ public class generate_Doc {
 				    if (!dir.exists()) dir.mkdirs();
 					
 					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\EVC.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_etat_104(String start, String end, category_produit cp, String unite) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/ETAT104.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\Etat 104.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				String cond_cat = (cp.getId()==0) ? "true" : 
+					
+					"registre_commerce IN "+
+					"(SELECT registre_commerce FROM proforma_cmd_bl_fact.facture fact "+
+					 "JOin proforma_cmd_bl_fact.facture_detail fact_d on fact_d.facture = fact.id "+
+
+					 "JOIN article.article art ON art.id = fact_d.article "+
+					 "JOIN article.produit prd ON prd.id = art.produit "+
+					 "JOIN article.sous_category_produit scp ON scp.id = prd.sous_category_produit "+
+					 "JOIN article.category_produit cp ON cp.id = scp.category_produit "+
+
+					 "WHERE CAST(date AS date) BETWEEN CAST('"+start+"' AS date) AND CAST('"+end+"' AS date) and cp.id = '"+cp.getId()+"' "+
+
+					 "Group by registre_commerce) ";
+				
+				String produit = (cp.getId()==0) ? "" : "Produit : "+cp.getNom_category();
+				
+				mp.put("start", start);
+				mp.put("end", end);
+				mp.put("condition_cat", cond_cat);
+				mp.put("category_produit", produit);
+				mp.put("unite", unite);
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint = JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\ETAT104.pdf");
 					
 					con.close();
 					

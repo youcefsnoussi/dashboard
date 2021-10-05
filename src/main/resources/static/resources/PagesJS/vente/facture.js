@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
 			
 	//$('#code_client').bind("enterKey",function(e){
@@ -166,6 +167,7 @@ $(document).ready(function() {
 		parrent.find("#id_um").val($('option:selected', this).attr("id_um"));
 		parrent.find("#prix_unitaire").val($('option:selected', this).attr("pu"));
 		parrent.find("#tva_art").val($('option:selected', this).attr("tva"));
+		parrent.find("#pesage_palette").val($('option:selected', this).attr("pp"));
 		
 		var pu = parrent.find("#prix_unitaire").val();
 		
@@ -338,7 +340,7 @@ $(document).ready(function() {
 								$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
 											   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
 											   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
-											   '>'+value.article.libelle+'</option>');
+											   'pp="'+value.article.pesagePalette+'">'+value.article.libelle+'</option>');
 								
 								$(this).selectpicker('refresh');
 									
@@ -637,6 +639,8 @@ $(document).ready(function() {
 			
 			var rc_plafond = 0;
 			
+			var palette_plafond = 0;
+			
 			var msg1 = "";
 			
 			var mnt_ttc = parseFloat( $("#total_ttc").val().replace(" ","") );
@@ -649,6 +653,7 @@ $(document).ready(function() {
 				data : {
 					id_rc_clt : $("#rc").val(),
 					montant_ttc : $("#total_ttc").val(),
+					nbr_palette : calculeNbrPalette()
 		        },
 		        success : function(responseJson) {
 					
@@ -674,6 +679,15 @@ $(document).ready(function() {
 								
 							}
 							
+							console.log("plafond_palette->"+responseJson.plafond_palette)
+							
+							if(responseJson.plafond_palette!=0){
+								
+								palette_plafond++;
+								
+								msg1 = msg1+"- Plafond Palette dépasser <br>";
+								
+							}
 						
 					}
 					
@@ -684,7 +698,7 @@ $(document).ready(function() {
 			
 			console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
 			
-			if(client_plafond==0 && rc_plafond==0){
+			if(client_plafond==0 && rc_plafond==0 && palette_plafond==0){
 				
 				console.log("-----------------> SUBMIT")
 				
@@ -733,6 +747,28 @@ function if_duplicate_value (arr){
 	}
 	
 	return false;
+	
+}
+
+function calculeNbrPalette(){
+	
+	var nbrP = 0;
+	
+	$(".qte").each(function() {
+		
+		console.log("------>enter each<-----------")
+		
+		if($(this).val()!="0"){
+			
+			console.log("enter if and value ->"+parseFloat($(this).val()))
+			
+			nbrP += parseFloat($(this).val()) / parseFloat($(this).parent().find("#pesage_palette").val());
+			
+		}
+		
+	});
+	
+	return nbrP;
 	
 }
 		

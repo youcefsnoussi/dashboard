@@ -70,5 +70,19 @@ $(document).ready(function() {
 	    
 	});
 			
+	$("#checkVP").change(function() {
 		
+		if($(this).prop("checked")){
+			
+			$("#vente_palette").val("on");
+			
+		}
+		else{
+			
+			$("#vente_palette").val("off");
+			
+		}
+		
+	});
+	
 });	

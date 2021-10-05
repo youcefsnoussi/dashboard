@@ -31,168 +31,59 @@
 		
 		//$('#code_client').bind("enterKey",function(e){
 			
-		$("#id_client").change(function(){
 		
+		
+		
+		//----------------------------------------------------------------------
+		
+		
+		//----------------------------------------------------------------------
+		
+		$("#rc").change(function(){
+			 
 			$("#designation").val("");
 			$("#adresse").val("");
-			$("#solde").val("");
-			$("#max_solde").val("");
-			$("#matricule").val("");
 			
-			var recherche = $("#id_client option:selected").attr("code_clt");
-			
-			console.log("==>"+recherche);
-			
-			spin_it('on');
+			$("#designation").val($("#rc option:selected").attr("des"));
+			$("#adresse").val($("#rc option:selected").attr("adresse"));
+			 
+			$('.art').find('option:not(:first)').remove();
+			$(".art").selectpicker('refresh');
+				
+			$.ajaxSetup({async: false});
 			$.ajax({
-				url: 'ajax_get_client_by_code',
+				url: 'ajax_get_art_by_rc_cat',
 				//type: 'POST',
 				dataType: 'json',
 				data : {
-					code	:recherche,
+					id_rc_clt : $(this).val(),
 		        },
-				success : function(data){
-					//console.log(data);
+		        success : function(responseJson) {
 					
-						//$("#id_client").val(data.id)
-						$("#designation").val(data.nom+' '+data.prenom)
-						$("#adresse").val(data.adresse)
-						$("#solde").val(parseFloat(data.sold_encours).formatMoney(2, '.', ' '))
-						$("#anc_code_client").val(recherche);
-						$("#mode_reg").val(data.type_regelement_client);
-						$("#max_solde").val(parseFloat(data.plafond).formatMoney(2, '.', ' '));
-						$("#mode_reg").val(data.type_reglement.id);
-						$("#mode_reg").selectpicker("refresh");
-						
-						if(($("#c_type_cl").val()!=data.category.id)&&($("#c_type_cl").val()!="")) {
+					if (responseJson != "null") {
+
+						$.each(responseJson, function(key, value) {
 							
-							$("#c_type_cl").val(data.category.id);
+							$(".art").each(function(){
+							
+								$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" data-subtext="'+value.article.code+'" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" pu="'+value.prix+'"' 
+										+' tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" >'+value.article.produit.designation+' '+value.article.emballage_produit.nom_emballage+' '+value.article.pesage_produit.pesage+'</option>');
 								
-						}
-						
-						//-------------------- update select RC b client
-						
-						$('#rc').find('option:not(:first)').remove();
-						$("#rc").selectpicker('refresh');
-						$("#designation_rc").val("");
-						$("#adresse_rc").val("");
-						$("#solde_rc").val("");
-						$("#max_solde_rc").val("");
-						
-						$.ajaxSetup({async: false});
-						$.ajax({
-							url: 'ajax_get_rc_by_client_fact',
-							//type: 'POST',
-							dataType: 'json',
-							data : {
-								id_client	:data.id,
-					        },
-					        success : function(responseJson) {
+								$(this).selectpicker('refresh');
 								
-								if (responseJson != "null") {
-
-									$.each(responseJson, function(key, value) {
-										
-										$("#rc").append('<option value="'+value.id+'" rc="'+value.registre_commerce.numero_rc+'" data-subtext="'+value.registre_commerce.numero_rc+' [ '+value.date_debut+' ➤ '+value.date_fin+' ]" nif="'+value.registre_commerce.numero_nif+'" title="'+value.registre_commerce.numero_rc+'" adresse="'+value.registre_commerce.adresse+'"' 
-												+' art="'+value.registre_commerce.numero_art+'" plafond="'+value.registre_commerce.plafond+'" sold="'+value.registre_commerce.sold_encours+'" nom="'+value.registre_commerce.nom+'" prenom="'+value.registre_commerce.prenom+'">'+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</option>');
-
-									});
-									
-									$("#rc").selectpicker('refresh');
-								}
-								
-							}
+							});
+							
 						});
 						
-						//-------------------------------------------------
+						$(".art").find("option").hide();
 						
-						//-------------------- Update articles -----------------
-						
-						$('.art').find('option:not(:first)').remove();
-						$(".art").selectpicker('refresh');
-						
-						$.ajaxSetup({async: false});
-						$.ajax({
-							url: 'ajax_get_art_by_client_cat',
-							//type: 'POST',
-							dataType: 'json',
-							data : {
-								id_client	:data.id,
-					        },
-					        success : function(responseJson) {
-								
-								if (responseJson != "null") {
-
-									$.each(responseJson, function(key, value) {
-										
-										$(".art").each(function(){
-										
-											$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" data-subtext="'+value.article.code+'" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" pu="'+value.prix+'"' 
-													+' tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" >'+value.article.produit.designation+' '+value.article.emballage_produit.nom_emballage+' '+value.article.pesage_produit.pesage+'</option>');
-											
-											$(this).selectpicker('refresh');
-											
-										});
-										
-									});
-									
-									$(".art").find("option").hide();
-									
-								}
-								
-							}
-						});
-						
-						//-----------------------------------------------------
-						
-						$(".qte").attr("readonly", false);
-						$(".qte").val(0);
-						$(".prix_unitaire").val(0);
-						$(".tva").val(0);
-						$(".montant_ht").val(0);
-						
-						
-				},
-				error: function (xhr, status) {
-		        	
-					$("#designation").val("");
-					$("#adresse").val("");
-					$("#solde").val("");
-					$("#max_solde").val("");
-					$("#matricule").val("");
+					}
 					
-					$('#rc').find('option:not(:first)').remove();
-					$("#rc").selectpicker('refresh');
-					$("#designation_rc").val("");
-					$("#adresse_rc").val("");
-					$("#solde_rc").val("");
-					$("#max_solde_rc").val("");
-					
-					$('#code_client').focus();
-					$('#code_client').val("");
-					
-		        	$("#title").text("Erreur !!!");
-					$("#icone").attr("class","far fa-exclamation-triangle");
-					$("#text").text("Code Client inexistant ");
-					$("#error").modal('show');
-					
-		        },
+				}
 			});
-			spin_it('off');
 			
-		});
-		
-		
-		$('#code_client').keyup(function(e){
-		    if(e.keyCode == 13)
-		    {
-		        $(this).trigger("enterKey");
-		    }
-		    else{
-		    	
-		    	$(this).val($(this).val().toUpperCase());
-		    	
-		    }
+			$(".qte").attr("readonly", false);
+			
 		});
 		
 		//----------------------------------------------------------------------
@@ -200,10 +91,6 @@
 		$(".art").change(function(){
 			
 			var parrent = $(this).parent().parent().parent();
-			
-			console.log("art val = "+$(this).val())
-			
-			console.log("art attr before= "+$(this).attr("name"))
 			
 			if($(this).val()!=""){
 				
@@ -220,108 +107,7 @@
 			parrent.find("#code_art").val($('option:selected', this).attr("code"));
 			parrent.find("#unite_mesure").val($('option:selected', this).attr("um"));
 			parrent.find("#id_um").val($('option:selected', this).attr("id_um"));
-			parrent.find("#prix_unitaire").val($('option:selected', this).attr("pu"));
-			parrent.find("#tva_art").val($('option:selected', this).attr("tva"));
 			
-			var pu = parrent.find("#prix_unitaire").val();
-			
-			parrent.find("#montant_ht").val((pu*0).formatMoney(2, '.', ' '));
-			
-			var montant_ht = 0;
-			
-			var montant_tva = 0;
-			
-			$(".montant_ht").each(function(){
-				
-				if($(this).val()!=""){
-					
-					var v = $(this).val();
-					
-					v = v.replace(/ /g,"");
-					
-					montant_ht = montant_ht + parseFloat(v);
-					
-					var tva = $(this).parent().parent().find("#tva_art").val()/100;
-					
-					montant_tva = montant_tva + ( parseFloat(v) * tva )
-					
-				}
-				
-			});
-			
-			var montant_ttc = montant_ht + montant_tva;
-			
-			$("#total_ht").val((montant_ht).formatMoney(2, '.', ' '));
-			$("#total_tva").val((montant_tva).formatMoney(2, '.', ' '));
-			$("#total_ttc").val((montant_ttc).formatMoney(2, '.', ' '));
-			
-		});
-		
-		//----------------------------------------------------------------------
-		
-		$("#rc").change(function(){
-			  
-			 $("#designation_rc").val($("#rc option:selected").attr("nom")+' '+$("#rc option:selected").attr("prenom"));
-			 $("#adresse_rc").val($("#rc option:selected").attr("adresse"));
-			 $("#solde_rc").val(parseFloat($("#rc option:selected").attr("sold")).formatMoney(2, '.', ' '));
-			 $("#max_solde_rc").val(parseFloat($("#rc option:selected").attr("plafond")).formatMoney(2, '.', ' '));
-			 
-		});
-		
-		//----------------------------------------------------------------------
-		
-		$(".qte").keyup(function(){
-			
-			var qte = $(this).val();
-			
-			var parent = $(this).parent().parent();
-			
-			var pu = parent.find("#prix_unitaire").val();
-			
-			var val_select_art = parent.find("#art").val();
-			
-			if(val_select_art!=""){
-				
-				parent.find("#montant_ht").val((pu*qte).formatMoney(2, '.', ' '));
-				
-			}
-			else{
-				
-				$("#title").text("Erreur !!!");
-				$("#icone").attr("class","far fa-exclamation-triangle");
-				$("#text").text("Veuillez selectionner un Article ");
-				$("#error").modal('show');
-				
-				$(this).val(0);
-			}
-			
-			var montant_ht = 0;
-			
-			var montant_tva = 0;
-			
-			$(".montant_ht").each(function(){
-				
-				if($(this).val()!=""){
-					
-					var v = $(this).val();
-					
-					v = v.replace(/ /g,"");
-					
-					montant_ht = montant_ht + parseFloat(v);
-					
-					var tva = $(this).parent().parent().find("#tva_art").val()/100;
-					
-					montant_tva = montant_tva + ( parseFloat(v) * tva )
-					
-				}
-				
-			});
-			
-			var montant_ttc = montant_ht + montant_tva;
-			
-			$("#total_ht").val((montant_ht).formatMoney(2, '.', ' '));
-			$("#total_tva").val((montant_tva).formatMoney(2, '.', ' '));
-			$("#total_ttc").val((montant_ttc).formatMoney(2, '.', ' '));
 			
 		});
 		
@@ -367,14 +153,6 @@
 			var test = 0;
 			
 			var msg = "";
-			
-			if($("#code_client").val()==""){
-				
-				test++;
-				msg = msg+"- Code client incorrect. <br>";
-				$("#code_client").css("border-color","red");
-				
-			}
 			
 			if($("#rc").val()==""){
 				
@@ -459,31 +237,26 @@
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Client </span>
+												style="min-width: 130px; text-align: left;">RC </span>
 										</div>
-										<select class="form-control selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
-											name="id_client" id="id_client" data-size="5">
-											
-											<option disabled="disabled" value="" selected>Client</option>
-											<option th:each="clt:${clients}" th:value="${clt.id}" th:text="${clt.code}" 
-													th:attr="data-subtext=${clt.nom}+' '+${clt.prenom}, code_clt=${clt.code}"></option>
-	
+										<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
+											name="id_rel_rc_clt" id="rc" data-size="5">
+											<option  value="" selected>Registre Commerce</option>
+											<option th:each="clt:${clients}" th:value="${clt.id}" 
+													th:text="${clt.registre_commerce.nom}+' '+${clt.registre_commerce.prenom}"
+													th:attr="data-subtext=${clt.registre_commerce.code},
+															 des=${clt.registre_commerce.nom}+' '+${clt.registre_commerce.prenom},
+															 adresse=${clt.registre_commerce.adresse}"></option>
 										</select>
-										
-										<!--  <input type="hidden" id="id_client" name="id_client" value="">  -->
 									</div>
 								</div>
-								<input type="hidden" class="form-control" id="lib_client"
-									name="lib_client" value="">
-	
 	
 								<div class="col-md-4 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration">Désignation</span>
 										</div>
-										<input type="text" name="designation" id="designation"
-											class="form-control " readonly="readonly">
+										<input type="text" name="designation_rc" id="designation" class="form-control " readonly="readonly">
 	
 									</div>
 								</div>
@@ -497,48 +270,6 @@
 										</div>
 										<input type="text" class="form-control " name="adresse"
 											id="adresse" value="" readonly="readonly">
-									</div>
-								</div>
-	
-							</div>
-	
-							<hr>
-	
-							<div class="row">
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">RC </span>
-										</div>
-										<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
-											name="id_rel_rc_clt" id="rc" data-size="5">
-											<option  value="" selected>Registre Commerce</option>
-	
-										</select>
-									</div>
-								</div>
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Désignation</span>
-										</div>
-										<input type="text" name="designation_rc" id="designation_rc" class="form-control " readonly="readonly">
-	
-									</div>
-								</div>
-	
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Adresse </span>
-										</div>
-										<input type="text" class="form-control " name="adresse_rc"
-											id="adresse_rc" value="" readonly="readonly">
 									</div>
 								</div>
 	
@@ -607,7 +338,7 @@
 								<td> <input class="form-control unite_mesure" id="unite_mesure" type="text" value="" style="text-align: center;" readonly> 
 										<input type="hidden" id="id_um" name="id_um" value="0" > </td>
 								
-								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="" style="text-align: right;" readonly> </td>
+								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="0" style="text-align: right;" readonly> </td>
 	
 							</tr>
 	
