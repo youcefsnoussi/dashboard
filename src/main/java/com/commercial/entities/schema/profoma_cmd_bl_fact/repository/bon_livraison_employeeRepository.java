@@ -34,4 +34,10 @@ public interface bon_livraison_employeeRepository extends JpaRepository<bon_livr
 	
 	//-----------------------------------------------------------------------------------
 	
+	@Query( " FROM bon_livraison_employee ble " +
+			
+  			" WHERE matricule_employee = :code_emp AND cancel = 'false' AND factured = 'false' " )
+
+	public List<bon_livraison_employee> test_if_it_got_bl(@Param("code_emp") String matricule_employee);	
+	
 }

@@ -368,7 +368,11 @@ public class bon_livraison_factureController {
 		
 		blfs.forEach(blf -> {
 			
-			blfs_details.add(blfdRepo.get_detail_by_blf(blf).get(0));
+			if(blf.getMontant_ht()!=0) {
+				
+				blfs_details.add(blfdRepo.get_detail_by_blf(blf).get(0));
+				
+			}
 			
 		});
 		
@@ -552,6 +556,8 @@ public class bon_livraison_factureController {
 		}
 		
 		model.addAttribute("date_blf", conv.convertion_MyDate_to_InputDate(blf.getDate()));
+		
+		model.addAttribute("mags", magasinRepo.findAll());
 		
 		model.addAttribute("articles", list_art);
 		

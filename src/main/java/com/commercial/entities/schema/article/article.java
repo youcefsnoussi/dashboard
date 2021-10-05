@@ -59,15 +59,16 @@ public class article implements Serializable{
 	@Column(columnDefinition="boolean default true")
 	private boolean display_listing = true;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double pesagePalette;
+	
+	
 	public article() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public article(String code, com.commercial.entities.schema.article.produit produit,
-			com.commercial.entities.schema.article.emballage_produit emballage_produit,
-			com.commercial.entities.schema.article.pesage_produit pesage_produit, String image_article, double vendu,
-			String date_creation, String code_comptable, unite_mesure unite_mesure_vente, boolean subvension,
-			String libelle) {
+	public article(String code, produit produit, emballage_produit emballage_produit, pesage_produit pesage_produit, String image_article, 
+			double vendu, String date_creation, String code_comptable, unite_mesure unite_mesure_vente, boolean subvension, String libelle) {
 		super();
 		this.code = code;
 		this.produit = produit;
@@ -186,4 +187,12 @@ public class article implements Serializable{
 		this.display_listing = diplay_listing;
 	}
 
+	public double getPesagePalette() {
+		return pesagePalette;
+	}
+
+	public void setPesagePalette(double pesagePalette) {
+		this.pesagePalette = pesagePalette;
+	}
+	
 }

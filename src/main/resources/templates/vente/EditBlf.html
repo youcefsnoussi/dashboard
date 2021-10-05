@@ -341,8 +341,8 @@
 									
 								<td> 
 									<select class="form-control id_magasin" id="id_magasin" name="id_magasin" >
-										<option value="0">Selection</option>
 										
+										<option th:each="mags:${mags}" th:value="${mags.id}" th:text="${mags.name}" th:if="${mags.id} != ${blf_det.magasin.id}"></option>
 										<option  th:value="${blf_det.magasin.id}" th:text="${blf_det.magasin.name}"  selected></option>
 										
 									 </select> 

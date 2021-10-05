@@ -2,7 +2,6 @@ package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.static_data.unite_mesure;;
 
 @Entity
 
@@ -33,16 +33,20 @@ public class BonCommandeDetail implements Serializable {
 	
 	private double quantite;
 	
+	@ManyToOne
+	@JoinColumn(name = "unite_mesure")
+	private unite_mesure unite_mesure;
+	
 	public BonCommandeDetail() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public BonCommandeDetail(BonCommande bon_commande, com.commercial.entities.schema.article.article article,
-			double quantite) {
+	public BonCommandeDetail(BonCommande bon_commande,article article, double quantite, unite_mesure unite_mesure) {
 		super();
 		this.bon_commande = bon_commande;
 		this.article = article;
 		this.quantite = quantite;
+		this.unite_mesure = unite_mesure;
 	}
 
 	public Long getId() {
@@ -75,6 +79,14 @@ public class BonCommandeDetail implements Serializable {
 
 	public void setQuantite(double quantite) {
 		this.quantite = quantite;
+	}
+
+	public unite_mesure getUnite_mesure() {
+		return unite_mesure;
+	}
+
+	public void setUnite_mesure(unite_mesure unite_mesure) {
+		this.unite_mesure = unite_mesure;
 	}
 	
 	

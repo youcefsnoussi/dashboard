@@ -98,13 +98,9 @@ public class registre_commerce implements Serializable{
 	}
 
 	public registre_commerce(String nom, String prenom, String code, category_client category, String numero_rc,
-			String numero_art, String numero_nif, String date_emission, String date_fin, String adresse, String comune,
-			com.commercial.entities.schema.static_data.wilaya wilaya, String etat, double tva, double plafond,
-			double sold_encours, String activite, String etat_blockage,
-			com.commercial.entities.schema.static_data.banque banque,
-			com.commercial.entities.schema.static_data.type_reglement type_reglement,
-			com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
-			com.commercial.entities.schema.static_data.unite unite) {
+			String numero_art, String numero_nif, String date_emission, String date_fin, String adresse, String comune, wilaya wilaya, 
+			String etat, double tva, double plafond, double sold_encours, String activite, String etat_blockage, banque banque, 
+			type_reglement type_reglement, mode_paiement mode_paiement, unite unite, boolean multiple_bon_livraison) {
 		super();
 		this.nom = nom;
 		this.prenom = prenom;
@@ -128,6 +124,7 @@ public class registre_commerce implements Serializable{
 		this.type_reglement = type_reglement;
 		this.mode_paiement = mode_paiement;
 		this.unite = unite;
+		this.multiple_bon_livraison = multiple_bon_livraison;
 	}
 
 	public Long getId() {

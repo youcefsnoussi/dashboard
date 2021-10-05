@@ -122,6 +122,7 @@ public class add_rcController {
 		@RequestParam("type_reg") long type_reg,
 		@RequestParam("unite") long unite,
 		@RequestParam("mode_pay") long mode_paiement,
+		@RequestParam(value = "MultipleBon", required = false) String MultipleBon,
 		
 		@SessionAttribute("user") users user){
 		
@@ -159,9 +160,11 @@ public class add_rcController {
 			
 			String code_rc = un.getId()+cat_rc.getLettre()+new_number_code_rc(cat_rc);
 			
+			boolean multipleBL = (MultipleBon.equals("on")) ? true : false;
+			
 			rc = new registre_commerce(nom, prenom, code_rc, cat_rc, num_rc, num_art, num_nif, date_emission, date_fin, adresse, comune, 
 					wilaya, "active", taux_tva, plafond, 0, activite, "active", banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),
-					mpRepo.getOne(mode_paiement), un);
+					mpRepo.getOne(mode_paiement), un, multipleBL);
 			
 			
 			rcRepo.save(rc);rcRepo.flush();

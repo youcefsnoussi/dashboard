@@ -251,6 +251,22 @@
 							        	
 							        	</div>
 							        	
+							        	<div class="col-md-3" style="text-align: center;">
+			        		
+							        		<label> Vente par BL</label>
+							        		
+							        		<input th:if="${rc.multiple_bon_livraison}==true" type="checkbox" id="bl_check" 
+							        				class="form-control" checked >
+							        		<input th:unless="${rc.multiple_bon_livraison}==true" type="checkbox" id="bl_check" 
+							        				class="form-control"  >
+							        		
+							        		<input th:if="${rc.multiple_bon_livraison}==true" type="hidden" id="MultipleBon" name="MultipleBon" 
+							        				class="form-control" value="on" >
+							        		<input th:unless="${rc.multiple_bon_livraison}==true" type="hidden" id="MultipleBon" name="MultipleBon" 
+							        				class="form-control" value="off" >
+							        		
+							        	</div>
+							        	
 							        </div>
 							        <hr>
 							        <div class="row">

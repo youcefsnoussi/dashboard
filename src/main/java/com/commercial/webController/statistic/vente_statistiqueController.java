@@ -540,6 +540,30 @@ public class vente_statistiqueController {
 	
 	//-----------------------------------------------------------------------------
 	
+	@RequestMapping(value="/etat_104")
+	public String etat_104(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="id_category", defaultValue="0") Long id_category,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		//List <Object[]> list = new ArrayList<Object[]>();
+		
+		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+		
+		model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+		
+		model.addAttribute("cat_prod", cat_prodRepo.findAll());
+		
+		return "statistic/Etat104";		
+	}
+	
+	//-----------------------------------------------------------------------------
 	
 	//___________________________________________/°=-PRINT FUNCTIONS-=°\_______________________________
 	
@@ -754,4 +778,25 @@ public class vente_statistiqueController {
 		
 	}
 	
+	//----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/print_etat_104")
+	public String print_etat_104(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="id_category", defaultValue="0") long id_cat_prod,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String pdf = "";
+		
+		category_produit cat_p = (id_cat_prod==0) ? new category_produit((long) 0,"Tout") : cat_prodRepo.getOne(id_cat_prod);
+		
+		pdf = gd.generate_etat_104(start, end, cat_p, user.getUnite().getNom_unite());
+		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	//----------------------------------------------------------------------------
 }

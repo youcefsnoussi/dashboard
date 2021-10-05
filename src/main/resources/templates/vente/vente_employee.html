@@ -77,10 +77,16 @@
 											name="employee" id="employee" data-size="5" required>
 											<option  disabled value="" selected>Employée</option>
 											
-											<option th:each="emp:${list_emp}" th:value="${emp.matricule}+'/'+${emp.nom}+'/'+${emp.prenom}" 
-													th:text="${emp.matricule}" 
+											<option th:each="emp:${list_emp}"  th:if="${emp.vente}=='false'" 
+													th:value="${emp.matricule}+'/'+${emp.nom}+'/'+${emp.prenom}" th:text="${emp.matricule}"
 													th:attr="data-subtext=${emp.nom}+' '+${emp.prenom},
 													nom=${emp.nom}, prenom=${emp.prenom}">
+											</option>
+											
+											<option th:each="emp:${list_emp}"  th:unless="${emp.vente}=='false'" 
+													th:value="${emp.matricule}+'/'+${emp.nom}+'/'+${emp.prenom}" 
+													th:text="${emp.matricule}+' '+${emp.nom}+' '+${emp.prenom}+' a déja un bon'" style="color:red;"
+													th:attr="nom=${emp.nom}, prenom=${emp.prenom}" disabled>
 											</option>
 											
 										</select>

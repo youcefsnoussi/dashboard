@@ -193,7 +193,7 @@
 												style="min-width: 76px; text-align: left;">Code </span>
 										</div>
 										<input type="text" class="form-control  code_client"
-											name="code_client" id="code_client" th:value="${facture.client.code}" disabled>
+											name="code_client" id="code_client" th:value="${facture.registre_commerce.code}" disabled>
 	
 									</div>
 								</div>
@@ -212,7 +212,7 @@
 									</div>
 								</div>
 	
-	
+								<!--  
 								<div class="col-md-4 column">
 									<div class="input-group">
 										<div class="input-group-prepend">
@@ -223,7 +223,7 @@
 											id="adresse" th:value="${facture.client.adresse}" disabled>
 									</div>
 								</div>
-	
+								-->
 							</div>
 	
 							<hr>
@@ -237,7 +237,7 @@
 												style="min-width: 130px; text-align: left;">Mode règelment </span>
 										</div>
 										<input type="text" class="form-control " name="mode_reg" id="mode_reg"
-											th:value="${facture.client.adresse}"  disabled>
+											th:value="${facture.mode_paiement.designation}"  disabled>
 										
 									</div>
 								</div>

@@ -231,6 +231,8 @@
 				
 				var end = $("#fin").val();
 				
+				var id_rc = $("#rc").val();
+				
 				if(start=="" || end==""){
 					
 					$("#title").text("Erreur !!!");
@@ -242,7 +244,7 @@
 				else{
 					
 					//console.log("start = "+start+" / end = "+end);
-					window.location.replace("list_fact?date_debut="+start+"&date_fin="+end);
+					window.location.replace("list_fact?date_debut="+start+"&date_fin="+end+"&id_rc="+id_rc);
 					
 				}
 				
@@ -373,35 +375,42 @@
 					
 					<div class="row">
 						 
-						<div class="col-md-3" >
+						<div class="col-md-4" >
 						
 							<div class="input-group">
 							
-								<div class="input-group-append">
 								
-									<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
-										style="width:100%;" placeholder="DU">
+									<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" placeholder="DU">
 										
 									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
 									
-									<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
-									style="width:100%;" placeholder="AU">
+									<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date"  placeholder="AU">
 									
 									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 									
-								</div>
+								
 								
 							</div>
 							
 						</div>
-						<!--  
-						<div class="col-md-1" >
+						  
+						<div class="col-md-2" >
 						
 							
-							<button id="today" name="today" class="btn btn-dark" type="button">Factures d'aujourd'hui</button>
+							<select id="rc" class="selectpicker " data-live-search="true" data-style="btn btn-outline-dark" data-width="100%">
+							
+								<option value="0"> Tout </option>
+								
+								<option th:each="rc:${rcs}" th:value="${rc.id}" th:text="${rc.nom}+' '+${rc.prenom}" 
+									th:attr="data-subtext=${rc.code}" th:if="${rc.id}==${selected_rc}" selected></option>
+								
+								<option th:each="rc:${rcs}" th:value="${rc.id}" th:text="${rc.nom}+' '+${rc.prenom}" 
+									th:attr="data-subtext=${rc.code}" th:unless="${rc.id}==${selected_rc}" ></option>
+								
+							</select>
 								
 							
-						</div>-->
+						</div>
 						
 						<div class="col-md-1" >
 						
@@ -422,17 +431,6 @@
 							  <button type="button" class="btn btn-dark" id="select_all">Sélectionner Tout</button>
 							  <button type="button" class="btn btn-secondary" id="deselect_all">Désélectionner Tout</button>
 							</div>
-						
-						</div>
-						
-						<div class="col-md-1" >
-						
-							<select id="years" class="form-control">
-							
-								<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:if="${y}==${selected_year}" selected></option>
-								<option th:each="y:${years}" th:value="${y}" th:text="${y}" th:unless="${y}==${selected_year}"></option>
-							
-							</select>
 						
 						</div>
 						

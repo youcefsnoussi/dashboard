@@ -17,6 +17,21 @@ $(document).ready(function() {
 				
 			});
 			
+			$("#bl_check").change(function() {
+				
+				if($(this).prop("checked")){
+					
+					$("#MultipleBon").val("on");
+					
+				}
+				else{
+					
+					$("#MultipleBon").val("off");
+					
+				}
+				
+			});
+			
 			if($("#etat_blockage").val()=="active"){
 				
 				$("#active").css("border-width","4px");

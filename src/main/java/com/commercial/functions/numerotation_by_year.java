@@ -22,7 +22,6 @@ public class numerotation_by_year {
 	
 	public String return_num (String num){ //assm la rebrique numero 
 		
-		
 		String numero ="",resnum="",year_encours="",month_encours="";
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
@@ -31,55 +30,51 @@ public class numerotation_by_year {
 		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
 		String m = dff.format(Calendar.getInstance().getTime());
 		
-		
-		
-			if(!num.equals("")){
-				
-					resnum= num;
-					year_encours = num.substring(0, 2);
-					
-					month_encours= num.substring(3, 5);
-					
-					System.out.println("year_encours == "+year_encours);
-					
-					System.out.println("month_encours == "+month_encours);
-					
-					if(year_encours.equals(y) && month_encours.equals(m)){
-						
-						String n = resnum.substring(6);
-						System.out.println(n);
-						int nn = Integer.parseInt(n);
-						System.out.println(nn);
-						nn++;
-							if( nn < 10 ){ numero = y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = y+"/"+m+"/0"+nn;}
-					}
-					
-					else{
-						
-						numero = y+"/"+m+"/00000001"; 
-						
-					}
-			}
+		if(!num.equals("")){
 			
-			else{
+				resnum= num;
+				year_encours = num.substring(0, 2);
 				
-				numero = y+"/"+m+"/00000001";
+				month_encours= num.substring(3, 5);
 				
-			}
-			
+				////System.out.println("year_encours == "+year_encours);
+				
+				////System.out.println("month_encours == "+month_encours);
+				
+				if(year_encours.equals(y) && month_encours.equals(m)){
+					
+					String n = resnum.substring(6);
+					////System.out.println(n);
+					int nn = Integer.parseInt(n);
+					////System.out.println(nn);
+					nn++;
+						if( nn < 10 ){ numero = y+"/"+m+"/0000000"+nn;} else
+						if( nn < 100 ){ numero = y+"/"+m+"/000000"+nn;} else	
+						if( nn < 1000 ){ numero = y+"/"+m+"/00000"+nn;} else
+						if( nn < 10000 ){ numero = y+"/"+m+"/0000"+nn;} else
+						if( nn < 100000 ){ numero = y+"/"+m+"/000"+nn;} else
+						if( nn < 1000000 ){ numero = y+"/"+m+"/00"+nn;}else
+						if( nn < 10000000 ){ numero = y+"/"+m+"/0"+nn;}
+				}
+				
+				else{
+					
+					numero = y+"/"+m+"/00000001"; 
+					
+				}
+		}
 		
+		else{
+			
+			numero = y+"/"+m+"/00000001";
+			
+		}
+			
 		return numero;
 	}
 	
 	public String return_num_proforma (String num, Long unite){ //assm la rebrique numero 
 		
-		
 		String numero ="",resnum="",year_encours="",month_encours="";
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
@@ -88,41 +83,39 @@ public class numerotation_by_year {
 		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
 		String m = dff.format(Calendar.getInstance().getTime());
 		
-		
-		
-			if(!num.equals("")){
-				
-					resnum= num;
-					year_encours = num.substring(4, 6);
-					
-					month_encours= num.substring(7, 9);
-					
-					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
-						
-						String n = resnum.substring(10);
-						int nn = Integer.parseInt(n);
-						nn++;
-							if( nn < 10 ){ numero = unite+"PRF"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = unite+"PRF"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = unite+"PRF"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = unite+"PRF"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = unite+"PRF"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = unite+"PRF"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = unite+"PRF"+y+"/"+m+"/0"+nn;}
-					}
-					
-					else{
-						
-						numero = unite+"PRF"+y+"/"+m+"/00000001"; 
-						
-					}
-			}
+		if(!num.equals("")){
 			
-			else{
+				resnum= num;
+				year_encours = num.substring(4, 6);
 				
-				numero = unite+"PRF"+y+"/"+m+"/00000001";
+				month_encours= num.substring(7, 9);
 				
-			}
+				if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
+					
+					String n = resnum.substring(10);
+					int nn = Integer.parseInt(n);
+					nn++;
+						if( nn < 10 ){ numero = unite+"PRF"+y+"/"+m+"/0000000"+nn;} else
+						if( nn < 100 ){ numero = unite+"PRF"+y+"/"+m+"/000000"+nn;} else	
+						if( nn < 1000 ){ numero = unite+"PRF"+y+"/"+m+"/00000"+nn;} else
+						if( nn < 10000 ){ numero = unite+"PRF"+y+"/"+m+"/0000"+nn;} else
+						if( nn < 100000 ){ numero = unite+"PRF"+y+"/"+m+"/000"+nn;} else
+						if( nn < 1000000 ){ numero = unite+"PRF"+y+"/"+m+"/00"+nn;}else
+						if( nn < 10000000 ){ numero = unite+"PRF"+y+"/"+m+"/0"+nn;}
+				}
+				
+				else{
+					
+					numero = unite+"PRF"+y+"/"+m+"/00000001"; 
+					
+				}
+		}
+		
+		else{
+			
+			numero = unite+"PRF"+y+"/"+m+"/00000001";
+			
+		}
 			
 		
 		return numero;
@@ -139,49 +132,46 @@ public class numerotation_by_year {
 		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
 		String m = dff.format(Calendar.getInstance().getTime());
 		
-		
-		
-			if(!num.equals("")){
-				
-					resnum= num;
-					year_encours = num.substring(4, 6);
-					
-					month_encours= num.substring(7, 9);
-					
-					System.out.println("year_encours == "+year_encours);
-					
-					System.out.println("month_encours == "+month_encours);
-					
-					if(year_encours.equals(y) && month_encours.equals(m)){
-						
-						String n = resnum.substring(10);
-						System.out.println(n);
-						int nn = Integer.parseInt(n);
-						System.out.println(nn);
-						nn++;
-							if( nn < 10 ){ numero = "CMD_"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = "CMD_"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = "CMD_"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = "CMD_"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = "CMD_"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = "CMD_"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = "CMD_"+y+"/"+m+"/0"+nn;}
-					}
-					
-					else{
-						
-						numero = "CMD_"+y+"/"+m+"/00000001"; 
-						
-					}
-			}
+		if(!num.equals("")){
 			
-			else{
+				resnum= num;
+				year_encours = num.substring(4, 6);
 				
-				numero = "CMD_"+y+"/"+m+"/00000001";
+				month_encours= num.substring(7, 9);
 				
-			}
-			
+				//System.out.println("year_encours == "+year_encours);
+				
+				//System.out.println("month_encours == "+month_encours);
+				
+				if(year_encours.equals(y) && month_encours.equals(m)){
+					
+					String n = resnum.substring(10);
+					//System.out.println(n);
+					int nn = Integer.parseInt(n);
+					//System.out.println(nn);
+					nn++;
+						if( nn < 10 ){ numero = "CMD_"+y+"/"+m+"/0000000"+nn;} else
+						if( nn < 100 ){ numero = "CMD_"+y+"/"+m+"/000000"+nn;} else	
+						if( nn < 1000 ){ numero = "CMD_"+y+"/"+m+"/00000"+nn;} else
+						if( nn < 10000 ){ numero = "CMD_"+y+"/"+m+"/0000"+nn;} else
+						if( nn < 100000 ){ numero = "CMD_"+y+"/"+m+"/000"+nn;} else
+						if( nn < 1000000 ){ numero = "CMD_"+y+"/"+m+"/00"+nn;}else
+						if( nn < 10000000 ){ numero = "CMD_"+y+"/"+m+"/0"+nn;}
+				}
+				
+				else{
+					
+					numero = "CMD_"+y+"/"+m+"/00000001"; 
+					
+				}
+		}
 		
+		else{
+			
+			numero = "CMD_"+y+"/"+m+"/00000001";
+			
+		}
+			
 		return numero;
 	}
 	
@@ -198,48 +188,45 @@ public class numerotation_by_year {
 		DateFormat dff = new SimpleDateFormat("MM"); // Just the year, with 2 digits
 		String m = dff.format(Calendar.getInstance().getTime());
 		
-		
-		
-			if(!num.equals("")){
-				
-					resnum= num;
-					year_encours = num.substring(3, 5);
-					
-					month_encours= num.substring(6, 8);
-					
-					System.out.println("year_encours == "+year_encours);
-					
-					System.out.println("month_encours == "+month_encours);
-					
-					if(year_encours.equals(y) && month_encours.equals(m)){
-						
-						String n = resnum.substring(10);
-						System.out.println(n);
-						int nn = Integer.parseInt(n);
-						System.out.println(nn);
-						nn++;
-							if( nn < 10 ){ numero = "BL_"+y+"/"+m+"/0000000"+nn;} else
-							if( nn < 100 ){ numero = "BL_"+y+"/"+m+"/000000"+nn;} else	
-							if( nn < 1000 ){ numero = "BL_"+y+"/"+m+"/00000"+nn;} else
-							if( nn < 10000 ){ numero = "BL_"+y+"/"+m+"/0000"+nn;} else
-							if( nn < 100000 ){ numero = "BL_"+y+"/"+m+"/000"+nn;} else
-							if( nn < 1000000 ){ numero = "BL_"+y+"/"+m+"/00"+nn;}else
-							if( nn < 10000000 ){ numero = "BL_"+y+"/"+m+"/0"+nn;}
-					}
-					
-					else{
-						
-						numero = "BL_"+y+"/"+m+"/00000001"; 
-						
-					}
-			}
+		if(!num.equals("")){
 			
-			else{
+				resnum= num;
+				year_encours = num.substring(3, 5);
 				
-				numero = "BL_"+y+"/"+m+"/00000001";
+				month_encours= num.substring(6, 8);
 				
-			}
+				//System.out.println("year_encours == "+year_encours);
+				
+				//System.out.println("month_encours == "+month_encours);
+				
+				if(year_encours.equals(y) && month_encours.equals(m)){
+					
+					String n = resnum.substring(10);
+					//System.out.println(n);
+					int nn = Integer.parseInt(n);
+					//System.out.println(nn);
+					nn++;
+						if( nn < 10 ){ numero = "BL_"+y+"/"+m+"/0000000"+nn;} else
+						if( nn < 100 ){ numero = "BL_"+y+"/"+m+"/000000"+nn;} else	
+						if( nn < 1000 ){ numero = "BL_"+y+"/"+m+"/00000"+nn;} else
+						if( nn < 10000 ){ numero = "BL_"+y+"/"+m+"/0000"+nn;} else
+						if( nn < 100000 ){ numero = "BL_"+y+"/"+m+"/000"+nn;} else
+						if( nn < 1000000 ){ numero = "BL_"+y+"/"+m+"/00"+nn;}else
+						if( nn < 10000000 ){ numero = "BL_"+y+"/"+m+"/0"+nn;}
+				}
+				
+				else{
+					
+					numero = "BL_"+y+"/"+m+"/00000001"; 
+					
+				}
+		}
+		
+		else{
 			
+			numero = "BL_"+y+"/"+m+"/00000001";
+			
+		}
 		
 		return numero;
 	}
@@ -263,16 +250,16 @@ public class numerotation_by_year {
 					
 					month_encours= num.substring(6, 8);
 					
-					System.out.println("year_encours == "+year_encours);
+					//System.out.println("year_encours == "+year_encours);
 					
-					System.out.println("month_encours == "+month_encours);
+					//System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(10);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = unite+"BL"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = unite+"BL"+y+"/"+m+"/000000"+nn;} else	
@@ -318,20 +305,20 @@ public class numerotation_by_year {
 			if(!num.equals("")){
 				
 					resnum= num;
-					year_encours = num.substring(3, 5);
+					year_encours = num.substring(2, 4);
 					
-					month_encours= num.substring(6, 8);
+					month_encours= num.substring(5, 7);
 					
-					System.out.println("year_encours == "+year_encours);
+					//System.out.println("year_encours == "+year_encours);
 					
-					System.out.println("month_encours == "+month_encours);
+					//System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(10);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = "BC"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = "BC"+y+"/"+m+"/000000"+nn;} else	
@@ -381,16 +368,16 @@ public class numerotation_by_year {
 					
 					month_encours= num.substring(7, 9);
 					
-					System.out.println("year_encours == "+year_encours);
+					//System.out.println("year_encours == "+year_encours);
 					
-					System.out.println("month_encours == "+month_encours);
+					//System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(11);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = long1+"FCT"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = long1+"FCT"+y+"/"+m+"/000000"+nn;} else	
@@ -440,16 +427,16 @@ public class numerotation_by_year {
 					
 					month_encours= num.substring(9, 11);
 					
-					System.out.println("year_encours == "+year_encours);
+					//System.out.println("year_encours == "+year_encours);
 					
-					System.out.println("month_encours == "+month_encours);
+					//System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(13);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = long1+"FCTAV"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = long1+"FCTAV"+y+"/"+m+"/000000"+nn;} else	
@@ -502,9 +489,9 @@ public class numerotation_by_year {
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(13);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = long1+"FCTRS"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = long1+"FCTRS"+y+"/"+m+"/000000"+nn;} else	
@@ -554,16 +541,16 @@ public class numerotation_by_year {
 					
 					month_encours= num.substring(6, 8);
 					
-					System.out.println("year_encours == "+year_encours);
+					//System.out.println("year_encours == "+year_encours);
 					
-					System.out.println("month_encours == "+month_encours);
+					//System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(10);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = unite+"BT"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = unite+"BT"+y+"/"+m+"/000000"+nn;} else	
@@ -615,16 +602,16 @@ public class numerotation_by_year {
 					
 					month_encours= num.substring(7, 9);
 					
-					System.out.println("year_encours == "+year_encours);
+					//System.out.println("year_encours == "+year_encours);
 					
-					System.out.println("month_encours == "+month_encours);
+					//System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(10);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = unite+"BTI"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = unite+"BTI"+y+"/"+m+"/000000"+nn;} else	
@@ -674,16 +661,16 @@ public class numerotation_by_year {
 					
 					month_encours= num.substring(6, 8);
 					
-					System.out.println("year_encours == "+year_encours);
+					//System.out.println("year_encours == "+year_encours);
 					
-					System.out.println("month_encours == "+month_encours);
+					//System.out.println("month_encours == "+month_encours);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
 						String n = resnum.substring(10);
-						System.out.println(n);
+						//System.out.println(n);
 						int nn = Integer.parseInt(n);
-						System.out.println(nn);
+						//System.out.println(nn);
 						nn++;
 							if( nn < 10 ){ numero = unite+"BS"+y+"/"+m+"/0000000"+nn;} else
 							if( nn < 100 ){ numero = unite+"BS"+y+"/"+m+"/000000"+nn;} else	
@@ -724,18 +711,18 @@ public class numerotation_by_year {
 		
 		numerotation_by_year numero = new numerotation_by_year();
 		/*
-		System.out.println("Result BLF ->"+numero.return_num_BonLivraisonFacture("1BL21/04/00000001", (long) 3));
-		System.out.println("--------------------");
+		//System.out.println("Result BLF ->"+numero.return_num_BonLivraisonFacture("1BL21/04/00000001", (long) 3));
+		//System.out.println("--------------------");
 		
-		System.out.println("Result BL ->"+numero.return_num_BonLivraison("BL_21/04/00000001"));
-		System.out.println("--------------------");
+		//System.out.println("Result BL ->"+numero.return_num_BonLivraison("BL_21/04/00000001"));
+		//System.out.println("--------------------");
 		
-		System.out.println("Result FACT ->"+numero.return_num_facture("1FCT21/04/00000001", (long) 3));
-		System.out.println("--------------------");
+		//System.out.println("Result FACT ->"+numero.return_num_facture("1FCT21/04/00000001", (long) 3));
+		//System.out.println("--------------------");
 		*/
 		
-		System.out.println("Result BS ->"+numero.return_num_BonSortie("1BS21/04/00000001", (long) 1));
-		System.out.println("--------------------");
+		//System.out.println("Result BS ->"+numero.return_num_BonSortie("1BS21/04/00000001", (long) 1));
+		//System.out.println("--------------------");
 		
 	}
 	

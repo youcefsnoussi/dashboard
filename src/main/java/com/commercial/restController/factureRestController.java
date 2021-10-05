@@ -41,6 +41,7 @@ import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
+import com.commercial.services.PaletteService;
 
 @RestController
 @SessionAttributes("user")
@@ -79,6 +80,9 @@ public class factureRestController {
 	
 	@Autowired
 	bon_livraisonRepository bon_lRepo;
+	
+	@Autowired
+	PaletteService ps;
 	
 	public factureRestController() {
 		// TODO Auto-generated constructor stub
@@ -236,6 +240,7 @@ public class factureRestController {
 		//@RequestParam("id_client") long id_client,
 		@RequestParam("id_rc_clt") long id_relation_rc_client,
 		//@RequestParam("id_bl") long id_bl,
+		@RequestParam("nbr_palette") long nbr_palette,
 		@RequestParam("montant_ttc") double montant_ttc) throws IOException, ParseException{
 		
 		//JSONArray arr_obj = new JSONArray();
@@ -258,7 +263,6 @@ public class factureRestController {
 			
 		}
 		
-		
 		double sold_encours = clt.getSold_encours();
 		
 		sold_encours = sold_encours + montant + montant_ttc;
@@ -269,7 +273,7 @@ public class factureRestController {
 		
 		//System.out.println("SOLD CLT -> "+sold_encours+"/ plafond CLT -> "+clt.getPlafond());
 		
-		/**************      TEST CLIENT FACTHER **********/
+		/**************      TEST CLIENT FATHER **********/
 		/*
 		if(sold_encours>clt.getPlafond()) {
 			
@@ -283,7 +287,34 @@ public class factureRestController {
 		}
 		*/
 		map.put("plafond_client", 0);
-		/**************      TEST CLIENT FACTHER **********/
+		//------------------------ TEST Palette -----------------------------
+		
+		if(clt.isVentePalette()==true) {
+			
+			if(ps.testPalettePlafond(list_bl, clt, nbr_palette)) {
+				
+				map.put("plafond_palette", 1);
+				
+			}
+			else {
+				
+				map.put("plafond_palette", 0);
+				
+			}
+			
+		}
+		else {
+			
+			map.put("plafond_palette", 0);
+			
+		}
+		
+		double pricePalette = pu_a_ctRepo.get_prix_articles_by_CatClient(rc_clt.getRegistre_commerce().getCategory(), 
+								artRepo.findByLibelle("Palette")) * nbr_palette;
+		
+		//-------------------------------------------------------------------
+		
+		/**************      TEST CLIENT RC **********/
 		
 		registre_commerce rc = rc_clt.getRegistre_commerce();
 		
@@ -303,7 +334,7 @@ public class factureRestController {
 		
 		//System.out.println("TTC ---------> = "+montant_ttc);
 		
-		sold_encours = sold_encours + montant + montant_ttc;
+		sold_encours = sold_encours + montant + montant_ttc + pricePalette; //--------> pricepalette prix total palette
 		
 		//System.out.println("SOLD RC -> "+sold_encours+"/ plafond RC -> "+rc.getPlafond());
 		

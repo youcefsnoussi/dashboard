@@ -1,8 +1,13 @@
 package com.commercial.webController.vente;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +24,7 @@ import com.commercial.entities.schema.article.repository.prixUnitaire_article_ca
 import com.commercial.entities.schema.article.repository.produitRepository;
 import com.commercial.entities.schema.article.repository.sous_category_produitRepository;
 import com.commercial.entities.schema.client.client_registreCommerce;
+import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
@@ -31,6 +37,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livrais
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.commandeRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.commande_detailRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
@@ -128,6 +135,9 @@ public class bon_commandeController {
 	@Autowired
 	BonCommandeDetailRepository bon_cmd_dRepo;
 	
+	@Autowired
+	facture_detailRepository fact_dRepo;
+	
 	public bon_commandeController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -165,17 +175,17 @@ public class bon_commandeController {
 	
 	//__________________________________________POST____________________________________________________________________
 	
-		@RequestMapping(value="/new_BonCommande_post",method=RequestMethod.POST)
-		public String new_bon_commande(HttpServletRequest req,
-				@RequestParam("id_rel_rc_clt") long id_relation_rc_clt,
-				@RequestParam("date_debut") String date_d,
-				@RequestParam("date_fin") String date_f,
-				
-				@RequestParam("art") long [] article,
-				@RequestParam("id_um") long [] id_unite_mesure,
-				@RequestParam("qte") double [] quantite,
-				
-				@SessionAttribute("user") users user){
+	@RequestMapping(value="/new_BonCommande_post",method=RequestMethod.POST)
+	public String new_bon_commande(HttpServletRequest req,
+			@RequestParam("id_rel_rc_clt") long id_relation_rc_clt,
+			@RequestParam("date_debut") String date_d,
+			@RequestParam("date_fin") String date_f,
+			
+			@RequestParam("art") long [] article,
+			@RequestParam("id_um") long [] id_unite_mesure,
+			@RequestParam("qte") double [] quantite,
+			
+			@SessionAttribute("user") users user){
 				
 				BonCommande last_bon_cmd = bon_cmdRepo.findFirst1ByOrderByNumeroDesc();
 				
@@ -215,7 +225,8 @@ public class bon_commandeController {
 					
 					if(quantite[i]!=0) {
 						
-						BonCommandeDetail bon_cmd_d = new BonCommandeDetail(bon_cmd, artRepo.getOne(article[i]), quantite[i]);
+						BonCommandeDetail bon_cmd_d = new BonCommandeDetail(bon_cmd, artRepo.getOne(article[i]), quantite[i], 
+																umRepo.getOne(id_unite_mesure[i]));
 						
 						bon_cmd_dRepo.save(bon_cmd_d);bon_cmd_dRepo.flush();
 						
@@ -230,4 +241,104 @@ public class bon_commandeController {
 			
 		}
 	
+		//------------------------------------------------------------- BON de COMMANDE TA3 TMENYIK -------------------
+		
+		@RequestMapping(value="/cmd_list_rc")
+		public String cmd_list_rc(HttpServletRequest request,
+								 @RequestParam(value="id_rc", defaultValue="0") long id_rc,
+								 @RequestParam(value="start", defaultValue="0") String start,
+								 @RequestParam(value="end", defaultValue="0") String end,
+								 @RequestParam(value="type", defaultValue="0") int type,
+								 @SessionAttribute("user") users user,
+								 Model model){
+			
+			//get_time_date gtd = new get_time_date();
+			
+			String ret = "statistic/CumuleCommandeRC";
+			
+			List<Object[]> result = new ArrayList<>();
+			
+			model.addAttribute("list_rc", rcRepo.findAll(Sort.by(Sort.Direction.ASC,"code")));
+			
+			model.addAttribute("selected_rc", id_rc);
+			
+			model.addAttribute("selected_type", type);
+			
+			if(id_rc !=0) {
+				
+				result = (type==0) ? cmd_detRepo.get_commande_details(id_rc, start, end) 
+							 : cmd_detRepo.get_commande_details_dates(id_rc, start, end);
+				
+			}
+			
+			model.addAttribute("result", result);
+			
+			return ret;
+			
+		}
+		
+		//----------------------------------------------------------------------
+		
+		@RequestMapping(value="/vente_commande_client")
+		public String vente_commande_client(HttpServletRequest request,
+							 @RequestParam(value="id_rc", defaultValue="0") long id_rc,
+							 @RequestParam(value="start", defaultValue="0") String start,
+							 @RequestParam(value="end", defaultValue="0") String end,
+							 @SessionAttribute("user") users user,
+							 Model model){
+			
+			model.addAttribute("list_rc", rcRepo.findAll());
+			
+			System.out.println("---------> ENTER DJDID <----------------");
+			
+			convert_string_to_date_util conv = new convert_string_to_date_util();
+			
+			get_time_date gtd = new get_time_date();
+			
+			List <Object[]> list = new ArrayList<Object[]>();
+			
+			if(id_rc==0) {
+				
+				model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+				
+				model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+				
+				model.addAttribute("list", list);
+				
+				model.addAttribute("id_rc", id_rc);
+				
+			}
+			else {
+				
+				model.addAttribute("start", start);
+				
+				model.addAttribute("end", end);
+				
+				registre_commerce rc = rcRepo.getOne(id_rc);
+				
+				list = fact_dRepo.get_quantite_sold_val_fact_by_rc(conv.convertion_InputDate_to_MyDate(start), 
+																	conv.convertion_InputDate_to_MyDate(end), rc);
+				
+				for (Object[] obj : list) {
+					
+					int randomNum = ThreadLocalRandom.current().nextInt(0, 10 + 1)*10;
+					
+					obj[5] = (double) obj[4] + randomNum;
+					
+					//System.out.println("->"+obj[5]);
+				}
+				
+				/*
+				list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av_by_rc(conv.convertion_InputDate_to_MyDate(start), 
+																	conv.convertion_InputDate_to_MyDate(end), rc) );
+				*/
+				model.addAttribute("list", list);
+				
+				model.addAttribute("id_rc", id_rc);
+				
+			}
+			
+			return "statistic/quantite_vendu_commander_client";		
+		}
+		
 }

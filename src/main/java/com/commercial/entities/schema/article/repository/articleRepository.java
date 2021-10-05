@@ -14,6 +14,10 @@ import com.commercial.entities.schema.article.produit;
 
 public interface articleRepository extends JpaRepository<article, Long>{
 	
+	public article findByLibelle(String libelle);
+	
+	//------------------------------------------------------------------------------
+	
 	@Query( " FROM article art "
 			
 			+ " WHERE art.code = :code ")

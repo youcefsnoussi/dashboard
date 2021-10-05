@@ -11,6 +11,14 @@ public interface clientRepository extends JpaRepository<client, Long> {
 	
 	@Query( " FROM client c "
 			
+			+ " WHERE c.ventePalette = 'true' ")
+	
+	public List<client> client_vente_palette();
+	
+	//--------------------
+	
+	@Query( " FROM client c "
+			
 			+ " WHERE c.etat_blockage = 'false' ")
 	
 	public List<client> client_active_only();

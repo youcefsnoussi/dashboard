@@ -52,6 +52,7 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
+import com.commercial.services.PaletteService;
 import com.commercial.services.track_operations;
 
 @Controller
@@ -128,6 +129,9 @@ public class commandeController {
 	
 	@Autowired
 	track_operations trk;
+	
+	@Autowired
+	PaletteService PalServ;
 	
 	//---------------------------------------------
 	
@@ -300,7 +304,8 @@ public class commandeController {
 			
 			String numero_bl = nby.return_num_BonLivraison(last_number);
 			
-			bon_livraison bl = new bon_livraison(clt, rc, today, time, numero_bl, matricule_camion, "", cmd, null, user, 0, montant_ht, montant_tva, montant_ttc);
+			bon_livraison bl = new bon_livraison(clt, rc, today, time, numero_bl, matricule_camion, "", cmd, null, user, 0, montant_ht, montant_tva,
+					montant_ttc);
 			
 			bon_lRepo.save(bl);bon_lRepo.flush();
 			
@@ -316,8 +321,9 @@ public class commandeController {
 				
 				if(quantite[i]!=0) {
 					
-					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], 
-							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), false, magasinRepo.getOne(id_magasin[i]));
+					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
+							montant_ht_art[i], (montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), 
+							false, magasinRepo.getOne(id_magasin[i]));
 					
 					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
@@ -340,7 +346,15 @@ public class commandeController {
 			
 			grpRepo.save(grp); grpRepo.flush();
 			
-			//----------------------------------------------- 
+			//-------------------------- Partie palette --------------------------------
+			
+			if(bl.getClient().isVentePalette()) {
+				
+				PalServ.addingPaletteToBL(bl);
+				
+			}
+			
+			//----------------------------------------------- --------------------------
 			
 			//-------------------------------------- INSERT F TABLE NKHALA MYSQL --------------------<
 			

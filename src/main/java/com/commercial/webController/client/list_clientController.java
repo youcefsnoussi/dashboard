@@ -148,6 +148,8 @@ public class list_clientController {
 		//@RequestParam("banque") long id_banque,
 		//@RequestParam("type_reg") long type_reg,
 		@RequestParam("plafond") double plafond,
+		@RequestParam(value = "ventePalette", required = false) String ventePalette,
+		@RequestParam(value = "soldPalette", required = false, defaultValue="0") long soldPalette, 
 		@Valid @RequestParam("img_client") MultipartFile img_client,
 		
 		@SessionAttribute("user") users user){
@@ -162,7 +164,7 @@ public class list_clientController {
 		
 		String path_img_client = "";
 		
-		
+		boolean isVentePalette = (ventePalette.equals("on")) ? true : false;
 		
 		if(!img_client.isEmpty() /*&& clt.getImg()!="D:/Commercial/Client/"+clt.getId()+"/"+ img_client.getOriginalFilename()*/) {
 		
@@ -214,6 +216,8 @@ public class list_clientController {
 			clt.setNom(nom);
 			clt.setPlafond(plafond);
 			clt.setPrenom(prenom);
+			clt.setVentePalette(isVentePalette);
+			clt.setSoldPalette(soldPalette);
 			//clt.setRemise(remise);
 			//clt.setTelephone(telephone);
 			//clt.setType_reglement(type_rRepo.getOne(type_reg));

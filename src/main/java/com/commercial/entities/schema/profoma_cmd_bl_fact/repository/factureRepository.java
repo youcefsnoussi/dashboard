@@ -55,7 +55,17 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 		
 		
 	//----------------------------------------------------------
-	
+		
+		@Query( " FROM facture fact "
+				
+			  + " WHERE CAST(fact.date AS date) BETWEEN (:start) AND (:end)"
+			  
+			  + " AND registre_commerce = :rc " )
+		 
+		public List<facture> date_between_facture_rc(@Param("start") Date start, @Param("end") Date end, @Param("rc") registre_commerce rc);
+		
+	//----------------------------------------------------------
+		
 		@Query( " FROM facture fact "
 				
 			  + " WHERE fact.notification = 'FALSE' "

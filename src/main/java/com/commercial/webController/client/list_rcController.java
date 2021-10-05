@@ -161,6 +161,7 @@ public class list_rcController {
 		@RequestParam("banque") long id_banque,
 		@RequestParam("type_reg") long type_reg,
 		@RequestParam("mode_pay") long mode_paiement,
+		@RequestParam(value = "MultipleBon", required = false) String MultipleBon,
 		
 		@SessionAttribute("user") users user){
 		
@@ -173,6 +174,8 @@ public class list_rcController {
 		date_emission = ctd.convertion_InputDate_to_MyDate(date_emission);
 		
 		date_fin = ctd.convertion_InputDate_to_MyDate(date_fin);
+		
+		boolean multipleBL = (MultipleBon.equals("on")) ? true : false;
 		
 		rc.setActivite(activite);
 		rc.setAdresse(adresse);
@@ -190,6 +193,7 @@ public class list_rcController {
 		rc.setType_reglement(type_rRepo.getOne(type_reg));
 		rc.setBanque(banqueRepo.getOne(id_banque));
 		rc.setMode_paiement(mpRepo.getOne(mode_paiement));
+		rc.setMultiple_bon_livraison(multipleBL);
 		
 		double ttva = 0;
 		
@@ -206,7 +210,7 @@ public class list_rcController {
 		//*********-*/654654dqsfsdfsdfsdfsd
 		registre_commerce_backup rcb = new registre_commerce_backup(rc, user);
 		
-		System.out.println("===== ID ==>"+rcb.getId()+" / id_rc ===>"+rcb.getId_rc());
+		//System.out.println("===== ID ==>"+rcb.getId()+" / id_rc ===>"+rcb.getId_rc());
 		
 		rcbRepo.save(rcb);rcbRepo.flush();
 		
@@ -224,8 +228,8 @@ public class list_rcController {
 	@RequestMapping(value="/list_rc_clt")
 	public String list_rc_client(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
-						 @RequestParam("id_client") long id_clt,
-						 @RequestParam("id_rc") long id_rc,
+						 @RequestParam(value="id_client", defaultValue="0") long id_clt,
+						 @RequestParam(value="id_rc", defaultValue="0") long id_rc,
 						 Model model){
 		
 		
@@ -251,6 +255,14 @@ public class list_rcController {
 			list_clt_rc = crcRepo.findAll();
 			
 		}
+		
+		String role_edit = "no_edit";
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_date_relation"))) 
+		{ role_edit="edit"; }
+		
+		model.addAttribute("edit_option", role_edit);
 		
 		model.addAttribute("rc_client", list_clt_rc);
 		
