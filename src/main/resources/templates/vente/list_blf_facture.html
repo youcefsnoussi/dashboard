@@ -74,7 +74,7 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([3,4,5,7,9]).every( function () {
+			            this.api().columns([3,4,5,7,6,13]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control "  ><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -97,11 +97,17 @@
 						
 					      var api = this.api();
 					      
-					      $( api.column( 6, {page:'current'} ).footer() ).html(
-					        api.column( 6, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
-					      );
 					      $( api.column( 8, {page:'current'} ).footer() ).html(
 					        api.column( 8, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
+					      );
+					      $( api.column( 10, {page:'current'} ).footer() ).html(
+					        api.column( 10, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
+					      );
+					      $( api.column( 11, {page:'current'} ).footer() ).html(
+					        api.column( 11, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
+					      );
+					      $( api.column( 12, {page:'current'} ).footer() ).html(
+					        api.column( 12, {page:'current'} ).data().sum().formatMoney(3, ',', ' ')
 					      );
 					      
 					 },
@@ -244,20 +250,16 @@
 						<div class="col-md-4 offset-md-1" >
 					
 							<div class="input-group">
-							
-								<div class="input-group-append">
 									
-									<input id="debut" type="date" name="start" th:value="${start}"  class="form-control date" 
-										style="width:100%;" placeholder="DU">
-										
-									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+								<input id="debut" type="date" name="start" th:value="${start}"  class="form-control date" 
+									style="" placeholder="DU">
 									
-									<input id="fin" type="date" name="end" th:value="${end}" class="form-control date" 
-									style="width:100%;" placeholder="AU">
-									
-									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
-									
-								</div>
+								<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+								
+								<input id="fin" type="date" name="end" th:value="${end}" class="form-control date" 
+								style="" placeholder="AU">
+								
+								<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 								
 							</div>
 							
@@ -317,9 +319,13 @@
 								<th >Code </th>
 								<th>RC</th>
 								<th>Matricule</th>
+								<th>Code Art</th>
+								<th>Libelle</th>
 								<th>Qunatite</th>
 								<th>PU</th>
 								<th>Montant HT</th>
+								<th>Montant TVA</th>
+								<th>Montant TTC</th>
 								<th>N° Facture</th>
 								<th>Détail Facture</th>
 								
@@ -339,11 +345,16 @@
 								<!-- <td th:text="${bl.commande.mode_paiement.designation}"></td> -->
 								<td th:text="${bl.matricule}"></td>
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
+									th:text="${bl_info.article.code}"></td>	
+								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
+									th:text="${bl_info.article.libelle}"></td>	
+								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
 									th:text="${#numbers.formatDecimal(bl_info.quantite, 2, 'WHITESPACE', 3,'POINT')}"></td>
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
 									th:text="${#numbers.formatDecimal(bl_info.prix_u_ht, 2, 'WHITESPACE', 3,'POINT')}"></td>
-								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
-									th:text="${#numbers.formatDecimal(bl_info.montant_ht, 2, 'WHITESPACE', 3,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${bl.facture.numero}"></td>	
 								<td style="text-align: center;    width: 10%;"> 
 									 <button type="button" class="btn btn-primary info_fact" 
@@ -368,6 +379,10 @@
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
 								<th></th>
 								<th></th>
 								

@@ -464,8 +464,6 @@
 					
 							<div class="input-group">
 								
-								<div class="input-group-prepend">
-								
 									<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
 										name="id_rel_rc_clt" id="rc" data-size="5">
 										<option  value="0" >Registre Commerce</option>
@@ -495,21 +493,18 @@
 										
 									</select>
 								
-								</div>
 								
-								<div class="input-group-append">
 									
 									<input id="debut" type="date" name="start" th:value="${start}"  class="form-control date" 
-										style="width:100%;" placeholder="DU">
+										style="" placeholder="DU">
 										
 									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
 									
 									<input id="fin" type="date" name="end" th:value="${end}" class="form-control date" 
-									style="width:100%;" placeholder="AU">
+									style="" placeholder="AU">
 									
 									<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 									
-								</div>
 								
 							</div>
 							

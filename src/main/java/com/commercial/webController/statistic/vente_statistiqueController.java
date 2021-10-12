@@ -359,7 +359,9 @@ public class vente_statistiqueController {
 		
 		get_time_date gtd = new get_time_date();
 		
-		//List <Object[]> list = new ArrayList<Object[]>();
+		List <Object[]> list = new ArrayList<Object[]>();
+		
+		
 		
 		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 		

@@ -76,6 +76,9 @@ public class paiement implements Serializable{
 	@Column(columnDefinition="numeric default 0")
 	private double sold_rest;
 	
+	@Column(columnDefinition="boolean default false")
+	private boolean litrage_compta = false;
+	
 	public paiement() {
 		// TODO Auto-generated constructor stub
 	}
@@ -256,6 +259,14 @@ public class paiement implements Serializable{
 
 	public void setSold_rest(double sold_rest) {
 		this.sold_rest = sold_rest;
+	}
+
+	public boolean isLitrage_compta() {
+		return litrage_compta;
+	}
+
+	public void setLitrage_compta(boolean litrage_compta) {
+		this.litrage_compta = litrage_compta;
 	}
 
 	
