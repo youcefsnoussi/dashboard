@@ -312,9 +312,9 @@ public class list_bl_encoursController {
 		
 		model.addAttribute("detail_bl", bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl)));
 		
-		client clt = bon_lRepo.getOne(id_bl).getClient();
+		registre_commerce rc = bon_lRepo.getOne(id_bl).getRegistre_commerce();
 		
-		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt.getCategory());
+		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(rc.getCategory());
 		
 		if (bon_lRepo.getOne(id_bl).getRegistre_commerce().getTva()==0) {
 			
