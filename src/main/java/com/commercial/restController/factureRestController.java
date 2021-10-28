@@ -193,7 +193,7 @@ public class factureRestController {
 		for(int i=0;i<list_art.size();i++) {
 			
 			prixUnitaire_article_categoryClient pu = list_art.get(i);
-			
+			/*
 			reduction_client_prixU_article red = reduxRepo.get_reduction_by_clt_art(clt_rc.getClient(), pu.getArticle(), gtd.get_date()); 
 			
 			if(red != null) {
@@ -205,7 +205,7 @@ public class factureRestController {
 				list_art.set(i, pu);
 				
 			}
-			
+			*/
 			if(clt_rc.getRegistre_commerce().getTva()==0) {
 				
 				//System.out.println("-----<>-- "+tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()));

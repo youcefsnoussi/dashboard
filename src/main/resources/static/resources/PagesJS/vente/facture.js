@@ -235,140 +235,142 @@ $(document).ready(function() {
 	//----------------------------------------------------------------------
 	
 	$("#rc").change(function(){
-		  
-		 $("#designation_rc").val($("#rc option:selected").attr("nom")+' '+$("#rc option:selected").attr("prenom"));
-		 $("#adresse_rc").val($("#rc option:selected").attr("adresse"));
-		 $("#solde_rc").val(parseFloat($("#rc option:selected").attr("sold")).formatMoney(2, '.', ' '));
-		 $("#max_solde_rc").val(parseFloat($("#rc option:selected").attr("plafond")).formatMoney(2, '.', ' '));
-		 $("#tv").val($("#rc option:selected").attr("tva"));
-		 $("#mode_reg").val( $("#rc option:selected").attr("mode_pay") );
 		 
-		 if( $("#rc option:selected").attr("is_blf")=="true" ){
-			 
-			 $("#frm").prop("action","new_commande_bl_fact_post");
-			 
-		 	 $("#select_mat").attr("name","");
-			 $("#select_mat").val("");
-			 $("#select_mat").attr('disabled',true);
-			 $("#select_mat").selectpicker('refresh');
-			 
-			 $("#input_mat").attr("name","matricule");
-			 $("#input_mat").attr('disabled',false);
-		     $("#radio_input").attr("checked","checked");
-		     $("#radio_select").attr("disabled",true);
-		     
-		     $("#chauffeur").css("display","block");
-		     $("#chauffeur_inp").attr("display","true");
-		 }
-		 else{
-			 
-			 $("#frm").prop("action","new_commande_post");
-			 
-			 $("#radio_select").attr("disabled",false);
-			 
-			 $("#chauffeur").css("display","none");
-			 $("#chauffeur_inp").attr("display","false");
-			 
-		 }
+		$('.art').find('option:not(:first)').remove();
+		$(".art").selectpicker('refresh');
+		
+		$(".qte").attr("readonly", false);
+		$(".qte").val(0);
+		$(".prix_unitaire").val(0);
+		$(".tva").val(0);
+		$(".montant_ht").val(0);
+		$(".id_magasin").empty();
+		$(".unite_mesure").val("");
+		$(".nom_art").val("");
+		
+		$("#total_ht").val(0);
+		$("#total_tva").val(0);
+		$("#total_ttc").val(0);
+		
+		$("#designation_rc").val($("#rc option:selected").attr("nom")+' '+$("#rc option:selected").attr("prenom"));
+		$("#adresse_rc").val($("#rc option:selected").attr("adresse"));
+		$("#solde_rc").val(parseFloat($("#rc option:selected").attr("sold")).formatMoney(2, '.', ' '));
+		$("#max_solde_rc").val(parseFloat($("#rc option:selected").attr("plafond")).formatMoney(2, '.', ' '));
+		$("#tv").val($("#rc option:selected").attr("tva"));
+		$("#mode_reg").val( $("#rc option:selected").attr("mode_pay") );
 		 
-		 var id_rc_clt = $(this).val();
+		if( $("#rc option:selected").attr("is_blf")=="true" ){
+			 
+		 $("#frm").prop("action","new_commande_bl_fact_post");
 		 
-		 var exo = $("#rc option:selected").attr("tva");
+	 	 $("#select_mat").attr("name","");
+		 $("#select_mat").val("");
+		 $("#select_mat").attr('disabled',true);
+		 $("#select_mat").selectpicker('refresh');
 		 
-		 console.log("exo ->"+exo)
+		 $("#input_mat").attr("name","matricule");
+		 $("#input_mat").attr('disabled',false);
+	     $("#radio_input").attr("checked","checked");
+	     $("#radio_select").attr("disabled",true);
+	     
+	     $("#chauffeur").css("display","block");
+	     $("#chauffeur_inp").attr("display","true");
+		}
+		else{
+			 
+		 $("#frm").prop("action","new_commande_post");
 		 
-		 if(exo==0){
+		 $("#radio_select").attr("disabled",false);
+		 
+		 $("#chauffeur").css("display","none");
+		 $("#chauffeur_inp").attr("display","false");
 			 
-			 $("#exo").attr("class","badge badge-warning");
-			 $("#exo").text("oui");
+		}
+		 
+		var id_rc_clt = $(this).val();
+		 
+		var exo = $("#rc option:selected").attr("tva");
+		 
+		console.log("exo ->"+exo)
+		 
+		if(exo==0){
 			 
-		 }
-		 else{
+		 $("#exo").attr("class","badge badge-warning");
+		 $("#exo").text("oui");
 			 
-			 $("#exo").attr("class","badge badge-secondary");
-			 $("#exo").text("non");
+		}
+		else{
 			 
-		 }
+		 $("#exo").attr("class","badge badge-secondary");
+		 $("#exo").text("non");
+			 
+		}
 		 
 		//-------------------- Update articles -----------------
 			
-			$('.art').find('option:not(:first)').remove();
-			$(".art").selectpicker('refresh');
-			
-			//$.ajaxSetup({async: false});
-			$("#redux").empty();
-			
-			$.ajax({
-				url: 'ajax_get_art_by_rc_cat',
-				//type: 'POST',
-				dataType: 'json',
-				data : {
-					id_rc_clt	:id_rc_clt,
-		        },
-		        success : function(responseJson) {
+		$("#redux").empty();
+		
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_get_art_by_rc_cat',
+			//type: 'POST',
+			dataType: 'json',
+			data : {
+				id_rc_clt	:id_rc_clt,
+	        },
+	        success : function(responseJson) {
+				
+				if (responseJson != "null") {
 					
-					if (responseJson != "null") {
+					$.each(responseJson, function(key, value) {
+						if(value.id==(-1)){
+							
+							$("#redux").append("<span class='badge badge-secondary' id='art'> "+value.article.produit.designation+" "+
+									value.article.emballage_produit.nom_emballage+" "+value.article.pesage_produit.pesage+
+									value.article.pesage_produit.unite_pesage+"</span>")
+							
+						}
 						
-						$.each(responseJson, function(key, value) {
-							if(value.id==(-1)){
+						$(".art").each(function(){
+							
+							var sub = "Subventionné";
+							
+							if(value.article.subvension==false){
 								
-								$("#redux").append("<span class='badge badge-secondary' id='art'> "+value.article.produit.designation+" "+
-										value.article.emballage_produit.nom_emballage+" "+value.article.pesage_produit.pesage+
-										value.article.pesage_produit.unite_pesage+"</span>")
+								sub = "NON Subventionné";
 								
 							}
+							/*
+							var cat = value.article.produit.sous_category_produit.category_produit.nom_category;
+							var s_cat = value.article.produit.sous_category_produit.nom_sous_category.replace(cat,"");
+							var prod_temp = value.article.produit.designation.replace(cat,"");
+							var prod = prod_temp.replace(s_cat,"");
+							var emb = value.article.emballage_produit.nom_emballage.replace(cat,"");
+							var pes = value.article.pesage_produit.pesage+' '+value.article.pesage_produit.unite_pesage;
+							'+cat+' '+s_cat+' '+prod+' '+emb+' '+pes+'
+							*/			
 							
-							$(".art").each(function(){
-								
-								var sub = "Subventionné";
-								
-								if(value.article.subvension==false){
-									
-									sub = "NON Subventionné";
-									
-								}
-								/*
-								var cat = value.article.produit.sous_category_produit.category_produit.nom_category;
-								var s_cat = value.article.produit.sous_category_produit.nom_sous_category.replace(cat,"");
-								var prod_temp = value.article.produit.designation.replace(cat,"");
-								var prod = prod_temp.replace(s_cat,"");
-								var emb = value.article.emballage_produit.nom_emballage.replace(cat,"");
-								var pes = value.article.pesage_produit.pesage+' '+value.article.pesage_produit.unite_pesage;
-								'+cat+' '+s_cat+' '+prod+' '+emb+' '+pes+'
-								*/			
-								
-								$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
-											   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
-											   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
-											   'pp="'+value.article.pesagePalette+'">'+value.article.libelle+'</option>');
-								
-								$(this).selectpicker('refresh');
-									
-							});
+							$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
+										   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
+										   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
+										   'pp="'+value.article.pesagePalette+'">'+value.article.libelle+'</option>');
 							
+							$(this).selectpicker('refresh');
+								
 						});
 						
-						$(".art").find("option").hide();
-						
-					}
+					});
+					
+					$(".art").find("option").hide();
 					
 				}
-			});
-			
-			//-----------------------------------------------------------
-			
-			$(".qte").attr("readonly", false);
-			$(".qte").val(0);
-			$(".prix_unitaire").val(0);
-			$(".tva").val(0);
-			$(".montant_ht").val(0);
-			$(".id_magasin").empty();
-			$(".unite_mesure").val("");
-			$(".nom_art").val("");
-			
-			$("#total_ht").val(0);
-			$("#total_tva").val(0);
-			$("#total_ttc").val(0);
+				
+			}
+		});
+		
+		//-----------------------------------------------------------
+		
+		
 			
 	});
 	
