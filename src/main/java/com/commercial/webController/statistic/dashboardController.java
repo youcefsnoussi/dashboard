@@ -288,7 +288,7 @@ public class dashboardController {
 		
 		model.addAttribute("weeks", weeks);
 		
-		System.out.println(categories.stream().distinct().collect(Collectors.toList()));
+		//System.out.println(categories.stream().distinct().collect(Collectors.toList()));
 		
 		model.addAttribute("cats", categories.stream().distinct().collect(Collectors.toList()));
 		

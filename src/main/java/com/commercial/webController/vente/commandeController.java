@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
@@ -175,7 +175,7 @@ public class commandeController {
 			
 			for(int j=0;j<list_bl.size();j++) {
 				
-				montant = montant + list_bl.get(j).getMontant_ttc();
+				montant += list_bl.get(j).getMontant_ttc();
 				
 			}
 			
@@ -224,21 +224,25 @@ public class commandeController {
 			@RequestParam("tva") double tva,
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
-			@RequestParam("total_ht") double montant_ht,
-			@RequestParam("pourc_reduction") double pourc_reduction,
-			@RequestParam("montant_reduction") double mnt_reduction,
-			@RequestParam("taux_tva_reduction") double taux_tva_reduction,
+			@RequestParam("total_ht") double montant_ht, //----> lebes
+			@RequestParam("pourc_reduction") double pourc_reduction, //----> lebes
+			@RequestParam("montant_reduction") double mnt_reduction, //----> lebes
+			@RequestParam("total_ht_net") double montant_ht_net, //----> lebes
 			@RequestParam("observation") String observation,
 			
 			@RequestParam("art") long [] article,
 			@RequestParam("id_um") long [] id_unite_mesure,
 			@RequestParam("id_magasin") long [] id_magasin,
 			@RequestParam("montant_ht_art") double [] montant_ht_art,
-			//@RequestParam("montant_ttc_art") double [] montant_ttc_art,
 			@RequestParam("tva_art") double [] tva_art,
 			@RequestParam("prix_unitaire") double [] prix_u_ht,
 			@RequestParam("qte") double [] quantite,
-			@RequestParam("tva_art") double [] montant_tva_art,
+			@RequestParam("montant_tva_art") double [] montant_tva_art,
+			@RequestParam("montant_redux_art_val") double [] montant_redux_art_val,
+			@RequestParam("montant_redux_art_pourc") double [] montant_redux_art_pourc,
+			@RequestParam("montant_net_ht_art") double [] montant_net_ht_art,
+			@RequestParam("montant_ttc_art") double [] montant_ttc_art,
+			
 			
 			@SessionAttribute("user") users user){
 			
@@ -268,8 +272,8 @@ public class commandeController {
 			
 			registre_commerce rc = clt_rc.getRegistre_commerce();
 			
-			commande cmd = new commande(today, time, numero_cmd, montant_ht, montant_tva, montant_ttc, "", null, null, user, false, matricule_camion
-					,mode_payRepo.getOne(id_mode_reg), clt_rc, pourc_reduction, mnt_reduction, taux_tva_reduction, observation);
+			commande cmd = new commande(today, time, numero_cmd, montant_ht, montant_tva, montant_ttc, "", clt, rc, null, user, false, 
+					matricule_camion ,mode_payRepo.getOne(id_mode_reg), clt_rc, pourc_reduction, mnt_reduction, observation, montant_ht_net);
 			
 			cmdRepo.save(cmd);cmdRepo.flush();
 			
@@ -284,7 +288,8 @@ public class commandeController {
 				if(quantite[i]!=0) {
 					
 					commande_detail cmd_d = new commande_detail(cmd, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], 
-							(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], umRepo.getOne(id_unite_mesure[i]));
+							montant_tva_art[i], tva_art[i], umRepo.getOne(id_unite_mesure[i]), montant_redux_art_pourc[i], 
+							montant_redux_art_val[i], montant_net_ht_art[i], montant_ttc_art[i]);
 					
 					cmd_detRepo.save(cmd_d);cmd_detRepo.flush();
 					
@@ -303,31 +308,47 @@ public class commandeController {
 			}
 			
 			String numero_bl = nby.return_num_BonLivraison(last_number);
-			
-			bon_livraison bl = new bon_livraison(clt, rc, today, time, numero_bl, matricule_camion, "", cmd, null, user, 0, montant_ht, montant_tva,
-					montant_ttc);
+			/*
+			bon_livraison bl = new bon_livraison(clt, rc, today, time, numero_bl, matricule_camion, "", cmd, null, user, 0, montant_ht, 
+					pourc_reduction, mnt_reduction, montant_ht_net, montant_tva, montant_ttc, false);
+			*/
+			bon_livraison bl = new bon_livraison(clt, rc, today, time, numero_bl, matricule_camion, cmd, user);
 			
 			bon_lRepo.save(bl);bon_lRepo.flush();
 			
 			//-------------------- tracking operation -----------------------------------
 			
-			trk.add_track("bon_livraison", "Génération de bon livraison a partir de la commande", cmd.getId(), user);
+			trk.add_track("bon_livraison", "Génération de bon livraison a partir de la commande", bl.getId(), user);
 			
 			//-------------------- tracking operation -----------------------------------
 			
-			boolean if_son = false; //----------------> testi ila son bach ninsiri f tabla ta3 nkhala
+			//boolean if_son = false; //----------------> testi ila son bach ninsiri f tabla ta3 nkhala
 			
 			for(int i=0;i<article.length;i++) {
 				
 				if(quantite[i]!=0) {
-					
+					 /*
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
-							montant_ht_art[i], (montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), 
-							false, magasinRepo.getOne(id_magasin[i]));
+							montant_ht_art[i], montant_tva_art[i], tva_art[i], umRepo.getOne(id_unite_mesure[i]), false, 
+							magasinRepo.getOne(id_magasin[i]), montant_redux_art_pourc[i], montant_redux_art_val[i], montant_net_ht_art[i], 
+							montant_ttc_art[i]);
+					*/
 					
+					prixUnitaire_article_categoryClient pu_obj = 
+							prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), artRepo.getOne(article[i]));
+					
+					//--------------------> TEST IS RC EXONERE TVA <------------------------------
+					
+					double taux_tva = (rc.getTva()==0) ? 0 : pu_obj.getTva().getTaux_tva();
+					
+					//----------------------------------------------------------------------------
+					
+					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i],
+							pu_obj.getPrix(), taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
+							magasinRepo.getOne(id_magasin[i]));
 					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
-					
+					/*
 					article art = artRepo.getOne(article[i]);
 					
 					if(art.getProduit().getSous_category_produit().getCategory_produit().getId()==5) {
@@ -335,10 +356,24 @@ public class commandeController {
 						if_son = true;
 						
 					}
-					
+					*/
 				}
 				
 			}
+			
+			//-------------------- calcule total from detail bl and put it in BL -------------
+			
+			List<Double[]> sum_details = bon_l_dRepo.get_sum_for_bl(bl);
+			
+			bl.setMontant_ht(sum_details.get(0)[0]); //sum_details[0]
+			bl.setValeur_reduction(sum_details.get(0)[1]);
+			bl.setMontant_ht_net(sum_details.get(0)[2]);
+			bl.setTva(sum_details.get(0)[3]);
+			bl.setMontant_ttc(sum_details.get(0)[4]);
+			
+			bl.setPourcentage_reduction( (sum_details.get(0)[1] * 100) / sum_details.get(0)[0] ); 
+			
+			bon_lRepo.save(bl);bon_lRepo.flush();
 			
 			//------------------------------------------------ insert table regroupment
 			

@@ -68,7 +68,9 @@ public interface facture_avoir_detailRepository extends JpaRepository<facture_av
 			
 			" fct_av_d.article.libelle, "+
 			
-			" SUM(quantite)*(-1), prix_u_ht, SUM(montant_ht)*(-1), SUM(montant_tva)*(-1), SUM(montant_ttc)*(-1)" + 
+			" SUM(quantite)*(-1), prix_u_ht, SUM(montant_ht)*(-1), SUM(montant_remise)*(-1), SUM(montant_ht_net)*(-1),"+
+			
+			"SUM(montant_tva)*(-1), SUM(montant_ttc)*(-1)" + 
 			
 			" FROM facture_avoir_detail fct_av_d" +
 			
@@ -136,7 +138,7 @@ public interface facture_avoir_detailRepository extends JpaRepository<facture_av
 	
 	@Query( " SELECT fct_av_d.tva,"+
 			
-			" SUM(montant_ht), SUM(montant_tva) " + 
+			" SUM(montant_ht_net), SUM(montant_tva) " + 
 			
 			" FROM facture_avoir_detail fct_av_d" +
 			

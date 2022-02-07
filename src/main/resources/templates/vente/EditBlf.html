@@ -25,7 +25,9 @@
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
 	
 	<script type="text/javascript" src="resources\PagesJS\vente\facture.js"></script>
-	    
+	
+	<script type="text/javascript" src="resources\additionalJS\CheckConnectionServer.js"></script>
+	
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
@@ -79,7 +81,9 @@
 				}
 				
 				if(test==0){
-				
+					
+					$(this).attr("disabled", true);
+					
 					$("#frm").submit();
 				
 				}
@@ -254,7 +258,7 @@
 							<div class="col-md-4 offset-md-8">
 								<div class="input-group">
 									<div class="input-group-prepend">
-										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Total HT </span>
 									</div>
 									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
 										th:value="${#numbers.formatDecimal(blf.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" readonly>
@@ -263,8 +267,39 @@
 							
 							<div class="col-md-4 offset-md-8">
 								<div class="input-group">
+										<span class="input-group-text declaration" style="text-align: left;">
+										 Remise (%) </span>
+									<input type="number" step="any" class="form-control zero remise_zero" name="pourc_reduction" 
+										style="text-align: right;" id="pourc_redux" value="0" readonly>
+									
+									<input type="text" class="form-control zero remise_zero" name="montant_reduction" 
+										style="text-align: right;" id="mnt_redux" value="0" readonly>
+									
+									<span class="input-group-text declaration" 
+													style="min-width: 106px; text-align: left;"> Remise (Val) </span>
+											
+										
+								</div>
+							</div>
+							
+							<div class="col-md-4 offset-md-8">
+										
+								<div class="input-group">
 									<div class="input-group-prepend">
-										<span class="input-group-text declaration">Montant TVA</span>
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;">
+										 Total HT Net </span>
+									</div>
+									<input type="text" class="form-control remise_zero" name="total_ht_net" style="text-align: right;" 
+										id="total_ht_net" th:value="${#numbers.formatDecimal(blf.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" 
+										readonly="readonly">
+								</div>
+							
+							</div>
+							
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration">Total TVA</span>
 									</div>
 									<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
 										th:value="${#numbers.formatDecimal(blf.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" readonly>
@@ -275,7 +310,7 @@
 							<div class="col-md-4 offset-md-8">
 								<div class="input-group">
 									<div class="input-group-prepend">
-										<span class="input-group-text declaration">Montant TTC </span>
+										<span class="input-group-text declaration">Total TTC </span>
 									</div>
 									<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" 
 										th:value="${#numbers.formatDecimal(blf.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" readonly>
@@ -293,20 +328,24 @@
 					<table class="table" id="table" >
 						<thead class="thead-dark">
 							<tr>
-								<th align="center"  width="8%">Art</th>
-								<th  align="center" width="30%">Libellé</th>
-								<th  align="center"  width="8%">Um</th>
-								<th  align="center" width="8%">Qte</th>
+								<th  align="center" >Art</th>
+								<th  align="center" >Libellé</th>
+								<th  align="center" >Um</th>
+								<th  align="center" >Qte</th>
 								<th  align="center" >Unité</th>
 								<th  align="center" >PU</th>
-								<th  align="center" >TVA</th>
 								<th  align="center" >MONTANT HT</th>
+								<th  align="center" >Remise ( Val / % )</th>
+								<th  align="center" >Montant NET HT</th>
+								<th  align="center" >TVA (%)</th>
+								<th  align="center" >Montant TVA</th>
+								<th  align="center" >Montant TTC</th>
 							</tr>
 						</thead>
 	
-						<tbody >
+						<tbody th:with="id_tr=${#lists.size(detail_bl)}">
 	
-							<tr th:each="blf_det:${detail_bl}" >
+							<tr th:each="blf_det, i:${detail_bl}" th:attr="id='tr'+${i.index}">
 								
 								
 								
@@ -317,7 +356,9 @@
 								 </td>
 								
 								<td> 
-									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="art">
+									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" 
+										data-live-search="true" name="art" th:attr="id_tr='tr'+${i.index}">
+										
 										<option value="0"  id_um="0" pu="0" tva="0">Selection</option>
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},
@@ -352,12 +393,30 @@
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" 
 									th:value="${blf_det.prix_u_ht}" type="number" step="any" style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control tva_art" id="tva_art" name="tva_art" type="number" 
-									th:value="${blf_det.tva}" step="any" value="" style="text-align: right;" readonly> </td>
-								
 								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" 
 									th:value="${#numbers.formatDecimal(blf_det.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" type="text" 
 										style="text-align: right;" readonly> </td>
+								
+								<td>
+									<div class="input-group">
+										<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" readonly
+											step="any" style="text-align: left;" placeholder="Val" th:value="${#numbers.formatDecimal(blf_det.montant_remise, 3, 'WHITESPACE', 2,'POINT')}">
+										<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" readonly
+											type="number" step="any" style="text-align: right;" placeholder="%" th:value="${#numbers.formatDecimal(blf_det.pourcentage_remise, 3, 'WHITESPACE', 2,'POINT')}">  
+									</div>
+								</td>
+								
+								<td><input class="form-control montant_net_ht remise_zero" id="montant_net_ht" name="montant_net_ht_art" type="text" 
+									style="text-align: right;" th:value="${#numbers.formatDecimal(blf_det.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" readonly> </td>	
+										
+								<td><input class="form-control tva_art" id="tva_art" name="tva_art" type="number" 
+									th:value="${blf_det.tva}" step="any" value="" style="text-align: right;" readonly> </td>
+									
+								<td><input class="form-control montant_tva remise_zero" id="montant_tva" name="montant_tva_art" type="text" 
+									 th:value="${#numbers.formatDecimal(blf_det.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" style="text-align: right;" readonly> </td>
+									
+								<td><input class="form-control montant_ttc remise_zero" id="montant_ttc" name="montant_ttc_art" type="text" 
+									 th:value="${#numbers.formatDecimal(blf_det.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"	style="text-align: right;" readonly> </td>				
 	
 							</tr>
 							<!--  

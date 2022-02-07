@@ -23,11 +23,8 @@
 	<script type="text/javascript" src="resources\additionalJS\jquery-spin.js"></script>
 	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
-	
-	<script type="text/javascript" src="resources\PagesJS\vente\facture.js"></script>
 	    
-	<script type="text/javascript" src="resources\PagesJS\vente\vente_employee.js"></script>
-	      
+	<script type="text/javascript" src="resources\PagesJS\vente\vente_employee.js"></script>  
 	      
 	</head>
 
@@ -141,32 +138,6 @@
 								</div>
 							
 							</div>
-							
-							<div class="row">
-							
-								<div class="col-md-4 offset-md-8">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Réduction (%) </span>
-										</div>
-										<input type="number" step="any" class="form-control zero" name="pourc_reduction" style="text-align: right;" id="pourc_redux" value="0" readonly>
-									</div>
-								</div>
-							
-							</div>
-							
-							<div class="row">
-							
-								<div class="col-md-4 offset-md-8">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT Avec Réduction </span>
-										</div>
-										<input type="text" step="any" class="form-control " name="total_ht" style="text-align: right;" id="total_ht_redux" value="0" readonly="readonly">
-									</div>
-								</div>
-							
-							</div>
 							<hr>
 							<div class="row">
 								
@@ -210,8 +181,10 @@
 								<th  align="center" >Qte</th>
 								<th  align="center" >Unité</th>
 								<th  align="center" >PU</th>
+								<th  align="center" >Montant HT</th>
 								<th  align="center" >TVA</th>
-								<th  align="center" >MONTANT HT</th>
+								<th  align="center" >Montant TVA</th>
+								<th  align="center" >Montant TTC</th>
 							</tr>
 						</thead>
 	
@@ -221,7 +194,8 @@
 	
 								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
 								
-								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="art">
+								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" 
+										data-live-search="true" name="art" th:attr="id_tr='tr'+${i}">
 										<option value="0" selected>Selection</option>
 										
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:text="${art.article.libelle}"
@@ -245,9 +219,15 @@
 								
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
 								
+								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" type="text" style="text-align: right;" value="0" readonly> </td>
+								
 								<td> <input class="form-control tva" id="tva_art" name="tva_art" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" type="text" style="text-align: right;" value="0" readonly> </td>
+								<td><input class="form-control montant_tva remise_zero" id="montant_tva" name="montant_tva_art" type="text" value="0"
+									style="text-align: right;" readonly> </td>
+									
+								<td><input class="form-control montant_ttc remise_zero" id="montant_ttc" name="montant_ttc_art" type="text" value="0" 
+									style="text-align: right;" readonly> </td>	
 	
 							</tr>
 	

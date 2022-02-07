@@ -22,6 +22,9 @@
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
@@ -123,6 +126,36 @@
 				
 			});
 			
+			$("#generate").click(function(){
+				
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.replace(/ /g, ""));
+					
+				});
+				
+				var myExcel = new ExcelGen({
+					
+					  "src_id": "table",
+					
+					  "show_header": true
+					
+				});
+				
+				myExcel.generate();
+				/*
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.formatMoney(2, '.', ' '));
+					
+				});
+				*/
+			});
+			
 			//$("#rc").val($("#id_rc").val());
 			
 			$("#rc").selectpicker('val',$("#id_rc").val());
@@ -200,6 +233,12 @@
 								<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
 										
 							</div>
+						
+						</div>
+						
+						<div class="col-md-1" >
+						
+							<button class="btn btn-primary" id="generate">Excel</button>
 						
 						</div>
 						

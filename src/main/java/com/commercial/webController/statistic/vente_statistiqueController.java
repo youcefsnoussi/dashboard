@@ -316,31 +316,9 @@ public class vente_statistiqueController {
 			
 			list = fact_dRepo.get_sum_declaration_tva(start, end);
 			
-			//System.out.println("---------->"+fact_av_dRepo.get_sum_declaration_tva(start, end).get(0)[0]);
-			
-			List <Object[]> list_av = fact_av_dRepo.get_sum_declaration_tva(start, end);
-			
-			//if(list_av.size()!=0) {
-			
-				for(int i=0; i<list_av.size();i++) {
-					
-					if(list_av.get(i)[0].equals(list.get(i)[0])) {
-						
-						double new_val_ht = ( (double) list.get(i)[1] ) - ( (double) fact_av_dRepo.get_sum_declaration_tva(start, end).get(i)[1] );
-						double new_val_tva = ( (double) list.get(i)[2] ) - ( (double) fact_av_dRepo.get_sum_declaration_tva(start, end).get(i)[2] );
-						
-						list.get(i)[1] = new_val_ht;
-						list.get(i)[2] = new_val_tva;
-						
-					}
-					
-				}
-			
-			//}
-			
-			model.addAttribute("list", list);
-			
 		}
+		
+		model.addAttribute("list", list);
 		
 		return "statistic/declaration_tva";		
 	}
@@ -358,10 +336,6 @@ public class vente_statistiqueController {
 		convert_string_to_date_util conv = new convert_string_to_date_util();
 		
 		get_time_date gtd = new get_time_date();
-		
-		List <Object[]> list = new ArrayList<Object[]>();
-		
-		
 		
 		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 		
@@ -511,6 +485,8 @@ public class vente_statistiqueController {
 		model.addAttribute("end",end);
 		model.addAttribute("unite",user.getUnite().getNom_unite());
 		
+		
+		
 		return "statistic/etat_sortie_category_article";		
 	}
 	
@@ -566,6 +542,92 @@ public class vente_statistiqueController {
 	}
 	
 	//-----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/rapport_wilaya")
+	public String rapport_wilaya(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="id_category", defaultValue="0") Long id_category,
+						 //@RequestParam(value="sub", defaultValue="false") boolean sub,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		List <Object[]> list = new ArrayList<Object[]>();
+		
+		String ret_start = (start.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : start;
+		
+		String ret_end = (end.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : end;
+		
+		if(id_category!=0) {
+			
+			category_produit cat_p = cat_prodRepo.getOne(id_category);
+
+			list = cat_prodRepo.get_quantite_vendu_by_wilaya_fact(ret_start, ret_end, cat_p) ;	
+					
+		}
+		
+		model.addAttribute("categories", cat_prodRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
+		
+		model.addAttribute("selected_category", id_category);
+		
+		model.addAttribute("start", ret_start);
+		
+		model.addAttribute("end", ret_end);
+		
+		//model.addAttribute("sub", sub);
+		
+		model.addAttribute("list", list);
+		
+		return "statistic/rapport_wilaya";		
+	}
+	
+	//------------------------------------------------------------------------------
+	
+	@RequestMapping(value="/rapport_wilaya_detail")
+	public String rapport_wilaya_detail(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="id_category", defaultValue="0") Long id_category,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		List <Object[]> list = new ArrayList<Object[]>();
+		
+		String ret_start = (start.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : start;
+		
+		String ret_end = (end.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : end;
+		
+		if(id_category!=0) {
+			
+			category_produit cat_p = cat_prodRepo.getOne(id_category);
+
+			list = cat_prodRepo.get_quantite_vendu_by_wilaya_fact_detail(ret_start, ret_end, cat_p.getId()) ;	
+					
+		}
+		
+		model.addAttribute("categories", cat_prodRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
+		
+		model.addAttribute("selected_category", id_category);
+		
+		model.addAttribute("start", ret_start);
+		
+		model.addAttribute("end", ret_end);
+		
+		model.addAttribute("list", list);
+		
+		return "statistic/rapport_wilaya_detail";		
+	}
+	
+	//------------------------------------------------------------------------------
+	
 	
 	//___________________________________________/°=-PRINT FUNCTIONS-=°\_______________________________
 	

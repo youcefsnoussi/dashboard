@@ -401,6 +401,22 @@ public class history_by_client_or_rc_Controller {
 							}
 							break;
 							
+							case "Regularisation Sold (-)":
+							{
+								
+								nums.add("");
+								
+							}
+							break;
+							
+							case "Regularisation Sold (+)":
+							{
+								
+								nums.add("");
+								
+							}
+							break;
+							
 							default:
 							break;
 						

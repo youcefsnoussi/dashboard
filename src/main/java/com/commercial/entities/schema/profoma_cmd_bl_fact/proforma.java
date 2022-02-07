@@ -46,6 +46,15 @@ public class proforma implements Serializable{
 	
 	private double total_ttc;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_remise;
+	
+	@Column(columnDefinition = "double precision default 0")
+	private double pourcentage_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double total_ht_net;
+	
 	@OneToOne
 	@JoinColumn(name = "commande")
 	private commande commande;
@@ -57,7 +66,7 @@ public class proforma implements Serializable{
 	public proforma() {
 		// TODO Auto-generated constructor stub
 	}
-
+	/*
 	public proforma(client client, registre_commerce registre_commerce, String date, String time,
 			String numero, List<proforma_detail> pf_d, users users) {
 		super();
@@ -67,11 +76,37 @@ public class proforma implements Serializable{
 		this.time = time;
 		this.numero = numero;
 		this.total_ht = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_ht).sum();
+		this.montant_remise = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_remise).sum();
+		this.pourcentage_remise = (this.montant_remise*100) / this.total_ht;
+		this.total_ht_net = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_ht_net).sum();
 		this.total_tva = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_tva).sum();
 		this.total_ttc = pf_d.stream().filter(pd -> pd != null).mapToDouble(proforma_detail::getMontant_ttc).sum();
 		this.users = users;
 	}
-
+	*/
+	
+	public proforma(com.commercial.entities.schema.client.client client,
+			com.commercial.entities.schema.client.registre_commerce registre_commerce, String date, String time,
+			String numero, double total_ht, double total_tva, double total_ttc, double montant_remise,
+			double pourcentage_remise, double total_ht_net,
+			com.commercial.entities.schema.profoma_cmd_bl_fact.commande commande,
+			com.commercial.entities.schema.user_menu.users users) {
+		super();
+		this.client = client;
+		this.registre_commerce = registre_commerce;
+		this.date = date;
+		this.time = time;
+		this.numero = numero;
+		this.total_ht = total_ht;
+		this.total_tva = total_tva;
+		this.total_ttc = total_ttc;
+		this.montant_remise = montant_remise;
+		this.pourcentage_remise = pourcentage_remise;
+		this.total_ht_net = total_ht_net;
+		this.commande = commande;
+		this.users = users;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -158,6 +193,30 @@ public class proforma implements Serializable{
 
 	public void setUsers(users users) {
 		this.users = users;
+	}
+
+	public double getMontant_remise() {
+		return montant_remise;
+	}
+
+	public void setMontant_remise(double montant_remise) {
+		this.montant_remise = montant_remise;
+	}
+
+	public double getPourcentage_remise() {
+		return pourcentage_remise;
+	}
+
+	public void setPourcentage_remise(double pourcentage_remise) {
+		this.pourcentage_remise = pourcentage_remise;
+	}
+
+	public double getTotal_ht_net() {
+		return total_ht_net;
+	}
+
+	public void setTotal_ht_net(double total_ht_net) {
+		this.total_ht_net = total_ht_net;
 	}
 	
 }

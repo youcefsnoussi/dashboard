@@ -42,6 +42,15 @@ public class facture_avoir implements Serializable{
 	
 	private double montant_ht;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_remise;
+	
+	@Column(columnDefinition = "double precision default 0")
+	private double pourcentage_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ht_net;
+	
 	private double tva;
 	
 	private double montant_ttc;
@@ -72,7 +81,7 @@ public class facture_avoir implements Serializable{
 			com.commercial.entities.schema.client.registre_commerce registre_commerce, String date, String time,
 			String numero, double montant_ht, double tva, double montant_ttc, String link_pdf,
 			com.commercial.entities.schema.user_menu.users users, String etat_sold, double sold_rest,
-			causes_facture_avoir cause) {
+			causes_facture_avoir cause, double montant_remise, double pourcentage_remise, double montant_ht_net) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;
@@ -87,6 +96,10 @@ public class facture_avoir implements Serializable{
 		this.etat_sold = etat_sold;
 		this.sold_rest = sold_rest;
 		this.cause = cause;
+		this.montant_remise = montant_remise;
+		this.pourcentage_remise = pourcentage_remise;
+		this.montant_ht_net = montant_ht_net;
+		
 	}
 
 	public Long getId() {
@@ -207,6 +220,30 @@ public class facture_avoir implements Serializable{
 
 	public void setCause(causes_facture_avoir cause) {
 		this.cause = cause;
+	}
+
+	public double getMontant_remise() {
+		return montant_remise;
+	}
+
+	public void setMontant_remise(double montant_remise) {
+		this.montant_remise = montant_remise;
+	}
+
+	public double getPourcentage_remise() {
+		return pourcentage_remise;
+	}
+
+	public void setPourcentage_remise(double pourcentage_remise) {
+		this.pourcentage_remise = pourcentage_remise;
+	}
+
+	public double getMontant_ht_net() {
+		return montant_ht_net;
+	}
+
+	public void setMontant_ht_net(double montant_ht_net) {
+		this.montant_ht_net = montant_ht_net;
 	}
 	
 }

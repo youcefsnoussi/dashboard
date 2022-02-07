@@ -13,7 +13,6 @@ import javax.persistence.Table;
 
 import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
-import com.commercial.entities.schema.article.magasin_article;
 import com.commercial.entities.schema.static_data.unite_mesure;
 import com.commercial.entities.schema.user_menu.users;
 
@@ -45,6 +44,18 @@ public class bon_livraison_detail implements Serializable{
 	
 	private double tva;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double pourcentage_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ht_net;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ttc;
+	
 	@ManyToOne
 	@JoinColumn(name = "users")
 	private users user_magasin_validate;
@@ -63,12 +74,10 @@ public class bon_livraison_detail implements Serializable{
 	public bon_livraison_detail() {
 		// TODO Auto-generated constructor stub
 	}
-
-	public bon_livraison_detail(com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison bon_livraison,
-			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
-			double montant_ht, double montant_tva, double tva, users user_magasin_validate,
-			com.commercial.entities.schema.static_data.unite_mesure unite_mesure, boolean validation,
-			Magasin magasin) {
+	
+	public bon_livraison_detail(bon_livraison bon_livraison, article article, double quantite, double prix_u_ht,
+			double montant_ht, double montant_tva, double tva, users user_magasin_validate, unite_mesure unite_mesure,
+			boolean validation, Magasin magasin) {
 		super();
 		this.bon_livraison = bon_livraison;
 		this.article = article;
@@ -80,6 +89,28 @@ public class bon_livraison_detail implements Serializable{
 		this.user_magasin_validate = user_magasin_validate;
 		this.unite_mesure = unite_mesure;
 		this.validation = validation;
+		this.magasin = magasin;
+	}
+	
+	public bon_livraison_detail(bon_livraison bon_livraison, article article, double quantite, double prix_u_ht,
+			double tva, double montant_remise, unite_mesure unite_mesure, Magasin magasin) {
+		super();
+		this.bon_livraison = bon_livraison;
+		this.article = article;
+		this.quantite = quantite;
+		this.prix_u_ht = prix_u_ht;
+		
+		this.montant_ht = quantite * prix_u_ht;
+		this.tva = tva;
+		this.montant_remise = montant_remise;
+		this.pourcentage_remise = (montant_remise * 100) / montant_ht;
+		this.montant_ht_net = montant_ht - montant_remise;
+		this.montant_tva = montant_ht_net * (tva / 100);
+		this.montant_ttc = montant_ht_net + montant_tva;
+		
+		this.user_magasin_validate = null;
+		this.unite_mesure = unite_mesure;
+		this.validation = false;
 		this.magasin = magasin;
 	}
 
@@ -179,4 +210,36 @@ public class bon_livraison_detail implements Serializable{
 		this.magasin = magasin;
 	}
 
+	public double getPourcentage_remise() {
+		return pourcentage_remise;
+	}
+
+	public void setPourcentage_remise(double pourcentage_remise) {
+		this.pourcentage_remise = pourcentage_remise;
+	}
+
+	public double getMontant_remise() {
+		return montant_remise;
+	}
+
+	public void setMontant_remise(double montant_remise) {
+		this.montant_remise = montant_remise;
+	}
+
+	public double getMontant_ht_net() {
+		return montant_ht_net;
+	}
+
+	public void setMontant_ht_net(double montant_ht_net) {
+		this.montant_ht_net = montant_ht_net;
+	}
+
+	public double getMontant_ttc() {
+		return montant_ttc;
+	}
+
+	public void setMontant_ttc(double montant_ttc) {
+		this.montant_ttc = montant_ttc;
+	}
+	
 }

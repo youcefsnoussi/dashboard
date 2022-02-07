@@ -214,7 +214,7 @@ public class WebController {
 			
 		}
 		
-		if(role.getNom_role().equals("Admin") || role.getNom_role().equals("Gérant")) {
+		if(role.getNom_role().equals("Admin") || role.getIds_banned().contains("dashboard")) {
 			
 			ret = "redirect:/dashboard?start=0&end=0&nbr_days=0";
 			

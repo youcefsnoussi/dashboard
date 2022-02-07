@@ -15,7 +15,7 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 	
 	@Query( " SELECT blf_det.prix_u_ht, blf_det.tva, blf_det.article.id, blf_det.unite_mesure.id, " +
 			
-			" SUM(quantite), SUM(montant_ht), SUM(montant_tva), SUM(montant_ht+montant_tva) " +
+			" SUM(quantite), SUM(montant_ht), SUM(montant_tva), SUM(montant_ttc), SUM(montant_ht_net), SUM(montant_remise) " +
 			
 			" FROM bon_livraison_facture_detail blf_det " + 
 			
@@ -27,7 +27,28 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 			
 			" GROUP BY blf_det.article.id, blf_det.prix_u_ht, blf_det.tva, blf_det.unite_mesure.id")
 		 
-	public List<Object []> get_cumule_facture_blf(@Param("start") String start, @Param("end") String end, @Param("rc") registre_commerce rc);
+	public List<Object []> get_cumule_facture_blf(@Param("start") String start, @Param("end") String end, 
+				@Param("rc") registre_commerce rc);
+	
+	//---------------------------------------------------------------------
+	
+	@Query( "SELECT blf_det.article.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva,"+
+			
+			"SUM(blf_det.quantite), SUM(blf_det.montant_ht), SUM(blf_det.montant_tva), SUM(blf_det.montant_ttc), "+
+			 
+			"SUM(montant_ht_net), SUM(montant_remise) "+  //blf_det.article.code,
+			
+			"FROM bon_livraison_facture_detail blf_det " + 
+			
+			"WHERE blf_det.bon_livraison_facture.id IN (:blfs) " + 
+			
+			"GROUP BY blf_det.article.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva, "+
+			
+			"blf_det.article.code "+
+			
+			"ORDER BY blf_det.article.code" )
+	
+	public List<Object[]> get_article_cumuleAll_from_detail_blfs(@Param("blfs") List<Long> blfs);
 	
 	//---------------------------------------------------------------------
 	
@@ -73,26 +94,37 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 			"GROUP BY blf_det.article.id, blf_det.magasin.id, blf_det.unite_mesure.id " )
 	
 	public List<Object[]> get_article_cumuleQuant_from_detail_blfs(@Param("blfs") List<Long> blfs);
-	//---------------------------------------------------------------------
 	
-	@Query( "SELECT blf_det.article.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva,"+
-			
-			"SUM(blf_det.quantite), SUM(blf_det.montant_ht), SUM(blf_det.montant_tva), SUM(blf_det.montant_ttc), "+
-			 
-			"blf_det.article.code "+ 
-			
-			"FROM bon_livraison_facture_detail blf_det " + 
-			
-			"WHERE blf_det.bon_livraison_facture.id IN (:blfs) " + 
-			
-			"AND blf_det.bon_livraison_facture.factured = 'false' " + 
-			
-			"GROUP BY blf_det.article.id, blf_det.unite_mesure.id, blf_det.prix_u_ht, blf_det.tva, "+
-			
-			"blf_det.article.code "+
-			
-			"ORDER BY blf_det.article.code" )
+	//-----------------------------------------------------------------------
 	
-	public List<Object[]> get_article_cumuleAll_from_detail_blfs(@Param("blfs") List<Long> blfs);
+	@Query( " SELECT SUM(montant_ht), SUM(montant_remise), SUM(montant_ht_net), SUM(montant_tva), SUM(montant_ttc) " +
+			
+			" FROM bon_livraison_facture_detail blf_d " +
+			
+		    " WHERE blf_d.bon_livraison_facture = :blf")
+	
+	public List<Double[]> get_sum_for_blf(@Param("blf") bon_livraison_facture blf);
+	
+	//-----------------------------------------------------------------------
+	
+	@Query( " SELECT fct_d.article.code, fct_d.article.produit.sous_category_produit.category_produit.nom_category, "+
+			
+			" fct_d.article.produit.sous_category_produit.nom_sous_category, "+
+			
+			" fct_d.article.libelle, "+
+			
+			" SUM(quantite), prix_u_ht, SUM(montant_ht), SUM(montant_remise), SUM(montant_ht_net), SUM(montant_tva), "+
+			
+			" SUM(montant_ttc)" + 
+			
+			" FROM bon_livraison_facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.bon_livraison_facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"+
+			
+			" AND fct_d.bon_livraison_facture.factured = 'false' AND fct_d.bon_livraison_facture.cancel = 'false' " + 
+			
+			" GROUP BY code, nom_category, nom_sous_category, libelle, prix_u_ht")
+		 
+	public List<Object[]> get_quantite_sold_val_bl(@Param("start") String start, @Param("end") String end);
 	
 }

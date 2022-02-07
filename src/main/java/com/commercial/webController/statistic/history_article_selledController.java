@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoir_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.user_menu.users;
@@ -29,6 +30,9 @@ public class history_article_selledController {
 	
 	@Autowired
 	facture_avoir_detailRepository fact_av_dRepo;
+	
+	@Autowired
+	bon_livraison_facture_detailRepository bldRepo;
 	
 	public history_article_selledController() {
 		// TODO Auto-generated constructor stub
@@ -107,7 +111,7 @@ public class history_article_selledController {
 			list = fact_detRepo.get_quantite_sold_val_fact(gtd.get_date(), gtd.get_date());
 			list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av(gtd.get_date(), gtd.get_date()));
 			
-			list1 = fact_detRepo.get_quantite_sold_val_bl(gtd.get_date(), gtd.get_date());
+			list1 = bldRepo.get_quantite_sold_val_bl(gtd.get_date(), gtd.get_date());
 			
 			date_debut = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
@@ -121,7 +125,7 @@ public class history_article_selledController {
 			list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av(conv.convertion_InputDate_to_MyDate(date_debut), 
 					conv.convertion_InputDate_to_MyDate(date_fin)));
 			
-			list1 = fact_detRepo.get_quantite_sold_val_bl(conv.convertion_InputDate_to_MyDate(date_debut), 
+			list1 = bldRepo.get_quantite_sold_val_bl(conv.convertion_InputDate_to_MyDate(date_debut), 
 					conv.convertion_InputDate_to_MyDate(date_fin));
 			
 		}

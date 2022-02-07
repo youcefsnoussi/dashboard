@@ -1,6 +1,7 @@
 package com.commercial.webController.vente;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -164,9 +165,11 @@ public class bon_transfertController {
 		
 		convert_string_to_date_util conv = new convert_string_to_date_util();
 		
+		List<bon_transfert_detail> bts_d = new ArrayList<>();
+		
 		if(start.equals("0") && end.equals("0")) {
 			
-			model.addAttribute("list_btd", bt_dRepo.date_between_bt_detail(gtd.get_date(), gtd.get_date()));
+			bts_d = bt_dRepo.date_between_bt_detail(gtd.get_date(), gtd.get_date());
 			
 			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
@@ -177,12 +180,13 @@ public class bon_transfertController {
 			date_d = conv.convertion_InputDate_to_MyDate(start);
 			date_f = conv.convertion_InputDate_to_MyDate(end);
 			
-			model.addAttribute("list_btd", bt_dRepo.date_between_bt_detail(date_d, date_f));
+			bts_d =  bt_dRepo.date_between_bt_detail(date_d, date_f);
 			
 			date_d = start; date_f = end;
 			
 		}
-		//model.addAttribute("bls", bon_lRepo.get_bl_encours());
+		
+		model.addAttribute("list_btd", bts_d);
 		
 		model.addAttribute("date_d", date_d);
 		

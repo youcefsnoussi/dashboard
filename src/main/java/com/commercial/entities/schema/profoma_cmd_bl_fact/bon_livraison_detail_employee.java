@@ -42,6 +42,9 @@ public class bon_livraison_detail_employee implements Serializable{
 	
 	private double montant_tva;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ttc;
+	
 	private double tva;
 	
 	@ManyToOne
@@ -63,11 +66,9 @@ public class bon_livraison_detail_employee implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public bon_livraison_detail_employee(
-			com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_employee bon_livraison_employee,
-			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
-			double montant_ht, double montant_tva, double tva, users user_magasin_validate,
-			com.commercial.entities.schema.static_data.unite_mesure unite_mesure, boolean validation, Magasin magasin) {
+	public bon_livraison_detail_employee(bon_livraison_employee bon_livraison_employee, article article, double quantite, 
+			double prix_u_ht, double montant_ht, double montant_tva, double tva, users user_magasin_validate, 
+			unite_mesure unite_mesure, boolean validation, Magasin magasin) {
 		super();
 		this.bon_livraison_employee = bon_livraison_employee;
 		this.article = article;
@@ -81,7 +82,26 @@ public class bon_livraison_detail_employee implements Serializable{
 		this.validation = validation;
 		this.magasin = magasin;
 	}
-
+	
+	public bon_livraison_detail_employee(bon_livraison_employee bon_livraison_employee, article article, double quantite, 
+			double prix_u_ht, double tva, users user_magasin_validate, unite_mesure unite_mesure, Magasin magasin) {
+		super();
+		this.bon_livraison_employee = bon_livraison_employee;
+		this.article = article;
+		this.quantite = quantite;
+		this.prix_u_ht = prix_u_ht;
+		this.tva = tva;
+		
+		this.montant_ht = quantite * prix_u_ht;
+		this.montant_tva = montant_ht * (tva / 100);
+		this.montant_ttc = montant_ht + montant_tva;
+		
+		this.user_magasin_validate = user_magasin_validate;
+		this.unite_mesure = unite_mesure;
+		this.validation = false;
+		this.magasin = magasin;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -144,6 +164,14 @@ public class bon_livraison_detail_employee implements Serializable{
 
 	public void setTva(double tva) {
 		this.tva = tva;
+	}
+	
+	public double getMontant_ttc() {
+		return montant_ttc;
+	}
+
+	public void setMontant_ttc(double montant_ttc) {
+		this.montant_ttc = montant_ttc;
 	}
 
 	public users getUser_magasin_validate() {

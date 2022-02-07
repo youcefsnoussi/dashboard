@@ -341,6 +341,9 @@ public class list_bl_encoursController {
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
 			@RequestParam("matricule") String matricule,
+			@RequestParam("pourc_reduction") double pourc_reduction, //----> lebes
+			@RequestParam("montant_reduction") double mnt_reduction, //----> lebes
+			@RequestParam("total_ht_net") double montant_ht_net,
 			
 			@RequestParam(name="art", defaultValue = "0") long [] article,
 			@RequestParam(name="id_um", defaultValue = "0") long [] id_unite_mesure,
@@ -350,18 +353,22 @@ public class list_bl_encoursController {
 			@RequestParam(name="tva_art", defaultValue = "0") double [] tva_art,
 			@RequestParam(name="prix_unitaire", defaultValue = "0") double [] prix_u_ht,
 			@RequestParam(name="qte", defaultValue = "0") double [] quantite,
-			@RequestParam(name="tva_art", defaultValue = "0") double [] montant_tva_art,
+			@RequestParam("montant_tva_art") double [] montant_tva_art,
+			@RequestParam("montant_redux_art_val") double [] montant_redux_art_val,
+			@RequestParam("montant_redux_art_pourc") double [] montant_redux_art_pourc,
+			@RequestParam("montant_net_ht_art") double [] montant_net_ht_art,
+			@RequestParam("montant_ttc_art") double [] montant_ttc_art,
 			
 			@SessionAttribute("user") users user){
 			
 			bon_livraison bl = bon_lRepo.getOne(id_bl);
-			
+			/*
 			get_time_date gtd = new get_time_date();
 			
 			String today = gtd.get_date();
 			
 			String time = gtd.get_time();
-			
+			*/
 			//------------------------- TEST PLAFOND
 			
 			int t = 0;
@@ -420,7 +427,7 @@ public class list_bl_encoursController {
 				montant_p = ps.getMontantPaletteFromInterface(article, quantite, clt);
 				
 			}
-			System.out.println("prix total palette djdid------>"+montant_p);
+			//System.out.println("prix total palette djdid------>"+montant_p);
 			
 			//---------------------------------------------------
 			
@@ -444,23 +451,6 @@ public class list_bl_encoursController {
 				trk.add_track("bon_livraison", "Modification Bon livraison", bl.getId(), user);
 				
 				//-------------------- tracking operation -----------------------------------
-				
-				//------------------------- edit BL --------------------------------------
-				
-				bl.setMontant_ht(montant_ht);
-				bl.setMontant_ttc(montant_ttc);
-				bl.setTva(montant_tva);
-				
-				bl.setDate(today);
-				bl.setTime(time);
-				
-				bl.setMatricule(matricule);
-				
-				bl.setUsers(user);
-				
-				bon_lRepo.save(bl); bon_lRepo.flush();
-				
-				//---------------------------------------------------------------
 				
 				List <bon_livraison_detail> bld = bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl));
 				
@@ -487,21 +477,75 @@ public class list_bl_encoursController {
 				for(int i=0;i<quantite.length;i++) {
 					
 					if(article[i]!=0 && quantite[i]!=0) {
-						
+						/*
 						System.out.println("index->"+i+" / art->"+artRepo.getOne(article[i]).getCode()+" / quant-> "+quantite[i]+
 								" / Mag-> "+magasinRepo.getOne(id_magasin[i]).getName());
 						
+						
 						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], 
-								montant_ht_art[i], (montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], null, umRepo.getOne(id_unite_mesure[i]),
-								false, magasinRepo.getOne(id_magasin[i]));
+								montant_ht_art[i], montant_tva_art[i], tva_art[i], umRepo.getOne(id_unite_mesure[i]), false, 
+								magasinRepo.getOne(id_magasin[i]), montant_redux_art_pourc[i], montant_redux_art_val[i], 
+								montant_net_ht_art[i],
+								montant_ttc_art[i]);
+						*/
+						
+						prixUnitaire_article_categoryClient pu_obj = 
+							prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), artRepo.getOne(article[i]));
+						
+						//--------------------> TEST IS RC EXONERE TVA <------------------------------
+						
+						double taux_tva = (rc.getTva()==0) ? 0 : pu_obj.getTva().getTaux_tva();
+						
+						//-------------------->	---------------------- <------------------------------
+						
+						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i],
+								pu_obj.getPrix(), taux_tva, montant_redux_art_val[i],
+								artRepo.getOne(article[i]).getUnite_mesure_vente(), magasinRepo.getOne(id_magasin[i]));
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 						
-						System.out.println("-------------SAVED");
+						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 						
 					}
 					
 				}
+				
+				//------------------------- edit BL --------------------------------------
+				
+				//-------------------- calcule total from detail bl and put it in BL
+				
+				List<Double[]> sum_details = bon_l_dRepo.get_sum_for_bl(bl);
+				
+				bl.setMontant_ht(sum_details.get(0)[0]);
+				bl.setValeur_reduction(sum_details.get(0)[1]); //------> NULL pointer excpetion
+				bl.setMontant_ht_net(sum_details.get(0)[2]);
+				bl.setTva(sum_details.get(0)[3]);
+				bl.setMontant_ttc(sum_details.get(0)[4]);
+				
+				bl.setPourcentage_reduction( (sum_details.get(0)[1] * 100) / sum_details.get(0)[0] ); 
+				
+				bl.setMatricule(matricule);
+				
+				bon_lRepo.save(bl);bon_lRepo.flush();
+				
+				/* -----------------> OLD TAKING VALUES FROM CLIENTS
+				bl.setValeur_reduction(mnt_reduction);
+				bl.setPourcentage_reduction(pourc_reduction);
+				bl.setMontant_ht_net(montant_ht_net);
+				bl.setMontant_ht(montant_ht);
+				bl.setMontant_ttc(montant_ttc);
+				bl.setTva(montant_tva);
+				
+				bl.setDate(today);
+				bl.setTime(time);
+				
+				bl.setMatricule(matricule);
+				
+				bl.setUsers(user);
+				
+				bon_lRepo.save(bl); bon_lRepo.flush();
+				*/
+				//---------------------------------------------------------------
 				
 				//--------------------------- UPDATE PALETTE ---------------------
 				
@@ -643,12 +687,12 @@ public class list_bl_encoursController {
 				
 				numerotation_by_year nby = new numerotation_by_year();
 				
-				String numero_fact = nby.return_num_facture(last_number, user.getUnite().getId());
-
+				String numero_fact = nby.return_num_facture(last_number, (long)user.getUnite().getIdentifiant());
+				
 				facture fact = new facture(bl.getClient(), bl.getRegistre_commerce(), bl.getCommande().getClient_registrecommerce(), today, time,
-						numero_fact, bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), 0, bl.getMontant_ht(), "", bl, 
-						bl.getCommande().getMode_paiement(), bl.getCommande().getUsers(), false,  bl.getMontant_ttc(), false, false, 
-						bl.getCommande().getPourcentage_reduction());
+						numero_fact, bl.getMontant_ht(), 0, bl.getMatricule(), bl.getMontant_ttc(), bl.getTva(), bl.getValeur_reduction(), 
+						bl.getMontant_ht_net(), "", bl, bl.getCommande().getMode_paiement(), bl.getCommande().getUsers(), false, 
+						bl.getMontant_ttc(), false, false, bl.getPourcentage_reduction());
 				
 				factRepo.save(fact);factRepo.flush();
 				
@@ -673,8 +717,8 @@ public class list_bl_encoursController {
 					bon_livraison_detail bld = bld_list.get(i);
 					
 					facture_detail fct_d = new facture_detail(fact, bld.getArticle(), bld.getQuantite(), bld.getPrix_u_ht(), bld.getMontant_ht(),
-							bld.getTva(), bld.getMontant_tva(), (bld.getMontant_ht() + bld.getMontant_tva()), 0,
-							0, bld.getMontant_ht(), bld.getUnite_mesure());
+							bld.getTva(), bld.getMontant_tva(), bld.getMontant_ttc(), bld.getPourcentage_remise(), bld.getMontant_remise(),
+							bld.getMontant_ht_net(), bld.getUnite_mesure());
 					
 					fact_detRepo.save(fct_d);fact_detRepo.flush();
 					

@@ -27,11 +27,7 @@ import com.commercial.entities.schema.client.repository.category_clientRepositor
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
-import com.commercial.entities.schema.dynamic_data.mouvement;
 import com.commercial.entities.schema.dynamic_data.repository.mouvementRepository;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_detail;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.prof_cmd_bl_fact_client_rc_avoir;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
@@ -42,8 +38,6 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
-import com.commercial.functions.get_time_date;
-import com.commercial.functions.numerotation_by_year;
 
 @Controller
 @SessionAttributes("user")
@@ -179,7 +173,7 @@ public class factureController {
 				@RequestParam("tva_art") double [] montant_tva_art,
 				
 				@SessionAttribute("user") users user){
-				
+				/*
 				facture  last_fact = factRepo.findFirst1ByOrderByNumeroDesc();
 				
 				String last_number = "";
@@ -189,16 +183,16 @@ public class factureController {
 					last_number = last_fact.getNumero();
 					
 				}
+				*/
+				//get_time_date gtd = new get_time_date();
 				
-				get_time_date gtd = new get_time_date();
+				//numerotation_by_year nby = new numerotation_by_year();
 				
-				numerotation_by_year nby = new numerotation_by_year();
+				//String numero_fact = nby.return_num_facture(last_number, (long) user.getUnite().getIdentifiant());
 				
-				String numero_fact = nby.return_num_facture(last_number, (long) user.getUnite().getIdentifiant());
+				//String today = gtd.get_date();
 				
-				String today = gtd.get_date();
-				
-				String time = gtd.get_time();
+				//String time = gtd.get_time();
 				
 				//--------------- 
 				

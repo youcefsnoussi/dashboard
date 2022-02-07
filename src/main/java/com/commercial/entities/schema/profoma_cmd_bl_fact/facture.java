@@ -94,15 +94,10 @@ public class facture implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public facture(com.commercial.entities.schema.client.client client,
-			com.commercial.entities.schema.client.registre_commerce registre_commerce,
-			client_registreCommerce client_registrecommerce, String date, String time, String numero, double montant_ht,
-			double tva, String matricule_camion, double montant_ttc, double montant_tva, double montant_remise,
-			double montant_ht_net, String link_pdf,
-			com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison bon_livraison,
-			com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
-			com.commercial.entities.schema.user_menu.users users, boolean etat_sold, double sold_rest, Boolean printed,
-			Boolean notification, double pourcentage_reduction) {
+	public facture(client client, registre_commerce registre_commerce, client_registreCommerce client_registrecommerce, String date, 
+			String time, String numero, double montant_ht, double tva, String matricule_camion, double montant_ttc, double montant_tva, 
+			double montant_remise, double montant_ht_net, String link_pdf, bon_livraison bon_livraison, mode_paiement mode_paiement,
+			users users, boolean etat_sold, double sold_rest, Boolean printed, Boolean notification, double pourcentage_reduction) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;

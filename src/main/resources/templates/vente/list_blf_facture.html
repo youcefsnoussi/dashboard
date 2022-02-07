@@ -76,7 +76,8 @@
 			        initComplete: function () {
 			            this.api().columns([3,4,5,7,6,13]).every( function () {
 			                var column = this;
-			                var select = $('<select class="form-control "  ><option value="">Tout</option></select>')
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+ 
+	                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -91,6 +92,7 @@
 			                column.data().unique().sort().each( function ( d, j ) {
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
+			                $('.selectpicker').selectpicker('refresh');
 			            } );
 			        },
 					 drawCallback: function () {

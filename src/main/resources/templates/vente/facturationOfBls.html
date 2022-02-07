@@ -148,13 +148,13 @@
 					
 					/*
 					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-							'src="facture_blf_list_mais?id_rel_rc_clt='+rc_clt+'&bls_f='+bls+'"></iframe>');  ---> MAIS
+							'src="facture_blf_list_mais?id_rel_rc_clt='+rc_clt+'&bls_f='+bls+'"></iframe>');  //---> MAIS
 					*/
 					$("#title_bl").text("Facture des Bon des Livraisons" );
 					
 					$("#icone_bl").attr("class","far fa-file-invoice");
 					
-					$("#bl_detail_modal").modal("show");;
+					$("#bl_detail_modal").modal("show");
 					
 				}
 				
@@ -674,7 +674,7 @@
 	
 	<div id="bl_detail_modal" class="modal" tabindex="-1" role="dialog">
 	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
-	    <div class="modal-content">
+	    <div class="modal-content" style="width: 125%;">
 	      <div class="modal-header">
 	      		
 	      		<input type="hidden" id="id_facture">

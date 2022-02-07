@@ -25,12 +25,17 @@ import com.commercial.entities.schema.client.repository.category_clientRepositor
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.client.repository.client_registreCommerceRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
+import com.commercial.entities.schema.dynamic_data.repository.mouvementRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.Connection_Comptabilite;
 import com.commercial.functions.convert_string_to_date_util;
+import com.commercial.functions.get_time_date;
 import com.commercial.services.generate_Doc;
 import com.commercial.services.track_operations;
 
@@ -38,10 +43,6 @@ import com.commercial.services.track_operations;
 @SessionAttributes("user")
 
 public class list_rcController {
-
-	public list_rcController() {
-		// TODO Auto-generated constructor stub
-	}
 	
 	@Autowired
 	registre_commerceRepository rcRepo;
@@ -75,6 +76,20 @@ public class list_rcController {
 	
 	@Autowired
 	mode_paiementRepository mpRepo;
+	
+	@Autowired
+	factureRepository factRepo;
+	
+	@Autowired
+	paiementRepository paiRepo;
+	
+	@Autowired
+	mouvementRepository mvmRepo;
+	
+	public list_rcController() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	
 	@RequestMapping(value="/list_rc")
 	public String rc(HttpServletRequest request,
@@ -116,6 +131,11 @@ public class list_rcController {
 				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_rc"))) 
 		{ role_edit="edit"; }
 		else { role_edit="no_edit"; }
+		
+		boolean manipulate_plafond = (user.getRole().getIds_banned().contains("manipulate_plafond") || 
+				user.getRole().getNom_role().equals("Admin")) ? true : false;
+		
+		model.addAttribute("manipulate_plafond", manipulate_plafond);
 		
 		model.addAttribute("edit_option", role_edit);
 		
@@ -206,6 +226,16 @@ public class list_rcController {
 		
 		rcRepo.save(rc);rcRepo.flush();
 		
+		//-------------------------------EDITTING in COMPTA DB ------------
+		
+		Connection_Comptabilite con_c = new Connection_Comptabilite();
+		
+		if(con_c.getconnection() != null) {
+			
+			con_c.EditClientToComptaDB(rc);
+			
+		}
+		
 		//-------------------- tracking operation -----------------------------------
 		//*********-*/654654dqsfsdfsdfsdfsd
 		registre_commerce_backup rcb = new registre_commerce_backup(rc, user);
@@ -267,6 +297,47 @@ public class list_rcController {
 		model.addAttribute("rc_client", list_clt_rc);
 		
 		return "client/list_rc_client";
+		
+	}
+	
+	//-----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/sold_rc_date")
+	public String SoldCLientParDate(HttpServletRequest request,
+						 @SessionAttribute("user") users user,
+						 @RequestParam(value="date", defaultValue="0") String date,
+						 Model model){
+		
+		get_time_date gtd = new get_time_date();
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		String sDate = (date.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : date;
+		
+		List<Object[]> result = new ArrayList<>();
+		
+		List<registre_commerce> listRc = rcRepo.findAll(Sort.by(Sort.Direction.ASC,("code")));
+		
+		listRc.parallelStream().forEach( rc -> {
+			
+			String dateLastFact = factRepo.GetLastDateFactByRc(rc);
+			
+			String dateLastPai = paiRepo.GetLastDateFactByRc(rc);
+			
+			Object soldDate = (mvmRepo.GetLastSoldDateByRc(rc.getId(), sDate)==null) ? 
+								rc.getSold_encours() : mvmRepo.GetLastSoldDateByRc(rc.getId(), sDate);
+			
+			Object[] obj = {rc, soldDate, dateLastFact, dateLastPai};
+			
+			result.add(obj);
+			
+		});
+		
+		model.addAttribute("result", result);
+		
+		model.addAttribute("selectedDate", sDate);
+		
+		return "client/SoldCLientParDate";
 		
 	}
 	

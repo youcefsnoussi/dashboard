@@ -165,4 +165,14 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	 
 	public List<registre_commerce> GetClients(@Param("start") String start, @Param("end") String end);
 	
+	//----------------------------------------------------------
+	
+	@Query(   " SELECT MAX(CAST(date as date)) "
+			
+			+ " FROM facture fct "
+			
+			+ " WHERE fct.registre_commerce = :rc ")
+	 
+	public String GetLastDateFactByRc(@Param("rc") registre_commerce rc);
+	
 }

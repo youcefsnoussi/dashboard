@@ -30,6 +30,10 @@
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\pdfmake.min.js"></script>
 		
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
+		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\print-js-master\src\js\print.min.js"></script>
@@ -139,6 +143,36 @@
 				
 			});
 			
+			$("#generate").click(function(){
+				
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.replace(/ /g, ""));
+					
+				});
+				
+				var myExcel = new ExcelGen({
+					
+					  "src_id": "table",
+					
+					  "show_header": true
+					
+				});
+				
+				myExcel.generate();
+				/*
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.formatMoney(2, '.', ' '));
+					
+				});
+				*/
+			});
+			
 			$("#du").text($("#debut").val());
 			
 			$("#au").text($("#fin").val());
@@ -190,7 +224,13 @@
 								
 							
 						</div>
-					
+						
+						<div class="col-md-1" >
+						
+							<button class="btn btn-primary" id="generate">Excel</button>
+						
+						</div>
+						
 					</div>
 					
 					<hr>

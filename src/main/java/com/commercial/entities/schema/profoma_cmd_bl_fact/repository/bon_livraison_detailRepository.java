@@ -40,6 +40,14 @@ public interface bon_livraison_detailRepository extends JpaRepository<bon_livrai
 		 
 	public List<Object[]> get_bl_bls_danon_by_id(@Param("bls") List<bon_livraison>  bls);
 	
+	//---------------------------------------------------------------------------------------
 	
+	@Query( " SELECT SUM(montant_ht), SUM(montant_remise), SUM(montant_ht_net), SUM(montant_tva), SUM(montant_ttc) " +
+			
+			" FROM bon_livraison_detail bl_d " +
+			
+		    " WHERE bl_d.bon_livraison = :bl")
+	
+	public List<Double[]> get_sum_for_bl(@Param("bl") bon_livraison bl);
 	
 }

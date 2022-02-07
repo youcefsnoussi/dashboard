@@ -244,11 +244,19 @@ public class list_factureController {
 		
 		facture fact = factRepo.getOne(id_facture);
 		
+		boolean edit_matricule = false;
+		
+		if(user.getRole().getNom_role().equals("Admin") || 
+				(!user.getRole().getNom_role().equals("Admin") && user.getRole().getIds_banned().contains("edit_matricule_fact"))) 
+			edit_matricule = true; 
+		
 		model.addAttribute("facture", fact);
 		
 		model.addAttribute("detail_facture", fact_detRepo.get_facture_detail(fact));
 		
 		model.addAttribute("avoir","false");
+		
+		model.addAttribute("edit_matricule", edit_matricule);
 		
 		String ret = "vente/info_facture";
 		
@@ -273,9 +281,9 @@ public class list_factureController {
 		
 		String pdf = "";
 		
-		//pdf = gd.generate_Fact(fact, qr_code);
+		//pdf = gd.generate_Fact(fact, qr_code); // ----> AinDefla OLD paper
 		
-		pdf = gd.generate_Fact_A4(fact, qr_code);
+		pdf = gd.generate_Fact_A4(fact, qr_code); // ---> new A4 paper
 			
 		return "redirect:/display_pdf?file="+pdf;
 		
@@ -419,13 +427,20 @@ public class list_factureController {
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
+			@RequestParam("montant_remise") double montant_remise,
+			@RequestParam("pourc_remise") double pourc_remise,
+			@RequestParam("total_ht_net") double montant_ht_net,
 			@RequestParam("cause") long cause,
 			
 			@RequestParam("id_art") long [] article,
 			@RequestParam("id_um") long [] id_unite_mesure,
 			@RequestParam("montant_ht_art") double [] montant_ht_art,
-			//@RequestParam("montant_ttc_art") double [] montant_ttc_art,
+			@RequestParam("pourcentage_remise_art") double [] pourc_remise_art,
+			@RequestParam("montant_remise_art") double [] montant_remise_art,
+			@RequestParam("montant_ht_net_art") double [] montant_ht_net_art,
 			@RequestParam("tva_art") double [] tva_art,
+			@RequestParam("montant_tva_art") double [] montant_tva_art,
+			@RequestParam("montant_ttc_art") double [] montant_ttc_art,
 			@RequestParam("prix_unitaire") double [] prix_u_ht,
 			@RequestParam("qte") double [] quantite,
 			//@RequestParam("tva_art") double [] montant_tva_art,
@@ -505,7 +520,7 @@ public class list_factureController {
 			//--------------------------------------insert to facture avoir table ------
 			
 			facture_avoir fact_av = new facture_avoir(clt, rc, today, time, numero, montant_ht, montant_tva, montant_ttc, "", user, "", 0, 
-														causeRepo.getOne(cause));
+														causeRepo.getOne(cause), montant_remise, pourc_remise, montant_ht_net);
 			
 			//new facture(client, registre_commerce, date, time, numero, montant_ht, tva, matricule_camion, montant_ttc, montant_tva, link_pdf, bon_livraison, mode_paiement, users, etat_sold, sold_rest)
 			
@@ -518,7 +533,8 @@ public class list_factureController {
 				//if(quantite[i]!=0) {
 				
 				facture_avoir_detail fact_avoir_d = new facture_avoir_detail(fact_av, artRepo.getOne(article[i]), quantite[i],
-							prix_u_ht[i], montant_ht_art[i], tva_art[i], (montant_ht_art[i]*(tva_art[i]/100)), (montant_ht_art[i] + (montant_ht_art[i]*(tva_art[i]/100))) );
+							prix_u_ht[i], montant_ht_art[i], tva_art[i], montant_tva_art[i], montant_ttc_art[i], pourc_remise_art[i],
+							montant_remise_art[i], montant_ht_net_art[i] );
 				
 				fact_avoir_detRepo.save(fact_avoir_d);fact_avoir_detRepo.flush();  
 					

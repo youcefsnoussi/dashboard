@@ -21,7 +21,7 @@ public interface bon_livraison_detail_employeeRepository extends JpaRepository<b
 	
 	@Query( " SELECT ble_det.prix_u_ht, ble_det.tva, ble_det.article.id, ble_det.magasin.id, ble_det.unite_mesure.id, " +
 			
-			" SUM(quantite), SUM(montant_ht), SUM(montant_tva), SUM(montant_ht+montant_tva) " +
+			" SUM(quantite), SUM(montant_ht), SUM(montant_tva), SUM(montant_ttc) " +
 			
 			" FROM bon_livraison_detail_employee ble_det " + 
 			
@@ -35,7 +35,7 @@ public interface bon_livraison_detail_employeeRepository extends JpaRepository<b
 	
 	//---------------------------------------------------------------------
 	
-	@Query( " SELECT SUM(montant_ht) AS mnt_ht, SUM(montant_tva) AS mnt_tva, SUM(montant_ht+montant_tva) AS mnt_ttc " +
+	@Query( " SELECT SUM(montant_ht) AS mnt_ht, SUM(montant_tva) AS mnt_tva, SUM(montant_ttc) AS mnt_ttc " +
 			
 			" FROM bon_livraison_detail_employee ble_det " + 
 			
@@ -44,5 +44,15 @@ public interface bon_livraison_detail_employeeRepository extends JpaRepository<b
 			" AND ble_det.bon_livraison_employee.cancel = 'false' AND ble_det.bon_livraison_employee.factured = 'false' ")
 		 
 	public List<Object []> get_total_facture_ble(@Param("start") String start, @Param("end") String end);
+	
+	//----------------------------------------------------------------------
+	
+	@Query( " SELECT SUM(montant_ht), SUM(montant_tva), SUM(montant_ttc) " +
+			
+			" FROM bon_livraison_detail_employee ble_det " +
+			
+		    " WHERE ble_det.bon_livraison_employee = :ble")
+	
+	public List<Double[]> get_sum_for_ble(@Param("ble") bon_livraison_employee ble);
 	
 }

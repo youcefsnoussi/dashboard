@@ -39,6 +39,31 @@
 			
 		}
 		
+		$("#edit_matricule").click(function() {
+			
+			let matricule = $("#matricule").val();
+			let id_facture = $("#id_facture").val();
+			
+			$.ajax({
+	 			url : 'update_matricule_facture',
+	 			data : {
+	 				id_facture : id_facture,
+	 				matricule : matricule
+	 			},
+	 			success : function(responseJson) {
+	 				
+	 				$("#title").text("Information");
+					$("#icone").attr("class","far fa-info-circle");
+					
+					$("#text").text("Modification Effectuer avec succes ");
+					
+					$("#error").modal('show');
+	 				
+	 			}
+	 		});
+			
+		});
+		
 	});
 	
 	</script>
@@ -66,6 +91,7 @@
 			<div class="card-body">
 					
 					<input type="hidden" id="info_av" th:value="${avoir}">
+					<input type="hidden" id="id_facture" th:value="${facture.id}">
 					
 					<div class="card" >
 	
@@ -135,16 +161,25 @@
 								</div>
 	
 								<div class="col-md-6 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 130px; text-align: left;">Matricule</span>
-										</div>
-										
-										<input type="text" class="form-control" name="matricule" id="matricule" 
-												th:value="${facture.matricule_camion}" disabled placeholder="xxxxxx-xxx-xx"> 
+								
+									<div class="input-group align-items-center" >
+									
+										<span class="input-group-text declaration"
+											style="min-width: 130px; text-align: left;">Matricule</span>
 											
+										<div class="input-group-append" th:if="${edit_matricule}==true" style="width:80%;">
+											<input type="text" class="form-control" name="matricule" id="matricule" 
+												th:value="${facture.matricule_camion}" placeholder="xxxxxx-xxx-xx"> 
+											<input type="button" class="btn btn-success" id="edit_matricule" value="Modifier">
+										</div>		
+										
+										<div class="input-group-append" th:unless="${edit_matricule}==true" style="width:80%;">
+											<input type="text" class="form-control" name="matricule" id="matricule" 
+												th:value="${facture.matricule_camion}" disabled> 
+										</div>
 									</div>
+									
+									
 								</div>
 	
 							</div>
@@ -234,6 +269,32 @@
 										<div class="col-md-12">
 											<div class="input-group">
 												<div class="input-group-prepend">
+													<span class="input-group-text declaration">Montant Remise</span>
+												</div>
+												<input type="text" class="form-control " name="total_remise" style="text-align: right;" id="total_remise" 
+													th:value="${#numbers.formatDecimal(facture.montant_remise, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
+											</div>
+										</div>
+									
+									</div>
+									
+									<div class="row">
+									
+										<div class="col-md-12">
+											<div class="input-group">
+												<span class="input-group-text declaration">Montant HT NET</span>
+												<input type="text" class="form-control " name="total_ht_net" style="text-align: right;" id="total_ht_net" 
+												th:value="${#numbers.formatDecimal(facture.montant_ht_net, 3, 'WHITESPACE', 2,'COMMA')}" disabled>
+											</div>
+										</div>
+									
+									</div>
+									
+									<div class="row">
+									
+										<div class="col-md-12">
+											<div class="input-group">
+												<div class="input-group-prepend">
 													<span class="input-group-text declaration">Montant TVA</span>
 												</div>
 												<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
@@ -270,13 +331,18 @@
 					<table class="table" id="table" >
 						<thead class="thead-dark">
 							<tr>
-								<th align="center"  width="8%">Art</th>
-								<th  align="center" width="40%">Libellé</th>
-								<th  align="center" >Um</th>
-								<th  align="center" >Qte</th>
-								<th  align="center" >PU</th>
-								<th  align="center" >TVA</th>
-								<th  align="center" >MONTANT HT</th>
+								<th align="center" width="5.5%">Art</th>
+								<th align="center" width="20%">Libellé</th>
+								<th align="center" >Um</th>
+								<th align="center" >Qte</th>
+								<th align="center" >PU</th>
+								<th align="center" >Montant HT</th>
+								<th align="center" >Remise (Valeur/%)</th>
+								<th align="center" >Montant HT NET</th>
+								<th align="center" >TVA</th>
+								<th align="center" >Montant TVA</th>
+								<th align="center" >Montant TTC</th>
+								
 							</tr>
 						</thead>
 	
@@ -299,10 +365,25 @@
 								
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${fact_det.prix_u_ht}" type="number" step="any" style="text-align: right;" disabled> </td>
 								
+								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(fact_det.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
+								
+								<td> 
+									<div class="input-group">
+									
+										<input class="form-control montant_remise" id="montant_remise" name="montant_remise" th:value="${#numbers.formatDecimal(fact_det.montant_remise, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled>
+										<input class="form-control pourcentage_remise" id="pourcentage_remise" name="pourcentage_remise" th:value="${#numbers.formatDecimal(fact_det.pourcentage_remise, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled>
+										
+									</div>
+								</td>
+								
+								<td><input class="form-control montant_ht_net" id="montant_ht_net" name="montant_ht_art_net" th:value="${#numbers.formatDecimal(fact_det.montant_ht_net, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
+								
 								<td><input class="form-control tva" id="tva" name="tva_art" type="number" th:value="${fact_det.tva}" step="any" value="" style="text-align: right;" disabled> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(fact_det.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
-	
+								<td><input class="form-control montant_tva" id="montant_tva" name="montant_tva" th:value="${#numbers.formatDecimal(fact_det.montant_tva, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
+								
+								<td><input class="form-control montant_ttc" id="montant_ttc" name="montant_ttc" th:value="${#numbers.formatDecimal(fact_det.montant_ttc, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" disabled> </td>
+								
 							</tr>
 	
 						</tbody>
@@ -326,7 +407,7 @@
 	        </button>
 	      </div>
 	      <div class="modal-body">
-	        <p id="text"></p>
+	        <label id="text"></label>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" id="fermer" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

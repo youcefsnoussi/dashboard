@@ -31,8 +31,10 @@ import com.commercial.entities.schema.client.repository.client_registreCommerceR
 import com.commercial.entities.schema.client.repository.reduction_client_prixU_articleRepository;
 import com.commercial.entities.schema.client.repository.registre_commerceRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiementRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_factureRepository;
@@ -42,6 +44,7 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
 import com.commercial.services.PaletteService;
+import com.commercial.services.track_operations;
 
 @RestController
 @SessionAttributes("user")
@@ -80,6 +83,9 @@ public class factureRestController {
 	
 	@Autowired
 	bon_livraisonRepository bon_lRepo;
+	
+	@Autowired
+	bon_livraison_factureRepository blfRepo;
 	
 	@Autowired
 	PaletteService ps;
@@ -184,8 +190,6 @@ public class factureRestController {
 		
 		client_registreCommerce clt_rc = clt_rcRepo.getOne(id_rc_clt);
 		
-		get_time_date gtd = new get_time_date();
-		
 		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt_rc.getRegistre_commerce().getCategory());
 		
 		//------------------------- get reduction if existe -----------------------
@@ -228,6 +232,8 @@ public class factureRestController {
 	public List<Magasin> get_magasin_by_article(
 		@RequestParam("id_article") long id_article) throws IOException, ParseException{
 		
+		//System.out.println("ajax_get_magasin_by_art ---> id article sent  by client -->"+id_article);
+		
 		List<Magasin> list_mag = magRepo.get_magasin_by_article(artRepo.getOne(id_article));
 		
 		return list_mag;
@@ -240,7 +246,7 @@ public class factureRestController {
 		//@RequestParam("id_client") long id_client,
 		@RequestParam("id_rc_clt") long id_relation_rc_client,
 		//@RequestParam("id_bl") long id_bl,
-		@RequestParam("nbr_palette") long nbr_palette,
+		@RequestParam(value="nbr_palette", defaultValue="0") double nbr_palette,
 		@RequestParam("montant_ttc") double montant_ttc) throws IOException, ParseException{
 		
 		//JSONArray arr_obj = new JSONArray();
@@ -252,7 +258,7 @@ public class factureRestController {
 		client_registreCommerce rc_clt = clt_rcRepo.getOne(id_relation_rc_client);
 		
 		client clt = rc_clt.getClient();
-		
+		/*
 		List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_clt(clt);
 		
 		double montant = 0;
@@ -266,7 +272,7 @@ public class factureRestController {
 		double sold_encours = clt.getSold_encours();
 		
 		sold_encours = sold_encours + montant + montant_ttc;
-		
+		*/
 		//clt_rc.get(i).getRegistre_commerce().setSold_encours(sold_encours);
 		
 		//double balance_clt = clt.getSold_encours();
@@ -287,9 +293,31 @@ public class factureRestController {
 		}
 		*/
 		map.put("plafond_client", 0);
+		
+		/**************      TEST CLIENT RC **********/
+		
+		registre_commerce rc = rc_clt.getRegistre_commerce();
+		
+		List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_rc(rc);
+		
+		List <bon_livraison_facture> list_blf =  blfRepo.get_blf_non_factured_rc(rc);
+		
+		double montant = 0;
+		
+		for(int j=0;j<list_bl.size();j++) montant += list_bl.get(j).getMontant_ttc();
+		
+		for(int j=0;j<list_blf.size();j++) montant +=  list_blf.get(j).getMontant_ttc();
+		
+		double sold_encours = rc.getSold_encours();
+		
 		//------------------------ TEST Palette -----------------------------
 		
+		double pricePalette = 0;
+		
 		if(clt.isVentePalette()==true) {
+			
+			pricePalette = pu_a_ctRepo.get_prix_articles_by_CatClient(rc_clt.getRegistre_commerce().getCategory(), 
+					artRepo.findByLibelle("Palette")) * nbr_palette;
 			
 			if(ps.testPalettePlafond(list_bl, clt, nbr_palette)) {
 				
@@ -309,30 +337,7 @@ public class factureRestController {
 			
 		}
 		
-		double pricePalette = pu_a_ctRepo.get_prix_articles_by_CatClient(rc_clt.getRegistre_commerce().getCategory(), 
-								artRepo.findByLibelle("Palette")) * nbr_palette;
-		
 		//-------------------------------------------------------------------
-		
-		/**************      TEST CLIENT RC **********/
-		
-		registre_commerce rc = rc_clt.getRegistre_commerce();
-		
-		list_bl = bon_lRepo.get_bl_encours_by_rc(rc);
-		
-		montant = 0;
-		
-		for(int j=0;j<list_bl.size();j++) {
-			
-			montant = montant + list_bl.get(j).getMontant_ttc();
-			
-		}
-		
-		//System.out.println("montant all bls ->"+montant);
-		
-		sold_encours = rc.getSold_encours();
-		
-		//System.out.println("TTC ---------> = "+montant_ttc);
 		
 		sold_encours = sold_encours + montant + montant_ttc + pricePalette; //--------> pricepalette prix total palette
 		
@@ -340,7 +345,7 @@ public class factureRestController {
 		
 		//double balance_rc = rc.getSold_encours();
 		
-		//System.out.println("("+(balance_rc+montant_ttc)+")>"+rc.getPlafond());
+		//System.out.println("("+(rc.getSold_encours()+montant)+") = ("+sold_encours+") ==>> "+rc.getPlafond());
 		
 		if(sold_encours>rc.getPlafond()) {
 			
@@ -439,6 +444,29 @@ public class factureRestController {
 		ret.put("prix", prix);
 		
 		return ret;
+		
+	}
+	
+	//------------------------------------------------- Edit matricule Controller --------------
+	
+	@RequestMapping(value="/update_matricule_facture")
+	public String update_matricule_facture(
+			@RequestParam("id_facture") long id_fact,
+			@RequestParam("matricule") String matricule,
+			@SessionAttribute("user") users user
+			) throws IOException, ParseException{
+		
+		facture fact = factRepo.getOne(id_fact);
+		
+		fact.setMatricule_camion(matricule);
+		
+		factRepo.save(fact); factRepo.flush();
+		
+		track_operations trk = new track_operations();
+		
+		trk.add_track("facture", "Changement matricule Facture", id_fact, user);
+		
+		return "OK";
 		
 	}
 	

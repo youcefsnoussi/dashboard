@@ -314,7 +314,11 @@
 							        		
 							        		<div class="input-group">
 							        		
-							        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc" th:value="${rc.plafond}" required>
+							        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc"
+							        			 th:value="${rc.plafond}" required th:if="${manipulate_plafond}==true">
+							        			
+							        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc"
+							        			 th:value="${rc.plafond}" required th:unless="${manipulate_plafond}==true" readonly>
 							        			
 							        			<div class="input-group-append">
 											      <div class="input-group-text"> <b>DA</b> </div>

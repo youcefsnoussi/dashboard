@@ -2,8 +2,9 @@
 $(document).ready(function() {
 			
 	//$('#code_client').bind("enterKey",function(e){
+	//-------------------------- CHECK CONNECTION TO SERVER
 	
-	
+	checkConnection("commande"); //-------> CheckConnectionServer
 	
 	//-------------------------------------------------------------------------------
 	
@@ -109,20 +110,25 @@ $(document).ready(function() {
 	
 	//----------------------------------------------------------------------
 	
-	$(".art").change(function(){
+	$(".art").on("change", function(){
 		
-		var parrent = $(this).parent().parent().parent();
+		let tr = $(this).attr("id_tr");
+		
+		let parrent = $("#"+tr);
 		
 		//-------------------- get unite chargement by art -----------------
 		
+		let id_art = $('option:selected', this).val();
+		
 		parrent.find('#id_magasin').empty();
+		
 		$.ajaxSetup({async: false});
 		$.ajax({
 			url: 'ajax_get_magasin_by_art',
 			//type: 'POST',
 			dataType: 'json',
 			data : {
-				id_article	: $(this).val(),
+				id_article	: id_art
 	        },
 	        success : function(responseJson) {
 	        	
@@ -140,11 +146,11 @@ $(document).ready(function() {
 		});
 		
 		//-----------------------------------------------------
-		
+		/*
 		console.log("art val = "+$(this).val())
 		
 		console.log("art attr before= "+$(this).attr("name"))
-		
+		*/
 		if($(this).val()!="0"){
 			
 			$(this).attr("name","art");
@@ -161,49 +167,23 @@ $(document).ready(function() {
 			
 		}
 		
-		parrent.find("#qte").val(0);
+		//$("#pourc_redux").val(0);
+		//$("#mnt_redux").val(0);
+		
+		
 		parrent.find("#code_art").val($('option:selected', this).attr("code"));
 		parrent.find("#unite_mesure").val($('option:selected', this).attr("um"));
 		parrent.find("#id_um").val($('option:selected', this).attr("id_um"));
 		parrent.find("#prix_unitaire").val($('option:selected', this).attr("pu"));
 		parrent.find("#tva_art").val($('option:selected', this).attr("tva"));
 		parrent.find("#pesage_palette").val($('option:selected', this).attr("pp"));
+		//parrent.find("#qte").val(0);
 		
-		var pu = parrent.find("#prix_unitaire").val();
+		CalculeHTArticle( $(this).parent().parent().parent().find("#qte") );
+		CalculeReductionArticle( $(this).parent().parent().parent().find("#redux_art_val"), "valeur" );
+		CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+		calculeTotal ();
 		
-		parrent.find("#montant_ht").val((pu*0).formatMoney(2, '.', ' '));
-		
-		var montant_ht = 0;
-		
-		var montant_tva = 0;
-		
-		$(".montant_ht").each(function(){
-			
-			if($(this).val()!=""){
-				
-				var v = $(this).val();
-				
-				v = v.replace(/ /g,"");
-				
-				montant_ht = montant_ht + parseFloat(v);
-				
-				var tva = $(this).parent().parent().find("#tva_art").val()/100;
-				
-				if($("#tv").val()!="0"){ //-------------------------- if RC not exnéré
-					
-					montant_tva = montant_tva + ( parseFloat(v) * tva );
-					
-				}
-				
-			}
-			
-		});
-		
-		var montant_ttc = montant_ht + montant_tva;
-		
-		$("#total_ht").val((montant_ht).formatMoney(2, '.', ' '));
-		$("#total_tva").val((montant_tva).formatMoney(2, '.', ' '));
-		$("#total_ttc").val((montant_ttc).formatMoney(2, '.', ' '));
 		
 	});
 	
@@ -218,7 +198,7 @@ $(document).ready(function() {
 		$("#input_mat").attr("name","");
 		$("#input_mat").attr('disabled',true);
 		
-	})
+	});
 	
 	$("#radio_input").click(function () {
 		
@@ -230,27 +210,21 @@ $(document).ready(function() {
 		$("#input_mat").attr("name","matricule");
 		$("#input_mat").attr('disabled',false);
 		
-	})
+	});
 	
 	//----------------------------------------------------------------------
 	
-	$("#rc").change(function(){
-		 
+	$("#rc").on("change", function(){
+		
+		$(".remise_zero").val(0);
+		
 		$('.art').find('option:not(:first)').remove();
 		$(".art").selectpicker('refresh');
 		
 		$(".qte").attr("readonly", false);
-		$(".qte").val(0);
-		$(".prix_unitaire").val(0);
-		$(".tva").val(0);
-		$(".montant_ht").val(0);
 		$(".id_magasin").empty();
 		$(".unite_mesure").val("");
 		$(".nom_art").val("");
-		
-		$("#total_ht").val(0);
-		$("#total_tva").val(0);
-		$("#total_ttc").val(0);
 		
 		$("#designation_rc").val($("#rc option:selected").attr("nom")+' '+$("#rc option:selected").attr("prenom"));
 		$("#adresse_rc").val($("#rc option:selected").attr("adresse"));
@@ -291,8 +265,6 @@ $(document).ready(function() {
 		 
 		var exo = $("#rc option:selected").attr("tva");
 		 
-		console.log("exo ->"+exo)
-		 
 		if(exo==0){
 			 
 		 $("#exo").attr("class","badge badge-warning");
@@ -323,6 +295,7 @@ $(document).ready(function() {
 				if (responseJson != "null") {
 					
 					$.each(responseJson, function(key, value) {
+						
 						if(value.id==(-1)){
 							
 							$("#redux").append("<span class='badge badge-secondary' id='art'> "+value.article.produit.designation+" "+
@@ -339,16 +312,7 @@ $(document).ready(function() {
 								
 								sub = "NON Subventionné";
 								
-							}
-							/*
-							var cat = value.article.produit.sous_category_produit.category_produit.nom_category;
-							var s_cat = value.article.produit.sous_category_produit.nom_sous_category.replace(cat,"");
-							var prod_temp = value.article.produit.designation.replace(cat,"");
-							var prod = prod_temp.replace(s_cat,"");
-							var emb = value.article.emballage_produit.nom_emballage.replace(cat,"");
-							var pes = value.article.pesage_produit.pesage+' '+value.article.pesage_produit.unite_pesage;
-							'+cat+' '+s_cat+' '+prod+' '+emb+' '+pes+'
-							*/			
+							}		
 							
 							$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
 										   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
@@ -378,75 +342,9 @@ $(document).ready(function() {
 	
 	$(".qte").keyup(function(){
 		
-		var qte = $(this).val();
-		
-		var parent = $(this).parent().parent();
-		
-		var pu = parent.find("#prix_unitaire").val();
-		
-		var val_select_art = parent.find("#art").val();
-		
-		if(val_select_art!=""){
-			
-			parent.find("#montant_ht").val((pu*qte).formatMoney(2, '.', ' '));
-			
-		}
-		else{
-			
-			$("#title").text("Erreur !!!");
-			$("#icone").attr("class","far fa-exclamation-triangle");
-			$("#text").text("Veuillez selectionner un Article ");
-			$("#error").modal('show');
-			
-			$(this).val(0);
-		}
-		
-		var montant_ht = 0;
-		
-		var montant_tva = 0;
-		
-		$(".montant_ht").each(function(){
-			
-			if($(this).val()!=""){
-				
-				var v = $(this).val();
-				
-				v = v.replace(/ /g,"");
-				
-				montant_ht = montant_ht + parseFloat(v);
-				
-				var tva = $(this).parent().parent().find("#tva_art").val()/100;
-				
-				
-				if($("#tv").val()!="0"){ //-------------------------- if RC not exnéré
-				
-					montant_tva = montant_tva + ( parseFloat(v) * tva )
-				
-				}
-				
-			}
-			
-		});
-		
-		var montant_ttc = montant_ht + montant_tva;
-		
-		$("#total_ht_hidden").val(montant_ht);
-		$("#total_tva_hidden").val(montant_tva);
-		
-		$("#total_ht").val((montant_ht).formatMoney(2, '.', ' '));
-		/*
-		var p_redux = $("#pourc_redux").val();
-		
-		var montant_ht_redux = montant_ht - (montant_ht* (p_redux/100) );
-		
-		var montant_tva_redux = montant_tva - (montant_tva* (p_redux/100) );
-		
-		var montant_ttc_redux = montant_ht_redux + montant_tva_redux;
-		*/
-		
-		$("#total_ht_redux").val( (montant_ht).formatMoney(2, '.', ' ') );
-		$("#total_tva").val( (montant_tva).formatMoney(2, '.', ' ') );
-		$("#total_ttc").val( (montant_ht+montant_tva).formatMoney(2, '.', ' ') );
+		CalculeHTArticle( $(this) );
+		CalculeTvaTtcArticle( $(this).parent().parent().find("#tva_art") );
+		calculeTotal ();
 		
 	});
 	
@@ -454,61 +352,31 @@ $(document).ready(function() {
 	
 	$("#pourc_redux").keyup(function() {
 		
-		var p_redux = parseFloat($(this).val());
-		
-		var montant_ht = $("#total_ht_hidden").val();
-		
-		var montant_tva = $("#total_tva_hidden").val();
-		
-		var montant_ht_redux = montant_ht - (montant_ht* (p_redux/100) );
-		//-----------------------------------------------------------------------------> calcule b %
-		var montant_tva_redux = montant_tva - (montant_tva* (p_redux/100) );
-		
-		/*
-		var montant_ht_redux = montant_ht - p_redux;
-		
-		var montant_tva_redux = montant_tva - p_redux;
-		*/
-		var montant_ttc_redux = montant_ht_redux + montant_tva_redux;
-		
-		$("#total_ht").val( (montant_ht_redux).formatMoney(2, '.', ' ') );
-		$("#total_tva").val( (montant_tva_redux).formatMoney(2, '.', ' ') );
-		$("#total_ttc").val( (montant_ttc_redux).formatMoney(2, '.', ' ') );
+		remiseGlobal($(this), "pourcentage");
 		
 	})
 	
 	$("#mnt_redux").keyup(function() {
 		
-		console.log("enter mnt")
-		
-		var p_redux = parseFloat($(this).val());
-		
-		var montant_ht = $("#total_ht_hidden").val();
-		
-		var montant_tva = $("#total_tva_hidden").val();
-		
-		
-		var montant_ht_redux = montant_ht - p_redux;
-		
-		var tva_redux = $("#tva_redux").val();
-		
-		var montant_tva_redux = montant_ht_redux * (tva_redux/100);
-		
-		var montant_ttc_redux = montant_ht_redux + montant_tva_redux;
-		
-		//------------ ------------------- calcule poucentage --------------------
-		
-		var pourcentage = (p_redux * 100) /  montant_ht;
-		
-		$("#pourc_redux").val(pourcentage.formatMoney(2, '.', ' '));
-		
-		//------------ --------------------- -------------------- ----------------
-		
-		$("#total_ht").val( (montant_ht_redux).formatMoney(2, '.', ' ') );
-		$("#total_tva").val( (montant_tva_redux).formatMoney(2, '.', ' ') );
-		$("#total_ttc").val( (montant_ttc_redux).formatMoney(2, '.', ' ') );
+		remiseGlobal($(this), "montant");
 		
 	})
+	
+	$(".redux_art_val").keyup(function() {
+		
+		CalculeReductionArticle( $(this), "valeur" );
+		CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+		calculeTotal ();
+		
+	});
+	
+	$(".redux_art_pourc").keyup(function() {
+		
+		CalculeReductionArticle( $(this), "pourcentage" );
+		CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+		calculeTotal ();
+		
+	});
 	
 	//____________________________________________> CALCULE REMISE <_____________________________________//
 	
@@ -625,17 +493,18 @@ $(document).ready(function() {
 			
 		}
 		
-		if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
-			
+		//if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
+		if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || isNaN(parseFloat($("#total_ttc").val())) ){
+		
 			test++;
 			msg = msg+"<b>- Veuillez faire une commande. </b><br>";
 			$("#total_ttc").css("border-color","red");
 			
 		}
 		
-		console.log("test->"+test)
+		console.log("test ----->"+test)
 		
-		if(test==0){
+		if(test===0){
 			
 			var client_plafond = 0;
 			
@@ -654,7 +523,7 @@ $(document).ready(function() {
 				dataType: 'json',
 				data : {
 					id_rc_clt : $("#rc").val(),
-					montant_ttc : $("#total_ttc").val(),
+					montant_ttc : $("#total_ttc").val().replaceAll(' ',''),
 					nbr_palette : calculeNbrPalette()
 		        },
 		        success : function(responseJson) {
@@ -704,6 +573,8 @@ $(document).ready(function() {
 				
 				console.log("-----------------> SUBMIT")
 				
+				spin_it('on');
+				
 				$("#sub").prop("disabled","true");
 				
 				$("#frm").submit();
@@ -731,6 +602,179 @@ $(document).ready(function() {
 	});
 	
 });
+
+//----------------------------------- Functions
+
+function CalculeReductionArticle(input, type){
+	
+	let tds = $(input).parent().parent().parent();
+	
+	let val_intro = ($(input).val() !== undefined) ? parseFloat($(input).val()) : 0;
+	
+	let val = 0;
+	
+	let pourc = 0;
+	
+	let mntHT = parseFloat( tds.find("#montant_ht").val().replaceAll(" ","") );
+	
+	if(type === "pourcentage"){
+		
+		pourc = val_intro;
+		
+		val = mntHT * (pourc / 100);
+		
+		$(input).parent().find("#redux_art_val").val(val);
+		
+	}
+	else{
+		
+		val = val_intro;
+		
+		pourc = (mntHT !== 0 ) ? (val * 100) / mntHT : 0;
+		
+		$(input).parent().find("#redux_art_pourc").val(pourc);
+		
+	}
+	
+	tds.find("#montant_net_ht").val( ( mntHT - val ).formatMoney(2, '.', ' ') );
+}	
+
+function CalculeHTArticle (input){
+	
+	let tds = $(input).parent().parent();
+	
+	let quant = parseFloat( $(input).val() );
+	
+	let prixUHT = parseFloat( tds.find("#prix_unitaire").val() );
+	
+	tds.find("#montant_ht").val ( (quant * prixUHT).formatMoney(2, '.', ' ') );
+	
+	tds.find("#montant_net_ht").val ( (quant * prixUHT).formatMoney(2, '.', ' ') );
+	
+}
+
+function CalculeTvaTtcArticle(input){
+	
+	let tds = $(input).parent().parent();
+	
+	let mntHTNet = parseFloat( tds.find("#montant_net_ht").val().replaceAll(" ","") );
+	
+	let tva = ($(input).val() !== undefined) ? parseFloat($(input).val()) : 0;
+	
+	let mntTVA = mntHTNet * (tva / 100);
+	
+	tds.find("#montant_tva").val ( (mntTVA).formatMoney(2, '.', ' ') );
+	
+	tds.find("#montant_ttc").val ( (mntHTNet + mntTVA).formatMoney(2, '.', ' ') );
+	
+	
+	
+}
+
+function calculeTotal (){
+	
+	let totalHT = 0;
+	
+	let totalHTNet = 0;
+	
+	let totalTVA = 0;
+	
+	let totalTTC = 0;
+	
+	let totalReduction = 0;
+	
+	$(".montant_ht").each(function() {
+		totalHT += parseFloat( $(this).val().replaceAll(" ","") );
+	});
+	
+	$(".montant_net_ht").each(function() {
+		totalHTNet += parseFloat( $(this).val().replaceAll(" ","") );
+	});
+	
+	$(".montant_tva").each(function() {
+		totalTVA += parseFloat( $(this).val().replaceAll(" ","") );
+	});
+	
+	$(".montant_ttc").each(function() {
+		totalTTC += parseFloat( $(this).val().replaceAll(" ","") );
+	});
+	
+	$(".redux_art_val").each(function() {
+		totalReduction += parseFloat( $(this).val().replaceAll(" ","") );
+	});
+	
+	$("#total_ht").val( (totalHT).formatMoney(2, '.', ' ') );
+	
+	$("#total_ht_net").val( (totalHTNet).formatMoney(2, '.', ' ') );
+	
+	$("#total_tva").val( (totalTVA).formatMoney(2, '.', ' ') );
+	
+	$("#total_ttc").val( (totalTTC).formatMoney(2, '.', ' ') );
+	
+	$("#mnt_redux").val( (totalReduction).formatMoney(2, '.', ' ') );
+	
+	$("#pourc_redux").val( ( (totalReduction*100)/totalHT ).formatMoney(8, '.', ' ') );
+	
+}
+
+function remiseGlobal(input, type){
+	
+	let val_intro = ( $(input).val() !== undefined) ? parseFloat($(input).val()) : 0;
+	
+	let val = 0;
+	
+	let pourc = 0;
+	
+	let mntHT = parseFloat( $("#total_ht").val().replaceAll(" ","") );
+	
+	if(type === "pourcentage"){
+		
+		pourc = val_intro;
+		
+		val = mntHT * (pourc / 100);
+		
+		$("#mnt_redux").val( val.formatMoney(8, '.', ' ') );
+		
+	}
+	else{
+		
+		val = val_intro;
+		
+		pourc = (val * 100) / mntHT;
+		
+		$("#pourc_redux").val( pourc.formatMoney(8, '.', ' ') );
+		
+		//console.log(" after attribution");
+		
+	}
+	
+	$("#total_ht_net").val( (mntHT - val).formatMoney(2, '.', ' ') );
+	
+	let pourcArt = (val/mntHT)*100;
+	
+	$(".redux_art_pourc").each(function() {
+		
+		$(this).val(pourcArt.formatMoney(8, '.', ' '));
+		CalculeReductionArticle($(this), "pourcentage");
+		CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+		
+	});
+	
+	let total_tva = 0;
+	
+	$(".montant_tva").each(function() {
+		
+		total_tva += ( $(this).val() !== undefined) ? parseFloat( $(this).val().replaceAll(" ","") ) : 0;
+		
+	});
+	
+	$("#total_tva").val( total_tva.formatMoney(2, '.', ' ') );
+	
+	$("#total_ttc").val( ((mntHT - val) + total_tva).formatMoney(2, '.', ' ') );
+	
+}
+
+//---------------------------------------------- Calcule
 
 function if_duplicate_value (arr){
 	
@@ -770,7 +814,11 @@ function calculeNbrPalette(){
 		
 	});
 	
-	return nbrP;
+	let result =  ( Number.isFinite(nbrP) === false ) ? 0 : nbrP;
+	
+	console.log("-------------------------------> test c p ",result)
+	
+	return result;
 	
 }
 		

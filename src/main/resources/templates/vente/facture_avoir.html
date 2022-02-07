@@ -25,102 +25,7 @@
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
 	
 	    
-	<script type="text/javascript">
-	
-	$(document).ready(function() {
-		
-		$(".qte").keyup(function(){
-			
-			var qte = $(this).val();
-			
-			var parent = $(this).parent().parent();
-			
-			var pu = parent.find("#prix_unitaire").val();
-			
-			if(pu!=""){
-				
-				parent.find("#montant_ht").val((pu*qte).formatMoney(2, '.', ' '));
-				
-			}
-			else{
-				
-				$("#title").text("Erreur !!!");
-				$("#icone").attr("class","far fa-exclamation-triangle");
-				$("#text").text("Veuillez selectionner un Article ");
-				$("#error").modal('show');
-				
-				$(this).val(0);
-			}
-			
-			var montant_ht = 0;
-			
-			var montant_tva = 0;
-			
-			$(".montant_ht").each(function(){
-				
-				if($(this).val()!=""){
-					
-					var v = $(this).val();
-					
-					v = v.replace(/ /g,"");
-					
-					montant_ht = montant_ht + parseFloat(v);
-					
-					var tva = $(this).parent().parent().find("#tva_art").val()/100;
-					
-					montant_tva = montant_tva + ( parseFloat(v) * tva )
-					
-				}
-				
-			});
-			
-			var montant_ttc = montant_ht + montant_tva;
-			
-			$("#total_ht").val((montant_ht).formatMoney(2, '.', ' '));
-			$("#total_tva").val((montant_tva).formatMoney(2, '.', ' '));
-			$("#total_ttc").val((montant_ttc).formatMoney(2, '.', ' '));
-			
-		});
-		
-		$("#sub").click(function(){
-			
-			var test = 0;
-			
-			$(".qte").each(function(){
-				
-				var current_val = parseFloat($(this).val());
-				
-				var old_val = parseFloat($(this).parent().find("#qte_init").val());
-				
-				if(current_val>old_val){
-					
-					test = 1;
-					
-					$(this).css("border-color","red");
-					
-				}
-				
-			});
-			
-			if(test==1){
-				
-				$("#title").text("Erreur !!!");
-				$("#icone").attr("class","far fa-exclamation-triangle");
-				$("#text").html("La quantité saisie doit être inferieur a la quantité initial ");
-				$("#error").modal('show');
-				
-			}
-			else{
-				
-				$("#frm").submit();
-				
-			}
-			
-		});
-		
-	});
-	
-	</script>
+	<script type="text/javascript" src="resources\PagesJS\vente\facture_avoir.js"></script>
 	      
 	      
 	</head>
@@ -310,7 +215,27 @@
 										th:value="${#numbers.formatDecimal(facture.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 								</div>
 							</div>
-	
+							
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<span class="input-group-text declaration" style="text-align: left;"> Montant Remise </span>
+									<input type="text" class="form-control " name="montant_remise" style="text-align: right;" id="montant_remise" 
+										th:value="${#numbers.formatDecimal(facture.montant_remise, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+									<input type="text" class="form-control " name="pourc_remise" style="text-align: right;" id="pourc_remise" 
+										th:value="${#numbers.formatDecimal(facture.pourcentage_reduction, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+									<span class="input-group-text declaration" style="text-align: right;"> % Remise </span>		
+								</div>
+							</div>
+							
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT NET</span>
+									</div>
+									<input type="text" class="form-control " name="total_ht_net" style="text-align: right;" id="total_ht_net" 
+										th:value="${#numbers.formatDecimal(facture.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+								</div>
+							</div>
 	
 							<div class="col-md-4 offset-md-8">
 								<div class="input-group">
@@ -348,8 +273,12 @@
 								<th  align="center"  width="8%">Um</th>
 								<th  align="center" >Qte</th>
 								<th  align="center" >PU</th>
+								<th  align="center" >Montant HT</th>
+								<th  align="center" >Remise (%/Valeur)</th>
+								<th  align="center" >Montant HT NET</th>
 								<th  align="center" >TVA</th>
-								<th  align="center" >MONTANT HT</th>
+								<th  align="center" >Montant TVA</th>
+								<th  align="center" >Montant TTC</th>
 							</tr>
 						</thead>
 	
@@ -373,12 +302,35 @@
 								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${fact_det.quantite}" style="text-align: right;" > 
 										<input type="hidden" id="qte_init" class="qte_init" th:value="${fact_det.quantite}"> </td>
 								
-								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${fact_det.prix_u_ht}" type="number" step="any" style="text-align: right;" readonly> </td>
+								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any"
+										th:value="${#numbers.formatDecimal(fact_det.prix_u_ht, 3, 2, 'POINT')}" style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control tva_art" id="tva_art" name="tva_art" type="number" th:value="${fact_det.tva}" step="any" value="" style="text-align: right;" readonly> </td>
+								<td><input class="form-control montant_ht_art" id="montant_ht_art" name="montant_ht_art" type="text" 
+										th:value="${#numbers.formatDecimal(fact_det.montant_ht, 3, 'WHITESPACE', 2, 'POINT')}" style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${fact_det.montant_ht}" type="text" style="text-align: right;" readonly> </td>
-	
+								<td>
+									<div class="input-group">
+									
+										<input class="form-control pourcentage_remise_art" id="pourcentage_remise_art" name="pourcentage_remise_art" type="text" 
+										th:value="${#numbers.formatDecimal(fact_det.pourcentage_remise, 2, 2, 'POINT')}" style="text-align: right;" readonly>
+										
+										<input class="form-control montant_remise_art" id="montant_remise_art" name="montant_remise_art" type="text" 
+										th:value="${#numbers.formatDecimal(fact_det.montant_remise, 3, 'WHITESPACE', 2, 'POINT')}" style="text-align: right;" readonly>
+										
+									</div>
+								</td>
+								
+								<td><input class="form-control montant_ht_net_art" id="montant_ht_net_art" name="montant_ht_net_art" type="text" style="text-align: right;"
+										th:value="${#numbers.formatDecimal(fact_det.montant_ht_net, 3, 'WHITESPACE', 2, 'POINT')}" readonly> </td>
+								
+								<td><input class="form-control tva_art" id="tva_art" name="tva_art" th:value="${fact_det.tva}" type="text"  style="text-align: right;" readonly> </td>
+								
+								<td><input class="form-control montant_tva_art" id="montant_tva_art" name="montant_tva_art" type="text" style="text-align: right;"
+										th:value="${#numbers.formatDecimal(fact_det.montant_tva, 3, 'WHITESPACE', 2, 'POINT')}" readonly> </td>
+								
+								<td><input class="form-control montant_ttc_art" id="montant_ttc_art" name="montant_ttc_art" type="text" style="text-align: right;"
+										th:value="${#numbers.formatDecimal(fact_det.montant_ttc, 3, 'WHITESPACE', 2, 'POINT')}"  readonly> </td>
+								
 							</tr>
 	
 						</tbody>

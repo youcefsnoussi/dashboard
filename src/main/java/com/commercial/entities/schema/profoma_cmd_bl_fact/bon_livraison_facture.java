@@ -55,11 +55,17 @@ public class bon_livraison_facture implements Serializable{
 	
 	private int etat_livraison;
 	
+	@Column(columnDefinition="double precision default 0")
 	private Double montant_ht;
 	
+	@Column(columnDefinition="double precision default 0")
 	private Double montant_tva;
 	
+	@Column(columnDefinition="double precision default 0")
 	private Double montant_ttc;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double pourcentage_remise;
 	
 	@Column(columnDefinition="double precision default 0")
 	private double montant_remise;
@@ -78,14 +84,11 @@ public class bon_livraison_facture implements Serializable{
 	public bon_livraison_facture() {
 		// TODO Auto-generated constructor stub
 	}
-
 	
-
-	public bon_livraison_facture(com.commercial.entities.schema.client.client client,
-			com.commercial.entities.schema.client.registre_commerce registre_commerce, String date, String time,
-			String numero, String matricule, com.commercial.entities.schema.profoma_cmd_bl_fact.commande commande,
-			com.commercial.entities.schema.user_menu.users users, int etat_livraison, Double montant_ht,
-			Double montant_tva, Double montant_ttc, double montant_remise, double montant_ht_net, String chauffeur) {
+	public bon_livraison_facture(client client, registre_commerce registre_commerce, String date, String time,
+			String numero, String matricule, commande commande, users users, int etat_livraison, Double montant_ht,
+			Double montant_tva, Double montant_ttc, double pourcentage_remise, double montant_remise,
+			double montant_ht_net, boolean cancel, boolean factured, String chauffeur) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;
@@ -99,24 +102,36 @@ public class bon_livraison_facture implements Serializable{
 		this.montant_ht = montant_ht;
 		this.montant_tva = montant_tva;
 		this.montant_ttc = montant_ttc;
+		this.pourcentage_remise = pourcentage_remise;
 		this.montant_remise = montant_remise;
 		this.montant_ht_net = montant_ht_net;
+		this.cancel = cancel;
+		this.factured = factured;
 		this.chauffeur = chauffeur;
 	}
-
 	
-
+	public bon_livraison_facture(client client, registre_commerce registre_commerce, String date, String time,
+			String numero, String matricule, commande commande, users users, String chauffeur) {
+		super();
+		this.client = client;
+		this.registre_commerce = registre_commerce;
+		this.date = date;
+		this.time = time;
+		this.numero = numero;
+		this.matricule = matricule;
+		this.commande = commande;
+		this.users = users;
+		this.etat_livraison = 0;
+		this.chauffeur = chauffeur;
+	}
+	
 	public double getMontant_remise() {
 		return montant_remise;
 	}
 
-
-
 	public void setMontant_remise(double montant_remise) {
 		this.montant_remise = montant_remise;
 	}
-
-
 
 	public double getMontant_ht_net() {
 		return montant_ht_net;
@@ -128,19 +143,13 @@ public class bon_livraison_facture implements Serializable{
 		this.montant_ht_net = montant_ht_net;
 	}
 
-
-
 	public String getChauffeur() {
 		return chauffeur;
 	}
 
-
-
 	public void setChauffeur(String chauffeur) {
 		this.chauffeur = chauffeur;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -269,9 +278,13 @@ public class bon_livraison_facture implements Serializable{
 	public void setFactured(boolean factured) {
 		this.factured = factured;
 	}
-	
-	
 
-	
+	public double getPourcentage_remise() {
+		return pourcentage_remise;
+	}
+
+	public void setPourcentage_remise(double pourcentage_remise) {
+		this.pourcentage_remise = pourcentage_remise;
+	}
 	
 }

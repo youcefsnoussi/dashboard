@@ -58,6 +58,9 @@ public class remboursement {
 	
 	private boolean cancel;
 	
+	@Column(columnDefinition="boolean default false")
+	private boolean litrage_compta = false;
+	
 	public remboursement() {
 		// TODO Auto-generated constructor stub
 	}
@@ -186,6 +189,14 @@ public class remboursement {
 
 	public void setCancel(boolean cancel) {
 		this.cancel = cancel;
+	}
+
+	public boolean isLitrage_compta() {
+		return litrage_compta;
+	}
+
+	public void setLitrage_compta(boolean litrage_compta) {
+		this.litrage_compta = litrage_compta;
 	}
 	
 }
