@@ -18,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -122,7 +121,7 @@ public class paymentsController {
 		
 		//----------------------------------------------------------------
 		
-		model.addAttribute("mode_payement", mode_payRepo.findAll());
+		model.addAttribute("mode_payement", mode_payRepo.findAll().stream().filter(mp-> mp.isDisplay()).toArray() );
 		
 		model.addAttribute("bank", banqueRepo.get_banks_displayed());
 		
@@ -191,6 +190,8 @@ public class paymentsController {
 		
 		paiement pay =  payRepo.findById(id_payement).orElseThrow(() -> new IllegalArgumentException("ID Paiement Invalid:" + id_payement));
 		
+		if(pay.isVerification()) return "403";
+		
 		pay.setDate(conv.convertion_MyDate_to_InputDate(pay.getDate()));
 		
 		//model.addAttribute("paiement", new paiement()); 
@@ -232,6 +233,8 @@ public class paymentsController {
 	    
 	    payRepo.save(p); payRepo.flush();
 	    
+	    trk.add_track("paiement", "Modification Paiement", p.getId(), user);
+	    
 	    return "redirect:/edit_payment/"+pay.getId();
 	}
 	
@@ -241,7 +244,7 @@ public class paymentsController {
 	generate_Doc gd;
 	
 	@RequestMapping(value="/print_bordereau_pay")
-	public String print_bl(HttpServletRequest request,
+	public String print_bordereau(HttpServletRequest request,
 						 @RequestParam("mode_pay") long [] mode_pay,
 						 @RequestParam("start") String start,
 						 @RequestParam("end") String end,
@@ -256,10 +259,12 @@ public class paymentsController {
 		
 		String pdf = "";
 		
+		if( mode_pay.length !=1 ) pdf = gd.generate_bordereau_pay(start, end, user.getUnite().getNom_unite(), mode_pay); 
 		
-		pdf = gd.generate_bordereau_pay(start, end, mode_pay);
+		else if( mode_pay [0] != 0) pdf = gd.generate_bordereau_pay(start, end, user.getUnite().getNom_unite(), mode_pay);
+		
+		else pdf = gd.generate_impaye();
 			
-		
 		return "redirect:/display_pdf?file="+pdf;
 		
 	}
@@ -436,10 +441,10 @@ public class paymentsController {
 			
 			long id_rc = c_rcRepo.getOne(id_clt_rc).getRegistre_commerce().getId();
 			
-			System.out.println("banc = "+banque.getNom_banque()+" / "+num_piece+" / "+date+" / "+montant+" / "+rcRepo.getOne(id_rc).getNom());
+			//System.out.println("banc = "+banque.getNom_banque()+" / "+num_piece+" / "+date+" / "+montant+" / "+rcRepo.getOne(id_rc).getNom());
 			
 			List<paiement> p = payRepo.if_payment_already_exist(banque, num_piece, cc.convertion_InputDate_to_MyDate(date), 
-											montant, rcRepo.getOne(id_rc));
+											/*montant,*/ rcRepo.getOne(id_rc));
 			
 			System.out.println("if pay exist "+p.size());
 			

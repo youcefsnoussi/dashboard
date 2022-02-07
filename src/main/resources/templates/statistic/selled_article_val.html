@@ -108,6 +108,12 @@
 					      $( api.column( 7, {page:'current'} ).footer() ).html(
 					        api.column( 7, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
+					      $( api.column( 8, {page:'current'} ).footer() ).html(
+					        api.column( 8, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      $( api.column( 9, {page:'current'} ).footer() ).html(
+					        api.column( 9, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
 					       
 					 },
 		    };
@@ -306,6 +312,8 @@
 										<th class="cc" >Quantité (Q)</th>
 										<th class="cc" >Prix U</th>
 										<th class="rr" >Montant HT (DA)</th>
+										<th class="rr" >Montant Remise (DA)</th>
+										<th class="rr" >Montant NET HT (DA)</th>
 										<th class="rr" >Montant TVA (DA)</th>
 										<th class="rr" >Montant TTC (DA)</th>
 										
@@ -326,6 +334,8 @@
 										<td class="rr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
 										<td class="rr"  th:text="${#numbers.formatDecimal(lst[7], 3, 'WHITESPACE', 2,'POINT')}"></td>
 										<td class="rr"  th:text="${#numbers.formatDecimal(lst[8], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[9], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[10], 3, 'WHITESPACE', 2,'POINT')}"></td>
 										
 									</tr>
 								
@@ -340,6 +350,8 @@
 										<th></th>
 										<th class="cc" ></th>
 										<th class="cc" ></th>
+										<th class="cc" ></th>
+										<th class="rr" ></th>
 										<th class="rr" ></th>
 										<th class="rr" ></th>
 										<th class="rr" ></th>
@@ -367,6 +379,8 @@
 										<th class="cc" >Quantité (Q)</th>
 										<th class="cc" >Prix U</th>
 										<th class="rr" >Montant HT (DA)</th>
+										<th class="rr" >Montant Remise (DA)</th>
+										<th class="rr" >Montant NET HT (DA)</th>
 										<th class="rr" >Montant TVA (DA)</th>
 										<th class="rr" >Montant TTC (DA)</th>
 										
@@ -387,6 +401,8 @@
 										<td class="rr"  th:text="${#numbers.formatDecimal(lst[6], 3, 'WHITESPACE', 2,'POINT')}"></td>
 										<td class="rr"  th:text="${#numbers.formatDecimal(lst[7], 3, 'WHITESPACE', 2,'POINT')}"></td>
 										<td class="rr"  th:text="${#numbers.formatDecimal(lst[8], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[9], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										<td class="rr"  th:text="${#numbers.formatDecimal(lst[10], 3, 'WHITESPACE', 2,'POINT')}"></td>
 										
 									</tr>
 								
@@ -401,6 +417,8 @@
 										<th></th>
 										<th class="cc" ></th>
 										<th class="cc" ></th>
+										<th class="cc" ></th>
+										<th class="rr" ></th>
 										<th class="rr" ></th>
 										<th class="rr" ></th>
 										<th class="rr" ></th>

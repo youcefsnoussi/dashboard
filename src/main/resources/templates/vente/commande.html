@@ -21,8 +21,8 @@
 	<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 	
 	<script type="text/javascript" src="resources\additionalJS\jquery-spin.js"></script>
-	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
+	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 	
 	<script type="text/javascript" src="resources\PagesJS\vente\facture.js"></script>
 	      
@@ -83,86 +83,7 @@
 						<br>
 	
 						<div class="card-body">
-							<!--  
-							<div class="row">
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Client </span>
-										</div>
-										<select class="form-control selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
-											name="id_client" id="id_client" data-size="5">
-											
-											<option disabled="disabled" value="" selected>Client</option>
-											<option th:each="clt:${clients}" th:value="${clt.id}" th:text="${clt.code}" 
-													th:attr="data-subtext=${clt.nom}+' '+${clt.prenom}, code_clt=${clt.code}"></option>
-	
-										</select>
-										
-										  <input type="hidden" id="id_client" name="id_client" value="">  
-									</div>
-								</div>
-								<input type="hidden" class="form-control" id="lib_client"
-									name="lib_client" value="">
-	
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Désignation</span>
-										</div>
-										<input type="text" name="designation" id="designation"
-											class="form-control " readonly="readonly">
-	
-									</div>
-								</div>
-	
-	
-								<div class="col-md-4 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Adresse </span>
-										</div>
-										<input type="text" class="form-control " name="adresse"
-											id="adresse" value="" readonly="readonly">
-									</div>
-								</div>
-	
-							</div>
-	
-							<br>
-	
-							<div class="row">
-								<div class="col-md-6 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Solde </span>
-										</div>
-										<input type="text" class="form-control " name="solde"
-											id="solde" value="" readonly="readonly">
-									</div>
-								</div>
-								<div class="col-md-6 column">
-									<div class="input-group">
-										<div class="input-group-prepend">
-											<span class="input-group-text declaration"
-												style="min-width: 76px; text-align: left;">Max Solde </span>
-										</div>
-										<input type="text" class="form-control " name="max_solde"
-											id="max_solde" value="0" readonly="readonly">
-									</div>
-								</div>
-	
-							</div>
-	
-							<br>
-							-->
 							
-	
 							<div class="row">
 	
 								<div class="col-md-4 column">
@@ -365,15 +286,19 @@
 									<div class="row">
 										
 										<div class="col-md-12">
-										
+											
 											<div class="input-group">
+											
 												<div class="input-group-prepend">
-													<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
+													<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> 
+														Total HT </span>
 												</div>
+												<input type="text" step="any" class="form-control remise_zero" name="total_ht" style="text-align: right;" 
+													id="total_ht" value="0" readonly="readonly">
 												<input type="hidden" id="total_ht_hidden" value="0">
-												<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" value="0" readonly="readonly">
+													
 											</div>
-										
+											
 										</div>
 										
 									</div>
@@ -382,79 +307,63 @@
 							
 										<div class="col-md-12">
 											<div class="input-group">
-												<div class="input-group-prepend">
-													<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Remise (%) </span>
-												</div>
-												<input type="number" step="any" class="form-control zero" name="pourc_reduction" style="text-align: right;" id="pourc_redux" value="0" >
+													<span class="input-group-text declaration" style="text-align: left;">
+													 Remise (%) </span>
+												<input type="number" step="any" class="form-control zero remise_zero" name="pourc_reduction" 
+													style="text-align: right;" id="pourc_redux" value="0" >
+												
+												<input type="text" class="form-control zero remise_zero" name="montant_reduction" 
+													style="text-align: right;" id="mnt_redux" value="0" >
+												
+												<span class="input-group-text declaration" 
+																style="min-width: 106px; text-align: left;"> Remise (Val) </span>
+														
+													
 											</div>
 										</div>
 									
 									</div>
 									
 									<div class="row">
-							
 										<div class="col-md-12">
-											
-											<div class="row">
-												
-												<div class="col-md-6">
-												
-													<div class="input-group">
-														<div class="input-group-prepend">
-															<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Taux TVA Remise </span>
-														</div>
-														<input type="number" step="any" class="form-control zero" name="taux_tva_reduction" style="text-align: right;" id="tva_redux" value="0" >
-													</div>
-												
-												</div>
-												
-												<div class="col-md-6">
-													
-													<div class="input-group">
-														<div class="input-group-prepend">
-															<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Remise (DA) </span>
-														</div>
-														<input type="number" step="any" class="form-control zero" name="montant_reduction" style="text-align: right;" id="mnt_redux" value="0" >
-													</div>
-													
-												</div>
-												
-											</div>
-											
-										</div>
-									
-									</div>
-									
-									<div class="row">
-									
-										<div class="col-md-12">
+										
 											<div class="input-group">
 												<div class="input-group-prepend">
-													<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT Avant Réduction </span>
+													<span class="input-group-text declaration" style="min-width: 106px; text-align: left;">
+													 Total HT Net </span>
 												</div>
-												<input type="text" step="any" class="form-control " name="total_ht" style="text-align: right;" id="total_ht_redux" value="0" readonly="readonly">
+												<input type="text" class="form-control remise_zero" name="total_ht_net" style="text-align: right;" 
+													id="total_ht_net" value="0" readonly="readonly">
 											</div>
+										
 										</div>
-									
+										
 									</div>
 									
 								</div>
 							
 							</div>
 							
+							<div class="row">
 							
+								<div class="col-md-4 offset-md-8">
+								
+									<hr>
+								
+								</div>
 							
-							<hr>
+							</div>
 							
 							<div class="row">
 								
 								<div class="col-md-4 offset-md-8">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Montant TVA</span>
+											<span class="input-group-text declaration">Total TVA</span>
 										</div>
 										<input type="hidden" id="total_tva_hidden" value="0">
-										<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" value="0" readonly="readonly">
+										<input type="text" class="form-control remise_zero" name="total_tva" style="text-align: right;" id="total_tva" 
+											value="0" readonly="readonly">
 									</div>
 								</div>
 							
@@ -465,9 +374,10 @@
 								<div class="col-md-4 offset-md-8">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Montant TTC </span>
+											<span class="input-group-text declaration">Total TTC </span>
 										</div>
-										<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" value="0" readonly="readonly">
+										<input type="text" class="form-control remise_zero" name="total_ttc" style="text-align: right;" id="total_ttc" 
+											value="0" readonly="readonly">
 									</div>
 								</div>
 	
@@ -487,8 +397,13 @@
 								<th  align="center" >Qte</th>
 								<th  align="center" >Unité</th>
 								<th  align="center" >PU</th>
-								<th  align="center" >TVA</th>
 								<th  align="center" >MONTANT HT</th>
+								<th  align="center" >Remise ( Val / % )</th>
+								<th  align="center" >Montant NET HT</th>
+								<th  align="center" >TVA (%)</th>
+								<th  align="center" >Montant TVA</th>
+								<th  align="center" >Montant TTC</th>
+								
 							</tr>
 						</thead>
 	
@@ -499,16 +414,19 @@
 								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
 								
 								<td> 
-									 <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="">
+									 <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8"
+									 	data-live-search="true" name="" th:attr="id_tr='tr'+${i}">
 										<option value="0" id_um="0" pu="0" tva="0" selected>Selection</option>
 									 </select> 
 								</td>
 								
-								<td> <input class="form-control unite_mesure" id="unite_mesure" type="text" value="" style="text-align: center;" readonly> 
+								<td> <input class="form-control unite_mesure" id="unite_mesure" type="text" value="" style="text-align: center;" 
+										readonly> 
 										<input type="hidden" id="id_um" name="id_um" value="0" > </td>
 								
 								<td> 
-									<input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="" style="text-align: right;" readonly>
+									<input class="form-control qte zero remise_zero" id="qte" name="qte" type="number" step="any" value="" 
+										style="text-align: right;" readonly>
 									<input type="hidden" class="pesage_palette" id="pesage_palette"> 
 								</td>
 								
@@ -518,12 +436,33 @@
 									</select>	
 								</td>
 								
-								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any" style="text-align: right;" readonly> </td>
+								<td><input class="form-control prix_unitaire remise_zero" id="prix_unitaire" name="prix_unitaire" type="text" 
+									style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control tva" id="tva_art" name="tva_art" type="number" step="any" value="" style="text-align: right;" readonly> </td>
+								<td><input class="form-control montant_ht remise_zero" id="montant_ht" name="montant_ht_art" type="text" 
+									style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" type="text" style="text-align: right;" readonly> </td>
-	
+								<td>
+									<div class="input-group">
+										<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" 
+											step="any" style="text-align: left;" placeholder="Val" value="0">
+										<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" 
+											type="number" step="any" style="text-align: right;" placeholder="%" value="0">  
+									</div>
+								</td>
+								
+								<td><input class="form-control montant_net_ht remise_zero" id="montant_net_ht" name="montant_net_ht_art" type="text" 
+									style="text-align: right;" value="0" readonly> </td>
+								
+								<td><input class="form-control tva remise_zero" id="tva_art" name="tva_art" type="number" step="any" value="0" 
+									style="text-align: right;" readonly> </td>
+								
+								<td><input class="form-control montant_tva remise_zero" id="montant_tva" name="montant_tva_art" type="text" value="0"
+									style="text-align: right;" readonly> </td>
+									
+								<td><input class="form-control montant_ttc remise_zero" id="montant_ttc" name="montant_ttc_art" type="text" value="0" 
+									style="text-align: right;" readonly> </td>	
+								
 							</tr>
 	
 						</tbody>

@@ -33,10 +33,14 @@ public class doc_app {
 	 * 
 	 * 				____________________________________________________________________________________________
 	 * 
+	 * 				- dashboard => acceuil iweli dashboard
+	 * 
 	 * 				------------------------------  RC -------------------------------------
 	 *				- add_rc => mayakderch yajouti rc (makach button + page inaccessible)
 	 *				- edit_rc => edit client previlege
 	 *				- rc_client =>yakder yarbet bin rc + client
+	 *				- edit_date_relation => edit date fin relation client RC
+	 *				- manipulate_plafond => yakder idir plafond wela i modifih
 	 *				
 	 *				------------------------------  Client -------------------------------------
 	 *				- add_client => manafichich button ta3 add client ma3endoch plafond (=10da) + blocké
@@ -54,11 +58,14 @@ public class doc_app {
 	 * 				- cancel_bl => yakder yanuli BL
 	 * 				- cancel_ble => yakder yanuli BL emlpoyée
 	 * 				- facture_av => yakder idir facture avoir
+	 * 				- edit_matricule_fact => imodofie matricule facture
+	 * 
 	 * 				--------------------------------------------------------------------------------
 	 * 				- cancel_blq => annuler bon_livraison_facture
 	 * 				- edit_blq => edit bon_livraison_facture
 	 * 				- cancel_bt => annuler bon_transfert
 	 * 				- fact_blfs => facturé les bls
+	 * 
 	 * 				--------------------------------------------------------------------------------
 	 * 				PS : -> PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
 	 * 					 
@@ -69,13 +76,21 @@ public class doc_app {
 
 	 * 				////////////////////////////////----------------------------------
 	 * 
-	 * 								th:value="${bl_det.article.produit.sous_category_produit.category_produit.nom_category}+' '+
-									  ${#strings.replace(bl_det.article.produit.sous_category_produit.nom_sous_category, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '')}+' '+
-									  ${#strings.replace(#strings.replace(bl_det.article.produit.designation, bl_det.article.produit.sous_category_produit.category_produit.nom_category, ''), bl_det.article.produit.sous_category_produit.nom_sous_category, '')}+' '+
-									  ${#strings.replace(bl_det.article.emballage_produit.nom_emballage, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '') }+' '+
-									  ${bl_det.article.pesage_produit.pesage}+' '+${bl_det.article.pesage_produit.unite_pesage}" 
+	 * 					th:value="${bl_det.article.produit.sous_category_produit.category_produit.nom_category}+' '+
+						${#strings.replace(bl_det.article.produit.sous_category_produit.nom_sous_category, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '')}+' '+
+						${#strings.replace(#strings.replace(bl_det.article.produit.designation, bl_det.article.produit.sous_category_produit.category_produit.nom_category, ''), bl_det.article.produit.sous_category_produit.nom_sous_category, '')}+' '+
+						${#strings.replace(bl_det.article.emballage_produit.nom_emballage, bl_det.article.produit.sous_category_produit.category_produit.nom_category, '') }+' '+
+						${bl_det.article.pesage_produit.pesage}+' '+${bl_det.article.pesage_produit.unite_pesage}" 
 	 * 
+	 * 			//------------------------------------- WACH NBEDEL KI NDIR MAJ l AINDEFLA 
 	 * 
+	 * 			- FILE ---> list_factureController ====>  fct ---> print_fact
+	 * 			- FILE ---> Connection_Comptabilite ===>  fct ---> conx
+	 * 			
+	 * 			//------------------------------------- WACH NBEDEL KI NDIR MAJ l Mais Server AIN Romana
+	 * 
+	 * 			- application.properties ---> DB -> commercial_mais
+	 * 			- FILE ---> vente\facturationOfBls.html ====>  fct ---> $("#fct_blf").click
 	 * 
 	 */
 	

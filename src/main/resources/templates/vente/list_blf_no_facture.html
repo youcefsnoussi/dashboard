@@ -79,7 +79,8 @@
 			        initComplete: function () {
 			            this.api().columns([3,4,5,6,7,8,9,10,16]).every( function () {
 			                var column = this;
-			                var select = $('<select class="form-control "  ><option value="">Tout</option></select>')
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+ 
+	                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -94,6 +95,7 @@
 			                column.data().unique().sort().each( function ( d, j ) {
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
+			                $('.selectpicker').selectpicker('refresh');
 			            } );
 			        },
 					 drawCallback: function () {
@@ -177,7 +179,8 @@
 				
 				
 				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-												'src="print_blf?id_bl='+id_blf+'"></iframe>'); //'src="print_blq?id_bl='+id_blf+'"></iframe>');
+												'src="print_blf?id_bl='+id_blf+'"></iframe>'); 
+				//'src="print_blq?id_bl='+id_blf+'"></iframe>');
 				
 				$("#title_bl").text("Imprimer BL N° "+num_blf);
 				
@@ -582,9 +585,9 @@
 		
 	</div> 
 	
-	<div id="bl_detail_modal" class="modal" tabindex="-1" role="dialog">
+	<div id="bl_detail_modal" class="modal modal-fullscreen-xl" tabindex="-1" role="dialog">
 	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
-	    <div class="modal-content">
+	    <div class="modal-content" style="width: 125%;">
 	      <div class="modal-header">
 	      		
 	      		<input type="hidden" id="id_facture">

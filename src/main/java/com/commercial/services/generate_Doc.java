@@ -10,9 +10,11 @@ import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -147,6 +149,7 @@ public class generate_Doc {
 		// TODO Auto-generated constructor stub
 	}
 	
+	DecimalFormat df = new DecimalFormat("#,##0.00",  new DecimalFormatSymbols(Locale.FRENCH));
 	
 	public String generate_BL(long id_bl, String numero, String matricule, String qr_code) {
 		 
@@ -238,8 +241,6 @@ public class generate_Doc {
 				Map<String, Object> mp = new HashMap<String, Object>();
 				
 				bon_livraison_employee ble = bleRepo.getOne(id_bl);
-					
-				DecimalFormat df = new DecimalFormat("#,##0.00");
 				
 					mp.put("id_bon_livraison",ble.getId());
 					mp.put("num",ble.getNumero());
@@ -247,7 +248,7 @@ public class generate_Doc {
 					mp.put("Matricule", ble.getMatricule_employee());
 					mp.put("client", ble.getNom_employee()+" "+ble.getPrenom_employee());
 					mp.put("montant_ht", df.format(ble.getMontant_ht()) );
-					mp.put("montant_tva", df.format(ble.getTva()) );
+					mp.put("montant_tva", df.format(ble.getMontant_tva()) );
 					mp.put("montant_ttc", df.format(ble.getMontant_ttc()) );
 					
 					try {
@@ -301,8 +302,6 @@ public class generate_Doc {
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", fact.getDate());
 				mp.put("ArticleLoieExoneration", fact.getRegistre_commerce().getArticleLoieExoneration());
-				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
 				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(fact.getMontant_ht()) );
@@ -499,8 +498,6 @@ public class generate_Doc {
 				mp.put("time", fact.getTime());
 				mp.put("user", fact.getUsers().getMatricule());
 				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
-				
 				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(fact.getMontant_ht()) );
 				mp.put("total_tva", df.format(fact.getMontant_tva()) );
@@ -633,12 +630,12 @@ public class generate_Doc {
 						
 						double val = cuml.get(""+det_fact.getTva());
 						
-						cuml.put(""+det_fact.getTva(), val + ( det_fact.getMontant_ht() * (det_fact.getTva()/100) ) );
+						cuml.put(""+det_fact.getTva(), val + det_fact.getMontant_tva() );
 						
 					}
 					else {
 						
-						cuml.putIfAbsent(""+det_fact.getTva(), det_fact.getMontant_ht() * (det_fact.getTva()/100));
+						cuml.putIfAbsent(""+det_fact.getTva(), det_fact.getMontant_tva() );
 						
 					}
 					
@@ -710,8 +707,6 @@ public class generate_Doc {
 			try {
 				
 				Map<String, Object> mp = new HashMap<String, Object>();
-				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
 				//---------------------- Entreprise INFO -------------------------------------
 				
@@ -789,8 +784,6 @@ public class generate_Doc {
 				mp.put("date", prof.getDate());
 				mp.put("time", prof.getTime());
 				mp.put("user", prof.getUsers().getMatricule());
-				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
 				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(prof.getTotal_ht()) );
@@ -937,8 +930,6 @@ public class generate_Doc {
 			mp.put("date", fact_av.getDate());
 			mp.put("user_matricule", fact_av.getUsers().getMatricule());
 			
-			DecimalFormat df = new DecimalFormat("# ###,##0.00");
-			
 			mp.put("montant_ht", df.format(fact_av.getMontant_ht()) );
 			mp.put("montant_tva", df.format(fact_av.getTva()) );
 			mp.put("montant_ttc", df.format(fact_av.getMontant_ttc()) );
@@ -1067,8 +1058,6 @@ public class generate_Doc {
 			mp.put("nif", fact_ris.getRegistre_commerce().getNumero_nif());
 			mp.put("art", fact_ris.getRegistre_commerce().getNumero_art());
 			
-			DecimalFormat df = new DecimalFormat("# ###,##0.00");
-			
 			mp.put("montant_ht", df.format(fact_ris.getMontant_ht()) );
 			mp.put("montant_tva", df.format(fact_ris.getTva()) );
 			mp.put("montant_ttc", df.format(fact_ris.getMontant_ttc()) );
@@ -1180,7 +1169,7 @@ public class generate_Doc {
 
 	//--------------------------------- STATISTIC -------------------------------------------------------
 	
-	public String generate_bordereau_pay(String start, String end, long [] mode_pay) {
+	public String generate_bordereau_pay(String start, String end, String unite, long [] mode_pay) {
 		 
 		 String destination = "D:/Commercial/Doc/PAI/BORD.pdf";
 		 
@@ -1190,10 +1179,6 @@ public class generate_Doc {
 				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\paiement\\bordereau_remise_paiements.jrxml");
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 				Map<String, Object> mp = new HashMap<String, Object>();
-				
-				System.out.println("start->"+start+" end->"+end);
-				
-				System.out.println("mode p size ->"+mode_pay.length);
 				
 				String req_p = " (";
 				
@@ -1220,12 +1205,11 @@ public class generate_Doc {
 				
 				req_p += ")";
 				
-				System.out.println("req -> "+req_p);
-				
 				mp.put("start",start);
 				mp.put("end",end);
 				mp.put("types_paiements", mode_paye);
 				mp.put("req_pay", req_p);
+				mp.put("unite", unite);
 				
 				try {
 					
@@ -1254,6 +1238,54 @@ public class generate_Doc {
 			return destination;
 	
 	}
+	
+	//--------------------------------- Impaye -------------------------------------------------------
+	
+		public String generate_impaye() {
+			 
+			 String destination = "D:/Commercial/Doc/PAI/IMP.pdf";
+			 
+			 JasperDesign jdesign; 
+				try {
+					
+					jdesign = JRXmlLoader.load("D:\\Commercial\\report\\paiement\\impaye.jrxml");
+					JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+					Map<String, Object> mp = new HashMap<String, Object>();
+					
+					String req_p = " (";
+					
+					String mode_paye = "";
+					
+					mp.put("types_paiements", mode_paye);
+					mp.put("req_pay", req_p);
+					
+					try {
+						
+						Connection con  = localDataSource.getConnection();
+					
+						JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+						
+						File dir = new File("D:\\Commercial\\Doc\\PAI");
+						
+					    if (!dir.exists()) dir.mkdirs();
+						
+						JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\PAI\\IMP.pdf");
+						
+						con.close();
+						
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				} catch (JRException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				return destination;
+		
+		}
 	
 	//------------------------------------------------------------------------------
 	
@@ -1635,8 +1667,6 @@ public class generate_Doc {
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 				
 				Map<String, Object> mp = new HashMap<String, Object>();
-				
-				DecimalFormat df = new DecimalFormat("#,##0.00");
 				
 				mp.put("code_nom_client", rc.getCode()+" - "+rc.getNom()+" "+rc.getPrenom());
 				mp.put("start", start);
@@ -2083,12 +2113,12 @@ public class generate_Doc {
 				mp.put("user", blf.getUsers().getMatricule());
 				mp.put("cat_rc", blf.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", blf.getDate());
-				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation());
+				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation()); //--->  null pointer exception
 				mp.put("chauffeur", blf.getChauffeur());
 				mp.put("user", blf.getUsers().getMatricule());
 				mp.put("time", blf.getTime());
 				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
+				
 				
 				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(blf.getMontant_ht()) );
@@ -2116,11 +2146,7 @@ public class generate_Doc {
 				
 				String m_ttc1 = df.format(blf.getMontant_ttc());
 				
-				System.out.println("---TTC1 -->"+m_ttc1);
-				
 				String m_ttc = m_ttc1.replaceAll(" ", "");
-				
-				System.out.println("---TTC -->"+m_ttc);
 				
 				String m [] = m_ttc.split(",");
 				
@@ -2132,7 +2158,8 @@ public class generate_Doc {
 					
 					String chk = ""+chkoupi[0], chk1 = ""+chkoupi[1]; 
 					
-					virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+FrenchNumberToWords.convert(Double.parseDouble(chk1));
+					virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+
+								FrenchNumberToWords.convert(Double.parseDouble(chk1));
 					
 				}
 				else {
@@ -2350,8 +2377,6 @@ public class generate_Doc {
 				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation());
 				mp.put("chauffeur", blf.getChauffeur());
 				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
-				
 				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(blf.getMontant_ht()) );
 				mp.put("total_tva", df.format(blf.getMontant_tva()) );
@@ -2535,8 +2560,6 @@ public class generate_Doc {
 				mp.put("date", bt.getDate());
 				mp.put("chauffeur", bt.getChauffeur());
 				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
-				
 				//---------------------- Entreprise INFO -------------------------------
 				
 				mp.put("Nom_entreprise", infoeRepo.getOne((long)1 ).getNom_entreprise() );
@@ -2606,8 +2629,6 @@ public class generate_Doc {
 				mp.put("date", blf.getDate());
 				mp.put("mode_pay", blf.getCommande().getMode_paiement().getDesignation());
 				mp.put("chauffeur", blf.getChauffeur());
-				
-				DecimalFormat df = new DecimalFormat("# ###,##0.00");
 				
 				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(blf.getMontant_ht()) );

@@ -2,7 +2,6 @@ package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -62,11 +61,9 @@ public class facture_detail implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public facture_detail(com.commercial.entities.schema.profoma_cmd_bl_fact.facture facture,
-			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
-			double montant_ht, double tva, double montant_tva, double montant_ttc, double pourcentage_remise,
-			double montant_remise, double montant_ht_net,
-			com.commercial.entities.schema.static_data.unite_mesure unite_mesure) {
+	public facture_detail(facture facture, article article, double quantite, double prix_u_ht, double montant_ht, double tva, 
+			double montant_tva, double montant_ttc, double pourcentage_remise, double montant_remise, double montant_ht_net, 
+			unite_mesure unite_mesure) {
 		super();
 		this.facture = facture;
 		this.article = article;

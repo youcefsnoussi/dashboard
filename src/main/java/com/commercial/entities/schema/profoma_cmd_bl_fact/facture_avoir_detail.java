@@ -2,6 +2,7 @@ package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,6 +37,15 @@ public class facture_avoir_detail implements Serializable{
 	
 	private double montant_ht;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double pourcentage_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ht_net;
+	
 	private double tva;
 	
 	private double montant_tva;
@@ -46,9 +56,8 @@ public class facture_avoir_detail implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public facture_avoir_detail(com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir facture_avoir,
-			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
-			double montant_ht, double tva, double montant_tva, double montant_ttc) {
+	public facture_avoir_detail(facture_avoir facture_avoir, article article, double quantite, double prix_u_ht, double montant_ht, double tva,
+			double montant_tva, double montant_ttc, double pourcentage_remise, double montant_remise, double montant_ht_net) {
 		super();
 		this.facture_avoir = facture_avoir;
 		this.article = article;
@@ -58,6 +67,9 @@ public class facture_avoir_detail implements Serializable{
 		this.tva = tva;
 		this.montant_tva = montant_tva;
 		this.montant_ttc = montant_ttc;
+		this.pourcentage_remise = pourcentage_remise;
+		this.montant_remise = montant_remise;
+		this.montant_ht_net = montant_ht_net;
 	}
 
 	public Long getId() {
@@ -131,7 +143,29 @@ public class facture_avoir_detail implements Serializable{
 	public void setMontant_ttc(double montant_ttc) {
 		this.montant_ttc = montant_ttc;
 	}
-	
-	
+
+	public double getPourcentage_remise() {
+		return pourcentage_remise;
+	}
+
+	public void setPourcentage_remise(double pourcentage_remise) {
+		this.pourcentage_remise = pourcentage_remise;
+	}
+
+	public double getMontant_remise() {
+		return montant_remise;
+	}
+
+	public void setMontant_remise(double montant_remise) {
+		this.montant_remise = montant_remise;
+	}
+
+	public double getMontant_ht_net() {
+		return montant_ht_net;
+	}
+
+	public void setMontant_ht_net(double montant_ht_net) {
+		this.montant_ht_net = montant_ht_net;
+	}
 	
 }

@@ -67,72 +67,134 @@
 					
 			}
 			
-			//---------------------------------- ----------------------- ---------------------------------------------
-			
-			$("#id_rc").val($("#id_client_rc option:selected").attr("id_rc"));
-			$("#id_clt").val($("#id_client_rc option:selected").attr("id_clt"));
-			$("#libelle_client").val($("#id_client_rc option:selected").text());
-			
-			$("#id_client_rc").on("change",function(){
+			$("#rc").on("change", function(){
 				
-				var nom = $("#id_client_rc option:selected").text();
-				var id_clt = $("#id_client_rc option:selected").attr("id_clt");
-				var id_rc = $("#id_client_rc option:selected").attr("id_rc");
+				$(".remise_zero").val(0);
 				
-				$("#id_rc").val(id_rc);
-				$("#id_clt").val(id_clt);
-				$("#libelle_client").val(nom);
+				$('.art').find('option:not(:first)').remove();
+				$(".art").selectpicker('refresh');
 				
-			})
-			
-			$(".art").change(function(){
+				$(".qte").attr("readonly", false);
+				$(".unite_mesure").val("");
+				$(".nom_art").val("");
 				
-				var parrent = $(this).parent().parent().parent();
+				$("#designation_rc").val($("#rc option:selected").attr("nom")+' '+$("#rc option:selected").attr("prenom"));
 				
-				var id_art =  $("option:selected", this).val();
+				$("#id_rc").val($("#rc option:selected").attr("id_rc"));
+				$("#id_clt").val($("#rc option:selected").attr("id_clt"));
 				
-				var id_rc = $("#id_rc").val();
-				
-				var res;
+				var id_rc_clt = $(this).val(); 
+				//-------------------- Update articles -----------------
+					
+				$("#redux").empty();
 				
 				$.ajaxSetup({async: false});
 				$.ajax({
-					url: 'get_prix_by_client',
+					url: 'ajax_get_art_by_rc_cat',
 					//type: 'POST',
 					dataType: 'json',
 					data : {
-						id_art: id_art,
-						id_rc : id_rc 
+						id_rc_clt	:id_rc_clt,
 			        },
 			        success : function(responseJson) {
-			        	
-			        	$.each(responseJson, function(key, value) {
-							res = value;
-			        	});
+						
+						if (responseJson != "null") {
+							
+							$.each(responseJson, function(key, value) {
+								
+								$(".art").each(function(){
+									
+									var sub = "Subventionné";
+									
+									if(value.article.subvension==false){
+										
+										sub = "NON Subventionné";
+										
+									}		
+									
+									$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
+												   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
+												   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
+												   'pp="'+value.article.pesagePalette+'">'+value.article.libelle+'</option>');
+									
+									$(this).selectpicker('refresh');
+										
+								});
+								
+							});
+							
+							$(".art").find("option").hide();
+							
+						}
+						
 					}
 				});
+					
+			});
+			
+			//---------------------------------- ----------------------- ---------------------------------------------
+			
+			$(".art").on("change", function(){
+		
+				let tr = $(this).attr("id_tr");
 				
-				parrent.find(".prix_unitaire").val(parseFloat(res.prix));
+				let parrent = $("#"+tr);
 				
-				parrent.find(".tva").val(parseFloat(res.tva.taux_tva));
+				let id_art = $('option:selected', this).val();
 				
-				parrent.find(".unite_mesure").val(res.article.unite_mesure_vente.nom_unite_mesure);
 				
-				parrent.find(".id_um").val(res.article.unite_mesure_vente.id);
+				parrent.find("#code_art").val($('option:selected', this).attr("code"));
+				parrent.find("#unite_mesure").val($('option:selected', this).attr("um"));
+				parrent.find("#id_um").val($('option:selected', this).attr("id_um"));
+				parrent.find("#prix_unitaire").val($('option:selected', this).attr("pu"));
+				parrent.find("#tva_art").val($('option:selected', this).attr("tva"));
+				//parrent.find("#qte").val(0);
 				
-				parrent.find(".nom_art").val(res.article.code);
+				CalculeHTArticle( $(this).parent().parent().parent().find("#qte") );
+				CalculeReductionArticle( $(this).parent().parent().parent().find("#redux_art_val"), "valeur" );
+				CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+				calculeTotal ();
+				
 				
 			});
 			
 			$(".qte").keyup(function(){
 				
-				calcule_article($(this));
-				
-				calcule_total()
+				CalculeHTArticle( $(this) );
+				CalculeTvaTtcArticle( $(this).parent().parent().find("#tva_art") );
+				calculeTotal ();
 				
 			});
 			
-			//-----------------------------------------
+			//____________________________________________> CALCULE REMISE <_____________________________________//
+			
+			$("#pourc_redux").keyup(function() {
+				
+				remiseGlobal($(this), "pourcentage");
+				
+			})
+			
+			$("#mnt_redux").keyup(function() {
+				
+				remiseGlobal($(this), "montant");
+				
+			})
+			
+			$(".redux_art_val").keyup(function() {
+				
+				CalculeReductionArticle( $(this), "valeur" );
+				CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+				calculeTotal ();
+				
+			});
+			
+			$(".redux_art_pourc").keyup(function() {
+				
+				CalculeReductionArticle( $(this), "pourcentage" );
+				CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+				calculeTotal ();
+				
+			});                                                                                                                                                                                      
 			
 			$(".zero").blur(function(){
 				
@@ -154,48 +216,263 @@
 				
 			});
 			
+			$("#sub").click(function(){
+				
+				var art_selected = [];
+				
+				$(".art").each(function() {
+					
+					if($(this).val() == "" || $(this).val() == "0"){}
+					else{
+						
+						art_selected.push($(this).val());
+						
+					}
+					
+				});
+				
+				var test = 0;
+				
+				var msg = "";
+				
+				if(if_duplicate_value(art_selected)==true){
+					
+					test++;
+					msg = msg+"<b>- Article Dupliqué. </b><br>";
+					$("#code_client").css("border-color","red");
+					
+				}
+				
+				if($("#rc").val()==null){
+					
+					test++;
+					msg = msg+"<b>- Selectionner un Registre de commerce. </b><br>";
+					//$("#rc").css("border-color","red");
+					$(".bs-placeholder").find('[data-id=rc]').css("border-color","red");
+					
+				}
+				
+				console.log( isNaN(parseFloat($("#total_ttc").val())) ); 
+				
+				if($("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || isNaN(parseFloat($("#total_ttc").val())) ){
+					
+					test++;
+					msg = msg+"<b>- Veuillez faire une commande. </b><br>";
+					$("#total_ttc").css("border-color","red");
+					
+				}
+				
+				if(test===0){
+					
+					$("#sub").prop("disabled","true");
+					
+					$("#frm").submit();
+					
+				}
+				else{
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html(msg);
+					$("#error").modal('show');
+					
+				}
+				
+			});
+			
 		});
 		
-		function calcule_article(input){
+		function CalculeReductionArticle(input, type){
 			
-			var parent = $(input).parent().parent();
+			let tds = $(input).parent().parent().parent();
 			
-			var quant = $(input).val();
+			let val_intro = ($(input).val() !== undefined) ? parseFloat($(input).val()) : 0;
 			
-			var prix_u_ht = parent.find(".prix_unitaire").val();
+			let val = 0;
 			
-			var tva = parent.find(".tva").val();
+			let pourc = 0;
 			
-			var montant_ht = quant * prix_u_ht;
+			let mntHT = parseFloat( tds.find("#montant_ht").val().replaceAll(" ","") );
 			
-			var montant_tva = montant_ht * (tva/100);
+			if(type === "pourcentage"){
+				
+				pourc = val_intro;
+				
+				val = mntHT * (pourc / 100);
+				
+				$(input).parent().find("#redux_art_val").val(val);
+				
+			}
+			else{
+				
+				val = val_intro;
+				
+				pourc = (mntHT !== 0 ) ? (val * 100) / mntHT : 0;
+				
+				$(input).parent().find("#redux_art_pourc").val(pourc);
+				
+			}
 			
-			var montant_ttc = montant_ht + montant_tva;
+			tds.find("#montant_net_ht").val( ( mntHT - val ).formatMoney(2, '.', ' ') );
+		}	
+
+		function CalculeHTArticle (input){
 			
-			parent.find(".montant_ht").val(montant_ht.formatMoney(2, '.', ' '));
+			let tds = $(input).parent().parent();
 			
-			parent.find(".montant_tva").val(montant_tva.formatMoney(2, '.', ' '));
+			let quant = parseFloat( $(input).val() );
 			
-			parent.find(".montant_ttc").val(montant_ttc.formatMoney(2, '.', ' '));
+			let prixUHT = parseFloat( tds.find("#prix_unitaire").val() );
+			
+			tds.find("#montant_ht").val ( (quant * prixUHT).formatMoney(2, '.', ' ') );
+			
+			tds.find("#montant_net_ht").val ( (quant * prixUHT).formatMoney(2, '.', ' ') );
+			
+		}
+
+		function CalculeTvaTtcArticle(input){
+			
+			let tds = $(input).parent().parent();
+			
+			let mntHTNet = parseFloat( tds.find("#montant_net_ht").val().replaceAll(" ","") );
+			
+			let tva = ($(input).val() !== undefined) ? parseFloat($(input).val()) : 0;
+			
+			let mntTVA = mntHTNet * (tva / 100);
+			
+			tds.find("#montant_tva").val ( (mntTVA).formatMoney(2, '.', ' ') );
+			
+			tds.find("#montant_ttc").val ( (mntHTNet + mntTVA).formatMoney(2, '.', ' ') );
+			
+			
+			
+		}
+
+		function calculeTotal (){
+			
+			let totalHT = 0;
+			
+			let totalHTNet = 0;
+			
+			let totalTVA = 0;
+			
+			let totalTTC = 0;
+			
+			let totalReduction = 0;
+			
+			$(".montant_ht").each(function() {
+				totalHT += parseFloat( $(this).val().replaceAll(" ","") );
+			});
+			
+			$(".montant_net_ht").each(function() {
+				totalHTNet += parseFloat( $(this).val().replaceAll(" ","") );
+			});
+			
+			$(".montant_tva").each(function() {
+				totalTVA += parseFloat( $(this).val().replaceAll(" ","") );
+			});
+			
+			$(".montant_ttc").each(function() {
+				totalTTC += parseFloat( $(this).val().replaceAll(" ","") );
+			});
+			
+			$(".redux_art_val").each(function() {
+				totalReduction += parseFloat( $(this).val().replaceAll(" ","") );
+			});
+			
+			$("#total_ht").val( (totalHT).formatMoney(2, '.', ' ') );
+			
+			$("#total_ht_net").val( (totalHTNet).formatMoney(2, '.', ' ') );
+			
+			$("#total_tva").val( (totalTVA).formatMoney(2, '.', ' ') );
+			
+			$("#total_ttc").val( (totalTTC).formatMoney(2, '.', ' ') );
+			
+			$("#mnt_redux").val( (totalReduction).formatMoney(2, '.', ' ') );
+			
+			$("#pourc_redux").val( ( (totalReduction*100)/totalHT ).formatMoney(2, '.', ' ') );
+			
+		}
+
+		function remiseGlobal(input, type){
+			
+			let val_intro = ( $(input).val() !== undefined) ? parseFloat($(input).val()) : 0;
+			
+			let val = 0;
+			
+			let pourc = 0;
+			
+			let mntHT = parseFloat( $("#total_ht").val().replaceAll(" ","") );
+			
+			if(type === "pourcentage"){
+				
+				pourc = val_intro;
+				
+				val = mntHT * (pourc / 100);
+				
+				$("#mnt_redux").val( val.formatMoney(2, '.', ' ') );
+				
+			}
+			else{
+				
+				val = val_intro;
+				
+				pourc = (val * 100) / mntHT;
+				
+				$("#pourc_redux").val( pourc.formatMoney(2, '.', ' ') );
+				
+				//console.log(" after attribution");
+				
+			}
+			
+			$("#total_ht_net").val( (mntHT - val).formatMoney(2, '.', ' ') );
+			
+			let pourcArt = (val/mntHT)*100;
+			
+			$(".redux_art_pourc").each(function() {
+				
+				$(this).val(pourcArt.formatMoney(2, '.', ' '));
+				CalculeReductionArticle($(this), "pourcentage");
+				CalculeTvaTtcArticle( $(this).parent().parent().parent().find("#tva_art") );
+				
+			});
+			
+			let total_tva = 0;
+			
+			$(".montant_tva").each(function() {
+				
+				total_tva += ( $(this).val() !== undefined) ? parseFloat( $(this).val().replaceAll(" ","") ) : 0;
+				
+			});
+			
+			$("#total_tva").val( total_tva.formatMoney(2, '.', ' ') );
+			
+			$("#total_ttc").val( ((mntHT - val) + total_tva).formatMoney(2, '.', ' ') );
+			
+		}
+
+		//---------------------------------------------- Calcule
+
+		function if_duplicate_value (arr){
+			
+			for(i=0;i<arr.length-1;i++){
+				
+				for(j=i+1;j<arr.length;j++){
+					
+					if(arr[i]==arr[j]){
+						
+						return true;
+						
+					}
+					
+				}
+				
+			}
+			
+			return false;
 			
 		}
 		
-		function calcule_total(){
-			
-			var total_ht = 0;
-			var total_tva = 0;
-			var total_ttc = 0;
-			
-			$(".montant_ht").each(function()  { total_ht += parseFloat($(this).val().replaceAll(' ', '')); });
-			$(".montant_tva").each(function() { total_tva += parseFloat($(this).val().replaceAll(' ', '')); });
-			$(".montant_ttc").each(function() { total_ttc += parseFloat($(this).val().replaceAll(' ', '')); });
-			
-			
-			$("#total_ht").val(total_ht.formatMoney(2, '.', ' '));
-			$("#total_tva").val(total_tva.formatMoney(2, '.', ' '));
-			$("#total_ttc").val(total_ttc.formatMoney(2, '.', ' '));
-			
-		}
 		
 		</script>
 		
@@ -236,13 +513,16 @@
 								
 								<div class="row">
 								
-									<div class="col-md-3">
+									<div class="col-md-4">
 									
-										<select id="id_client_rc" class="selectpicker" data-live-search="true" data-style="btn-outline-dark"
-											th:object="${client_registreCommerce}">
-										
+										<select id="rc" class="selectpicker" data-live-search="true" data-style="btn-outline-dark"
+											th:object="${client_registreCommerce}" data-size="5" data-width="100%">
+											
+											<option  disabled value="" selected>Registre Commerce</option>
+											
 											<option th:each="RcClt : ${clients}" th:attr="id_rc=${RcClt.registre_commerce.id},
-												id_clt=${RcClt.client.id}, data-subtext=${RcClt.registre_commerce.code}"
+												id_clt=${RcClt.client.id}, data-subtext=${RcClt.registre_commerce.code},
+												nom=${RcClt.registre_commerce.nom}, prenom=${RcClt.registre_commerce.prenom}"
 												th:text="${RcClt.registre_commerce.nom}+' '+${RcClt.registre_commerce.prenom}"
 												th:value="${RcClt.id}"></option>
 										
@@ -255,7 +535,7 @@
 									
 									<div class="col-md-4">
 									
-										<input type="text" class="form-control" id="libelle_client" placeholder="Libelle Client" disabled>
+										<input type="text" class="form-control" id="designation_rc" placeholder="Libelle Client" disabled>
 										
 									</div>
 									
@@ -265,12 +545,12 @@
 								
 								<div class="row">
 								
-									<div class="col-md-3 offset-md-9">
+									<div class="col-md-4 offset-md-8">
 									
 										<div class="input-group">
 											<div class="input-group-prepend">
 												<span class="input-group-text declaration" style="min-width: 106px; text-align: right;"> 
-												Montant HT </span>
+												Total HT </span>
 											</div>
 											<input type="text" id="total_ht" class="form-control" th:field="*{total_ht}" 
 												style="text-align: right;" th:readonly="true">
@@ -278,12 +558,57 @@
 									
 									</div>
 									
-									<div class="col-md-3 offset-md-9">
+									<div class="col-md-4 offset-md-8">
+									
+										<div class="row">
+								
+											<div class="col-md-12">
+												<div class="input-group">
+														<span class="input-group-text declaration" style="text-align: left;">
+														 Remise (%) </span>
+													<input type="number" step="any" class="form-control zero remise_zero"  
+														style="text-align: right;" id="pourc_redux" value="0" th:field="*{pourcentage_remise}">
+													
+													<input type="text" class="form-control zero remise_zero" 
+														style="text-align: right;" id="mnt_redux" value="0" th:field="*{montant_remise}">
+													
+													<span class="input-group-text declaration" 
+																	style="min-width: 106px; text-align: left;"> Remise (Val) </span>
+															
+														
+												</div>
+											</div>
+										
+										</div>
+									
+									</div>
+									
+									<div class="col-md-4 offset-md-8">
+									
+										<div class="row">
+											<div class="col-md-12">
+											
+												<div class="input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text declaration" style="min-width: 106px; text-align: left;">
+														 Total HT Net </span>
+													</div>
+													<input type="text" class="form-control remise_zero" style="text-align: right;" 
+														id="total_ht_net" value="0" readonly="readonly" th:field="*{total_ht_net}">
+												</div>
+											
+											</div>
+											
+										</div>
+									
+									</div>
+									
+									<div class="col-md-4 offset-md-8">
 									
 										<div class="input-group">
 											<div class="input-group-prepend">
 												<span class="input-group-text declaration" style="min-width: 106px; text-align: right;"> 
-												Montant TVA </span>
+												Total TVA </span>
 											</div>
 											<input type="text" id="total_tva" class="form-control" th:field="*{total_tva}" 
 												style="text-align: right;" th:readonly="true">
@@ -291,12 +616,12 @@
 									
 									</div>
 									
-									<div class="col-md-3 offset-md-9">
+									<div class="col-md-4 offset-md-8">
 									
 										<div class="input-group">
 											<div class="input-group-prepend">
 												<span class="input-group-text declaration" style="min-width: 106px; text-align: right;"> 
-												Montant TTC </span>
+												Total TTC </span>
 											</div>
 											<input type="text" id="total_ttc" class="form-control" th:field="*{total_ttc}" 
 												style="text-align: right;" th:readonly="true">
@@ -324,54 +649,70 @@
 											<th  align="center"  width="8%">Um</th>
 											<th  align="center" >Qte</th>
 											<th  align="center" >PU</th>
-											<th  align="center" >TVA</th>
 											<th  align="center" >MONTANT HT</th>
-											<th  align="center" >MONTANT TVA</th>
-											<th  align="center" >MONTANT TTC</th>
+											<th  align="center" >Remise ( Val / % )</th>
+											<th  align="center" >Montant NET HT</th>
+											<th  align="center" >TVA (%)</th>
+											<th  align="center" >Montant TVA</th>
+											<th  align="center" >Montant TTC</th>
 										</tr>
 									</thead>
 				
 									<tbody th:object="${ProformaDetailsDto}">
 				
-										<tr th:each="details, itemStat : *{ProformaDetails}" > 
+										<tr th:each="details, itemStat : *{ProformaDetails}" th:attr="id=${itemStat.index}"> 
 				
 											<td> 
-												<input class="form-control nom_art" type="text" disabled> 
+												<input class="form-control nom_art" type="text" id="code_art" disabled> 
 											</td>
 											
 											<td> 
 												 <select class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" 
-												  data-live-search="true" th:field="*{ProformaDetails[__${itemStat.index}__].article}">
+												  data-live-search="true" th:field="*{ProformaDetails[__${itemStat.index}__].article}" 
+												  th:attr="id_tr=${itemStat.index}" id="art">
 												  
 													<option value="0" th:attr="id_um=0, des_um=0" selected>Articles</option>
-													
+													<!-- 
 													<option th:each="art : ${articles}" th:text="${art.libelle}" th:value="${art.id}"
 														th:attr="id_um=${art.unite_mesure_vente.id},data-subtext=${art.code}, 
 														des_um=${art.unite_mesure_vente.nom_unite_mesure}"></option>
-													
+													-->
 												 </select> 
 											</td>
 											
-											<td> <input class="form-control unite_mesure" type="text" style="text-align: center;" disabled> 
-												 <input type="hidden" 
+											<td> <input id="unite_mesure" class="form-control unite_mesure" type="text" 
+													style="text-align: center;" disabled> 
+												 <input type="hidden" id="id_um"
 												 	class="id_um" th:field="*{ProformaDetails[__${itemStat.index}__].unite_mesure}"> </td>
 											
 											<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="0" 
 													style="text-align: right;" th:field="*{ProformaDetails[__${itemStat.index}__].quantite}"> </td>
 											
-											<td><input class="form-control prix_unitaire" type="number" step="any" readonly  
+											<td><input class="form-control prix_unitaire" type="number" step="any" readonly id="prix_unitaire" 
 													style="text-align: right;" th:field="*{ProformaDetails[__${itemStat.index}__].prix_u_ht}"> </td>
 											
-											<td><input class="form-control tva" type="number" step="any" style="text-align: right;" readonly 
+											<td><input class="form-control montant_ht"  type="text" style="text-align: right;" readonly 
+													th:field="*{ProformaDetails[__${itemStat.index}__].montant_ht}" id="montant_ht" > </td>
+											
+											<td>
+												<div class="input-group">
+													<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" 
+														step="any" style="text-align: left;" placeholder="Val" value="0" th:field="*{ProformaDetails[__${itemStat.index}__].montant_remise}">
+													<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" 
+														type="number" step="any" style="text-align: right;" placeholder="%" value="0" th:field="*{ProformaDetails[__${itemStat.index}__].pourcentage_remise}">  
+												</div>
+											</td>
+											
+											<td><input class="form-control montant_net_ht remise_zero" id="montant_net_ht" name="montant_net_ht_art" type="text" 
+												style="text-align: right;" value="0" readonly th:field="*{ProformaDetails[__${itemStat.index}__].montant_ht_net}"> </td>
+											
+											<td><input class="form-control tva" type="number" step="any" style="text-align: right;" readonly id="tva_art"
 													th:field="*{ProformaDetails[__${itemStat.index}__].tva}"> </td>
 											
-											<td><input class="form-control montant_ht"  type="text" style="text-align: right;" readonly 
-													th:field="*{ProformaDetails[__${itemStat.index}__].montant_ht}"> </td>
-											
-											<td><input class="form-control montant_tva"  type="text" style="text-align: right;" readonly
+											<td><input class="form-control montant_tva"  type="text" style="text-align: right;" readonly id="montant_tva"
 													th:field="*{ProformaDetails[__${itemStat.index}__].montant_tva}"> </td>
 											
-											<td><input class="form-control montant_ttc"  type="text" style="text-align: right;" readonly
+											<td><input class="form-control montant_ttc"  type="text" style="text-align: right;" readonly id="montant_ttc"
 													th:field="*{ProformaDetails[__${itemStat.index}__].montant_ttc}"> </td>
 											
 										</tr>
@@ -388,7 +729,7 @@
 						
 						<div class="d-flex justify-content-center">
 						
-							<input id="sub" type="submit" class="btn btn-primary" value="Valider">
+							<input id="sub" type="button" class="btn btn-primary" value="Valider">
 						
 						</div>
 					

@@ -47,7 +47,7 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 			
 			+ " AND article = :article")
 	
-	public prixUnitaire_article_categoryClient  get_prix_articles_by_CatClient_Object(@Param("cat_client") category_client cat_client, @Param("article") article article);
+	public prixUnitaire_article_categoryClient get_prix_articles_by_CatClient_Object(@Param("cat_client") category_client cat_client, @Param("article") article article);
 	
 	//-------------------------------------------------------------------
 	

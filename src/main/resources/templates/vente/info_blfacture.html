@@ -53,6 +53,10 @@
 		
 		$("#confirm").click(function() {
 			
+			spin_it('on');
+			
+			$(this).attr("disabled", true);
+			
 			$("#frm").submit();
 			
 		});
@@ -139,8 +143,27 @@
 										th:value="${#numbers.formatDecimal(montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" readonly>
 								</div>
 							</div>
-	
-	
+							
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant Remise </span>
+									</div>
+									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
+										th:value="${#numbers.formatDecimal(montant_remise, 3, 'WHITESPACE', 2,'COMMA')}" readonly>
+								</div>
+							</div>
+							
+							<div class="col-md-4 offset-md-8">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant NET HT</span>
+									</div>
+									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
+										th:value="${#numbers.formatDecimal(montant_ht_net, 3, 'WHITESPACE', 2,'COMMA')}" readonly>
+								</div>
+							</div>
+							
 							<div class="col-md-4 offset-md-8">
 								<div class="input-group">
 									<div class="input-group-prepend">
@@ -172,13 +195,17 @@
 					<table class="table" id="table" >
 						<thead class="thead-dark">
 							<tr>
-								<th align="center"  width="8%">Art</th>
-								<th  align="center" width="40%">Libellé</th>
+								<th  align="center"  width="5%">Art</th>
+								<th  align="center" width="20%">Libellé</th>
 								<th  align="center" >Um</th>
 								<th  align="center" >Qte</th>
 								<th  align="center" >PU</th>
+								<th  align="center" >Montant HT</th>
+								<th  align="center" >Montant Remise</th>
+								<th  align="center" >Montant NET HT</th>
 								<th  align="center" >TVA</th>
-								<th  align="center" >MONTANT HT</th>
+								<th  align="center" >Montant TVA</th>
+								<th  align="center" >Montant TTC</th>
 							</tr>
 						</thead>
 	
@@ -197,18 +224,35 @@
 												th:value="${det.article.unite_mesure_vente.nom_unite_mesure}" readonly> 
 								</td>
 								
-								<td> <input class="form-control qte zero" id="qte" name="qte" type="text" th:value="${#numbers.formatDecimal(det.quantite, 2, 'WHITESPACE', 2,'COMMA')}" 
+								<td> <input class="form-control qte zero" id="qte" name="qte" type="text" th:value="${det.quantite}" 
 										style="text-align: right;" readonly> </td>
 								
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" 
 										th:value="${det.prix_u_ht}" type="number" step="any" style="text-align: right;" readonly> </td>
 								
+								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" 
+										th:value="${#numbers.formatDecimal(det.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" 
+										style="text-align: right;" readonly> </td>
+								
+								<td><input class="form-control montant_remise" id="montant_remise" name="montant_ht_art" 
+										th:value="${#numbers.formatDecimal(det.montant_remise, 3, 'WHITESPACE', 2,'COMMA')}" 
+										type="text" style="text-align: right;" readonly> </td>
+								
+								<td><input class="form-control montant_ht_net" id="montant_ht_net" name="montant_ht_art" 
+										th:value="${#numbers.formatDecimal(det.montant_ht_net, 3, 'WHITESPACE', 2,'COMMA')}" 
+										type="text" style="text-align: right;" readonly> </td>
+								
 								<td><input class="form-control tva" id="tva" name="tva_art" type="number" th:value="${det.tva}" 
 										step="any" value="" style="text-align: right;" readonly> </td>
 								
-								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" 
-										th:value="${#numbers.formatDecimal(det.montant_ht, 3, 'WHITESPACE', 2,'COMMA')}" type="text" style="text-align: right;" readonly> </td>
-	
+								<td><input class="form-control montant_tva" id="montant_tva" name="montant_ht_art" 
+										th:value="${#numbers.formatDecimal(det.montant_tva, 3, 'WHITESPACE', 2,'COMMA')}" 
+										type="text" style="text-align: right;" readonly> </td>
+								
+								<td><input class="form-control montant_ttc" id="montant_ttc" name="montant_ht_art" 
+										th:value="${#numbers.formatDecimal(det.montant_ttc, 3, 'WHITESPACE', 2,'COMMA')}" 
+										type="text" style="text-align: right;" readonly> </td>
+								
 							</tr>
 	
 						</tbody>

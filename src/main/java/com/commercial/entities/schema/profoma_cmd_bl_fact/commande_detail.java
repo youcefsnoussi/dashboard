@@ -42,6 +42,18 @@ public class commande_detail implements Serializable{
 	
 	private double tva;
 	
+	@Column(columnDefinition="double precision default 0")
+	private double pourcentage_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_remise;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ht_net;
+	
+	@Column(columnDefinition="double precision default 0")
+	private double montant_ttc;
+	
 	@ManyToOne
 	@JoinColumn(name = "unite_mesure")
 	private unite_mesure unite_mesure;
@@ -50,10 +62,9 @@ public class commande_detail implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public commande_detail(com.commercial.entities.schema.profoma_cmd_bl_fact.commande commande,
-			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
-			double montant_ht, double montant_tva, double tva,
-			com.commercial.entities.schema.static_data.unite_mesure unite_mesure) {
+	public commande_detail(commande commande, article article, double quantite, double prix_u_ht, double montant_ht, double montant_tva, 
+			double tva, unite_mesure unite_mesure, double pourcentage_remise, double montant_remise, double montant_ht_net, 
+			double montant_ttc) {
 		super();
 		this.commande = commande;
 		this.article = article;
@@ -63,6 +74,10 @@ public class commande_detail implements Serializable{
 		this.montant_tva = montant_tva;
 		this.tva = tva;
 		this.unite_mesure = unite_mesure;
+		this.pourcentage_remise = pourcentage_remise;
+		this.montant_remise = montant_remise;
+		this.montant_ht_net = montant_ht_net;
+		this.montant_ttc = montant_ttc;
 	}
 
 	public Long getId() {

@@ -20,11 +20,11 @@
 		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
 		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
-		
-		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
@@ -73,9 +73,9 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([]).every( function () {
+			            this.api().columns([2]).every( function () {
 			                var column = this;
-			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			                var select = $('<select class="form-control" ><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -96,12 +96,8 @@
 						
 					      var api = this.api();
 					      
-					      $( api.column( 1, {page:'current'} ).footer() ).html(
-					        api.column( 1, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      
-					      $( api.column( 2, {page:'current'} ).footer() ).html(
-					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 3, {page:'current'} ).footer() ).html(
+					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      
 					 },
@@ -111,11 +107,13 @@
 			
 			$("#afficher").click(function(){
 				
-				var start = $("#start").val();
+				let start = $("#start").val();
 				
-				var end = $("#end").val();
+				let end = $("#end").val();
 				
-				var id_category = $("#id_category").val();
+				let cat = $("#category").val();
+				
+				let sub = $("#subvension").val();
 				
 				if(start=="" || end==""){
 					
@@ -128,7 +126,7 @@
 				}
 				else{
 					
-					//window.location.replace("print_etat_vente_client?start="+start+"&end="+end+"&id_category="+id_category);
+					window.location.replace("rapport_wilaya?start="+start+"&end="+end+"&id_category="+cat);
 					
 				}
 				
@@ -136,14 +134,14 @@
 		 	
 			$("#print").click(function(){
 				
-				var id_category = $("#id_category").val();
+				var id_rc = $("#rc").val();
 				
 				var start = $("#start").val();
 				
 				var end = $("#end").val();
 				
 				$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
-											'src="print_etat_vente_client?start='+start+'&end='+end+'&id_category='+id_category+'"></iframe>');
+											'src="print_declaration_tva?start='+start+'&end='+end+'"></iframe>');
 				
 				$("#title").text("Imprimer");
 				
@@ -210,7 +208,7 @@
 		
 		<div class="card">
 		
-			<h3 class="card-header  text-center"> <i class="far fa-history"></i> Etat des vente par client </h3>
+			<h3 class="card-header  text-center"> <i class="far fa-history"></i> Rapport Par Wilaya</h3>
 			<br>
 			
 			<div class="card-body">
@@ -222,9 +220,9 @@
 						<div class="col-md-4" >
 						
 							<div class="input-group">
-										
+								<!--  		
 								<button id="print" class="btn btn-secondary" type="button">Imprimer</button>
-								
+								-->
 								<input id="start" type="date" name="start"  class="form-control date" style="" 
 								th:value="${start}" placeholder="DU">
 								<span class="input-group-text declaration far fa-calendar-alt"> </span>
@@ -237,16 +235,34 @@
 						
 						</div>
 						
-						<div class="col-md-2 offset-md-1" >
+						<div class="col-md-2" >
 						
-							<select id="id_category" name="id_category" class="form-control">
+							<select id="category" class="form-control">
 							
-								<option th:each="cat : ${cat_prod}" th:value="${cat.id}" th:text="${cat.nom_category}"></option>
-							
+								<option th:each="cat:${categories}" th:value="${cat.id}" th:text="${cat.nom_category}" 
+										th:if="${cat.id}==${selected_category}" selected></option>
+								
+								<option th:each="cat:${categories}" th:value="${cat.id}" th:text="${cat.nom_category}" 
+										th:unless="${cat.id}==${selected_category}"></option>
+								
 							</select>
 						
 						</div>
+						<!--  
+						<div class="col-md-2" >
 						
+							<select id="subvension" class="form-control">
+								
+								<option value="false" th:if="!${sub}" selected>Non subventionnée</option>
+								<option value="false" th:unless="!${sub}" >Non subventionnée</option>
+								
+								<option value="true" th:if="${sub}" selected>Subventionnée</option>
+								<option value="true" th:unless="${sub}" >Subventionnée</option>
+								
+							</select>
+						
+						</div>
+						-->
 						<div class="col-md-1" >
 						
 							<button class="btn btn-primary" id="generate">Excel</button>
@@ -263,11 +279,10 @@
 							
 							<tr>
 							
-								<th>N° RC</th>
-								<th>Libelle Client</th>
-								<th>Adresse</th>
-								<th>Category</th>	
-								<th>Quantite</th>		
+								<th>Wilaya</th>
+								<th>Category</th>
+								<th>Type</th>
+								<th>Quantite (Q)</th>	
 								
 							</tr>
 							
@@ -275,9 +290,28 @@
 						
 						<tbody>
 						
+							<tr th:each="lst:${list}">
+							
+								<td class="cc"  th:text="${lst[0]}"></td>
+								<td class="rr"  th:text="${lst[1]}"></td>
+								<td class="cc"  th:if="${lst[2]}==true" >Subventionnée</td>
+								<td class="cc"  th:unless="${lst[2]}==true" >Non Subventionnée</td>
+								<td class="rr"  th:text="${#numbers.formatDecimal(lst[3], 3, 'WHITESPACE', 2,'POINT')}"></td>
+							
+							</tr>
+						
 						</tbody>
 						
 						<tfoot class="thead-dark">
+						
+							<tr>
+							
+								<th class="cc"> </th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+							
+							</tr>
 						
 						</tfoot>
 						

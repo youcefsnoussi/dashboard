@@ -24,10 +24,10 @@
 	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
 	
-	<script type="text/javascript" src="resources\PagesJS\vente\facture.js"></script>
-	    
+	<script type="text/javascript" src="resources\additionalJS\ZeroClass.js"></script>
+	<!--    
 	<script type="text/javascript" src="resources\PagesJS\vente\vente_employee.js"></script>
-	      
+	-->  
 	
 	<script type="text/javascript">
 	
@@ -65,6 +65,75 @@
 				
 		}
 		
+		$(".art").on("change", function(){
+			
+			let tr = $(this).attr("id_tr");
+			
+			let parrent = $("#"+tr);
+			
+			//-------------------- get unite chargement by art -----------------
+			
+			let id_art = $('option:selected', this).val();
+			
+			parrent.find('#id_magasin').empty();
+			
+			$.ajaxSetup({async: false});
+			$.ajax({
+				url: 'ajax_get_magasin_by_art',
+				//type: 'POST',
+				dataType: 'json',
+				data : {
+					id_article	: id_art
+		        },
+		        success : function(responseJson) {
+		        	
+					$.each(responseJson, function(key, value) {
+						
+						parrent.find("#id_magasin").each(function(){
+							
+							$(this).append('<option value="'+value.id+'" > '+value.name+' </option>');
+							
+						});
+						
+					});
+					
+				}
+			});
+			
+			//-----------------------------------------------------
+			/*
+			console.log("art val = "+$(this).val())
+			
+			console.log("art attr before= "+$(this).attr("name"))
+			*/
+			if($(this).val()!="0"){
+				
+				$(this).attr("name","art");
+				parrent.find('#id_magasin').attr("name","id_magasin");
+				
+			}
+			else{
+				
+				$(this).attr("name","");
+				
+				parrent.find(".prix_unitaire").val(0);
+				
+				//parrent.find('#id_magasin').attr("name","");
+				
+			}
+			
+			//$("#pourc_redux").val(0);
+			//$("#mnt_redux").val(0);
+			
+			
+			parrent.find("#code_art").val($('option:selected', this).attr("code"));
+			parrent.find("#unite_mesure").val($('option:selected', this).attr("um"));
+			parrent.find("#id_um").val($('option:selected', this).attr("id_um"));
+			
+			//-----------------------------------------------------
+			
+		});
+		
 		//------------------------------------------
 		
 		$("#sub_bt").click(function() {
@@ -80,8 +149,6 @@
 				}
 				
 			});
-			
-			console.log("mat_c->"+$("#matricule_vehicule").val()+"< / chauff->"+$("#chauffeur").val()+"<")
 			
 			if($("#matricule_vehicule").val()=="" || $("#chauffeur").val()==""){
 				
@@ -229,7 +296,8 @@
 	
 								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
 								
-								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" data-live-search="true" name="art">
+								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" 
+										data-size="8" data-live-search="true" name="art" th:attr="id_tr = 'tr'+${i}">
 										<option value="0" selected>Selection</option>
 										
 										<option th:each="art:${articles}" th:value="${art.id}" th:text="${art.libelle}"

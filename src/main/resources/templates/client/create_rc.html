@@ -8,17 +8,14 @@
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
-		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		<link rel="stylesheet" href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css"> 
 		
-		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
-		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
-		
+		<script type="text/javascript" src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
-		
 		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
-		
 		<script type="text/javascript" src="resources\PagesJS\client\create_rc.js"></script>
 		
 		
@@ -221,7 +218,11 @@
 			        		
 			        		<div class="input-group">
 			        		
-			        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc" value="0" required>
+			        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc" 
+			        				value="10" required th:if="${manipulate_plafond}==true">
+			        			
+			        			<input type="number" step="any" id="plafond" name="plafond" class="form-control saisie_rc" 
+			        				value="10" required th:unless="${manipulate_plafond}==true" readonly>
 			        			
 			        			<div class="input-group-append">
 							      <div class="input-group-text"> <b>DA</b> </div>

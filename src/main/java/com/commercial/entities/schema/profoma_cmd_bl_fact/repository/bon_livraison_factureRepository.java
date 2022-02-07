@@ -54,6 +54,8 @@ public interface bon_livraison_factureRepository extends JpaRepository<bon_livra
 	public List<bon_livraison_facture> get_blf_non_factured_rc_date(@Param("rc") registre_commerce rc, @Param("start") String start,
 			@Param("end") String end );
 	
+	
+	
 	//-----------------------------------------------------------
 	
 	@Query( " FROM bon_livraison_facture blf "
@@ -67,5 +69,13 @@ public interface bon_livraison_factureRepository extends JpaRepository<bon_livra
 	public List<bon_livraison_facture> get_blfs_date(@Param("start") String start, @Param("end") String end);
 	
 	//-----------------------------------------------------------
+	
+	@Query( " FROM bon_livraison_facture blf "
+			
+		  + " WHERE blf.cancel = 'FALSE' AND blf.factured = 'FALSE' "
+		  
+		  + " AND blf.registre_commerce = :rc ")
+		 
+	public List<bon_livraison_facture> get_blf_non_factured_rc(@Param("rc") registre_commerce rc );
 	
 }

@@ -76,6 +76,10 @@ public class FactureAvoirFromMultipleFactService {
 			double montant_ttc = (double) obj[6];
 			
 			double tva = (double) obj[7];
+			
+			double montant_remise = (double) obj[8];
+			
+			double montant_ht_net = (double) obj[9];
 			/*
 			System.out.println( art.getCode()+" | "+um.getNom_unite_mesure()+" | "+quant+" | "+prix_u_ht+" | "+tva+" | "+montant_ht+" | "+montant_tva+" | "+
 					montant_ttc);
@@ -91,6 +95,9 @@ public class FactureAvoirFromMultipleFactService {
 			tmp.put("montant_tva", montant_tva);
 			tmp.put("montant_ttc", montant_ttc);
 			tmp.put("tva", tva);
+			tmp.put("montant_remise", montant_remise);
+			tmp.put("montant_ht_net", montant_ht_net);
+			tmp.put("pourcentage_remise", (montant_remise * 100)/montant_ht);
 			
 			result.add(tmp);
 			
@@ -105,17 +112,25 @@ public class FactureAvoirFromMultipleFactService {
 		
 		Map<String, Double> result = new HashMap<>();
 		
-		double montant_ht = 0, montant_tva = 0, montant_ttc = 0;
+		double montant_ht = 0, montant_ht_net = 0, montant_remise = 0, montant_tva = 0, montant_ttc = 0;
 		
 		for (Map<String, Object> map : input) {
 			
 			montant_ht += (double) map.get("montant_ht");
+			montant_ht_net += (double) map.get("montant_ht_net");
+			montant_remise += (double) map.get("montant_remise");
 			montant_tva += (double) map.get("montant_tva");
 			montant_ttc += (double) map.get("montant_ttc");
 			
 		}
 		
 		result.put("montant_ht", montant_ht);
+		
+		result.put("montant_ht_net", montant_ht_net);
+		
+		result.put("montant_remise", montant_remise);
+		
+		result.put("pourcentage_reduction", (montant_remise * 100) / montant_ht);
 		
 		result.put("montant_tva", montant_tva);
 		

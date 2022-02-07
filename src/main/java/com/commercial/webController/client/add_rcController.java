@@ -29,6 +29,7 @@ import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.Connection_Comptabilite;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.services.track_operations;
 
@@ -88,6 +89,9 @@ public class add_rcController {
 		{ ret = "client/create_rc"; }
 		else { ret = "403"; }
 		
+		boolean manipulate_plafond = (user.getRole().getIds_banned().contains("manipulate_plafond") || 
+					user.getRole().getNom_role().equals("Admin")) ? true : false;
+		
 		//----------------------------------------------------------------	
 		
 		model.addAttribute("client", clientRepo.findAll());
@@ -97,6 +101,7 @@ public class add_rcController {
 		model.addAttribute("type_reg", type_rRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		model.addAttribute("banque", banqueRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
 		model.addAttribute("mode_pay", mpRepo.findAll(Sort.by(Sort.Direction.ASC, "id")));
+		model.addAttribute("manipulate_plafond", manipulate_plafond);
 		
 		return ret;
 		
@@ -128,8 +133,6 @@ public class add_rcController {
 		
 		convert_string_to_date_util ctd = new convert_string_to_date_util();
 		
-		System.out.println("tva==="+tva);
-		
 		registre_commerce rc = rcRepo.if_rc_exist_db(num_rc, num_nif, num_art, nom, prenom);
 		
 		String ret = "exist";
@@ -150,24 +153,32 @@ public class add_rcController {
 				
 			}
 			
-			System.out.println("watch dog");
-			
 			wilaya wilaya = wilayaRepo.getOne(id_wilaya);
 			
 			unite un = uniteRepo.getOne(unite);
 			
 			category_client cat_rc = cat_clientRepo.getOne(cat_client);
 			
-			String code_rc = un.getId()+cat_rc.getLettre()+new_number_code_rc(cat_rc);
+			String code_rc = un.getIdentifiant()+cat_rc.getLettre()+new_number_code_rc(cat_rc);
 			
 			boolean multipleBL = (MultipleBon.equals("on")) ? true : false;
 			
-			rc = new registre_commerce(nom, prenom, code_rc, cat_rc, num_rc, num_art, num_nif, date_emission, date_fin, adresse, comune, 
-					wilaya, "active", taux_tva, plafond, 0, activite, "active", banqueRepo.getOne(id_banque), type_rRepo.getOne(type_reg),
-					mpRepo.getOne(mode_paiement), un, multipleBL);
+			rc = new registre_commerce(nom, prenom, code_rc, cat_rc, num_rc, num_art, num_nif, date_emission, date_fin, adresse, 
+					comune, wilaya, "active", taux_tva, plafond, 0, activite, "active", banqueRepo.getOne(id_banque), 
+					type_rRepo.getOne(type_reg), mpRepo.getOne(mode_paiement), un, multipleBL);
 			
 			
 			rcRepo.save(rc);rcRepo.flush();
+			
+			//------------------------------ ADDING TO COMPTA DB -----------------------------------
+			
+			Connection_Comptabilite con_c = new Connection_Comptabilite();
+			
+			if(con_c.getconnection() != null) {
+				
+				con_c.InsertClientToComptaDB(rc);
+				
+			}
 			
 			//-------------------- tracking operation -----------------------------------
 			
@@ -191,13 +202,13 @@ public class add_rcController {
 		
 		List<registre_commerce> list_c = rcRepo.last_rc_by_category(cat);
 		
-		registre_commerce c = list_c.get(list_c.size()-1);
+		registre_commerce c = (list_c.size() != 0) ? list_c.get(list_c.size()-1) : null;
 		
 		if(c!=null) {
 			
 			String code = c.getCode();
 			
-			String num = code.substring(2);
+			String num = (code.length()==7) ? code.substring(2) : code.substring(3);
 			
 			long n = Long.parseLong(num);
 			

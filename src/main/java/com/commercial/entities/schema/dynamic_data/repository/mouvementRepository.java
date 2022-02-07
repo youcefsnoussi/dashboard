@@ -45,10 +45,11 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	@Query( " FROM mouvement mvm "
 			
 		  + " WHERE mvm.registre_commerce = :rc "
-		  + " AND CAST(mvm.date AS date) BETWEEN CAST(:start as date) AND CAST(:end AS date) "
+		  + " AND CAST(mvm.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date) "
 		  + " ORDER BY CAST(mvm.date AS date), mvm.id ASC")
 	
-	public List<mouvement>  mouvement_by_rc_intervall(@Param("rc") registre_commerce rc,@Param("start") String start, @Param("end") String end); 
+	public List<mouvement>  mouvement_by_rc_intervall(@Param("rc") registre_commerce rc,@Param("start") String start, 
+				@Param("end") String end); 
 	
 	//---------------------------------------------------------------------------------
 	
@@ -69,5 +70,14 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 		  + " ORDER BY CAST(mvm.date AS date), mvm.id DESC")
 	
 	public List<mouvement> sold_fin_periode(@Param("rc") registre_commerce rc, @Param("start") String start, @Param("end") String end);
+	
+	//---------------------------------------------------------------------------------
+	
+	@Query( value="Select mvm.new_sold_rc FROM dynamic_data.mouvement mvm " +
+				  "WHERE registre_commerce = :rc AND CAST(date as date) <= Cast(:date AS date) " + 
+				  "ORDER BY mvm.id DESC limit 1 ",
+				  nativeQuery=true)
+	 
+	public Object GetLastSoldDateByRc(@Param("rc") long rc, @Param("date") String date);
 	
 }

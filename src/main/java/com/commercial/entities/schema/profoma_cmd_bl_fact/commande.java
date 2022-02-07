@@ -46,6 +46,14 @@ public class commande implements Serializable{
 	
 	private String link_pdf;
 	
+	@ManyToOne
+	@JoinColumn(name = "client")
+	private client client;
+	
+	@ManyToOne
+	@JoinColumn(name = "registre_commerce")
+	private registre_commerce registre_commerce;
+	
 	@OneToOne
 	@JoinColumn(name = "proforma")
 	private proforma proforma;
@@ -76,21 +84,22 @@ public class commande implements Serializable{
 	@Column(columnDefinition = "double precision default 0")
 	private double valeur_reduction;
 	
-	@Column(columnDefinition = "double precision default 0")
-	private double taux_tva_reduction;
-	
 	private String observation;
-
+	
+	@Column(columnDefinition = "double precision default 0")
+	private double montant_ht_net;
+	
 	public commande() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	public commande(String date, String time, String numero, double montant_ht, double tva, double montant_ttc,
-			String link_pdf, com.commercial.entities.schema.profoma_cmd_bl_fact.proforma proforma,
-			List<bon_livraison> list_bon_livraison, com.commercial.entities.schema.user_menu.users users,
+			String link_pdf, com.commercial.entities.schema.client.client client,
+			com.commercial.entities.schema.client.registre_commerce registre_commerce,
+			com.commercial.entities.schema.profoma_cmd_bl_fact.proforma proforma, com.commercial.entities.schema.user_menu.users users,
 			boolean cloturer, String matricule, com.commercial.entities.schema.static_data.mode_paiement mode_paiement,
-			client_registreCommerce client_registrecommerce, double pourcentage_reduction, double valeur_reduction,
-			double taux_tva_reduction, String observation) {
+			client_registreCommerce client_registrecommerce, double pourcentage_reduction, double valeur_reduction, String observation,
+			double montant_ht_net) {
 		super();
 		this.date = date;
 		this.time = time;
@@ -99,8 +108,9 @@ public class commande implements Serializable{
 		this.tva = tva;
 		this.montant_ttc = montant_ttc;
 		this.link_pdf = link_pdf;
+		this.client = client;
+		this.registre_commerce = registre_commerce;
 		this.proforma = proforma;
-		this.list_bon_livraison = list_bon_livraison;
 		this.users = users;
 		this.cloturer = cloturer;
 		this.matricule = matricule;
@@ -108,8 +118,24 @@ public class commande implements Serializable{
 		this.client_registrecommerce = client_registrecommerce;
 		this.pourcentage_reduction = pourcentage_reduction;
 		this.valeur_reduction = valeur_reduction;
-		this.taux_tva_reduction = taux_tva_reduction;
 		this.observation = observation;
+		this.montant_ht_net = montant_ht_net;
+	}
+
+	public client getClient() {
+		return client;
+	}
+
+	public void setClient(client client) {
+		this.client = client;
+	}
+
+	public registre_commerce getRegistre_commerce() {
+		return registre_commerce;
+	}
+
+	public void setRegistre_commerce(registre_commerce registre_commerce) {
+		this.registre_commerce = registre_commerce;
 	}
 
 	public Long getId() {
@@ -248,14 +274,6 @@ public class commande implements Serializable{
 		this.valeur_reduction = valeur_reduction;
 	}
 
-	public double getTaux_tva_reduction() {
-		return taux_tva_reduction;
-	}
-
-	public void setTaux_tva_reduction(double taux_tva_reduction) {
-		this.taux_tva_reduction = taux_tva_reduction;
-	}
-
 	public String getObservation() {
 		return observation;
 	}
@@ -264,5 +282,12 @@ public class commande implements Serializable{
 		this.observation = observation;
 	}
 
+	public double getMontant_ht_net() {
+		return montant_ht_net;
+	}
 
+	public void setMontant_ht_net(double montant_ht_net) {
+		this.montant_ht_net = montant_ht_net;
+	}
+	
 }

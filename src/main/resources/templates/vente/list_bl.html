@@ -243,7 +243,8 @@
 				text-align: right;
 			
 			}
-		
+			
+			
 		</style>
 		
 </head>
@@ -314,7 +315,8 @@
 								<td th:text="${#numbers.formatDecimal(bl.tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td style="text-align: center;    width: 10%;"> 
-									 <button type="button" class="btn btn-warning info" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
+									 <button th:if="${bl.valeur_reduction}==0" type="button" class="btn btn-warning info" 
+									 	th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
 															<i class="far fa-edit"></i>
 									 </button> 
 									 <button type="button" class="btn btn-primary print" th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 
@@ -362,9 +364,9 @@
 		
 	</div> 
 	
-	<div id="bl_detail_modal" class="modal" tabindex="-1" role="dialog">
+	<div id="bl_detail_modal" class="modal modal-fullscreen-xl" tabindex="-1" role="dialog">
 	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
-	    <div class="modal-content">
+	    <div class="modal-content" style="width: 125%;">
 	      <div class="modal-header">
 	      		
 	      		<input type="hidden" id="id_facture">

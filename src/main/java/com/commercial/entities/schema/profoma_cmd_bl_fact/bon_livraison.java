@@ -57,10 +57,22 @@ public class bon_livraison implements Serializable{
 	
 	private int etat_livraison;
 	
+	@Column(columnDefinition = "double precision default 0")
 	private Double montant_ht;
 	
+	@Column(columnDefinition = "double precision default 0")
+	private double pourcentage_reduction;
+	
+	@Column(columnDefinition = "double precision default 0")
+	private double valeur_reduction;
+	
+	@Column(columnDefinition = "double precision default 0")
+	private double montant_ht_net;
+	
+	@Column(columnDefinition = "double precision default 0")
 	private Double tva;
 	
+	@Column(columnDefinition = "double precision default 0")
 	private Double montant_ttc;
 	
 	@Column(columnDefinition="boolean default false")
@@ -70,13 +82,10 @@ public class bon_livraison implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public bon_livraison(com.commercial.entities.schema.client.client client,
-			com.commercial.entities.schema.client.registre_commerce registre_commerce, String date, String time,
-			String numero, String matricule, String link_pdf,
-			com.commercial.entities.schema.profoma_cmd_bl_fact.commande commande,
-			com.commercial.entities.schema.profoma_cmd_bl_fact.facture facture,
-			com.commercial.entities.schema.user_menu.users users, int etat_livraison, double montant_ht, double tva,
-			double montant_ttc) {
+	public bon_livraison(client client, registre_commerce registre_commerce, String date, String time,
+			String numero, String matricule, String link_pdf, commande commande, facture facture, users users, int etat_livraison, 
+			Double montant_ht, double pourcentage_reduction, double valeur_reduction, double montant_ht_net, Double tva,
+			Double montant_ttc, boolean cancel) {
 		super();
 		this.client = client;
 		this.registre_commerce = registre_commerce;
@@ -90,12 +99,30 @@ public class bon_livraison implements Serializable{
 		this.users = users;
 		this.etat_livraison = etat_livraison;
 		this.montant_ht = montant_ht;
+		this.pourcentage_reduction = pourcentage_reduction;
+		this.valeur_reduction = valeur_reduction;
+		this.montant_ht_net = montant_ht_net;
 		this.tva = tva;
 		this.montant_ttc = montant_ttc;
+		this.cancel = cancel;
 	}
-
 	
-
+	public bon_livraison(client client, registre_commerce registre_commerce, String date, String time,
+			String numero, String matricule, commande commande, users users) {
+		super();
+		this.client = client;
+		this.registre_commerce = registre_commerce;
+		this.date = date;
+		this.time = time;
+		this.numero = numero;
+		this.matricule = matricule;
+		this.link_pdf = "";
+		this.commande = commande;
+		this.users = users;
+		this.etat_livraison = 0;
+		this.cancel = false;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -235,6 +262,29 @@ public class bon_livraison implements Serializable{
 	public void setCancel(boolean cancel) {
 		this.cancel = cancel;
 	}
-	
+
+	public double getPourcentage_reduction() {
+		return pourcentage_reduction;
+	}
+
+	public void setPourcentage_reduction(double pourcentage_reduction) {
+		this.pourcentage_reduction = pourcentage_reduction;
+	}
+
+	public double getValeur_reduction() {
+		return valeur_reduction;
+	}
+
+	public void setValeur_reduction(double valeur_reduction) {
+		this.valeur_reduction = valeur_reduction;
+	}
+
+	public double getMontant_ht_net() {
+		return montant_ht_net;
+	}
+
+	public void setMontant_ht_net(double montant_ht_net) {
+		this.montant_ht_net = montant_ht_net;
+	}
 	
 }

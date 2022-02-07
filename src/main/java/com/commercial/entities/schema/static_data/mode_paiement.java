@@ -20,6 +20,9 @@ public class mode_paiement  implements Serializable{
 	
 	private String designation;
 	
+	@Column(columnDefinition="boolean default true")
+	private boolean display ;
+	
 	public mode_paiement() {
 		// TODO Auto-generated constructor stub
 	}
@@ -44,7 +47,13 @@ public class mode_paiement  implements Serializable{
 	public void setDesignation(String designation) {
 		this.designation = designation;
 	}
-	
-	
+
+	public boolean isDisplay() {
+		return display;
+	}
+
+	public void setDisplay(boolean display) {
+		this.display = display;
+	}
 	
 }

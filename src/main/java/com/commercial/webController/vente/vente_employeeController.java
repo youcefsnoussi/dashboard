@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
@@ -26,6 +27,7 @@ import com.commercial.entities.schema.article.repository.pesage_produitRepositor
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.article.repository.produitRepository;
 import com.commercial.entities.schema.article.repository.sous_category_produitRepository;
+import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
 import com.commercial.entities.schema.client.registre_commerce;
@@ -184,7 +186,7 @@ public class vente_employeeController {
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
 			@RequestParam("total_ht") double montant_ht,
-			@RequestParam("pourc_reduction") double pourc_reduction,
+			//@RequestParam("pourc_reduction") double pourc_reduction,
 			
 			@RequestParam(name = "art", defaultValue = "0") long [] article,
 			@RequestParam(name = "id_um", defaultValue = "0") long [] id_unite_mesure,
@@ -218,18 +220,20 @@ public class vente_employeeController {
 		
 		String date = gtd.get_date(), time = gtd.get_time();
 		
-		System.out.println("mat before =>"+s[0]);
+		//System.out.println("mat before =>"+s[0]);
 		
 		String matricule = s[0];
 		
-		System.out.println("mat after =>"+matricule);
+		//System.out.println("mat after =>"+matricule);
 		
 		String nom = s[1];
 		
 		String prenom = s[2];
-		
+		/*
 		bon_livraison_employee ble = new bon_livraison_employee(matricule, nom, prenom, date, time, numero, "", null, user, 0, 
 										montant_ht, montant_tva, montant_ttc, false);
+		*/
+		bon_livraison_employee ble = new bon_livraison_employee(matricule, nom, prenom, date, time, numero, user);
 		
 		bleRepo.save(ble); bleRepo.flush();
 		
@@ -242,15 +246,34 @@ public class vente_employeeController {
 		for(int i=0;i<article.length;i++) {
 			
 			if(quantite[i]!=0) {
+				/*
+				bon_livraison_detail_employee ble_d = new bon_livraison_detail_employee(ble, artRepo.getOne(article[i]), quantite[i],
+						prix_u_ht[i], montant_ht_art[i], (montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, 
+						umRepo.getOne(id_unite_mesure[i]), false, magasinRepo.getOne(id_magasin[i]));
+				*/
+				prixUnitaire_article_categoryClient pu_obj = 
+						prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(cat_clientRepo.get_category_by_name("Personnel"), 
+						artRepo.getOne(article[i]));
 				
-				bon_livraison_detail_employee ble_d = new bon_livraison_detail_employee(ble, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i],
-						(montant_ht_art[i]*(tva_art[i]/100)), tva_art[i], user, umRepo.getOne(id_unite_mesure[i]), false, magasinRepo.getOne(id_magasin[i]));
-						
+				bon_livraison_detail_employee ble_d = new bon_livraison_detail_employee(ble, artRepo.getOne(article[i]), quantite[i],
+						pu_obj.getPrix(), pu_obj.getTva().getTaux_tva(), user, artRepo.getOne(article[i]).getUnite_mesure_vente(), 
+						magasinRepo.getOne(id_magasin[i]));
+				
 				ble_dRepo.save(ble_d);ble_dRepo.flush();
 				
 			}
 			
 		}
+		
+		//-------------------- calcule total from detail ble and put it in BLE -------------
+		
+		List<Double[]> sum_details = ble_dRepo.get_sum_for_ble(ble);
+		
+		ble.setMontant_ht(sum_details.get(0)[0]); //sum_details[0]
+		ble.setMontant_tva(sum_details.get(0)[1]);
+		ble.setMontant_ttc(sum_details.get(0)[2]);
+		
+		bleRepo.save(ble); bleRepo.flush();
 		
 		return "redirect:/vente_employee?id_bl="+ble.getId()+"&num_bl="+ble.getNumero()+"&type=ble";
 		
@@ -568,7 +591,7 @@ public class vente_employeeController {
 		
 		//-------------------- tracking operation -----------------------------------
 		
-		trk.add_track("facture", "creation facture apres validation BL", fact.getId(), user);
+		trk.add_track("facture", "creation facture apres validation BL Employé", fact.getId(), user);
 		
 		//-------------------- tracking operation -----------------------------------
 		
@@ -578,10 +601,13 @@ public class vente_employeeController {
 			
 			//bon_livraison_detail bld = bld_list.get(i);
 			
-			facture_detail fct_d = new facture_detail(fact, (article)ret_all_details_ble.get(i).get("article"), (double)ret_all_details_ble.get(i).get("quantite"), 
-					(double)ret_all_details_ble.get(i).get("prix_u_ht"), (double)ret_all_details_ble.get(i).get("montant_ht"), (double)ret_all_details_ble.get(i).get("tva"), 
+			facture_detail fct_d = new facture_detail(fact, (article)ret_all_details_ble.get(i).get("article"), 
+					(double)ret_all_details_ble.get(i).get("quantite"), 
+					(double)ret_all_details_ble.get(i).get("prix_u_ht"), 
+					(double)ret_all_details_ble.get(i).get("montant_ht"), 
+					(double)ret_all_details_ble.get(i).get("tva"), 
 					(double)ret_all_details_ble.get(i).get("montant_tva"), 
-					((double)ret_all_details_ble.get(i).get("montant_ht") + (double)ret_all_details_ble.get(i).get("montant_tva")), 0, 0, 
+					(double)ret_all_details_ble.get(i).get("montant_ttc"), 0, 0, 
 					(double)ret_all_details_ble.get(i).get("montant_ht"),  
 					(unite_mesure)ret_all_details_ble.get(i).get("unite_mesure"));
 			
@@ -591,7 +617,8 @@ public class vente_employeeController {
 		
 		//------------------------------------------------ insert into mouvement table
 		
-		mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture", fact.getId(), gtd.get_date(), gtd.get_time(), "", sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
+		mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture", fact.getId(), gtd.get_date(), gtd.get_time(), "", 
+					sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
 		
 		mvmRepo.save(mvm);mvmRepo.flush();
 		

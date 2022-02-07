@@ -241,7 +241,7 @@
 			-->
 			<div class="card-body">
 			
-				<div class="container">
+				<div class="container-fluid">
 					
 					<form id="frm" th:action="@{/new_payment_post}" method="post" autocomplete="off" enctype="multipart/form-data">
 					
@@ -291,7 +291,7 @@
 						
 							<div class="col-md-3">
 							
-								<label>Mode paiement</label>
+								<label>Mode paiement</label> <br>
 								
 								<select id="mode_pay" name="mode_pay" class="selectpicker show-tick jump" data-live-search="true" 
 									data-style="btn-outline-dark" title="Mode" required>
@@ -304,7 +304,7 @@
 							
 							<div class="col-md-3">
 							
-								<label>Banque</label>
+								<label>Banque</label> <br>
 								
 								<select id="bank" name="bank" class="selectpicker show-tick jump" data-live-search="true" 
 									data-style="btn-outline-dark" title="Banque" required>

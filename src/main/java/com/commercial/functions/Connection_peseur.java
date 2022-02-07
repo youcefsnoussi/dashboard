@@ -297,6 +297,51 @@ public class Connection_peseur {
 	
 	//---------------------------------------------------------------------------------------
 	
+	public void update_bl_when_edit(String numero_bl, String date) {
+		
+		
+		Connection_peseur db = new Connection_peseur();
+		Connection con = db.getconnection();
+
+	
+  		Statement state = null;
+		try {
+			state = con.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		try {
+			
+			String [] d = date.split("/");
+			
+			String datee = d[2]+"/"+d[1]+"/"+d[0];
+			
+			String sql = "UPDATE factures SET date_facture = '"+datee+"' WHERE idfacture = '"+numero_bl+"' ";
+			
+			state.execute(sql);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		try {
+			
+			con.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//---------------------------------------------------------------------------------------
 	public boolean IfConxToDB() throws SQLException {
 		
 		

@@ -47,11 +47,14 @@ public class bon_livraison_employee  implements Serializable {
 	
 	private int etat_livraison;
 	
-	private Double montant_ht;
+	@Column(columnDefinition = "double precision default 0")
+	private double montant_ht;
 	
-	private Double tva;
+	@Column(columnDefinition = "double precision default 0")
+	private double montant_tva;
 	
-	private Double montant_ttc;
+	@Column(columnDefinition = "double precision default 0")
+	private double montant_ttc;
 	
 	@Column(columnDefinition="boolean default false")
 	boolean cancel = false;
@@ -64,10 +67,8 @@ public class bon_livraison_employee  implements Serializable {
 	}
 
 	public bon_livraison_employee(String matricule_employee, String nom_employee, String prenom_employee, String date,
-			String time, String numero, String link_pdf,
-			com.commercial.entities.schema.profoma_cmd_bl_fact.facture facture,
-			com.commercial.entities.schema.user_menu.users users, int etat_livraison, Double montant_ht, Double tva,
-			Double montant_ttc, boolean cancel) {
+			String time, String numero, String link_pdf, facture facture, users users, int etat_livraison, double montant_ht, 
+			double montant_tva, double montant_ttc, boolean cancel) {
 		super();
 		this.matricule_employee = matricule_employee;
 		this.nom_employee = nom_employee;
@@ -80,11 +81,26 @@ public class bon_livraison_employee  implements Serializable {
 		this.users = users;
 		this.etat_livraison = etat_livraison;
 		this.montant_ht = montant_ht;
-		this.tva = tva;
+		this.montant_tva = montant_tva;
 		this.montant_ttc = montant_ttc;
 		this.cancel = cancel;
 	}
-
+	
+	public bon_livraison_employee(String matricule_employee, String nom_employee, String prenom_employee, String date,
+			String time, String numero, users users) {
+		super();
+		this.matricule_employee = matricule_employee;
+		this.nom_employee = nom_employee;
+		this.prenom_employee = prenom_employee;
+		this.date = date;
+		this.time = time;
+		this.numero = numero;
+		this.link_pdf = "";
+		this.facture = null;
+		this.users = users;
+		this.etat_livraison = 0;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -177,16 +193,16 @@ public class bon_livraison_employee  implements Serializable {
 		return montant_ht;
 	}
 
-	public void setMontant_ht(Double montant_ht) {
+	public void setMontant_ht(double montant_ht) {
 		this.montant_ht = montant_ht;
 	}
 
-	public Double getTva() {
-		return tva;
+	public Double getMontant_tva() {
+		return montant_tva;
 	}
 
-	public void setTva(Double tva) {
-		this.tva = tva;
+	public void setMontant_tva(double montant_tva) {
+		this.montant_tva = montant_tva;
 	}
 
 	public Double getMontant_ttc() {

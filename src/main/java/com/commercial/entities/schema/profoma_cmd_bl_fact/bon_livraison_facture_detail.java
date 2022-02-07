@@ -75,14 +75,10 @@ public class bon_livraison_facture_detail implements Serializable {
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	public bon_livraison_facture_detail(
-			com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture bon_livraison_facture,
-			com.commercial.entities.schema.article.article article, double quantite, double prix_u_ht,
-			double montant_ht, double montant_tva, double montant_ttc, double pourcentage_remise, double montant_remise,
-			double montant_ht_net, double tva, users user_magasin_validate,
-			com.commercial.entities.schema.static_data.unite_mesure unite_mesure, boolean validation, Magasin magasin) {
+	public bon_livraison_facture_detail(bon_livraison_facture bon_livraison_facture, article article, double quantite, 
+			double prix_u_ht, double montant_ht, double montant_tva, double montant_ttc, double pourcentage_remise, 
+			double montant_remise, double montant_ht_net, double tva, users user_magasin_validate, unite_mesure unite_mesure, 
+			boolean validation, Magasin magasin) {
 		super();
 		this.bon_livraison_facture = bon_livraison_facture;
 		this.article = article;
@@ -100,56 +96,61 @@ public class bon_livraison_facture_detail implements Serializable {
 		this.validation = validation;
 		this.magasin = magasin;
 	}
-
 	
-
+	public bon_livraison_facture_detail(bon_livraison_facture bon_livraison_facture, article article, double quantite, 
+			double prix_u_ht, double montant_remise, double tva, unite_mesure unite_mesure, Magasin magasin) {
+		super();
+		this.bon_livraison_facture = bon_livraison_facture;
+		this.article = article;
+		this.quantite = quantite;
+		this.prix_u_ht = prix_u_ht;
+		this.tva = tva;
+		this.montant_remise = montant_remise;
+		this.unite_mesure = unite_mesure;
+		this.magasin = magasin;
+		
+		this.montant_ht = quantite * prix_u_ht;
+		this.montant_tva = montant_ht * (tva / 100);
+		this.montant_ttc = montant_ht + montant_tva;
+		this.pourcentage_remise = (montant_remise * 100) / montant_ht;
+		this.montant_ht_net = montant_ht - montant_remise;
+		
+		this.user_magasin_validate = null;
+		this.validation = false;
+		
+	}
+	
 	public double getMontant_ttc() {
 		return montant_ttc;
 	}
-
-
 
 	public void setMontant_ttc(double montant_ttc) {
 		this.montant_ttc = montant_ttc;
 	}
 
-
-
 	public double getPourcentage_remise() {
 		return pourcentage_remise;
 	}
-
-
 
 	public void setPourcentage_remise(double pourcentage_remise) {
 		this.pourcentage_remise = pourcentage_remise;
 	}
 
-
-
 	public double getMontant_remise() {
 		return montant_remise;
 	}
-
-
 
 	public void setMontant_remise(double montant_remise) {
 		this.montant_remise = montant_remise;
 	}
 
-
-
 	public double getMontant_ht_net() {
 		return montant_ht_net;
 	}
 
-
-
 	public void setMontant_ht_net(double montant_ht_net) {
 		this.montant_ht_net = montant_ht_net;
 	}
-
-
 
 	public Long getId() {
 		return id;

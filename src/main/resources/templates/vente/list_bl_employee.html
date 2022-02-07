@@ -75,8 +75,8 @@
 			        initComplete: function () {
 			            this.api().columns([2,7]).every( function () {
 			                var column = this;
-			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+
-			                				'.data-live-search="true" data-container="body"><option value="">Tout</option></select>')
+			                var select = $('<select class="selectpicker " data-width="fit" data-style="btn btn-outline-secondary" '+
+			                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -91,6 +91,7 @@
 			                column.data().unique().sort().each( function ( d, j ) {
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
+			                $('.selectpicker').selectpicker('refresh');
 			            } );
 			        },
 					 drawCallback: function () {
@@ -355,7 +356,7 @@
 								<th>Montant HT</th>
 								<th>Montant TVA</th>
 								<th>Montant TTC</th>
-								<th>Facturé ?</th>
+								<th>N° Facture</th>
 								<th></th>
 								
 							</tr>
@@ -371,10 +372,9 @@
 								<td th:text="${bl.matricule_employee}"></td>
 								<td th:text="${bl.nom_employee}+' '+${bl.prenom_employee}"></td>
 								<td th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:text="${#numbers.formatDecimal(bl.tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(bl.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
-								<td th:if="${bl.factured}==true" th:text="OUI"></td>
-								<td th:unless="${bl.factured}==true" th:text="NON"></td>
+								<td th:text="(${bl.facture} != null) ? ${bl.facture.numero} : 'Non facturé'"></td>
 								<td style="text-align: center;width: 10%;"> 
 															 <button type="button" class="btn btn-warning info" 
 															 	th:attr="id_bl=${bl.id},num_bl=${bl.numero}"> 

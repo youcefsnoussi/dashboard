@@ -156,11 +156,11 @@ public class PaletteService {
 		
 	}
 	
-	public boolean testPalettePlafond(List<bon_livraison> bls, client clt, long nbrPCurrentBL) {
+	public boolean testPalettePlafond(List<bon_livraison> bls, client clt, double nbrPCurrentBL) {
 		
 		long soldEncours = clt.getSoldPalette();
 		
-		long nbrPBLS = nbrPCurrentBL;
+		double nbrPBLS = nbrPCurrentBL;
 		
 		for (bon_livraison bl : bls) {
 			

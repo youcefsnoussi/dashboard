@@ -73,7 +73,7 @@
 			            { "width": "7%", "targets": 8 }
 			          ],
 			        initComplete: function () {
-			            this.api().columns([4,5,6]).every( function () {
+			            this.api().columns([3,4,5,6]).every( function () {
 			                var column = this;
 			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+
 			                				'.data-live-search="true" data-container="body"><option value="">Tout</option></select>')
@@ -318,8 +318,8 @@
 								<th>N°</th>
 								<th>Date</th>
 								<th>Heure</th>
-								<th>Code</th>
-								<th>Unité interne</th>
+								<th>Source</th>
+								<th>Destination</th>
 								<th>Matricule </th>
 								<th>Chauffeur</th>
 								<th>Article</th>
@@ -337,7 +337,7 @@
 								<td th:text="${btd.bon_transfert.numero}"></td>
 								<td th:text="${btd.bon_transfert.date}"></td>
 								<td th:text="${btd.bon_transfert.time}"></td>
-								<td th:text="${btd.bon_transfert.unite_interne.code}"></td>
+								<td th:text="${btd.magasin.name}" ></td>
 								<td th:text="${btd.bon_transfert.unite_interne.designation}"></td>
 								<td th:text="${btd.bon_transfert.matricule_vehicule}" ></td>
 								<td th:text="${btd.bon_transfert.chauffeur}" ></td>
