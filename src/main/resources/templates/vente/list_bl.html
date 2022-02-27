@@ -295,6 +295,7 @@
 								<th>Montant TVA</th>
 								<th>Montant TTC</th>
 								<th></th>
+								<th th:if="${displayUser}==true">User</th>
 								
 							</tr>
 						
@@ -329,6 +330,7 @@
 											<i class="far fa-trash"></i>
 									 </button> 
 								</td>
+								<td th:if="${displayUser}==true" th:text="${bl.users.username}"></td>
 								
 							</tr>
 						
@@ -349,6 +351,7 @@
 								<th class="rr"></th>
 								<th class="rr"></th>
 								<th></th>
+								<th th:if="${displayUser}==true"></th>
 								
 							</tr>
 						

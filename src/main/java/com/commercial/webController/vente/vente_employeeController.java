@@ -27,7 +27,6 @@ import com.commercial.entities.schema.article.repository.pesage_produitRepositor
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.article.repository.produitRepository;
 import com.commercial.entities.schema.article.repository.sous_category_produitRepository;
-import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
 import com.commercial.entities.schema.client.registre_commerce;

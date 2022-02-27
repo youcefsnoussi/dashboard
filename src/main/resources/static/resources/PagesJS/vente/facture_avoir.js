@@ -33,6 +33,8 @@ $(document).ready(function() {
 		
 		if(test===0){
 			
+			$(this).attr("disabled",true);
+			
 			$("#frm").submit();
 			
 		}

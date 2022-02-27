@@ -221,8 +221,12 @@ public class list_bl_encoursController {
 		
 		//----------------------ROLE TEST---------------------------------
 		
-		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("cancel_bl")) 
-		{ cancel_bl = true; }
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getNom_role().equals("Responsable") || 
+				user.getRole().getIds_banned().contains("cancel_bl") ) 
+		{ 
+			cancel_bl = true; 
+			model.addAttribute("displayUser", true);
+		}
 		
 		model.addAttribute("cancel_bl", cancel_bl);
 		

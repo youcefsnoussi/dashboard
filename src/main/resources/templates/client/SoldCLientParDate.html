@@ -95,19 +95,26 @@
 			                } );
 			            } );
 			        },
-					 drawCallback: function () {
+			        "footerCallback": function ( row, data, start, end, display ) {
 						
-					      var api = this.api();
+					      var api = this.api(), data;
+					      var intVal = function ( i ) {
+	    	                    return typeof i === 'string' ?
+	    	                        i.replace(/[\$,]/g, '')*1 :
+	    	                        typeof i === 'number' ?
+	    	                            i : 0;
+	    	                };
 					      /*
-					      $( api.column( 1, {page:'current'} ).footer() ).html(
-					        api.column( 1, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      */
 					      $( api.column( 2, {page:'current'} ).footer() ).html(
 					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
-					      
+					      */
+					      $( api.column( 2 ).footer() ).html('<b>'+api.column( 2, { page: 'current'} ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 ).formatMoney(2, ',', ' ')+'</b>' );
 					 },
+					 "createdRow": function ( row, data, index ) {
+							$('td', row).eq(2).text( parseFloat(data[2]).formatMoney(2, ',', ' ')),
+				         	$('td', row).eq(3).text( parseFloat(data[3]).formatMoney(2, ',', ' '))
+						},
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
@@ -253,6 +260,7 @@
 								<th>Code</th>
 								<th>Client</th>
 								<th>Sold Date</th>
+								<th>Plafond</th>
 								<th>Date Derniere Facture</th>
 								<th>Date Dernier Paiement</th>	
 								
@@ -266,7 +274,8 @@
 							
 								<td class="cc"  th:text="${lst[0].code}"></td>
 								<td class="ll"  th:text="${lst[0].nom}+' '+${lst[0].prenom}"></td>
-								<td class="rr"  th:text="${#numbers.formatDecimal(lst[1], 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td class="rr"  th:text="${lst[1]}"></td>
+								<td class="cc"  th:text="${lst[0].plafond}"></td>
 								<td class="cc"  th:text="${lst[2]}"></td>
 								<td class="cc"  th:text="${lst[3]}"></td>
 							
@@ -278,6 +287,7 @@
 						
 							<tr>
 							
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

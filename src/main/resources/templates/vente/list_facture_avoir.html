@@ -105,6 +105,9 @@
 					      $( api.column( 8, {page:'current'} ).footer() ).html(
 					        api.column( 8, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
+					      $( api.column( 9, {page:'current'} ).footer() ).html(
+					        api.column( 9, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
 					      
 					 },
 		    };
@@ -284,6 +287,7 @@
 								<!-- <th>Mode Reglement</th> 
 								<th>Matricule</th> -->
 								<th>Montant HT</th>
+								<th>Montant NET HT</th>
 								<th>Montant TVA</th>
 								<th>Montant TTC</th>
 								<th>Détail</th>
@@ -307,6 +311,7 @@
 								<!--  <td th:text="${list_fact.mode_paiement.designation}"></td>
 								<td th:text="${list_fact.matricule_camion}"></td> -->
 								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ht, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.tva, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"></td>
 								
@@ -337,6 +342,7 @@
 						
 							<tr>
 							
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>
