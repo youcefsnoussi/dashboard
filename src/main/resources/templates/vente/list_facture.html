@@ -110,6 +110,9 @@
 					      $( api.column( 9, {page:'current'} ).footer() ).html(
 					        api.column( 9, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
+					      $( api.column( 10, {page:'current'} ).footer() ).html(
+					        api.column( 10, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
 					      
 					 },/*
 					 "createdRow": function ( row, data, index ) {
@@ -452,6 +455,7 @@
 								<th>Mode Reglement</th>
 								<th>Matricule</th>
 								<th>Montant HT</th>
+								<th>Montant NET HT</th>
 								<th>Montant TVA</th>
 								<th>Montant TTC</th>
 								<th>Visualiser</th>
@@ -474,6 +478,7 @@
 								<td th:unless="${list_fact.mode_paiement}!=null" th:text="''"></td>
 								<td th:text="${list_fact.matricule_camion}"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" 
@@ -503,6 +508,7 @@
 								<td th:text="${list_fact.mode_paiement.designation}"></td>
 								<td th:text="${list_fact.matricule_camion}"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td th:text="${#numbers.formatDecimal(list_fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
 								<td style="text-align: center;"> <button type="button" class="btn btn-dark info" 
@@ -535,6 +541,7 @@
 								<th></th>
 								<th></th>
 								<th></th>
+								<th class="rr"></th>
 								<th class="rr"></th>
 								<th class="rr"></th>
 								<th class="rr"></th>
