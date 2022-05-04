@@ -23,12 +23,14 @@ import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
+import com.commercial.entities.schema.article.repository.article_consignation_relationRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
 import com.commercial.entities.schema.article.repository.emballage_produitRepository;
 import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.pesage_produitRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.article.repository.produitRepository;
+import com.commercial.entities.schema.article.repository.rc_consignationRepository;
 import com.commercial.entities.schema.article.repository.sous_category_produitRepository;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
@@ -69,6 +71,7 @@ import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.generateQRcode;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
+import com.commercial.services.ConsignationService;
 import com.commercial.services.generate_Doc;
 import com.commercial.services.track_operations;
 
@@ -180,6 +183,17 @@ public class bon_livraison_factureController {
 	@Autowired
 	bon_livraison_facture_detailRepository blfdRepo;
 	
+	//----------------------------------------------------------
+	
+	@Autowired
+	ConsignationService consService;
+	
+	@Autowired
+	article_consignation_relationRepository art_cons_relRepo;
+	
+	@Autowired
+	rc_consignationRepository rccRepo;
+	
 	public bon_livraison_factureController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -213,6 +227,7 @@ public class bon_livraison_factureController {
 			@RequestParam("montant_redux_art_pourc") double [] montant_redux_art_pourc,
 			@RequestParam("montant_net_ht_art") double [] montant_net_ht_art,
 			@RequestParam("montant_ttc_art") double [] montant_ttc_art,
+			@RequestParam("art_consign") List<String> art_consign,
 			
 			@SessionAttribute("user") users user){
 			
@@ -313,11 +328,21 @@ public class bon_livraison_factureController {
 					
 					//----------------------------------------------------------------------------
 					
+					double prix_u = (!artRepo.getOne(article[i]).isConsignation()) ? pu_obj.getPrix() 
+							: rccRepo.getRcConsignation(rc, artRepo.getOne(article[i])).getPrix_u_ht();
+					
 					bon_livraison_facture_detail blfd = new bon_livraison_facture_detail(blf, artRepo.getOne(article[i]), 
-							quantite[i], pu_obj.getPrix(), montant_redux_art_val[i], taux_tva,
+							quantite[i], prix_u, montant_redux_art_val[i], taux_tva,
 							artRepo.getOne(article[i]).getUnite_mesure_vente(), magasinRepo.getOne(id_magasin[i]));
 					
 					blfdRepo.save(blfd);blfdRepo.flush();
+					
+					if(art_cons_relRepo.if_art_consigned(artRepo.getOne(article[i])).size()!=0) {
+						
+						consService.consignationBLF(blf, art_consign.get(i), rc, artRepo.getOne(article[i]), quantite[i], 
+									magasinRepo.getOne(id_magasin[i]));
+					
+					}
 					
 				}
 				
@@ -872,7 +897,7 @@ public class bon_livraison_factureController {
 		
 		List<Map<String, Object>> ret_all_details_blf = new ArrayList<Map<String, Object>>();
 		
-		double montant_ht=0, montant_tva=0, montant_ttc=0;
+		double montant_ht=0, montant_tva=0, montant_ttc=0, montant_ht_net=0, montant_remise=0;
 		
 		for(int i=0; i<sample_all_detail_blf.size(); i++) {
 			
@@ -894,7 +919,11 @@ public class bon_livraison_factureController {
 			
 			double mnt_ht = quant * price;
 			
-			double mnt_tva = ( quant * price )*( tva / 100);
+			double mnt_rem = (double)obj[4];
+			
+			double mnt_ht_net = mnt_ht - mnt_rem;
+			
+			double mnt_tva = mnt_ht_net*( tva / 100);
 			
 			double mnt_ttc = mnt_ht + mnt_tva;
 			
@@ -909,10 +938,14 @@ public class bon_livraison_factureController {
 				info.put("unite_mesure", um);
 				info.put("quantite", quant);
 				info.put("montant_ht", mnt_ht);
+				info.put("montant_remise", mnt_rem);
+				info.put("montant_ht_net", mnt_ht);
 				info.put("montant_tva", mnt_tva);
 				info.put("montant_ttc", mnt_ttc);
 				
 				montant_ht += mnt_ht;
+				montant_remise += mnt_rem;
+				montant_ht_net += mnt_ht_net;
 				montant_tva += mnt_tva;
 				montant_ttc += mnt_ttc;
 				
@@ -925,10 +958,14 @@ public class bon_livraison_factureController {
 				
 				info.put("quantite", (double) info.get("quantite") + quant);
 				info.put("montant_ht", (double) info.get("montant_ht") + mnt_ht);
+				info.put("montant_remise", (double) info.get("montant_remise") + mnt_rem);
+				info.put("montant_ht_net", (double) info.get("montant_ht_net") + mnt_ht_net);
 				info.put("montant_tva", (double) info.get("montant_tva") + mnt_tva);
 				info.put("montant_ttc", (double) info.get("montant_ttc") + mnt_ttc);
 				
 				montant_ht += mnt_ht;
+				montant_remise += mnt_rem;
+				montant_ht_net += mnt_ht_net;
 				montant_tva += mnt_tva;
 				montant_ttc += mnt_ttc;
 				
@@ -942,6 +979,10 @@ public class bon_livraison_factureController {
 		model.addAttribute("cumule_ble", ret_all_details_blf);
 		
 		model.addAttribute("montant_ht", montant_ht);
+		
+		model.addAttribute("montant_remise", montant_remise);
+		
+		model.addAttribute("montant_ht_net", montant_ht_net);
 		
 		model.addAttribute("montant_tva", montant_tva);
 		
@@ -1078,7 +1119,7 @@ public class bon_livraison_factureController {
 	}
 	
 	//----------------------------------------------------------------------------------------------
-	
+	/*
 	@RequestMapping(value="/facture_blf_post",method=RequestMethod.POST)
 	public String facture_blfs_post(HttpServletRequest req,
 		@RequestParam("id_rel_rc_clt") long id_rc_clt,
@@ -1248,7 +1289,7 @@ public class bon_livraison_factureController {
 		return "redirect:/print_fact?id_fact="+fact.getId();
 		
 	}
-	
+	*/
 	//----------------------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/facture_blf_list_post",method=RequestMethod.POST)
@@ -1405,19 +1446,30 @@ public class bon_livraison_factureController {
 		
 		for(int i=0;i<ret_all_details_blf.size();i++) {
 			
-			facture_detail fct_d = new facture_detail(fact, (article)ret_all_details_blf.get(i).get("article"), 
-					(double)ret_all_details_blf.get(i).get("quantite"), 
-					(double)ret_all_details_blf.get(i).get("prix_u_ht"), 
-					(double)ret_all_details_blf.get(i).get("montant_ht"), 
-					(double)ret_all_details_blf.get(i).get("tva"), 
-					(double)ret_all_details_blf.get(i).get("montant_tva"), 
-					(double)ret_all_details_blf.get(i).get("montant_ttc"),
-					(double)ret_all_details_blf.get(i).get("pourcentage_remise"),
-					(double)ret_all_details_blf.get(i).get("montant_remise"), //------------> null pointer exception
-					(double)ret_all_details_blf.get(i).get("montant_ht_net"),  
-					(unite_mesure)ret_all_details_blf.get(i).get("unite_mesure"));
+			article art = (article)ret_all_details_blf.get(i).get("article");
 			
-			fact_detRepo.save(fct_d);fact_detRepo.flush();
+			if(!art.isConsignation()) {
+				
+				facture_detail fct_d = new facture_detail(fact, art, 
+						(double)ret_all_details_blf.get(i).get("quantite"), 
+						(double)ret_all_details_blf.get(i).get("prix_u_ht"), 
+						(double)ret_all_details_blf.get(i).get("montant_ht"), 
+						(double)ret_all_details_blf.get(i).get("tva"), 
+						(double)ret_all_details_blf.get(i).get("montant_tva"), 
+						(double)ret_all_details_blf.get(i).get("montant_ttc"),
+						(double)ret_all_details_blf.get(i).get("pourcentage_remise"),
+						(double)ret_all_details_blf.get(i).get("montant_remise"), //------------> null pointer exception
+						(double)ret_all_details_blf.get(i).get("montant_ht_net"),  
+						(unite_mesure)ret_all_details_blf.get(i).get("unite_mesure"));
+				
+				fact_detRepo.save(fct_d);fact_detRepo.flush();
+				
+			}
+			else {
+				
+				consService.consignationFACT(fact, art, rc, (double)ret_all_details_blf.get(i).get("quantite"));
+				
+			}
 			
 		}
 		

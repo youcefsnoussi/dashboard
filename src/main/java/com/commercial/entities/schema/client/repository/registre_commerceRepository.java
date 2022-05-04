@@ -16,6 +16,10 @@ public interface registre_commerceRepository extends JpaRepository<registre_comm
 	
 	public registre_commerce  findFirst1ByOrderByIdDesc();
 	
+	public List<registre_commerce> findByConsignationTrue();
+	
+	//--------------------------------------------------------------
+	
 	@Query( " FROM registre_commerce rc "
 			
 			+ " WHERE rc.numero_rc = :num_rc "
@@ -28,6 +32,8 @@ public interface registre_commerceRepository extends JpaRepository<registre_comm
 	
 	public registre_commerce  if_rc_exist_db(@Param("num_rc") String num_rc, @Param("num_nif") String num_nif, @Param("num_art") String num_art, 
 												@Param("nom") String nom, @Param("prenom") String prenom);
+	
+	//---------------------
 	
 	@Query( " FROM registre_commerce rc "
 			

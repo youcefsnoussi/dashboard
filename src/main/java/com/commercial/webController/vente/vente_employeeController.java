@@ -157,8 +157,14 @@ public class vente_employeeController {
 		
 		String ret = "vente/vente_employee";
 		
-		List< Map<String,String> > emp =  Connection_RH.get_employee(user.getUnite());
+		List< Map<String,String> > emp = new ArrayList< Map<String,String> >();
 		
+		if(Connection_RH.getconnection() != null) {
+			
+			emp =  Connection_RH.get_employee(user.getUnite());
+			
+		}
+			
 		for (Map<String, String> map : emp) {
 			
 			boolean vente = (bleRepo.test_if_it_got_bl(map.get("matricule")).isEmpty()) ? false : true;

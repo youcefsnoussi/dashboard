@@ -1,5 +1,7 @@
 package com.commercial.webController.vente;
 
+import java.io.IOException;
+import java.sql.Date;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -289,6 +291,28 @@ public class list_factureController {
 		
 	}
 	
+	@RequestMapping(value="/print_facts")
+	public String print_facts(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="id_rc", defaultValue="0") long id_rc,
+						 @SessionAttribute("user") users user,
+						 Model model) throws IOException{
+		
+		List<facture> facts = (id_rc != 0) 
+				? factRepo.date_between_facture_rc(Date.valueOf(start), Date.valueOf(end), rcRepo.getOne(id_rc))
+				: factRepo.date_between_facture(Date.valueOf(start), Date.valueOf(end) ); 
+		
+		String pdf = "";
+		
+		
+		pdf = gd.generate_facts(facts);
+			
+		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
 	//--------------------------------------------------------------------------------
 	
 	@RequestMapping(value="/fact_avoir")
@@ -546,11 +570,15 @@ public class list_factureController {
 			
 			for (facture fct : lst_fact) {
 				
-				prof_cmd_bl_fact_client_rc_avoir grp = grpRepo.get_relation_by_facture(fct);
+				Optional<prof_cmd_bl_fact_client_rc_avoir> grp = Optional.ofNullable(grpRepo.get_relation_by_facture(fct));
 				
-				grp.setFacture_avoir(fact_av);
+				grp.ifPresent(res -> {
 				
-				grpRepo.save(grp); grpRepo.flush();
+					res.setFacture_avoir(fact_av);
+				
+					grpRepo.save(res); grpRepo.flush();
+				
+				});
 				
 				fct.setFacture_avoir(fact_av);
 				
@@ -560,7 +588,8 @@ public class list_factureController {
 			
 			//------------------------------------------------ insert into mouvement table
 			
-			mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture Avoire", fact_av.getId(), gtd.get_date(), gtd.get_time(), "", sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
+			mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture Avoire", fact_av.getId(), gtd.get_date(), gtd.get_time(),
+					"", sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
 			
 			mvmRepo.save(mvm);mvmRepo.flush();
 			

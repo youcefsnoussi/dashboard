@@ -24,32 +24,7 @@
 	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
 	
-	<script type="text/javascript" src="resources\PagesJS\vente\facture.js"></script>
 	    
-	<script type="text/javascript">
-	
-	$(document).ready(function() {
-		
-		$("#client").change(function() {
-			
-			var des = $("#client option:selected").attr("data-subtext");
-			
-			$("#nom").val(des);
-			
-		})
-		
-		
-		$("#sub_ris").click(function() {
-			
-			$("#frm").submit();
-			
-		})
-		
-	});
-	
-	</script>
-	      
-	      
 	</head>
 
 	<body >
@@ -186,7 +161,7 @@
 								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
 								
 								<td> <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" 
-																		data-size="8" data-live-search="true" name="art_ris">
+										data-size="8" data-live-search="true" name="art" th:attr="id_tr='tr'+${i}">
 										<option value="0" >Selection</option>
 										
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:text="${art.article.libelle}"
@@ -200,7 +175,7 @@
 								<td> <input class="form-control unite_mesure" id="unite_mesure" type="text" value="" style="text-align: center;" readonly> 
 										<input type="hidden" id="id_um" name="id_um" value="0" > </td>
 								
-								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="0" style="text-align: right;" > </td>
+								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="0" style="text-align: right;" th:attr="id_tr='tr'+${i}"> </td>
 								
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
 								
@@ -283,5 +258,105 @@
 	</div>
 	
 	</body>
+	
+	<script type="text/javascript">
+	
+	$(document).ready(function() {
+		
+		$("#client").change(function() {
+			
+			var des = $("#client option:selected").attr("data-subtext");
+			
+			$("#nom").val(des);
+			
+		})
+		
+		$(".art").change(function() {
+			
+			let tr = $(this).attr("id_tr");
+			
+			let parrent = $("#"+tr);
+			
+			parrent.find("#qte").val(0);
+			
+			parrent.find("#code_art").val($('option:selected', this).attr("code"));
+			
+			parrent.find("#unite_mesure").val($('option:selected', this).attr("um"));
+			
+			parrent.find("#id_um").val($('option:selected', this).attr("id_um"));
+			
+			parrent.find("#prix_unitaire").val($('option:selected', this).attr("pu"));
+			
+			parrent.find("#tva_art").val($('option:selected', this).attr("tva"));
+			
+			parrent.find("#montant_ht").val(0);
+			
+			calculeTotal();
+			
+		});
+		
+		$(".qte").keyup(function() {
+			
+			calculeDetail( $(this) )
+			
+		})
+		
+		$("#sub_ris").click(function() {
+			
+			$("#frm").submit();
+			
+		})
+		
+	});
+	
+	function calculeTotal() {
+		
+		let total_ht = 0;
+		
+		$(".montant_ht").each(function() {
+			
+			total_ht += parseFloat($(this).val());
+			
+		})
+		
+		$("#total_ht").val(total_ht);
+		
+		$("#total_ttc").val(total_ht);
+		
+	}
+	
+	function calculeDetail( input ) {
+		
+		let tr = $(input).attr("id_tr");
+		
+		let parrent = $("#"+tr);
+		
+		parrent.find("#montant_ht").val( parseFloat($(input).val()) * parseFloat(parrent.find("#prix_unitaire").val()) );
+		
+		calculeTotal();
+		
+	}
+	
+	$(".zero").focus(function(){
+		
+		if($(this).val()==0){
+			
+			$(this).val("");
+			
+		}
+		
+	});
+	
+	$(".zero").blur(function(){
+		
+		if($(this).val()==""){
+			
+			$(this).val(0);
+			
+		}
+		
+	});
+	
+	</script>
 	
 </html>

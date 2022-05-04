@@ -73,9 +73,10 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([]).every( function () {
-			                var column = this;
-			                var select = $('<select class="form-control" ><option value=""></option></select>')
+			            this.api().columns([0]).every( function () {
+			            	var column = this;
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+ 
+	                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -90,18 +91,23 @@
 			                column.data().unique().sort().each( function ( d, j ) {
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
+			                $('.selectpicker').selectpicker('refresh');
 			            } );
 			        },
 					 drawCallback: function () {
 						
 					      var api = this.api();
 					      
-					      $( api.column( 1, {page:'current'} ).footer() ).html(
-					        api.column( 1, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 5, {page:'current'} ).footer() ).html(
+					        api.column( 5, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      
-					      $( api.column( 2, {page:'current'} ).footer() ).html(
-					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 6, {page:'current'} ).footer() ).html(
+					        api.column( 6, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					      $( api.column( 7, {page:'current'} ).footer() ).html(
+					        api.column( 7, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      
 					 },
@@ -117,6 +123,8 @@
 				
 				var id_category = $("#id_category").val();
 				
+				console.log("-->"+id_category)
+				
 				if(start=="" || end==""){
 					
 					$("#title").text("Erreur !!!");
@@ -128,7 +136,7 @@
 				}
 				else{
 					
-					//window.location.replace("print_etat_vente_client?start="+start+"&end="+end+"&id_category="+id_category);
+					window.location.replace("etat_104?start="+start+"&end="+end+"&id_category="+id_category);
 					
 				}
 				
@@ -151,6 +159,27 @@
 				
 				$("#display_details").modal("show");
 				
+			});
+			
+			$("#id_category").change(function() {
+				
+		 		//console.log($(this).val())
+		 		let val = $(this).val();
+		 		
+		 		const test = val.some(function(value) {
+					
+		 			return value==0;
+		 			
+				});
+		 		
+		 		if( test === true ) {
+		 			
+		 			$(this).selectpicker('deselectAll');
+		 			$(this).val([0]);
+		 			$(this).selectpicker('refresh');
+		 			
+		 		}
+		 		
 			});
 			
 			$("#generate").click(function(){
@@ -239,11 +268,17 @@
 						
 						<div class="col-md-2 offset-md-1" >
 						
-							<select id="id_category" name="id_category" class="form-control">
+							<select id="id_category" name="id_category" class="selectpicker" data-style="btn-outline-dark" multiple>
 							
-								<option value="0">Tout</option>
-								<option th:each="cat : ${cat_prod}" th:value="${cat.id}" th:text="${cat.nom_category}"></option>
-							
+								<option th:if="${tout}==false" value="0">Tout</option>
+								<option th:unless="${tout}==false" value="0" selected>Tout</option>
+								
+								<option th:each="cat : ${cat_prod}" th:value="${cat.id}" th:text="${cat.nom_category}"
+									th:if="${#lists.contains(id_cat_prod, cat.id)}" selected></option>
+								
+								<option th:each="cat : ${cat_prod}" th:value="${cat.id}" th:text="${cat.nom_category}"
+									th:unless="${#lists.contains(id_cat_prod, cat.id)}" ></option>
+								
 							</select>
 						
 						</div>
@@ -263,7 +298,8 @@
 						<thead class="thead-dark">
 							
 							<tr>
-							
+								
+								<th>Code</th>
 								<th>Client</th>
 								<th>Adresse</th>
 								<th>N° NIF</th>	
@@ -278,11 +314,39 @@
 						</thead>
 						
 						<tbody>
-						
+							
+							<tr th:each="d : ${data}">
+								
+								<td th:text="${d[0]}"></td>
+								<td th:text="${d[1]}+' '+${d[2]}+' '+${d[3]}"></td>
+								<td th:text="${d[4]}"></td>
+								<td th:text="${d[5]}"></td>
+								<td th:text="${d[6]}"></td>
+								<td th:text="${d[7]}"></td>
+								<td th:text="${#numbers.formatDecimal(d[8], 2, 'WHITESPACE', 3,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(d[9], 2, 'WHITESPACE', 3,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(d[10], 2, 'WHITESPACE', 3,'POINT')}"></td>
+							
+							</tr>
+							
 						</tbody>
 						
 						<tfoot class="thead-dark">
-						
+							
+							<tr>
+								
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							
+							</tr>
+							
 						</tfoot>
 						
 					</table>

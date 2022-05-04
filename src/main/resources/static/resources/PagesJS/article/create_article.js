@@ -83,6 +83,21 @@ $(document).ready(function(){
 		
 	});
 	
+	$("#consign").change(function(){
+		
+		if($(this).prop("checked")){
+			
+			$("#consignation").val("on");
+			
+		}
+		else{
+		
+			$("#consignation").val("off");
+			
+		}
+		
+	});
+	
 	if($("#article").val()!=""){
 		
 		$("#frm").attr("action","edit_article");
@@ -98,9 +113,6 @@ $(document).ready(function(){
 		$("#code_art").val($("#code").val());
 		$("#code_art").prop("readonly",true);
 		
-		$("#code_comptable").val($("#code_compt").val());
-		$("#code_comptable").prop("readonly",true);
-		
 		//$("#tva").val($("#id_tva").val());
 		$("#unite_mesure_vente").val($("#id_unite_mesure_vente").val());
 		
@@ -114,8 +126,6 @@ $(document).ready(function(){
 		
 		$("#magasin").selectpicker('refresh');
 		
-		console.log("sub val -> "+$("#sub").val());
-		
 		if($("#sub").val()=="true"){
 			
 			$("#subvension").prop("checked",true);
@@ -123,7 +133,12 @@ $(document).ready(function(){
 			
 		}
 		
-		console.log("subvension val -> "+$("#subvention").val());
+		if($("#cons").val()=="true"){
+			
+			$("#consign").prop("checked",true);
+			$("#consignation").val("on");
+			
+		}
 		
 	}
 	

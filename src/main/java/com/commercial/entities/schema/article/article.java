@@ -14,7 +14,6 @@ import javax.persistence.Table;
 import com.commercial.entities.schema.static_data.unite_mesure;
 
 @Entity
-
 @Table(name="article" , schema = "article")
 
 public class article implements Serializable{
@@ -45,8 +44,6 @@ public class article implements Serializable{
 	
 	private String date_creation;
 	
-	private String code_comptable;
-	
 	@ManyToOne
 	@JoinColumn(name = "unite_mesure_vente")
 	private unite_mesure unite_mesure_vente;
@@ -62,13 +59,16 @@ public class article implements Serializable{
 	@Column(columnDefinition="double precision default 0")
 	private double pesagePalette;
 	
+	@Column(columnDefinition="boolean default false")
+	private boolean consignation = false;
 	
 	public article() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public article(String code, produit produit, emballage_produit emballage_produit, pesage_produit pesage_produit, String image_article, 
-			double vendu, String date_creation, String code_comptable, unite_mesure unite_mesure_vente, boolean subvension, String libelle) {
+	public article(String code, produit produit, emballage_produit emballage_produit, pesage_produit pesage_produit, 
+			String image_article, double vendu, String date_creation, unite_mesure unite_mesure_vente, boolean subvension, 
+			String libelle, boolean consignation) {
 		super();
 		this.code = code;
 		this.produit = produit;
@@ -77,10 +77,10 @@ public class article implements Serializable{
 		this.image_article = image_article;
 		this.vendu = vendu;
 		this.date_creation = date_creation;
-		this.code_comptable = code_comptable;
 		this.unite_mesure_vente = unite_mesure_vente;
 		this.subvension = subvension;
 		this.libelle = libelle;
+		this.consignation = consignation;
 	}
 
 	public Long getId() {
@@ -147,14 +147,6 @@ public class article implements Serializable{
 		this.date_creation = date_creation;
 	}
 
-	public String getCode_comptable() {
-		return code_comptable;
-	}
-
-	public void setCode_comptable(String code_comptable) {
-		this.code_comptable = code_comptable;
-	}
-
 	public unite_mesure getUnite_mesure_vente() {
 		return unite_mesure_vente;
 	}
@@ -193,6 +185,14 @@ public class article implements Serializable{
 
 	public void setPesagePalette(double pesagePalette) {
 		this.pesagePalette = pesagePalette;
+	}
+
+	public boolean isConsignation() {
+		return consignation;
+	}
+
+	public void setConsignation(boolean consignation) {
+		this.consignation = consignation;
 	}
 	
 }

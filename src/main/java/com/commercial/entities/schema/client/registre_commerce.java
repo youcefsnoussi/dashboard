@@ -19,88 +19,92 @@ import com.commercial.entities.schema.static_data.wilaya;
 
 @Entity
 
-@Table(name="registre_commerce" , schema = "client")
+@Table(name = "registre_commerce", schema = "client")
 
-public class registre_commerce implements Serializable{
-	
-	 @Id 
-	 @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 private Long id;
-	 
-	 private String nom;
-	 private String prenom;
-	 
-	 @Column(unique = true)
-	 private String code;
-	 
-	 @ManyToOne
-	 @JoinColumn(name = "category_client")
-	 private category_client category;
-	 
-	 @Column(unique = true)
-	 private String numero_rc;
-	 
-	 @Column(unique = true)
-	 private String numero_art;
-	 
-	 @Column(unique = true)
-	 private String numero_nif;
-	 
-	 private String date_emission;
-	 
-	 private String date_fin;
-	 
-	 private String adresse;
-	 private String comune;
-	 
-	 @ManyToOne
-	 @JoinColumn(name = "wilaya")
-	 private wilaya wilaya;
-	 
-	 private String etat; //------------------> etat tweli desactivé ki ifout la date
-	 
-	 private double tva; //-------------------> 0 matetebakch alih tva / 1 3akss
-	 
-	 private double plafond;
-	 
-	 private double sold_encours;
-	 
-	 private String activite;
-	 
-	 private String etat_blockage = "active";
-	 
-	 @ManyToOne
-	 @JoinColumn(name = "banque")
-	 private banque banque;
-	
-	 @ManyToOne
-	 @JoinColumn(name = "type_reglement")
-	 private type_reglement type_reglement;
-	 
-	 @ManyToOne
-	 @JoinColumn(name = "mode_paiement")
-	 private mode_paiement mode_paiement;
-	 
-	 @ManyToOne
-	 @JoinColumn(name = "unite")
-	 private unite unite;
-	 
-	 private String date_last_facture;
-	 
-	 @Column(columnDefinition="boolean default false")
-	 private boolean multiple_bon_livraison;
-	 
-	 private String ArticleLoieExoneration;
-	 
+public class registre_commerce implements Serializable {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	private String nom;
+	private String prenom;
+
+	@Column(unique = true)
+	private String code;
+
+	@ManyToOne
+	@JoinColumn(name = "category_client")
+	private category_client category;
+
+	@Column(unique = true)
+	private String numero_rc;
+
+	@Column(unique = true)
+	private String numero_art;
+
+	@Column(unique = true)
+	private String numero_nif;
+
+	private String date_emission;
+
+	private String date_fin;
+
+	private String adresse;
+	private String comune;
+
+	@ManyToOne
+	@JoinColumn(name = "wilaya")
+	private wilaya wilaya;
+
+	private String etat; // ------------------> etat tweli desactivé ki ifout la date
+
+	private double tva; // -------------------> 0 matetebakch alih tva / 1 3akss
+
+	private double plafond;
+
+	private double sold_encours;
+
+	private String activite;
+
+	private String etat_blockage = "active";
+
+	@ManyToOne
+	@JoinColumn(name = "banque")
+	private banque banque;
+
+	@ManyToOne
+	@JoinColumn(name = "type_reglement")
+	private type_reglement type_reglement;
+
+	@ManyToOne
+	@JoinColumn(name = "mode_paiement")
+	private mode_paiement mode_paiement;
+
+	@ManyToOne
+	@JoinColumn(name = "unite")
+	private unite unite;
+
+	private String date_last_facture;
+
+	@Column(columnDefinition = "boolean default false")
+	private boolean multiple_bon_livraison;
+
+	private String ArticleLoieExoneration;
+
+	@Column(columnDefinition = "boolean default false")
+	private boolean consignation;
+
 	public registre_commerce() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public registre_commerce(String nom, String prenom, String code, category_client category, String numero_rc,
-			String numero_art, String numero_nif, String date_emission, String date_fin, String adresse, String comune, wilaya wilaya, 
-			String etat, double tva, double plafond, double sold_encours, String activite, String etat_blockage, banque banque, 
-			type_reglement type_reglement, mode_paiement mode_paiement, unite unite, boolean multiple_bon_livraison) {
+			String numero_art, String numero_nif, String date_emission, String date_fin, String adresse, String comune,
+			wilaya wilaya, String etat, double tva, double plafond, double sold_encours, String activite,
+			String etat_blockage, banque banque, type_reglement type_reglement, mode_paiement mode_paiement,
+			unite unite, boolean multiple_bon_livraison, boolean consignation) {
 		super();
 		this.nom = nom;
 		this.prenom = prenom;
@@ -125,6 +129,7 @@ public class registre_commerce implements Serializable{
 		this.mode_paiement = mode_paiement;
 		this.unite = unite;
 		this.multiple_bon_livraison = multiple_bon_livraison;
+		this.consignation = consignation;
 	}
 
 	public Long getId() {
@@ -242,7 +247,7 @@ public class registre_commerce implements Serializable{
 	public double getTva() {
 		return tva;
 	}
-	
+
 	public void setTva(double tva) {
 		this.tva = tva;
 	}
@@ -334,7 +339,13 @@ public class registre_commerce implements Serializable{
 	public void setArticleLoieExoneration(String articleLoieExoneration) {
 		ArticleLoieExoneration = articleLoieExoneration;
 	}
-	 
-	
 
+	public boolean isConsignation() {
+		return consignation;
+	}
+
+	public void setConsignation(boolean consignation) {
+		this.consignation = consignation;
+	}
+	
 }

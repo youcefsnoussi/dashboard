@@ -207,29 +207,6 @@
 							        		
 							        	</div>
 										
-										<div class="col-md-3" style="text-align: center;">
-			        		
-							        		<label> Vente Palette </label>
-							        		
-							        		<input th:if="${c.ventePalette}==true" type="checkbox" id="checkVP"  class="form-control" checked >
-							        		<input th:unless="${c.ventePalette}==true" type="checkbox" id="checkVP" class="form-control"  >
-							        		
-							        		<input th:if="${c.ventePalette}==true" type="hidden" id="vente_palette" name="ventePalette" 
-							        				class="form-control" value="on" >
-							        		<input th:unless="${c.ventePalette}==true" type="hidden" id="vente_palette" name="ventePalette" 
-							        				class="form-control" value="off" >
-							        		
-							        	</div>
-							        	
-							        	<div class="col-md-3">
-							        		
-							        		<label> Sold Palette </label>
-							        		
-							        		<input type="number" step="any" class="form-control" id="sold_palette" name="soldPalette" 
-							        			th:value="${c.soldPalette}" >
-							        		
-							        	</div>
-										
 									</div>
 									
 									<hr>

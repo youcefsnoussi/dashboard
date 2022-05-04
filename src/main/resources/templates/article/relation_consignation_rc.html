@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\displayResponseResult.js"></script>
+		
+		<style>
+		
+		</style>
+		
+		<script type="text/javascript">
+		
+		$(document).ready(function(){
+			
+			$("#sub").click(function() {
+				
+				let div = parseFloat($("#prix_u").val());
+				
+				if( div >= 0){
+					
+					$(this).attr("disabled", true);
+					
+					$("#frm").submit();
+					
+				}
+				else{
+					
+					$("#title").text("Erreur !!!");
+					
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					
+					$("#text").text("Prix doit être supperieur a 0");
+					
+					$("#error").modal("show");
+					
+				}
+				
+			});
+			
+		})
+		
+		</script>
+		
+</head>
+<body>
+	
+	<div class="container-fluid h-100"> <!-- h-100 -->
+		
+		<div class="card">
+		
+			<!--
+			<h3 class="card-header  text-center"> <i class="far fa-bread-slice"></i>  Ajouter un article </h3>
+			<br>
+			-->
+			<form id="frm" th:action="@{/relation_consignation_rc_post}" method="post" autocomplete="off">
+						  
+				<div class="card-body " th:with="info = ${info_entreprise}">
+						  
+					<div class="row d-flex justify-content-center">
+					
+						<div class="col-md-4">
+						
+							<label>Registre Commerce</label>
+							
+							<select class="form-control selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
+								name="id_rc" id="id_rc" data-size="5">
+								
+								<option th:each="rc:${rcs}" th:value="${rc.id}" th:text="${rc.nom}+' '+${rc.prenom}" 
+										th:attr="data-subtext=${rc.code}"></option>
+
+							</select>
+							
+						</div>
+						
+						<div class="col-md-4 offset">
+							
+							<label>Article Consignation</label>
+							
+							<select class="form-control selectpicker" data-style="btn btn-outline-secondary" data-live-search="true"
+								name="id_art_cons" id="id_art_cons" data-size="5">
+								
+								<option th:each="art_cons:${articles_consignation}" th:value="${art_cons.id}" 
+									th:text="${art_cons.libelle}" th:attr="data-subtext=${art_cons .code}"></option>
+
+							</select>
+						
+						</div>
+						
+						<div class="col-md-4 offset">
+							
+							<label>Prix unitaire</label>
+							
+							<input type="number" step="any" class="form-control" id="prix_u" name="prix_u">
+						
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<div class="d-flex justify-content-center">
+					
+						<input type="button" class="btn btn-primary" value="Valider" id="sub">
+					
+					</div>
+					
+				</div>
+			
+			</form>
+			
+		</div>
+		
+	</div>
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <h6 id="text"></h6>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+</body>
+</html>

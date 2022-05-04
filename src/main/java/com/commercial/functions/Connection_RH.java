@@ -18,7 +18,7 @@ public class Connection_RH {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Connection getconnection() {
+	public static Connection getconnection() {
 		
 		Connection appcon = null;
 		try {
@@ -31,19 +31,20 @@ public class Connection_RH {
 			String username = "postgres";
 			String password = "***REMOVED***";
 			appcon = DriverManager.getConnection(url, username, password);
-			System.out.println("DATABASE CONNECT !! (y)");
+			//System.out.println("DATABASE CONNECT !! (y)");
 			
 			//appcon.close();
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("non");
-			System.out.println(e);
+			//e.printStackTrace();
+			System.out.println("Class de Connection Introuvable \nMessage : "+e.getMessage());
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("nooooooooOoooooooon");
+			//e.printStackTrace();
+			System.out.println("Connection to GRH DB Impossible \nMessage : "+e.getMessage());
+			//System.out.println("nooooooooOoooooooon");
 		}
 
 		return appcon;
@@ -56,8 +57,8 @@ public class Connection_RH {
 		
 		List <Map<String,String>> list_emp = new ArrayList <Map<String,String>> ();
 		
-		Connection_RH db = new Connection_RH();
-		Connection con = db.getconnection();
+		//Connection_RH db = new Connection_RH();
+		Connection con = getconnection();
 
 	
   		Statement state = null;

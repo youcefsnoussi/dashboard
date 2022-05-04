@@ -75,7 +75,7 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 	
 	@Query( value="Select mvm.new_sold_rc FROM dynamic_data.mouvement mvm " +
 				  "WHERE registre_commerce = :rc AND CAST(date as date) <= Cast(:date AS date) " + 
-				  "ORDER BY mvm.id DESC limit 1 ",
+				  "ORDER BY CAST(mvm.date AS date) DESC limit 1 ",
 				  nativeQuery=true)
 	 
 	public Object GetLastSoldDateByRc(@Param("rc") long rc, @Param("date") String date);

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,14 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.article_consignation_relation;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
+import com.commercial.entities.schema.article.rc_consignation;
 import com.commercial.entities.schema.article.repository.articleRepository;
+import com.commercial.entities.schema.article.repository.article_consignation_relationRepository;
 import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
+import com.commercial.entities.schema.article.repository.rc_consignationRepository;
 import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
@@ -86,6 +91,9 @@ public class factureRestController {
 	
 	@Autowired
 	bon_livraison_factureRepository blfRepo;
+	
+	@Autowired
+	article_consignation_relationRepository art_cons_relRepo;
 	
 	@Autowired
 	PaletteService ps;
@@ -184,19 +192,48 @@ public class factureRestController {
 	@Autowired
 	tva_Repository tvaRepo;
 	
+	@Autowired
+	rc_consignationRepository rccRepo;
+	
 	@RequestMapping(value="/ajax_get_art_by_rc_cat")
 	public List<prixUnitaire_article_categoryClient> get_art_by_rc_cat(
 		@RequestParam("id_rc_clt") long id_rc_clt) throws IOException, ParseException{
 		
 		client_registreCommerce clt_rc = clt_rcRepo.getOne(id_rc_clt);
 		
-		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(clt_rc.getRegistre_commerce().getCategory());
+		List <prixUnitaire_article_categoryClient> list_art = 
+				pu_a_ctRepo.get_articles_by_CatClient(clt_rc.getRegistre_commerce().getCategory());
 		
 		//------------------------- get reduction if existe -----------------------
 		
-		for(int i=0;i<list_art.size();i++) {
+		list_art.stream().forEach( pu -> {
 			
-			prixUnitaire_article_categoryClient pu = list_art.get(i);
+			if(clt_rc.getRegistre_commerce().getTva()==0) {
+				
+				//System.out.println("-----<>-- "+tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()));
+				
+				pu.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()).get(0));
+				
+			}
+			
+			if(pu.getArticle().isConsignation()) { //---------> article consignation display price consignation
+				
+				Optional<rc_consignation> rcc = 
+						Optional.ofNullable(rccRepo.getRcConsignation(clt_rc.getRegistre_commerce(), pu.getArticle()));
+				
+				rcc.ifPresent(r -> {
+				
+					pu.setPrix(r.getPrix_u_ht());
+				
+				});
+				
+			}
+			
+		});
+		
+		//for(int i=0;i<list_art.size();i++) {
+			
+			//prixUnitaire_article_categoryClient pu = list_art.get(i);
 			/*
 			reduction_client_prixU_article red = reduxRepo.get_reduction_by_clt_art(clt_rc.getClient(), pu.getArticle(), gtd.get_date()); 
 			
@@ -210,15 +247,15 @@ public class factureRestController {
 				
 			}
 			*/
-			if(clt_rc.getRegistre_commerce().getTva()==0) {
+			//if(clt_rc.getRegistre_commerce().getTva()==0) {
 				
 				//System.out.println("-----<>-- "+tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()));
 				
-				pu.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()).get(0) );
+				//pu.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()).get(0) );
 				
-			}
+			//}
 			
-		}
+		//}
 		
 		//--------------------------------------------------------------------------
 		
@@ -239,6 +276,25 @@ public class factureRestController {
 		return list_mag;
 	}
 	
+	//----------------------------------------------------------------
+	
+	@RequestMapping(value="/ajax_get_art_consign")
+	public List<article_consignation_relation> ajax_get_art_consign(
+		@RequestParam("id_article") long id_article,
+		@RequestParam("id_rc_clt") long id_rc_clt
+		) throws IOException, ParseException{
+		
+		//System.out.println("ajax_get_magasin_by_art ---> id article sent  by client -->"+id_article);
+		
+		//List<article_consignation_relation> list_art_consign = art_cons_relRepo.findByArticle(artRepo.getOne(id_article));
+		
+		List<article_consignation_relation> list_art_consign = 
+				art_cons_relRepo.getArticleConsignationWithRc(artRepo.getOne(id_article),
+						clt_rcRepo.getOne(id_rc_clt).getRegistre_commerce());
+		
+		return list_art_consign;
+	}
+	
 	//------------------------------------------------------------------
 	
 	@RequestMapping(value="/ajax_test_plafond")
@@ -256,9 +312,9 @@ public class factureRestController {
 		HashMap<String, Integer> map = new HashMap<>();
 		
 		client_registreCommerce rc_clt = clt_rcRepo.getOne(id_relation_rc_client);
-		
-		client clt = rc_clt.getClient();
 		/*
+		client clt = rc_clt.getClient();
+		
 		List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_clt(clt);
 		
 		double montant = 0;
@@ -311,7 +367,7 @@ public class factureRestController {
 		double sold_encours = rc.getSold_encours();
 		
 		//------------------------ TEST Palette -----------------------------
-		
+		/*
 		double pricePalette = 0;
 		
 		if(clt.isVentePalette()==true) {
@@ -336,10 +392,10 @@ public class factureRestController {
 			map.put("plafond_palette", 0);
 			
 		}
-		
+		*/
 		//-------------------------------------------------------------------
 		
-		sold_encours = sold_encours + montant + montant_ttc + pricePalette; //--------> pricepalette prix total palette
+		sold_encours = sold_encours + montant + montant_ttc ; //--------> pricepalette prix total palette + pricePalette
 		
 		//System.out.println("SOLD RC -> "+sold_encours+"/ plafond RC -> "+rc.getPlafond());
 		

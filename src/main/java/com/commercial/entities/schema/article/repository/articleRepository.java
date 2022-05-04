@@ -16,6 +16,10 @@ public interface articleRepository extends JpaRepository<article, Long>{
 	
 	public article findByLibelle(String libelle);
 	
+	public List<article> findByConsignationTrue();
+	
+	public List<article> findByConsignationFalse();
+	
 	//------------------------------------------------------------------------------
 	
 	@Query( " FROM article art "
@@ -31,11 +35,10 @@ public interface articleRepository extends JpaRepository<article, Long>{
 			+ " WHERE art.produit = :produit "
 			+ " AND art.emballage_produit = :emb_produit "
 			+ " AND art.pesage_produit = :pes_produit"
-			+ " AND art.code_comptable = :code_comptable"
 			+ " AND art.subvension = :sub")
 	
 	public article  if_art_same_spec_exist(@Param("produit") produit produit, @Param("emb_produit") emballage_produit emb_produit,
-											@Param("pes_produit") pesage_produit pes_produit, @Param("code_comptable") String code_comptable,
+											@Param("pes_produit") pesage_produit pes_produit,
 											@Param("sub") boolean subvension);
 	
 	//------------------------------------------------------------------------------

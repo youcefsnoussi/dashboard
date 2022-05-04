@@ -178,7 +178,8 @@ public class dashboardController {
 					
 					sum_fct = fact_dRepo.get_info_sold_fact_by_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), cat_p);
 					
-					sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), cat_p);
+					sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_category(firstDayOfMonth.toString(), 
+										lastDayOfMonth.toString(), cat_p);
 					
 					for(int i=0;i<sum_fct.size();i++) {
 						
@@ -217,9 +218,11 @@ public class dashboardController {
 					
 					for(sous_category_produit scat :l_scat) {
 						
-						sum_fct = fact_dRepo.get_info_sold_fact_by_sous_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), scat);
+						sum_fct = fact_dRepo.get_info_sold_fact_by_sous_category(firstDayOfMonth.toString(), 
+												lastDayOfMonth.toString(), scat);
 						
-						sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_sous_category(firstDayOfMonth.toString(), lastDayOfMonth.toString(), scat);
+						sum_fct_av = fact_av_dRepo.get_info_sold_fact_av_by_sous_category(firstDayOfMonth.toString(), 
+												lastDayOfMonth.toString(), scat);
 						
 						for(int i=0;i<sum_fct.size();i++) {
 							

@@ -48,13 +48,14 @@
 					
 						<input type="hidden" id="id_art" name="id_art" th:value="${article.id}">
 						<input type="hidden" id="code" th:value="${article.code}">
-						<input type="hidden" id="code_compt" th:value="${article.code_comptable}">
 						
 						<input type="hidden" id="id_cat_prod" th:value="${article.produit.sous_category_produit.category_produit.id}">
 						<input type="hidden" id="id_sous_cat_prod" th:value="${article.produit.sous_category_produit.id}">
 						<input type="hidden" id="id_prod" th:value="${article.produit.id}">
 						
 						<input type="hidden" id="sub" th:value="${article.subvension}">
+						
+						<input type="hidden" id="cons" th:value="${article.consignation}">
 						
 						<input type="hidden" id="libelle" th:value="${article.libelle}">
 						
@@ -163,14 +164,6 @@
 						
 						</div>
 						
-						<div class="col-md-3" >
-						
-							<label> Code Comptable</label>
-							
-							<input type="text" id="code_comptable" name="code_comptable" class="form-control" value=" " required>
-						
-						</div>
-						
 						<div class="col-md-3">
 						 
 							<label> Unite de mesure (Vente)</label>
@@ -189,6 +182,15 @@
 			        		
 			        		<input type="checkbox" id="subvension"  class="form-control">
 			        		<input type="hidden" id="subvention" name="subvention" value="off">
+			        		
+			        	</div>
+						
+						<div class="col-md-1">
+			        		
+			        		<label> Consignation </label>
+			        		
+			        		<input type="checkbox" id="consign"  class="form-control">
+			        		<input type="hidden" id="consignation" name="consignation" value="off">
 			        		
 			        	</div>
 						

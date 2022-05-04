@@ -182,6 +182,7 @@ public class list_rcController {
 		@RequestParam("type_reg") long type_reg,
 		@RequestParam("mode_pay") long mode_paiement,
 		@RequestParam(value = "MultipleBon", required = false) String MultipleBon,
+		@RequestParam(value = "Consignation", required = false) String Consignation,
 		
 		@SessionAttribute("user") users user){
 		
@@ -196,6 +197,8 @@ public class list_rcController {
 		date_fin = ctd.convertion_InputDate_to_MyDate(date_fin);
 		
 		boolean multipleBL = (MultipleBon.equals("on")) ? true : false;
+		
+		boolean consignation = (Consignation.equals("on")) ? true : false;
 		
 		rc.setActivite(activite);
 		rc.setAdresse(adresse);
@@ -214,6 +217,7 @@ public class list_rcController {
 		rc.setBanque(banqueRepo.getOne(id_banque));
 		rc.setMode_paiement(mpRepo.getOne(mode_paiement));
 		rc.setMultiple_bon_livraison(multipleBL);
+		rc.setConsignation(consignation);
 		
 		double ttva = 0;
 		
@@ -230,14 +234,14 @@ public class list_rcController {
 		
 		Connection_Comptabilite con_c = new Connection_Comptabilite();
 		
-		if(con_c.getconnection() != null) {
+		if(con_c.getconnection()!=null) {
 			
 			con_c.EditClientToComptaDB(rc);
 			
 		}
-		
 		//-------------------- tracking operation -----------------------------------
-		//*********-*/654654dqsfsdfsdfsdfsd
+		//**********/ 654654dqsfsdfsdfsdfsd
+		
 		registre_commerce_backup rcb = new registre_commerce_backup(rc, user);
 		
 		//System.out.println("===== ID ==>"+rcb.getId()+" / id_rc ===>"+rcb.getId_rc());

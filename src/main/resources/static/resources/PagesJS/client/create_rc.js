@@ -72,6 +72,21 @@ $(document).ready(function() {
 		
 	});
 	
+	$("#consignation_check").change(function() {
+		
+		if($(this).prop("checked")){
+			
+			$("#Consignation").val("on");
+			
+		}
+		else{
+			
+			$("#Consignation").val("off");
+			
+		}
+		
+	});
+	
 	$(".n_nif").keyup(function(){
 		
 		var val = $(this).val();

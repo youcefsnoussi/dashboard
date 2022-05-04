@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
+import com.commercial.entities.schema.article.repository.article_consignation_relationRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
 import com.commercial.entities.schema.article.repository.emballage_produitRepository;
 import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.pesage_produitRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
 import com.commercial.entities.schema.article.repository.produitRepository;
+import com.commercial.entities.schema.article.repository.rc_consignationRepository;
 import com.commercial.entities.schema.article.repository.sous_category_produitRepository;
 import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.client_registreCommerce;
@@ -52,7 +54,7 @@ import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
-import com.commercial.services.PaletteService;
+import com.commercial.services.ConsignationService;
 import com.commercial.services.track_operations;
 
 @Controller
@@ -131,7 +133,7 @@ public class commandeController {
 	track_operations trk;
 	
 	@Autowired
-	PaletteService PalServ;
+	rc_consignationRepository rccRepo;
 	
 	//---------------------------------------------
 	
@@ -215,6 +217,12 @@ public class commandeController {
 	
 	//__________________________________________POST____________________________________________________________________
 	
+	@Autowired
+	ConsignationService consService;
+	
+	@Autowired
+	article_consignation_relationRepository art_cons_relRepo;
+	
 	@RequestMapping(value="/new_commande_post",method=RequestMethod.POST)
 	public String new_commande(HttpServletRequest req,
 			//@RequestParam("id_client") long id_client,
@@ -242,7 +250,7 @@ public class commandeController {
 			@RequestParam("montant_redux_art_pourc") double [] montant_redux_art_pourc,
 			@RequestParam("montant_net_ht_art") double [] montant_net_ht_art,
 			@RequestParam("montant_ttc_art") double [] montant_ttc_art,
-			
+			@RequestParam("art_consign") List<String> art_consign,
 			
 			@SessionAttribute("user") users user){
 			
@@ -334,6 +342,8 @@ public class commandeController {
 							montant_ttc_art[i]);
 					*/
 					
+					//System.out.println("art consignation for "+i+" -->"+ art_consign.get(i));
+					
 					prixUnitaire_article_categoryClient pu_obj = 
 							prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), artRepo.getOne(article[i]));
 					
@@ -343,11 +353,22 @@ public class commandeController {
 					
 					//----------------------------------------------------------------------------
 					
+					double prix_u = (!artRepo.getOne(article[i]).isConsignation()) ? pu_obj.getPrix() 
+							: rccRepo.getRcConsignation(rc, artRepo.getOne(article[i])).getPrix_u_ht();
+					
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i],
-							pu_obj.getPrix(), taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
+							prix_u, taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
 							magasinRepo.getOne(id_magasin[i]));
 					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
+					
+					if(art_cons_relRepo.if_art_consigned(artRepo.getOne(article[i])).size()!=0) {
+					
+						consService.consignationBL(bl, art_consign.get(i), rc, artRepo.getOne(article[i]), quantite[i], 
+									magasinRepo.getOne(id_magasin[i]));
+					
+					}
+					
 					/*
 					article art = artRepo.getOne(article[i]);
 					
@@ -382,13 +403,13 @@ public class commandeController {
 			grpRepo.save(grp); grpRepo.flush();
 			
 			//-------------------------- Partie palette --------------------------------
-			
+			/*
 			if(bl.getClient().isVentePalette()) {
 				
 				PalServ.addingPaletteToBL(bl);
 				
 			}
-			
+			*/
 			//----------------------------------------------- --------------------------
 			
 			//-------------------------------------- INSERT F TABLE NKHALA MYSQL --------------------<

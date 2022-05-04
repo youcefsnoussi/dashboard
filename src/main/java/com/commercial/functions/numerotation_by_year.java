@@ -75,7 +75,7 @@ public class numerotation_by_year {
 	
 	public String return_num_proforma (String num, Long unite){ //assm la rebrique numero 
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -88,7 +88,7 @@ public class numerotation_by_year {
 				resnum= num;
 				year_encours = num.substring(4, 6);
 				
-				month_encours= num.substring(7, 9);
+				//month_encours= num.substring(7, 9);
 				
 				if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 					
@@ -235,7 +235,7 @@ public class numerotation_by_year {
 	
 	public String return_num_BonLivraisonFacture (String num, Long unite){ //assm la rebrique numero 
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -248,7 +248,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(3, 5);
 					
-					month_encours= num.substring(6, 8);
+					//month_encours= num.substring(6, 8);
 					
 					//System.out.println("year_encours == "+year_encours);
 					
@@ -292,7 +292,7 @@ public class numerotation_by_year {
 	public String return_num_BonCommande (String num){ //assm la rebrique numero 
 		
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -307,7 +307,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(2, 4);
 					
-					month_encours= num.substring(5, 7);
+					//month_encours= num.substring(5, 7);
 					
 					//System.out.println("year_encours == "+year_encours);
 					
@@ -351,7 +351,7 @@ public class numerotation_by_year {
 	public String return_num_facture (String num,Long long1){ //assm la rebrique numero 
 		
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -366,7 +366,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(4, 6);
 					
-					month_encours= num.substring(7, 9);
+					//month_encours= num.substring(7, 9);
 					
 					//System.out.println("year_encours == "+year_encours);
 					
@@ -410,7 +410,7 @@ public class numerotation_by_year {
 	public String return_num_facture_avoir (String num, Long long1){ //assm la rebrique numero 
 		
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -425,7 +425,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(6, 8);
 					
-					month_encours= num.substring(9, 11);
+					//month_encours= num.substring(9, 11);
 					
 					//System.out.println("year_encours == "+year_encours);
 					
@@ -469,7 +469,7 @@ public class numerotation_by_year {
 	public String return_num_facture_ristourne (String num, Long long1){ //assm la rebrique numero 
 		
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -484,7 +484,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(6, 8);
 					
-					month_encours= num.substring(9, 11);
+					//month_encours= num.substring(9, 11);
 					
 					if(year_encours.equals(y) /*&& month_encours.equals(m)*/){
 						
@@ -524,7 +524,7 @@ public class numerotation_by_year {
 	public String return_num_BonTransfert (String num, Long unite){ //assm la rebrique numero 
 		
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -539,7 +539,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(3, 5);
 					
-					month_encours= num.substring(6, 8);
+					//month_encours= num.substring(6, 8);
 					
 					//System.out.println("year_encours == "+year_encours);
 					
@@ -585,7 +585,7 @@ public class numerotation_by_year {
 	public String return_num_BonTransfertInterne (String num, Long unite){ //assm la rebrique numero 
 		
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -600,7 +600,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(4, 6);
 					
-					month_encours= num.substring(7, 9);
+					//month_encours= num.substring(7, 9);
 					
 					//System.out.println("year_encours == "+year_encours);
 					
@@ -644,7 +644,7 @@ public class numerotation_by_year {
 	public String return_num_BonSortie (String num, Long unite){ //assm la rebrique numero 
 		
 		
-		String numero ="",resnum="",year_encours="",month_encours="";
+		String numero ="",resnum="",year_encours=""/*,month_encours=""*/;
 		
 		DateFormat df = new SimpleDateFormat("yy"); // Just the year, with 2 digits
 		String y = df.format(Calendar.getInstance().getTime());
@@ -659,7 +659,7 @@ public class numerotation_by_year {
 					resnum= num;
 					year_encours = num.substring(3, 5);
 					
-					month_encours= num.substring(6, 8);
+					//month_encours= num.substring(6, 8);
 					
 					//System.out.println("year_encours == "+year_encours);
 					
@@ -709,7 +709,7 @@ public class numerotation_by_year {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		numerotation_by_year numero = new numerotation_by_year();
+		//numerotation_by_year numero = new numerotation_by_year();
 		/*
 		//System.out.println("Result BLF ->"+numero.return_num_BonLivraisonFacture("1BL21/04/00000001", (long) 3));
 		//System.out.println("--------------------");

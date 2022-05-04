@@ -83,7 +83,9 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 	
 	//---------------------------------------------------------------------
 	
-	@Query( "SELECT blf_det.article.id, blf_det.magasin.id, blf_det.unite_mesure.id, SUM(blf_det.quantite) "+ 
+	@Query( "SELECT blf_det.article.id, blf_det.magasin.id, blf_det.unite_mesure.id, SUM(blf_det.quantite), " +
+			
+			"SUM(blf_det.montant_remise) "+ 
 	
 			"FROM bon_livraison_facture_detail blf_det " + 
 			

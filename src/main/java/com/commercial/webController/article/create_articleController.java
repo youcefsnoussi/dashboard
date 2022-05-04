@@ -220,12 +220,12 @@ public class create_articleController {
 		@RequestParam("emb_prod") long emb_prod,
 		@RequestParam("pesage_prod") long pesage_prod,
 		@RequestParam("code_art") String code_art,
-		@RequestParam("code_comptable") String code_comptable,
 		@RequestParam("tva") long [] id_tva,
 		@RequestParam("unite_mesure_vente") long id_unite_mesure,
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("prix_category") double [] prix_category,
 		@RequestParam("subvention") String check,
+		@RequestParam("consignation") String check_c,
 		@RequestParam("lib") String lib,
 		
 		@SessionAttribute("user") users user){
@@ -254,13 +254,9 @@ public class create_articleController {
 		
 		pesage_produit pes_produit = pesRepo.getOne(pesage_prod);
 		
-		boolean sub = false;
+		boolean sub = (check.equals("on")) ? true : false;
 		
-		if(check.equals("on")) {
-			
-			sub = true;
-			
-		}
+		boolean consignation = (check_c.equals("on")) ? true : false;
 		
 		//--------------------------
 		
@@ -268,13 +264,12 @@ public class create_articleController {
 		
 		if(art_if_code_existe==null) {
 			
-			article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, code_comptable, sub);
+			article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, sub);
 			
 			if(art_if_same_specs==null) {
 				
-				
-				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(), code_comptable, 
-						unite_mesureRepo.getOne(id_unite_mesure), sub, lib);
+				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(),
+						unite_mesureRepo.getOne(id_unite_mesure), sub, lib, consignation);
 				
 				artRepo.save(art);
 				artRepo.flush();

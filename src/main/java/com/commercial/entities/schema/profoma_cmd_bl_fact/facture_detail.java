@@ -78,7 +78,23 @@ public class facture_detail implements Serializable{
 		this.montant_ht_net = montant_ht_net;
 		this.unite_mesure = unite_mesure;
 	}
-
+	
+	public facture_detail(facture facture, article article, double quantite, double prix_u_ht, double tva, double montant_remise) {
+		super();
+		this.facture = facture;
+		this.article = article;
+		this.quantite = quantite;
+		this.prix_u_ht = prix_u_ht;
+		this.montant_ht = quantite * prix_u_ht;
+		this.tva = tva;
+		this.montant_remise = montant_remise;
+		this.montant_ht_net = montant_ht - montant_remise;
+		this.pourcentage_remise = (montant_remise * 100) / montant_ht;
+		this.montant_tva = montant_ht_net * (tva / 100);
+		this.montant_ttc = montant_ht_net + montant_tva;
+		this.unite_mesure = article.getUnite_mesure_vente();
+	}
+	
 	public Long getId() {
 		return id;
 	}

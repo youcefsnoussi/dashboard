@@ -23,7 +23,7 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 	
 	@Query( " FROM prixUnitaire_article_categoryClient prix_u_c "
 			
-			+ " WHERE category_client = :cat_client AND prix !=(-1) ")
+			+ " WHERE category_client = :cat_client AND ( prix != '-1' OR prix_u_c.article.consignation='true') ")
 	
 	public List<prixUnitaire_article_categoryClient>  get_articles_by_CatClient(@Param("cat_client") category_client cat_client);
 	
@@ -47,7 +47,8 @@ public interface prixUnitaire_article_categoryClient_Repository extends JpaRepos
 			
 			+ " AND article = :article")
 	
-	public prixUnitaire_article_categoryClient get_prix_articles_by_CatClient_Object(@Param("cat_client") category_client cat_client, @Param("article") article article);
+	public prixUnitaire_article_categoryClient get_prix_articles_by_CatClient_Object(@Param("cat_client") category_client cat_client,
+											@Param("article") article article);
 	
 	//-------------------------------------------------------------------
 	

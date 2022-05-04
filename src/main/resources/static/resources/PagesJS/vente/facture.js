@@ -110,6 +110,12 @@ $(document).ready(function() {
 	
 	//----------------------------------------------------------------------
 	
+	$(".select_consign").change(function() {
+		
+		$(this).parent().parent().find("#art_consign").val($(this).val());
+		
+	})
+	
 	$(".art").on("change", function(){
 		
 		let tr = $(this).attr("id_tr");
@@ -122,7 +128,7 @@ $(document).ready(function() {
 		
 		parrent.find('#id_magasin').empty();
 		
-		$.ajaxSetup({async: false});
+		//$.ajaxSetup({async: false});
 		$.ajax({
 			url: 'ajax_get_magasin_by_art',
 			//type: 'POST',
@@ -141,6 +147,40 @@ $(document).ready(function() {
 					});
 					
 				});
+				
+			}
+		});
+		
+		//-----------------------------------------------------
+		
+		parrent.find("#select_consign").find('option').remove();
+		parrent.find("#select_consign").selectpicker('refresh');
+		
+		let id_rc_clt = $("#rc").val();
+		
+		//$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_get_art_consign',
+			//type: 'POST',
+			dataType: 'json',
+			data : {
+				id_article	: id_art,
+				id_rc_clt : id_rc_clt
+	        },
+	        success : function(responseJson) {
+	        	
+				$.each(responseJson, function(key, value) {
+					
+					parrent.find("#select_consign").each(function(){
+						
+						$(this).append('<option value="'+value.article_consignation.id+'" > '+
+								value.article_consignation.libelle+' </option>');
+						
+					});
+					
+				});
+				
+				parrent.find("#select_consign").selectpicker('refresh');
 				
 			}
 		});
@@ -221,6 +261,9 @@ $(document).ready(function() {
 		$('.art').find('option:not(:first)').remove();
 		$(".art").selectpicker('refresh');
 		
+		$(".select_consign").find('option').remove();
+		$(".select_consign").selectpicker('refresh');
+		
 		$(".qte").attr("readonly", false);
 		$(".id_magasin").empty();
 		$(".unite_mesure").val("");
@@ -294,8 +337,10 @@ $(document).ready(function() {
 				
 				if (responseJson != "null") {
 					
+					let options = new Array();
+					
 					$.each(responseJson, function(key, value) {
-						
+						/*
 						if(value.id==(-1)){
 							
 							$("#redux").append("<span class='badge badge-secondary' id='art'> "+value.article.produit.designation+" "+
@@ -303,27 +348,19 @@ $(document).ready(function() {
 									value.article.pesage_produit.unite_pesage+"</span>")
 							
 						}
+						*/
 						
-						$(".art").each(function(){
-							
-							var sub = "Subventionné";
-							
-							if(value.article.subvension==false){
-								
-								sub = "NON Subventionné";
-								
-							}		
-							
-							$(this).append('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
-										   'data-subtext="'+value.article.code+' ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
-										   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
-										   'pp="'+value.article.pesagePalette+'">'+value.article.libelle+'</option>');
-							
-							$(this).selectpicker('refresh');
-								
-						});
+						let sub = (value.article.subvension==true) ? "Subventionné" : "NON Subventionné";
+						
+						options.push('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
+								   'data-subtext=" ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
+								   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
+								   '">'+value.article.code+' | '+value.article.libelle+'</option>');
 						
 					});
+					
+					$(".art").append(options);
+					$(".art").selectpicker('refresh');
 					
 					$(".art").find("option").hide();
 					
@@ -502,7 +539,7 @@ $(document).ready(function() {
 			
 		}
 		
-		console.log("test ----->"+test)
+		//console.log("test ----->"+test)
 		
 		if(test===0){
 			
@@ -549,7 +586,7 @@ $(document).ready(function() {
 								msg1 = msg1+"- Plafond RC dépasser <br>";
 								
 							}
-							
+							/*
 							console.log("plafond_palette->"+responseJson.plafond_palette)
 							
 							if(responseJson.plafond_palette!=0){
@@ -559,17 +596,17 @@ $(document).ready(function() {
 								msg1 = msg1+"- Plafond Palette dépasser <br>";
 								
 							}
-						
+							*/
 					}
 					
 				}
 			});
 			
-			console.log("-------------------------")
+			//console.log("-------------------------")
 			
-			console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
+			//console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
 			
-			if(client_plafond==0 && rc_plafond==0 && palette_plafond==0){
+			if(client_plafond==0 && rc_plafond==0 /*&& palette_plafond==0*/){
 				
 				console.log("-----------------> SUBMIT")
 				

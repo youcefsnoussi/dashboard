@@ -122,7 +122,25 @@ public class facture implements Serializable{
 		this.notification = notification;
 		this.pourcentage_reduction = pourcentage_reduction;
 	}
-
+	
+	public facture(client client, registre_commerce registre_commerce, client_registreCommerce client_registrecommerce, String date, 
+			String time, String numero, String matricule_camion, bon_livraison bon_livraison, mode_paiement mode_paiement, users users
+			) {
+		
+		this.client = client;
+		this.registre_commerce = registre_commerce;
+		this.client_registrecommerce = client_registrecommerce;
+		this.date = date;
+		this.time = time;
+		this.numero = numero;
+		this.matricule_camion = matricule_camion;
+		this.bon_livraison = bon_livraison;
+		this.mode_paiement = mode_paiement;
+		this.users = users;
+		this.printed = false;
+		
+	}
+	
 	public Long getId() {
 		return id;
 	}
