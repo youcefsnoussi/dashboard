@@ -391,9 +391,9 @@
 					<table class="table" id="table" width="100%">
 						<thead class="thead-dark">
 							<tr>
-								<th align="center"  width="8%">Art</th>
+								<th align="center"  width="5%">Art consigne</th>
 								<th  align="center" >Libellé</th>
-								<th  align="center"  width="8%">Um</th>
+								<th  align="center"  width="3%">Um</th>
 								<th  align="center" >Qte</th>
 								<th  align="center" >Unité</th>
 								<th  align="center" >PU</th>
@@ -411,7 +411,14 @@
 	
 							<tr th:each="i : ${#numbers.sequence( 1, 20, 1)}" th:attr="id='tr'+${i}" >
 	
-								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
+								<td> 
+									<select class="form-control selectpicker select_consign" data-style="btn btn-outline-secondary" 
+										id="select_consign" data-width="100%" name="select_consign" th:attr="id_tr='tr'+${i}" 
+										multiple data-actions-box="true" data-selected-text-format="count"> 
+										
+									</select>
+									<input type="hidden" id="art_consign" name="art_consign" class="art_consign">
+								</td>
 								
 								<td> 
 									 <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8"

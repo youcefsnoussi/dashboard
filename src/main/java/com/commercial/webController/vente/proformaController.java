@@ -91,7 +91,7 @@ public class proformaController {
 		
 		get_time_date gtd = new get_time_date();
 		
-		System.out.println("Montant TVA-->"+proforma.getTotal_tva());
+		//System.out.println("Montant TVA-->"+proforma.getTotal_tva());
 		
 		proforma.setUsers(user);
 		proforma.setDate(gtd.get_date());
@@ -165,7 +165,7 @@ public class proformaController {
 	generate_Doc gd;
 	
 	@GetMapping("/print_proforma/{id}")
-	public String print_bl(HttpServletRequest request,
+	public String print_proforma(HttpServletRequest request,
 						 @PathVariable("id") long id_proforma,
 						 @SessionAttribute("user") users user,
 						 Model model){

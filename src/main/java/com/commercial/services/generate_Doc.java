@@ -920,29 +920,54 @@ public class generate_Doc {
 			
 			Map<String, Object> mp = new HashMap<String, Object>();
 			
+			//---------------------- Entreprise INFO -------------------------------
+			
+			mp.put("Nom_entreprise", infoeRepo.getOne((long)1 ).getNom_entreprise() );
+			mp.put("capitale", df.format(infoeRepo.getOne((long)1 ).getCapitale()) );
+			mp.put("adresse", infoeRepo.getOne((long)1 ).getAdresse_facturation() );
+			mp.put("tel", infoeRepo.getOne((long)1 ).getTelephone() );
+			mp.put("fax", infoeRepo.getOne((long)1 ).getFax() );
+			mp.put("num_rc", infoeRepo.getOne((long)1 ).getNum_rc() );
+			mp.put("num_art", infoeRepo.getOne((long)1 ).getNum_art() );
+			mp.put("num_nif", infoeRepo.getOne((long)1 ).getNum_nif() );
+			mp.put("num_nis", infoeRepo.getOne((long)1 ).getNum_nis() );
+			mp.put("BankAccounts", infoeRepo.getOne((long)1 ).getBankAccounts() );
+			
+			mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
+			
+			//----------------------- ajout virgule f lettre ta3 shkoupi ------------------
+			
 			mp.put("num_fact_av", fact_av.getNumero());
 			mp.put("id_fact_av", fact_av.getId());
-			mp.put("num_fact", facts);
-			mp.put("code", fact_av.getRegistre_commerce().getCode());
-			mp.put("client_category", fact_av.getRegistre_commerce().getNom()+" "+fact_av.getRegistre_commerce().getPrenom()+" "+
-										fact_av.getRegistre_commerce().getCategory().getNom_category());
-			mp.put("adresse", fact_av.getRegistre_commerce().getAdresse());
+			mp.put("num_client", fact_av.getRegistre_commerce().getCode());
+			mp.put("nom_client",fact_av.getRegistre_commerce().getNom()+" "+fact_av.getRegistre_commerce().getPrenom()+" "+
+					fact_av.getRegistre_commerce().getCategory().getNom_category());
+			mp.put("adresse_client", fact_av.getRegistre_commerce().getAdresse());
+			mp.put("rc", fact_av.getRegistre_commerce().getNumero_rc());
+			mp.put("nif", fact_av.getRegistre_commerce().getNumero_nif());
+			mp.put("nis", fact_av.getRegistre_commerce().getNumero_art());
+			mp.put("user", fact_av.getUsers().getMatricule());
+			mp.put("cat_rc", fact_av.getRegistre_commerce().getCategory().getNom_category());
 			mp.put("date", fact_av.getDate());
-			mp.put("user_matricule", fact_av.getUsers().getMatricule());
+			//mp.put("ArticleLoieExoneration", fact_av.getRegistre_commerce().getArticleLoieExoneration());
+			mp.put("time", fact_av.getTime());
+			mp.put("user", fact_av.getUsers().getMatricule());
 			
-			mp.put("montant_ht", df.format(fact_av.getMontant_ht()) );
-			mp.put("montant_tva", df.format(fact_av.getTva()) );
-			mp.put("montant_ttc", df.format(fact_av.getMontant_ttc()) );
+			//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
+			mp.put("total_ht", df.format(fact_av.getMontant_ht()) );
+			mp.put("total_tva", df.format(fact_av.getTva()) );
+			mp.put("total_ttc", df.format(fact_av.getMontant_ttc()) );
+			mp.put("timbre", df.format(0) );
+			mp.put("total_ht_net", df.format(fact_av.getMontant_ht_net()) );
+			mp.put("total_remise", df.format(fact_av.getMontant_remise()) );
+			
+			mp.put("num_fact", facts);
 			
 			//----------------------- ajout virgule f lettre ta3 shkoupi ------------------
 			
 			String m_ttc1 = df.format(fact_av.getMontant_ttc());
 			
-			System.out.println("---TTC1 -->"+m_ttc1);
-			
 			String m_ttc = m_ttc1.replaceAll(" ", "");
-			
-			System.out.println("---TTC -->"+m_ttc);
 			
 			String m [] = m_ttc.split(",");
 			
@@ -954,7 +979,8 @@ public class generate_Doc {
 				
 				String chk = ""+chkoupi[0], chk1 = ""+chkoupi[1]; 
 				
-				virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+FrenchNumberToWords.convert(Double.parseDouble(chk1));
+				virgule = FrenchNumberToWords.convert(Double.parseDouble(chk))+" "+
+				FrenchNumberToWords.convert(Double.parseDouble(chk1));
 				
 			}
 			else {
@@ -963,7 +989,7 @@ public class generate_Doc {
 				
 			}
 			
-			mp.put("montant_ttc_lettre", FrenchNumberToWords.convert(Double.parseDouble(m[0]))+" Virgule "+
+			mp.put("total_ttc_lettre", FrenchNumberToWords.convert(Double.parseDouble(m[0]))+" Virgule "+
 					virgule+" Dinars Algérien");
 			
 			//----------------------- calcule Cumule TVA --------------------------
@@ -1005,7 +1031,7 @@ public class generate_Doc {
 			
 			mp.put("cumule_tva", cumule_tva);
 				
-			jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture_avoir.jrxml");
+			jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture_avoir_A4.jrxml");
 			
 			JasperReport jreport = JasperCompileManager.compileReport(jdesign);
 			
@@ -1889,7 +1915,7 @@ public class generate_Doc {
 					
 					"registre_commerce IN "+
 					"(SELECT registre_commerce FROM proforma_cmd_bl_fact.facture fact "+
-					 "JOin proforma_cmd_bl_fact.facture_detail fact_d on fact_d.facture = fact.id "+
+					 "JOIN proforma_cmd_bl_fact.facture_detail fact_d on fact_d.facture = fact.id "+
 
 					 "JOIN article.article art ON art.id = fact_d.article "+
 					 "JOIN article.produit prd ON prd.id = art.produit "+
@@ -2252,6 +2278,43 @@ public class generate_Doc {
 			String qr_code = generateQRcode.createQRcode(blfs.get(i).getNumero(), "BL");
 			
 			String pdf = generate_blq(blfs.get(i), qr_code);
+			
+		    Path source = Paths.get(pdf);
+
+		    Path newDir = Paths.get("D:\\Commercial\\Doc\\Combination");
+
+		    //create the target directories, if directory exits, no effect
+		    Files.createDirectories(newDir);
+		    
+		    String fp = source.getFileName().toString();
+		    
+		    fp = fp.replaceAll(".pdf", i+".pdf");
+		    
+		    Files.move(source, newDir.resolve(fp), StandardCopyOption.REPLACE_EXISTING);
+		    
+		    String newPath = "D:\\Commercial\\Doc\\Combination\\"+fp;
+		    
+		    allPdfs.add(newPath);
+		    
+		}
+		
+		CombinePdf.combine(allPdfs, "D:\\Commercial\\Doc\\BL\\BLFS.pdf");
+		
+		return "D:/Commercial/Doc/BL/BLFS.pdf";
+	
+	}	
+	
+	//------------------------------------------------------------------------------
+	
+	public String generate_facts(List<facture> facts) throws IOException {
+		
+		ArrayList<String> allPdfs = new ArrayList<String>();
+		
+		for(int i=0; i<facts.size(); i++) {
+			
+			String qr_code = generateQRcode.createQRcode(facts.get(i).getNumero(), "FCT");
+			
+			String pdf = generate_Fact_A4(facts.get(i), qr_code);
 			
 		    Path source = Paths.get(pdf);
 

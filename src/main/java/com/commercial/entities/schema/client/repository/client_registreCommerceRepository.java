@@ -150,6 +150,14 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 	@Query( "FROM client_registreCommerce crc " + 
 	
+			"WHERE crc.registre_commerce.consignation = 'TRUE' ")
+	
+	public List<client_registreCommerce>  RC_consignation();
+	
+	//-----------------------------------------------------
+	
+	@Query( "FROM client_registreCommerce crc " + 
+	
 			"WHERE crc.registre_commerce.multiple_bon_livraison = 'TRUE' ")
 	
 	public List<client_registreCommerce>  RC_bls_facture();

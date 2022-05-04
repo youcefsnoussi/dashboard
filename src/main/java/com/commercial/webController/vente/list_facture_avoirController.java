@@ -132,8 +132,8 @@ public class list_facture_avoirController {
 	@RequestMapping(value="/list_fact_avoir")
 	public String list_fact_avoir(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
-						 @RequestParam("date_debut") String date_debut,
-						 @RequestParam("date_fin") String date_fin,
+						 @RequestParam(name="date_debut", defaultValue="0") String date_debut,
+						 @RequestParam(name="date_fin", defaultValue="0") String date_fin,
 						 Model model) throws ParseException{
 		
 		String ret = "vente/list_facture_avoir";

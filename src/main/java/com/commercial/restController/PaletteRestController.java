@@ -1,5 +1,6 @@
 package com.commercial.restController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +32,12 @@ public class PaletteRestController {
 	
 	@GetMapping(value="/getClientsPalette")
 	public List<client> getClientsPalette(){
-		
+		/*
 		System.out.println("access get client");
 		
 		List<client> lstClientsPal = cltRepo.client_vente_palette();
-		
-		return lstClientsPal;
+		*/
+		return new ArrayList<>();
 		
 	}
 	
@@ -47,7 +48,7 @@ public class PaletteRestController {
 			) 
 	{
 		
-		ps.paletteIN(nbr_palette, cltRepo.getOne(id_client));
+		//ps.paletteIN(nbr_palette, cltRepo.getOne(id_client));
 		
 	}
 	

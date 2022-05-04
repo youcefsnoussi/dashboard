@@ -118,7 +118,7 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 			
 			+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"
 			
-			+ " ORDER BY registre_commerce.code" )
+			/*+ " ORDER BY registre_commerce.code"*/ )
 	 
 	public List<facture> get_code_rc_num_date(@Param("start") String start, @Param("end") String end);
 	

@@ -25,7 +25,7 @@ public class Connection_Comptabilite {
 			String username = "postgres";
 			String password = "Admin125478";
 			appcon = DriverManager.getConnection(url, username, password);
-			System.out.println("DATABASE CONNECT !! (y)");
+			//System.out.println("DATABASE CONNECT !! (y)");
 			
 			//appcon.close();
 			
@@ -36,10 +36,11 @@ public class Connection_Comptabilite {
 			System.out.println(e);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("nooooooooOoooooooon");
+			//e.printStackTrace();
+			System.out.println("No Connection to Comptability DB \nError Code : "+e.getErrorCode()+"\nMessage : "+e.getMessage());
+			appcon = null;
 		}
-
+		
 		return appcon;
 	
 	}

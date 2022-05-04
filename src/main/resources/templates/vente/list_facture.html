@@ -180,6 +180,37 @@
 				
 			});
 			
+			$("#printAll").click(function(){
+				
+				let start = $("#debut").val();
+				
+				let end = $("#fin").val();
+				
+				let id_rc = $("#rc").val();
+				
+				if(start=="" || end==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez selectionner les dates !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+												'src="print_facts?start='+start+'&end='+end+'&id_rc='+id_rc+'"></iframe>');
+					
+					$("#title_bl").text("Imprimer ");
+					
+					$("#icone_bl").attr("class","far fa-file-invoice");
+					
+					$("#fact_detail_modal").modal("show");
+					
+				}
+				
+			});
+			
 			$("#fact_av").click(function(){
 				
 				var facts = $("#facts").val();
@@ -437,6 +468,12 @@
 						
 						</div>
 						
+						<div class="col-md-1" >
+						
+							<button class="btn btn-dark" id="printAll">Imprimer</button>
+						
+						</div>
+						
 					</div>
 					
 					<hr>
@@ -582,10 +619,10 @@
 	      		<div class="col-md-4 offset-md-1">
 	      		<!--  
 	      			<button class="btn btn-info" id="print_fact"> <i id="icone_fact" class="far fa-print" style="font-size:22px;" ></i> 
-	      											Imprimer </button>  --> 
+	      											Imprimer </button>  
 	      			<button class="btn btn-warning" id="fact_avoir"> <i id="icone_fact" class="far fa-file-invoice" style="font-size:22px;" ></i> 
 	      											Facture d'avoir </button>
-			    	
+			    	--> 
 	      		</div>
 	      	
 	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">

@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import com.commercial.entities.schema.client.client;
 
 public interface clientRepository extends JpaRepository<client, Long> {
-	
+	/*
 	@Query( " FROM client c "
 			
 			+ " WHERE c.ventePalette = 'true' ")
 	
 	public List<client> client_vente_palette();
-	
+	*/
 	//--------------------
 	
 	@Query( " FROM client c "

@@ -30,6 +30,8 @@
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\vfs_fonts.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
 		
+		<script type="text/javascript" src="resources\additionalJS\jquery-spin.js"></script>
+		<script type="text/javascript" src="resources\additionalJS\spin.js"></script> 
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
@@ -42,6 +44,7 @@
 		<script type="text/javascript">
 		
 		$(document).ready(function() {
+			
 			/*
 			var getUrlParameter = function getUrlParameter(sParam) {
 			    var sPageURL = window.location.search.substring(1),
@@ -167,6 +170,7 @@
 				}
 				else{
 					
+					spin_it('on');
 					window.location.replace("etat_sortie_category?start="+start+"&end="+end);
 					
 				}

@@ -251,7 +251,7 @@
 							        	
 							        	</div>
 							        	
-							        	<div class="col-md-3" style="text-align: center;">
+							        	<div class="col-md-1" style="text-align: center;">
 			        		
 							        		<label> Vente par BL</label>
 							        		
@@ -263,6 +263,22 @@
 							        		<input th:if="${rc.multiple_bon_livraison}==true" type="hidden" id="MultipleBon" name="MultipleBon" 
 							        				class="form-control" value="on" >
 							        		<input th:unless="${rc.multiple_bon_livraison}==true" type="hidden" id="MultipleBon" name="MultipleBon" 
+							        				class="form-control" value="off" >
+							        		
+							        	</div>
+							        	
+							        	<div class="col-md-1" style="text-align: center;">
+			        		
+							        		<label> Consignation </label>
+							        		
+							        		<input th:if="${rc.consignation}==true" type="checkbox" id="consignation_check" 
+							        				class="form-control" checked >
+							        		<input th:unless="${rc.consignation}==true" type="checkbox" id="consignation_check" 
+							        				class="form-control"  >
+							        		
+							        		<input th:if="${rc.consignation}==true" type="hidden" id="Consignation" name="Consignation" 
+							        				class="form-control" value="on" >
+							        		<input th:unless="${rc.consignation}==true" type="hidden" id="Consignation" name="Consignation" 
 							        				class="form-control" value="off" >
 							        		
 							        	</div>

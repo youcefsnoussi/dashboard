@@ -32,6 +32,21 @@ $(document).ready(function() {
 				
 			});
 			
+			$("#consignation_check").change(function() {
+				
+				if($(this).prop("checked")){
+					
+					$("#Consignation").val("on");
+					
+				}
+				else{
+					
+					$("#Consignation").val("off");
+					
+				}
+				
+			});
+			
 			if($("#etat_blockage").val()=="active"){
 				
 				$("#active").css("border-width","4px");

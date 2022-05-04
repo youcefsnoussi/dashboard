@@ -26,6 +26,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_ristourne_deta
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_ristourneRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_ristourne_detailRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
 import com.commercial.services.generate_Doc;
@@ -83,7 +84,7 @@ public class facture_ristourneController {
 		
 		model.addAttribute("articles", pu_a_ctRepo.get_articles_ristourne(cat_prodRepo.get_cat_prod_by_name("Ristourne")));
 		
-		System.out.println(pu_a_ctRepo.get_articles_ristourne(cat_prodRepo.get_cat_prod_by_name("Ristourne")).get(0).getArticle().getId());
+		//System.out.println(pu_a_ctRepo.get_articles_ristourne(cat_prodRepo.get_cat_prod_by_name("Ristourne")).get(0).getArticle().getId());
 		
 		return ret;
 		
@@ -155,7 +156,8 @@ public class facture_ristourneController {
 			
 			//--------------------------------------insert to facture ristourne table ------
 			
-			facture_ristourne fact_ris = new facture_ristourne(clt, rc, today, time, numero, montant_ht, montant_tva, montant_ttc, "", user);
+			facture_ristourne fact_ris = new facture_ristourne(clt, rc, today, time, numero, montant_ht, montant_tva, 
+					montant_ttc, "", user);
 			
 			
 			fct_risRepo.save(fact_ris); fct_risRepo.flush();
@@ -164,11 +166,11 @@ public class facture_ristourneController {
 			
 			for(int i=0;i<article.length;i++) {
 				
-				System.out.println("id_art=========>"+article[i]);
-				
 				if(quantite[i]!=0) {
 					
-					facture_ristourne_detail fact_ris_d = new facture_ristourne_detail(fact_ris, artRepo.getOne(article[i]), quantite[i], 										prix_u_ht[i], montant_ht_art[i], tva_art[i], (montant_ht_art[i]*(tva_art[i]/100)), (montant_ht_art[i] + 										(montant_ht_art[i]*(tva_art[i]/100))) );
+					facture_ristourne_detail fact_ris_d = new facture_ristourne_detail(fact_ris, 
+							artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], tva_art[i], 
+							(montant_ht_art[i]*(tva_art[i]/100)), (montant_ht_art[i] + (montant_ht_art[i]*(tva_art[i]/100))) );
 					
 					fct_ris_dRepo.save(fact_ris_d);fct_ris_dRepo.flush();
 					
@@ -178,7 +180,8 @@ public class facture_ristourneController {
 			
 			//------------------------------------------------ insert into mouvement table
 			
-			mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture Ristourne", fact_ris.getId(), gtd.get_date(), gtd.get_time(), "", 										sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
+			mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture Ristourne", fact_ris.getId(), gtd.get_date(), 
+					gtd.get_time(), "", sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
 			
 			mvmRepo.save(mvm);mvmRepo.flush();
 			
@@ -192,9 +195,50 @@ public class facture_ristourneController {
 		
 	}
 	
-	//---------------------------- PRINT 
-	
 	//-----------------------------------------------------------------------------
+	
+	@RequestMapping(value="/list_ristourne")
+	public String list_proforma(HttpServletRequest request,
+						 @SessionAttribute("user") users user,
+						 @RequestParam(value="date_debut", defaultValue="0") String date_debut,
+						 @RequestParam(value="date_fin", defaultValue="0") String date_fin,
+						 Model model){
+		
+		String ret = "vente/list_ristourne";
+		
+		get_time_date gtd = new get_time_date();
+		
+		String date_d = "", date_f = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		if(date_debut.equals("0") && date_fin.equals("0")) {
+			
+			model.addAttribute("list_ristourne", fct_risRepo.get_ristourne_dates(gtd.get_date(), gtd.get_date()));
+			
+			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+			date_f = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+		}
+		else {
+					
+			model.addAttribute("list_ristourne", fct_risRepo.get_ristourne_dates(date_debut, date_fin));
+			
+			date_d = date_debut;
+			
+			date_f = date_fin;
+				
+		}
+		
+		model.addAttribute("date_d", date_d);
+		
+		model.addAttribute("date_f", date_f);
+		
+		return ret;
+		
+	}
+	
+	//---------------------------- PRINT 
 	
 	@Autowired
 	generate_Doc gd;

@@ -164,7 +164,7 @@ public class list_clientController {
 		
 		String path_img_client = "";
 		
-		boolean isVentePalette = (ventePalette.equals("on")) ? true : false;
+		//boolean isVentePalette = (ventePalette.equals("on")) ? true : false;
 		
 		if(!img_client.isEmpty() /*&& clt.getImg()!="D:/Commercial/Client/"+clt.getId()+"/"+ img_client.getOriginalFilename()*/) {
 		
@@ -216,8 +216,6 @@ public class list_clientController {
 			clt.setNom(nom);
 			clt.setPlafond(plafond);
 			clt.setPrenom(prenom);
-			clt.setVentePalette(isVentePalette);
-			clt.setSoldPalette(soldPalette);
 			//clt.setRemise(remise);
 			//clt.setTelephone(telephone);
 			//clt.setType_reglement(type_rRepo.getOne(type_reg));

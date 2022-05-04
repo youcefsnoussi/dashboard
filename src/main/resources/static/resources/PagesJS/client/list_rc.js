@@ -48,7 +48,7 @@ $(document).ready(function() {
 	
 	$("#add_rc").click(function(){
 		
-		$('#print_content').html('<iframe id="frame" width="" height="" onload="ifrhgh()" frameborder="0" src="add_rc"></iframe>');
+		$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="add_rc"></iframe>');
 		
 		$("#title").text("Nouveau RC");
 		
@@ -62,7 +62,7 @@ $(document).ready(function() {
 		
 		var id_rc = $(this).attr("id_rc");
 		
-		$('#print_content').html('<iframe id="frame" width="" height="" onload="ifrhgh()" frameborder="0" '+
+		$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" '+
 										'src="info_rc?id_rc='+id_rc+' "></iframe>');
 		
 		$("#title").text("Détail RC");
@@ -75,7 +75,7 @@ $(document).ready(function() {
 	
 	$("#rc_clt").click(function(){
 		
-		$('#print_content').html('<iframe id="frame" width="" height="" onload="ifrhgh()" frameborder="0" src="clt_rc"></iframe>');
+		$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="clt_rc"></iframe>');
 		
 		$("#title").text("Relation registre commerce client");
 		
@@ -93,7 +93,7 @@ $(document).ready(function() {
 		
 		if(etat != "tout"){
 			
-			$('#print_content').html('<iframe id="frame" width="" height="" onload="ifrhgh()" frameborder="0" '+
+			$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" '+
 					'src="print_etat_clt?etat='+etat+' "></iframe>');
 
 			$("#title").text("Etat des soldes "+title);

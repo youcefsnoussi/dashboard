@@ -42,9 +42,9 @@
 		
 		if($("#etat_liv").val()==1){
 			
-			$("#title").text("Erreur !!!");
-			$("#icone").attr("class","far fa-exclamation-triangle");
-			$("#text").html("Facture établie !!! ");
+			$("#title").text("Information");
+			$("#icone").attr("class","far fa-check");
+			$("#text").html("Facture établie ");
 			$("#error").modal('show');
 			
 		}
@@ -240,7 +240,7 @@
 	        </button>
 	      </div>
 	      <div class="modal-body">
-	        <p id="text"></p>
+	        <h5 id="text"></h5>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" id="fermer" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

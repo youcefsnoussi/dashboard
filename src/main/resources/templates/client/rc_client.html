@@ -44,7 +44,8 @@
 								
 								<label> Client </label>
 								
-								<select id="id_client" class="selectpicker" data-live-search="true" name="id_client" required>
+								<select id="id_client" class="selectpicker" data-live-search="true" data-container="body" 
+									name="id_client" required>
 								
 									<option th:each="c:${client}" th:value="${c.id}" th:text="${c.nom}+' '+${c.prenom}" > </option>
 								
@@ -62,9 +63,11 @@
 								
 								<label> RC </label>
 								
-								<select id="id_rc" class="selectpicker" data-live-search="true" name="id_rc" required>
+								<select id="id_rc" class="selectpicker" data-live-search="true" data-container="body" 
+									name="id_rc" required>
 								
-									<option th:each="rc:${rc}" th:value="${rc.id}" th:text="${rc.nom}+' '+${rc.prenom}" th:attr="data-subtext=${rc.code}"> </option>
+									<option th:each="rc:${rc}" th:value="${rc.id}" th:text="${rc.nom}+' '+${rc.prenom}" 
+										th:attr="data-subtext=${rc.code}"> </option>
 								
 								</select>
 							

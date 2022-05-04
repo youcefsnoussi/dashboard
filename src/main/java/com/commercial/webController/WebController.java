@@ -93,7 +93,7 @@ public class WebController {
 		
 		for(int i=0;i<cookie.length;i++) {
 			
-			System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
+			//System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
 			
 			if(cookie[i].getName().equals("JSESSIONID")) {
 				
@@ -140,7 +140,7 @@ public class WebController {
 				
 				//System.out.println("obj size->"+m.length);
 				
-				System.out.println("id_menu == "+m[0]+" // "+m[1]);
+				//System.out.println("id_menu == "+m[0]+" // "+m[1]);
 				
 				List<Object[]> list_submenu = roles_menurepository.get_submenu_by_user_role(role, menurepository.getOne((long) m[0]));
 				
@@ -233,7 +233,7 @@ public class WebController {
 		
 		for(int i=0;i<cookie.length;i++) {
 			
-			System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
+			//System.out.println(cookie[i].getName()+" / "+cookie[i].getValue());
 			
 			if(cookie[i].getName().equals("JSESSIONID")) {
 				

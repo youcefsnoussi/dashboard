@@ -11,16 +11,12 @@ import com.commercial.entities.schema.article.prixUnitaire_article_categoryClien
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
-import com.commercial.entities.schema.client.HistoriquePalette;
-import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.repository.HistoriquePaletteRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
-import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_detailRepository;
-import com.commercial.functions.get_time_date;
 
 @Service
 public class PaletteService {
@@ -121,7 +117,7 @@ public class PaletteService {
 		blRepo.save(bl); blRepo.flush();
 		
 	}
-	
+	/*
 	public void paletteOut ( long nbrPalette, facture fact) {
 		
 		get_time_date gtd = new get_time_date();
@@ -243,5 +239,5 @@ public class PaletteService {
 		return nbrPalette;
 		
 	}
-	
+	*/
 }

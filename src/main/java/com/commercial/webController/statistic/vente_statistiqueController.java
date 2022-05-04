@@ -1,6 +1,8 @@
 package com.commercial.webController.statistic;
 
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -359,9 +361,13 @@ public class vente_statistiqueController {
 		
 		get_time_date gtd = new get_time_date();
 		
+		LocalTime start_time = LocalTime.now();
+		
+		System.out.println("start ------->"+start_time);
+		
 		List <Object[]> rows = new ArrayList<Object[]>();
 		
-		List<article> lst_art = new ArrayList<article>();
+		//List<article> lst_art = new ArrayList<article>();
 		
 		if(start.equals("0")) {
 			
@@ -371,11 +377,14 @@ public class vente_statistiqueController {
 			
 		}
 		
-		lst_art = fact_dRepo.get_all_articles_ordered_by_libelle(start, end);
+		final List<article> lst_art = fact_dRepo.get_all_articles_ordered_by_libelle(start, end);
 		
 		List<facture> facts = factRepo.get_code_rc_num_date(start, end);
 		
-		for (facture fct : facts) {
+		System.out.println("getting facts ------->"+LocalTime.now()+" | diff ---> "+ChronoUnit.MINUTES.between(start_time, LocalTime.now())+":"+
+				ChronoUnit.SECONDS.between(start_time, LocalTime.now()));
+		
+		facts.parallelStream().forEach(fct -> {
 			
 			Object [] obj = new Object [lst_art.size()+3];
 			
@@ -383,6 +392,33 @@ public class vente_statistiqueController {
 			obj [1] = fct.getRegistre_commerce().getNom()+" "+fct.getRegistre_commerce().getPrenom();
 			obj [2] = fct.getNumero();
 			
+			for (int i = 0; i<lst_art.size(); i++) {
+				
+				System.out.println("****START");
+				
+				Object quant = 0;
+				
+				quant = fact_dRepo.get_quantite_by_article_facture(fct, lst_art.get(i));
+				
+				obj[i+3] = (quant!=null) ? quant : 0;
+				
+				System.out.println("****END");
+				
+			}
+			
+			rows.add(obj);
+			
+		});
+		
+		/*
+		for (facture fct : facts) {
+			
+			Object [] obj = new Object [lst_art.size()+3];
+			
+			obj [0] = fct.getRegistre_commerce().getCode();
+			obj [1] = fct.getRegistre_commerce().getNom()+" "+fct.getRegistre_commerce().getPrenom();
+			obj [2] = fct.getNumero();
+
 			for (int i = 0; i<lst_art.size(); i++) {
 				
 				Object quant = 0;
@@ -406,13 +442,18 @@ public class vente_statistiqueController {
 			
 			rows.add(obj);
 			
-		}
+		}*/
 		
 		model.addAttribute("articles", lst_art);
 		model.addAttribute("rows", rows);
 		model.addAttribute("start",start);
 		model.addAttribute("end",end);
 		model.addAttribute("unite",user.getUnite().getNom_unite());
+		
+		LocalTime end_time = LocalTime.now();
+		
+		System.out.println("end ------->"+end_time+" | diff ---> "+ChronoUnit.MINUTES.between(start_time, end_time)+":"+
+					ChronoUnit.SECONDS.between(start_time, end_time));
 		
 		return "statistic/etat_sortie_article";		
 	}
@@ -432,8 +473,6 @@ public class vente_statistiqueController {
 		
 		List <Object[]> rows = new ArrayList<Object[]>();
 		
-		List<category_produit> lst_art = new ArrayList<category_produit>();
-		
 		if(start.equals("0")) {
 			
 			start = conv.convertion_MyDate_to_InputDate(gtd.get_date());
@@ -442,11 +481,11 @@ public class vente_statistiqueController {
 			
 		}
 		
-		lst_art = fact_dRepo.get_all_category_articles_ordered_by_libelle(start, end);
+		final List<category_produit> lst_art = fact_dRepo.get_all_category_articles_ordered_by_libelle(start, end);
 		
 		List<facture> facts = factRepo.get_code_rc_num_date(start, end);
 		
-		for (facture fct : facts) {
+		facts.parallelStream().forEach(fct -> {
 			
 			Object [] obj = new Object [lst_art.size()+3];
 			
@@ -454,30 +493,21 @@ public class vente_statistiqueController {
 			obj [1] = fct.getRegistre_commerce().getNom()+" "+fct.getRegistre_commerce().getPrenom();
 			obj [2] = fct.getNumero();
 			
+			//System.out.println("->"+fct.getNumero());
+			
 			for (int i = 0; i<lst_art.size(); i++) {
 				
 				Object quant = 0;
 				
 				quant = fact_dRepo.get_quantite_by_category_article_facture(fct, lst_art.get(i));
 				
-				//System.out.println("-->"+quant);
-				
-				if(quant!=null) {
-					
-					obj[i+3] = quant;
-					
-				}
-				else {
-					
-					obj[i+3] = 0;
-					
-				}
+				obj[i+3] = (quant!=null) ? quant : 0;
 				
 			}
 			
 			rows.add(obj);
 			
-		}
+		});
 		
 		model.addAttribute("articles", lst_art);
 		model.addAttribute("rows", rows);
@@ -522,7 +552,7 @@ public class vente_statistiqueController {
 	public String etat_104(HttpServletRequest request,
 						 @RequestParam(value="start", defaultValue="0") String start,
 						 @RequestParam(value="end", defaultValue="0") String end,
-						 @RequestParam(value="id_category", defaultValue="0") Long id_category,
+						 @RequestParam(value="id_category", defaultValue="0") List<Long> id_category,
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
@@ -530,13 +560,26 @@ public class vente_statistiqueController {
 		
 		get_time_date gtd = new get_time_date();
 		
-		//List <Object[]> list = new ArrayList<Object[]>();
+		start = (start.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : start;
 		
-		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+		end = (end.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : end;
 		
-		model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
+		List<category_produit> lst_cat = (id_category.size()==1 && id_category.get(0)==0) ? cat_prodRepo.findAll() 
+											: cat_prodRepo.findByIdIn(id_category);
+		
+		List <Object[]> list = fact_dRepo.Etat104(start, end, lst_cat);
+		
+		model.addAttribute("start", start);
+		
+		model.addAttribute("end", end);
+		
+		model.addAttribute("id_cat_prod", id_category);
 		
 		model.addAttribute("cat_prod", cat_prodRepo.findAll());
+		
+		model.addAttribute("data", list);
+		
+		model.addAttribute("tout", (id_category.contains( (long)0 )) ? true : false );
 		
 		return "statistic/Etat104";		
 	}
@@ -566,7 +609,7 @@ public class vente_statistiqueController {
 			
 			category_produit cat_p = cat_prodRepo.getOne(id_category);
 
-			list = cat_prodRepo.get_quantite_vendu_by_wilaya_fact(ret_start, ret_end, cat_p) ;	
+			list = cat_prodRepo.get_quantite_vendu_by_wilaya_fact(ret_start, ret_end, cat_p.getId()) ;	
 					
 		}
 		
@@ -628,6 +671,44 @@ public class vente_statistiqueController {
 	
 	//------------------------------------------------------------------------------
 	
+	@RequestMapping(value="/rapport_ultra_detailler")
+	public String rapport_ultra_detailler(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		/*
+		LocalTime start_time = LocalTime.now();
+		
+		System.out.println("start ------->"+start_time);
+		*/
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		List <Object[]> list = new ArrayList<Object[]>();
+		
+		String ret_start = (start.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : start;
+		
+		String ret_end = (end.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : end;
+		
+		list = fact_dRepo.RapoortUltraDetailler(ret_start, ret_end) ;	
+		
+		model.addAttribute("start", ret_start);
+		
+		model.addAttribute("end", ret_end);
+		
+		model.addAttribute("list", list);
+		/*
+		LocalTime end_time = LocalTime.now();
+		
+		System.out.println("end ------->"+end_time+" | diff ---> "+ChronoUnit.MINUTES.between(start_time, end_time)+":"+
+					ChronoUnit.SECONDS.between(start_time, end_time));
+		*/
+		return "statistic/rapport_ultra_detailler";		
+	}
+	
+	//------------------------------------------------------------------------------
 	
 	//___________________________________________/°=-PRINT FUNCTIONS-=°\_______________________________
 	

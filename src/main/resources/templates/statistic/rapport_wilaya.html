@@ -22,6 +22,8 @@
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
+		<script type="text/javascript" src="resources\additionalJS\MySpin.js"></script> 
+		
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
@@ -73,7 +75,7 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([2]).every( function () {
+			            this.api().columns([0,1]).every( function () {
 			                var column = this;
 			                var select = $('<select class="form-control" ><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
@@ -96,8 +98,8 @@
 						
 					      var api = this.api();
 					      
-					      $( api.column( 3, {page:'current'} ).footer() ).html(
-					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 2, {page:'current'} ).footer() ).html(
+					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      
 					 },
@@ -126,6 +128,7 @@
 				}
 				else{
 					
+					BeginSpin();
 					window.location.replace("rapport_wilaya?start="+start+"&end="+end+"&id_category="+cat);
 					
 				}
@@ -281,7 +284,6 @@
 							
 								<th>Wilaya</th>
 								<th>Category</th>
-								<th>Type</th>
 								<th>Quantite (Q)</th>	
 								
 							</tr>
@@ -292,10 +294,8 @@
 						
 							<tr th:each="lst:${list}">
 							
-								<td class="cc"  th:text="${lst[0]}"></td>
-								<td class="rr"  th:text="${lst[1]}"></td>
-								<td class="cc"  th:if="${lst[2]}==true" >Subventionnée</td>
-								<td class="cc"  th:unless="${lst[2]}==true" >Non Subventionnée</td>
+								<td class="cc"  th:text="${lst[1]}"></td>
+								<td class="rr"  th:text="${lst[2]}"></td>
 								<td class="rr"  th:text="${#numbers.formatDecimal(lst[3], 3, 'WHITESPACE', 2,'POINT')}"></td>
 							
 							</tr>
@@ -307,7 +307,6 @@
 							<tr>
 							
 								<th class="cc"> </th>
-								<th class="rr"></th>
 								<th class="rr"></th>
 								<th class="rr"></th>
 							

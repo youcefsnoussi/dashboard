@@ -127,7 +127,8 @@ public class add_rcController {
 		@RequestParam("type_reg") long type_reg,
 		@RequestParam("unite") long unite,
 		@RequestParam("mode_pay") long mode_paiement,
-		@RequestParam(value = "MultipleBon", required = false) String MultipleBon,
+		@RequestParam(value = "MultipleBon", required = false, defaultValue = "off") String MultipleBon,
+		@RequestParam(value = "Consignation", required = false, defaultValue = "off") String Consignation,
 		
 		@SessionAttribute("user") users user){
 		
@@ -163,9 +164,11 @@ public class add_rcController {
 			
 			boolean multipleBL = (MultipleBon.equals("on")) ? true : false;
 			
+			boolean consignation = (Consignation.equals("on")) ? true : false;
+			
 			rc = new registre_commerce(nom, prenom, code_rc, cat_rc, num_rc, num_art, num_nif, date_emission, date_fin, adresse, 
 					comune, wilaya, "active", taux_tva, plafond, 0, activite, "active", banqueRepo.getOne(id_banque), 
-					type_rRepo.getOne(type_reg), mpRepo.getOne(mode_paiement), un, multipleBL);
+					type_rRepo.getOne(type_reg), mpRepo.getOne(mode_paiement), un, multipleBL, consignation);
 			
 			
 			rcRepo.save(rc);rcRepo.flush();
@@ -198,7 +201,7 @@ public class add_rcController {
 	
 	public String new_number_code_rc(category_client cat) {
 		
-		String ret= "00001";
+		String ret= (!cat.getLettre().equals("EX") && !cat.getLettre().equals("CA")) ? "00001" : "0001";
 		
 		List<registre_commerce> list_c = rcRepo.last_rc_by_category(cat);
 		

@@ -51,8 +51,6 @@ public class article_backup implements Serializable{
 	
 	private String date_creation;
 	
-	private String code_comptable;
-	
 	@ManyToOne
 	@JoinColumn(name = "unite_mesure_vente")
 	private unite_mesure unite_mesure_vente;
@@ -91,7 +89,6 @@ public class article_backup implements Serializable{
 		this.image_article = image_article;
 		this.vendu = vendu;
 		this.date_creation = date_creation;
-		this.code_comptable = code_comptable;
 		this.unite_mesure_vente = unite_mesure_vente;
 		this.id_article = id_article;
 		this.date = gtd.get_date();
@@ -113,7 +110,6 @@ public class article_backup implements Serializable{
 		this.image_article = art.getImage_article();
 		this.vendu = art.getVendu();
 		this.date_creation = art.getDate_creation();
-		this.code_comptable = art.getCode_comptable();
 		this.unite_mesure_vente = art.getUnite_mesure_vente();
 		this.id_article = art.getId();
 		this.date = gtd.get_date();
@@ -185,14 +181,6 @@ public class article_backup implements Serializable{
 
 	public void setDate_creation(String date_creation) {
 		this.date_creation = date_creation;
-	}
-
-	public String getCode_comptable() {
-		return code_comptable;
-	}
-
-	public void setCode_comptable(String code_comptable) {
-		this.code_comptable = code_comptable;
 	}
 
 	public unite_mesure getUnite_mesure_vente() {
