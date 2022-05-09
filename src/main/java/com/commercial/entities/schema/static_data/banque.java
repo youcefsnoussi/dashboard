@@ -35,6 +35,7 @@ public class banque implements Serializable{
 		this.code = code;
 		this.nom_banque = nom_banque;
 		this.numero_compte_entreprise = numero_compte_entreprise;
+		this.display = true;
 	}
 
 	public Long getId() {

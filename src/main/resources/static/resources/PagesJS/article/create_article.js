@@ -118,6 +118,8 @@ $(document).ready(function(){
 		
 		$("#lib").val($("#libelle").val());
 		
+		$("#multiplicator").val($("#multi").val());
+		
 		var units = $("#id_magasin").val().split("/");
 		
 		units.splice(-1,1);

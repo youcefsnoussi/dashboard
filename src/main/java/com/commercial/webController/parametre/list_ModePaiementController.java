@@ -42,6 +42,7 @@ public class list_ModePaiementController {
 	public String insert_edit_mode_pay(HttpServletRequest req,
 			@RequestParam("designation") String designation,
 			@RequestParam("id_mode_payment") long id_mode_payment,
+			@RequestParam(name="display", defaultValue="on") String display,
 			@SessionAttribute("user") users user){
 			
 			if(id_mode_payment==0) {
@@ -56,6 +57,7 @@ public class list_ModePaiementController {
 				mode_paiement mp = mpRepo.getOne(id_mode_payment);
 				
 				mp.setDesignation(designation);
+				mp.setDisplay( (display.equals("on")) ? true : false );
 				
 				mpRepo.save(mp); mpRepo.flush();
 				

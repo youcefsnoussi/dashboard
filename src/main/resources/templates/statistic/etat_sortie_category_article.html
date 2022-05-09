@@ -84,16 +84,16 @@
 			    	"bPaginate": false,
 					"scrollY":"400px",
 					"scrollX": "auto",
-			        "deferRender": true,
+			        "deferRender": true,/*
 			        dom: 'Bfrtip',
 	                 buttons: [
-	                        /*   {
+	                           {
 	                               extend: 'print',
 	                               footer: true,
 	                               exportOptions: {
 	                                   columns: ':visible'
 	                               }
-	                           },'excelHtml5',*/
+	                           },'excelHtml5',
 	                           {
 	                               extend: 'pdfHtml5',
 	                               className: "btn btn-dark",
@@ -115,7 +115,7 @@
 	                               },  
 	                           }
 	                           //,'colvis'
-	                       ], 
+	                       ],*/ 
 			        initComplete: function () {
 			            this.api().columns([]).every( function () {
 			                var column = this;

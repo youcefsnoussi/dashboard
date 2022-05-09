@@ -23,7 +23,7 @@
 </head>
 <body>
 	
-	<div class="container h-100">
+	<div class="container-fluid h-100">
 		
 		<div class="card">
 		
@@ -69,13 +69,15 @@
 								<td th:text="${banque.nom_banque}"></td>
 								<td th:text="${banque.code}"></td>
 								<td th:text="${banque.numero_compte_entreprise}"></td>
-								<td style="text-align: center;"> <button type="button" class="btn btn-info edit" th:attr="id_banque=${banque.id},
-																														  nom_banque=${banque.nom_banque},
-																														  code=${banque.code},								
-																														  numero_compte_entreprise=${banque.numero_compte_entreprise}"
-																														  > 
-																				<i class="far fa-edit"></i>
-																		 </button> 
+								<td style="text-align: center;"> 
+										<button type="button" class="btn btn-info edit" th:attr="id_banque=${banque.id},
+												  nom_banque=${banque.nom_banque},
+												  code=${banque.code},								
+												  numero_compte_entreprise=${banque.numero_compte_entreprise},
+												  display=${banque.display}"
+												  > 
+												<i class="far fa-edit"></i>
+										 </button> 
 								</td>
 								
 							</tr>
@@ -110,7 +112,7 @@
 				
 				<div class="row">
 				
-					<div class="col-md-4">
+					<div class="col-md-3">
 					
 						<label> Nom de la banque</label>
 						
@@ -118,7 +120,7 @@
 						
 					</div>
 					
-					<div class="col-md-4">
+					<div class="col-md-3">
 					
 						<label>Code la banque</label>
 						
@@ -132,6 +134,15 @@
 						
 						<input type="number" step="any" id="num_compte" name="num_compte" class="form-control clear" required>
 					
+					</div>
+					
+					<div class="col-md-1">
+					
+						<label>Afficher</label>
+						
+						<input type="checkbox" id="display_ui"  class="form-control">
+			        	<input type="hidden" id="display" name="display">
+						
 					</div>
 				
 				</div>

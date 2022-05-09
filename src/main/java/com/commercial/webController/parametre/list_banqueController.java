@@ -45,6 +45,7 @@ public class list_banqueController {
 			@RequestParam("code") String code,
 			@RequestParam("num_compte") String num_compte_entreprise,
 			@RequestParam("id_banque") long id_banque,
+			@RequestParam(name="display", defaultValue="on") String display,
 			@SessionAttribute("user") users user){
 			
 			if(id_banque==0) {
@@ -61,6 +62,7 @@ public class list_banqueController {
 				b.setCode(code);
 				b.setNom_banque(nom_banque);
 				b.setNumero_compte_entreprise(num_compte_entreprise);
+				b.setDisplay( (display.equals("on")) ? true : false );
 				
 				banqueRepo.save(b); banqueRepo.flush();
 				

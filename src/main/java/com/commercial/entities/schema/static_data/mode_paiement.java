@@ -30,6 +30,7 @@ public class mode_paiement  implements Serializable{
 	public mode_paiement(String designation) {
 		super();
 		this.designation = designation;
+		this.display = true;
 	}
 
 	public Long getId() {
