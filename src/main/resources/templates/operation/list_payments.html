@@ -346,6 +346,8 @@
 			
 			$("#confirm").click(function(){
 				
+				$(this).attr("disabled", true);
+				
 				$.ajax({
 					url : 'cancel_payment',
 					data : {

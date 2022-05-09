@@ -394,15 +394,11 @@ public class vente_statistiqueController {
 			
 			for (int i = 0; i<lst_art.size(); i++) {
 				
-				System.out.println("****START");
-				
 				Object quant = 0;
 				
 				quant = fact_dRepo.get_quantite_by_article_facture(fct, lst_art.get(i));
 				
 				obj[i+3] = (quant!=null) ? quant : 0;
-				
-				System.out.println("****END");
 				
 			}
 			

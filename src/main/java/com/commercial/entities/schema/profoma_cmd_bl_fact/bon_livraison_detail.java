@@ -97,10 +97,10 @@ public class bon_livraison_detail implements Serializable{
 		super();
 		this.bon_livraison = bon_livraison;
 		this.article = article;
-		this.quantite = quantite;
+		this.quantite = quantite*article.getMultiplicator();
 		this.prix_u_ht = prix_u_ht;
 		
-		this.montant_ht = quantite * prix_u_ht;
+		this.montant_ht = this.quantite * prix_u_ht;
 		this.tva = tva;
 		this.montant_remise = montant_remise;
 		this.pourcentage_remise = (montant_remise * 100) / montant_ht;

@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Application Gestion de blé</title>
+		<title>Application Commercial</title>
 		
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
 		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
@@ -66,6 +66,7 @@
 						<input type="hidden" id="id_unite_mesure_vente" th:value="${article.unite_mesure_vente.id}">
 						<input type="hidden" id="prices" th:value="${prices}">
 						<input type="hidden" id="id_magasin" th:value="${magasins}">
+						<input type="hidden" id="multi" th:value="${article.multiplicator}">
 					
 					</div>
 					
@@ -140,7 +141,8 @@
 						
 							<label> Magasin </label> <br>
 							
-							<select class="selectpicker" data-style="btn btn-outline-secondary" id="magasin" name="magasin" multiple required>
+							<select class="selectpicker" data-style="btn btn-outline-secondary" id="magasin" name="magasin" 
+								multiple data-width="100%" required>
 								
 								<option th:each="mag:${magasin}" th:value="${mag.id}" th:text="${mag.name}" ></option>
 								
@@ -205,7 +207,15 @@
 							<input type="text" id="lib" class="form-control" name="lib" >
 							
 						</div>
-					
+						
+						<div class="col-md-3">
+						
+							<label>Multiplicateur</label>
+							
+							<input type="number" step="any" id="multiplicator" class="form-control" name="multiplicator" value="1" >
+							
+						</div>
+						
 					</div>
 					
 					<hr>

@@ -227,6 +227,7 @@ public class create_articleController {
 		@RequestParam("subvention") String check,
 		@RequestParam("consignation") String check_c,
 		@RequestParam("lib") String lib,
+		@RequestParam("multiplicator") double multiplicator,
 		
 		@SessionAttribute("user") users user){
 		
@@ -269,7 +270,7 @@ public class create_articleController {
 			if(art_if_same_specs==null) {
 				
 				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(),
-						unite_mesureRepo.getOne(id_unite_mesure), sub, lib, consignation);
+						unite_mesureRepo.getOne(id_unite_mesure), sub, lib, consignation, multiplicator);
 				
 				artRepo.save(art);
 				artRepo.flush();
@@ -351,6 +352,7 @@ public class create_articleController {
 		@RequestParam("subvention") String check,
 		@RequestParam("lib") String lib,
 		@RequestParam("cat_client") long [] cat_client,
+		@RequestParam("multiplicator") double multiplicator,
 		
 		@SessionAttribute("user") users user){
 		
@@ -410,6 +412,7 @@ public class create_articleController {
 				//art.setMagasin_stock(magasin);
 				art.setSubvension(sub);
 				art.setLibelle(lib);
+				art.setMultiplicator(multiplicator);
 				
 				artRepo.save(art);artRepo.flush();
 				

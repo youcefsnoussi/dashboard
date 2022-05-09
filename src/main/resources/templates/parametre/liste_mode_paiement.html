@@ -23,8 +23,8 @@
 		
 </head>
 <body>
-	
-	<div class="container h-100">
+	<br>
+	<div class="container-fluid h-100">
 		
 		<div class="card">
 		
@@ -35,13 +35,15 @@
 			
 			<div class="card-body">
 			
-				<div class="container">
+				<div class="container-fluid">
 					
 					<div class="row">
 					
 						<div class="col-md-3">
 						
-							<button id="add_mode_payment" class="btn btn-dark btn_icon"> <span> nouveau mode de paiement </span> <i class="far fa-plus-circle"></i> </button>
+							<button id="add_mode_payment" class="btn btn-dark btn_icon"> <span> Nouveau mode de paiement </span> 
+								<i class="far fa-plus-circle"></i> 
+							</button>
 						
 						</div>
 					
@@ -67,11 +69,12 @@
 							<tr th:each="mode_pay:${mode_pay}">
 							
 								<td th:text="${mode_pay.designation}"></td>
-								<td style="text-align: center;"> <button type="button" class="btn btn-info edit" th:attr="id_payment=${mode_pay.id},
-																														  nom_payment=${mode_pay.designation}"
-																														  > 
-																				<i class="far fa-edit"></i>
-																		 </button> 
+								<td style="text-align: center;"> 
+									<button type="button" class="btn btn-info edit" 
+										th:attr="id_payment=${mode_pay.id}, nom_payment=${mode_pay.designation}, 
+										display=${mode_pay.display}" > 
+										<i class="far fa-edit"></i>
+									</button> 
 								</td>
 								
 							</tr>
@@ -104,13 +107,22 @@
 				
 				<input type="hidden" id="id_mode_payment" name="id_mode_payment">
 				
-				<div class="row justify-content-center">
+				<div class="row">
 				
 					<div class="col-md-6">
 					
 						<label> Désignation</label>
 						
 						<input type="text" id="designation" name="designation" class="form-control clear" required>
+						
+					</div>
+					
+					<div class="col-md-1">
+					
+						<label>Afficher</label>
+						
+						<input type="checkbox" id="display_ui"  class="form-control">
+			        	<input type="hidden" id="display" name="display">
 						
 					</div>
 					

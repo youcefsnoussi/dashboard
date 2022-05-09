@@ -31,6 +31,7 @@
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		<script type="text/javascript" src="resources\additionalJS\MySpin.js"></script> 
 		
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
@@ -42,37 +43,7 @@
 		<script type="text/javascript">
 		
 		$(document).ready(function() {
-			/*
-			var getUrlParameter = function getUrlParameter(sParam) {
-			    var sPageURL = window.location.search.substring(1),
-			        sURLVariables = sPageURL.split('&'),
-			        sParameterName,
-			        i;
-
-			    for (i = 0; i < sURLVariables.length; i++) {
-			        sParameterName = sURLVariables[i].split('=');
-
-			        if (sParameterName[0] === sParam) {
-			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-			        }
-			    }
-			};
 			
-			var ret = getUrlParameter('ret');
-			
-			if(ret!=null){
-				
-				$("#title").text("Information");
-				$("#icone").attr("class","far fa-info-circle");
-				
-				$("#text").text("Annulation effectuer avec succes ");
-				
-				$("#error").modal('show');
-					
-			}
-			
-			$('[data-toggle="tooltip"]').tooltip()
-			*/
 			var datatable_config = {
 					"language": {
 				            "url": "resources/Plugins/datatable/lang/French.json"
@@ -90,7 +61,7 @@
 	                               exportOptions: {
 	                                   columns: ':visible'
 	                               }
-	                           },'excelHtml5',*/
+	                           },'excelHtml5',
 	                           {
 	                               extend: 'pdfHtml5',
 	                               className: "btn btn-dark",
@@ -110,7 +81,7 @@
 	                                   doc.styles.tableBodyEven.alignment = 'center';
 	                                   doc.styles.tableBodyOdd.alignment = 'center'; 
 	                               },  
-	                           }
+	                           }*/
 	                           //,'colvis'
 	                       ], 
 			        initComplete: function () {
@@ -167,10 +138,41 @@
 				}
 				else{
 					
+					BeginSpin();
 					window.location.replace("etat_sortie_article?start="+start+"&end="+end);
 					
 				}
 				
+			});
+			
+			$("#generate").click(function(){
+				
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.replace(/ /g, ""));
+					
+				});
+				
+				var myExcel = new ExcelGen({
+					
+					  "src_id": "table",
+					
+					  "show_header": true
+					
+				});
+				
+				myExcel.generate();
+				/*
+				$(".nbr").each(function(){
+					
+					var s = $(this).text();
+					
+					$(this).text(s.formatMoney(2, '.', ' '));
+					
+				});
+				*/
 			});
 			
 		});
@@ -222,6 +224,12 @@
 								<button id="afficher" class="btn btn-secondary" type="button">Afficher</button>
 										
 							</div>
+						
+						</div>
+						
+						<div class="col-md-1" >
+						
+							<button class="btn btn-primary" id="generate">Excel</button>
 						
 						</div>
 						

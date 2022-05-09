@@ -14,7 +14,33 @@ $(document).ready(function() {
 				$("#code").val(i.attr("code"));
 				$("#num_compte").val(i.attr("numero_compte_entreprise"));
 				
+				let display = i.attr("display");
+				
+				if(display=="true"){
+					$("#display_ui").prop("checked",true);
+					$("#display").val("on");
+				}
+				else{
+					$("#display_ui").prop("checked",false);
+					$("#display").val("off");
+				}
+				
 				$("#add_edit_banque").modal('show');
+				
+			});
+			
+			$("#display_ui").change(function(){
+				
+				if($(this).prop("checked")){
+					
+					$("#display").val("on");
+					
+				}
+				else{
+				
+					$("#display").val("off");
+					
+				}
 				
 			});
 			
