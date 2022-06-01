@@ -97,7 +97,7 @@ public class FactureAvoirFromMultipleFactService {
 			tmp.put("tva", tva);
 			tmp.put("montant_remise", montant_remise);
 			tmp.put("montant_ht_net", montant_ht_net);
-			tmp.put("pourcentage_remise", (montant_remise * 100)/montant_ht);
+			tmp.put("pourcentage_remise", (montant_ht==0) ? 0 : (montant_remise * 100)/montant_ht);
 			
 			result.add(tmp);
 			

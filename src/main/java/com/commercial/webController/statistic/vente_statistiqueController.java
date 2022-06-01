@@ -162,11 +162,8 @@ public class vente_statistiqueController {
 			
 		}
 		
-		
 		return "statistic/vente_par_produit";		
 	}
-	
-	
 	
 	//-----------------------------------------------------------------------------
 	

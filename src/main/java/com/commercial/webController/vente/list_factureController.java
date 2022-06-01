@@ -588,7 +588,7 @@ public class list_factureController {
 			
 			//------------------------------------------------ insert into mouvement table
 			
-			mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture Avoire", fact_av.getId(), gtd.get_date(), gtd.get_time(),
+			mouvement mvm = new mouvement(clt, rc, montant_ttc, "Facture Avoir", fact_av.getId(), gtd.get_date(), gtd.get_time(),
 					"", sold_encours_clt, sold_encours_rc, new_sold_clt, new_sold_rc);
 			
 			mvmRepo.save(mvm);mvmRepo.flush();

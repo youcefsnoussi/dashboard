@@ -1,6 +1,7 @@
 package com.commercial.restController;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,9 @@ public class CreateArticleRestController {
 	@RequestMapping(value="/get_sous_cat_prod")
 	public List<sous_category_produit> get_sous_cat_prod(@RequestParam("id_cat_prod") Long id_cat_prod) throws IOException{
 		
-    	List<sous_category_produit> list_sous_cat=  sous_cat_prodRepo.get_sousCat_by_cat(cat_prodRepo.getOne(id_cat_prod));
+    	List<sous_category_produit> list_sous_cat=  
+    			(id_cat_prod==null) ? new ArrayList<sous_category_produit>() : 
+    			sous_cat_prodRepo.get_sousCat_by_cat(cat_prodRepo.getOne(id_cat_prod));
     	
 		return list_sous_cat;
 		
@@ -61,7 +64,9 @@ public class CreateArticleRestController {
 	@RequestMapping(value="/get_prod_sousCat")
 	public List<produit> get_prod(@RequestParam("id_sous_cat_prod") Long id_sous_cat_prod) throws IOException{
 		
-    	List<produit> list_prod=  prodRepo.get_prod_by_sousCat(sous_cat_prodRepo.getOne(id_sous_cat_prod));
+    	List<produit> list_prod=  
+    			(id_sous_cat_prod==null) ? new ArrayList<produit>()
+    			: prodRepo.get_prod_by_sousCat(sous_cat_prodRepo.getOne(id_sous_cat_prod));
     	
 		return list_prod;
 		

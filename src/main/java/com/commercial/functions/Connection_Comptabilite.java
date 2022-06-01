@@ -59,10 +59,12 @@ public class Connection_Comptabilite {
 			e.printStackTrace();
 		}
 		
+		String adresse = rc.getAdresse().replaceAll("'", "''");
+		
 		try {
 			
 			String sql = "INSERT INTO comptable.client_compta( code, lib, adr_cl, c_wil, rc, nif, ai, id_com) " + 
-							" VALUES ( '"+rc.getCode()+"', '"+rc.getNom()+" "+rc.getPrenom()+"', '"+rc.getAdresse()+"', " +
+							" VALUES ( '"+rc.getCode()+"', '"+rc.getNom()+" "+rc.getPrenom()+"', '"+adresse+"', " +
 							" '"+rc.getWilaya().getDesignation()+"', '"+rc.getNumero_rc()+"', '"+rc.getNumero_nif()+"', " +
 							" '"+rc.getNumero_art()+"', '"+rc.getId()+"')";
 			
@@ -92,9 +94,11 @@ public class Connection_Comptabilite {
 			e.printStackTrace();
 		}
 		
+		String adresse = rc.getAdresse().replaceAll("'", "''");
+		
 		try {
 			
-			String sql = "UPDATE comptable.client_compta SET lib='"+rc.getNom()+" "+rc.getPrenom()+"', adr_cl='"+rc.getAdresse()+"', " +
+			String sql = "UPDATE comptable.client_compta SET lib='"+rc.getNom()+" "+rc.getPrenom()+"', adr_cl='"+adresse+"', " +
 							" c_wil='"+rc.getWilaya().getDesignation()+"', rc='"+rc.getNumero_rc()+"', nif='"+rc.getNumero_nif()+"', " +
 							" ai='"+rc.getNumero_art()+"' WHERE id = '"+rc.getId()+"' ";
 			

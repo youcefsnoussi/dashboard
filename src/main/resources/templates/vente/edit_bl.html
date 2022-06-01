@@ -85,6 +85,7 @@
 				if(test==0){
 					
 					$(this).attr("disabled", true);
+					spin_it('on');
 					$("#frm").submit();
 				
 				}
@@ -367,11 +368,33 @@
 								
 								<td> 
 								
-									<input class="form-control nom_art" type="text" th:value="${bl_det.article.code}" id="code_art" disabled>
+									<input type="hidden" id="id_bl_detail" name="id_bl_detail" th:value="${bl_det.id}">
 									
-									 <input type="hidden" id="id_bl_detail" name="id_bl_detail" th:value="${bl_det.id}">
+									<select class="form-control selectpicker select_consign" data-style="btn btn-outline-secondary" 
+										id="select_consign" data-width="100%" name="select_consign" th:attr="id_tr='tr'+${i}" 
+										multiple data-actions-box="true" data-selected-text-format="count" 
+										th:if="${#lists.size(bld_cons)}>0"> 
+										
+										<option th:each="bld : ${bld_cons[i.index]}" th:value="${bld.article.id}" 
+												th:text="${bld.article.libelle}" selected></option>
+										
+									</select>
 									
-								 </td>
+									<select class="form-control selectpicker select_consign" data-style="btn btn-outline-secondary" 
+										id="select_consign" data-width="100%" name="select_consign" th:attr="id_tr='tr'+${i}" 
+										multiple data-actions-box="true" data-selected-text-format="count"
+										th:unless="${#lists.size(bld_cons)}>0"> 
+										
+									</select>
+									
+									
+									<input type="hidden" id="art_consign" name="art_consign" class="art_consign" 
+										th:value="${bld_cons_id[i.index]}" th:if="${#lists.size(bld_cons_id)}>0">
+										
+									<input type="hidden" id="art_consign" name="art_consign" class="art_consign" 
+										th:unless="${#lists.size(bld_cons_id)}>0">	
+									
+								</td>
 								
 								<td> 
 									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" 
@@ -399,8 +422,13 @@
 									 <input type="hidden" id="id_um" name="id_um" th:value="${bl_det.unite_mesure.id}" >		
 								</td>
 								
-								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" th:value="${bl_det.quantite}" style="text-align: right;" > 
-										<input type="hidden" id="qte_init" class="qte_init" th:value="${bl_det.quantite}"> </td>
+								<td> 
+										<input class="form-control qte zero" id="qte" name="qte" type="number" step="any" 
+										th:value="${bl_det.quantite}/${bl_det.article.multiplicator}" style="text-align: right;" >
+										 
+										<input type="hidden" id="qte_init" class="qte_init" 
+											th:value="${bl_det.quantite}/${bl_det.article.multiplicator}"> 
+								</td>
 									
 								<td> 
 									<select class="form-control id_magasin" id="id_magasin" name="id_magasin" >
@@ -412,7 +440,11 @@
 										<!--   <input class="form-control qte zero" id="magasin" name="magasin" type="text" th:value="${bl_det.magasin.name}" style="text-align: center;" disabled> 
 										<input type="hidden" id="id_magasin" class="id_magasin" name="id_magasin" th:value="${bl_det.magasin.id}"> </td>
 										-->
-								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" th:value="${bl_det.prix_u_ht}" type="number" step="any" style="text-align: right;" readonly> </td>
+								<td>
+										<input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" 
+										th:value="${bl_det.prix_u_ht}*${bl_det.article.multiplicator}" type="number" step="any" 
+										style="text-align: right;" readonly> 
+								</td>
 								
 								<td><input class="form-control montant_ht" id="montant_ht" name="montant_ht_art" th:value="${#numbers.formatDecimal(bl_det.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" type="text" style="text-align: right;" readonly> </td>
 								
@@ -440,7 +472,16 @@
 							
 							<tr  th:each="j : ${#numbers.sequence(id_tr, id_tr+10, 1)}" th:attr="id='tr'+${j}" >
 							
-								<td> <input class="form-control nom_art" type="text" value="" id="code_art" readonly> </td>
+								<td>
+								
+									<select class="form-control selectpicker select_consign" data-style="btn btn-outline-secondary" 
+										id="select_consign" data-width="100%" name="select_consign" th:attr="id_tr='tr'+${i}" 
+										multiple data-actions-box="true" data-selected-text-format="count"> 
+										
+									</select>
+									<input type="hidden" id="art_consign" name="art_consign" class="art_consign">
+									
+								</td>
 			 					
 								<td> 
 									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8"

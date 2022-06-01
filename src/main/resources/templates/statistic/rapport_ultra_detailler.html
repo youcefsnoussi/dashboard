@@ -123,7 +123,7 @@
 			        "deferRender": false,
 			        initComplete: function () {
 			        	$("#spin").css("display","none");
-			        	this.api().columns([1,2,3,8,9,10,11,12,21,22]).every( function () {
+			        	this.api().columns([1,2,3,4,9,10,11,12,13,15,19,22,23]).every( function () {
 			                var column = this;
 			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+ 
 			                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
@@ -148,11 +148,8 @@
 						
 					      var api = this.api();
 					      
-					      $( api.column( 13, {page:'current'} ).footer() ).html(
-					        api.column( 13, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
-					      );
-					      $( api.column( 15, {page:'current'} ).footer() ).html(
-					        api.column( 15, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 14, {page:'current'} ).footer() ).html(
+					        api.column( 14, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      $( api.column( 16, {page:'current'} ).footer() ).html(
 					        api.column( 16, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
@@ -160,25 +157,28 @@
 					      $( api.column( 17, {page:'current'} ).footer() ).html(
 					        api.column( 17, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
-					      $( api.column( 19, {page:'current'} ).footer() ).html(
-					        api.column( 19, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      $( api.column( 18, {page:'current'} ).footer() ).html(
+					        api.column( 18, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      $( api.column( 20, {page:'current'} ).footer() ).html(
 					        api.column( 20, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      $( api.column( 21, {page:'current'} ).footer() ).html(
+					        api.column( 21, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      
 					 },
 					 
 					 "createdRow": function ( row, data, index ) {
 						
-			         	$('td', row).eq(13).text( parseFloat(data[13]).formatMoney(2, ',', ' ')),
 			         	$('td', row).eq(14).text( parseFloat(data[14]).formatMoney(2, ',', ' ')),
 			         	$('td', row).eq(15).text( parseFloat(data[15]).formatMoney(2, ',', ' ')),
 			         	$('td', row).eq(16).text( parseFloat(data[16]).formatMoney(2, ',', ' ')),
 			         	$('td', row).eq(17).text( parseFloat(data[17]).formatMoney(2, ',', ' ')),
 			         	$('td', row).eq(18).text( parseFloat(data[18]).formatMoney(2, ',', ' ')),
 			         	$('td', row).eq(19).text( parseFloat(data[19]).formatMoney(2, ',', ' ')),
-			         	$('td', row).eq(20).text( parseFloat(data[20]).formatMoney(2, ',', ' '))
+			         	$('td', row).eq(20).text( parseFloat(data[20]).formatMoney(2, ',', ' ')),
+			         	$('td', row).eq(21).text( parseFloat(data[21]).formatMoney(2, ',', ' '))
 			         	
 					 }	
 		    };
@@ -302,6 +302,7 @@
 								<th>Client</th>
 								<th>Code</th>
 								<th>RC</th>
+								<th>Catégory</th>
 								<th>Adresse</th>
 								<th>N°RC</th>	
 								<th>N°ART</th>
@@ -360,6 +361,7 @@
 						
 							<tr>
 							
+								<th class="cc"></th>
 								<th class="cc"></th>
 								<th class="cc"></th>
 								<th class="cc"></th>

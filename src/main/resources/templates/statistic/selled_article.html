@@ -47,11 +47,11 @@
 			
 			var datatable_config = {
 					"language": {
-				            "url": "resources/Plugins/datatable/lang/French.json"
+				        "url": "resources/Plugins/datatable/lang/French.json"
 				    },
-					"ordering": true,
+				    "ordering": true,
 			    	"bPaginate": false,
-					"scrollY":"400px",
+					"scrollY":h-510,
 					"scrollX": "auto",
 			        "deferRender": true,
 			        //dom: '<"top"B l f>rt<"bottom"ip>',
@@ -104,6 +104,18 @@
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
 			
+		 	var table1 = $('#table1').DataTable(datatable_config);
+		 	
+		 	var table2 = $('#table2').DataTable(datatable_config);
+		 	
+			//------------------- TO RENDER table header and footer between tabs
+		 	
+		 	$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+		        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+		    } );
+		 	
+		 	//------------------- ------------------------------------------------------
+		 	
 			$("#afficher").click(function(){
 				
 				var start = $("#debut").val();
@@ -222,50 +234,179 @@
 					
 					<hr>
 					
-					<table id="table" class="table table-bordered table-hover" style="width:100%">
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
 					
-						<thead class="thead-dark">
+					  <li class="nav-item">
+					    <a class="nav-link active" data-toggle="tab" href="#Quant_Fact" role="tab" aria-controls="info" 
+					    	aria-selected="true">Quantité Facturé</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#Quant_BL" role="tab" aria-controls="info" aria-selected="true">
+					    	Quantité Bls</a>
+					  </li>
 						
-							<tr>
-								
-								<th>Code</th>
-								<th>Category</th>
-								<th>Désignation</th>
-								<th>Quantité (Q)</th>
-								
-							</tr>
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#Quant_trans" role="tab" aria-controls="info" aria-selected="true">
+					    	Quantité Transfert</a>
+					  </li>	
+					  	
+					</ul>
+					
+					<div class="tab-content" id="nav-tabContent">
 						
-						</thead>
-						
-						<tbody>
-						
-							<tr th:each="lst:${list}" >
-								
-								<td th:text="${lst[1]}"></td>
-								<td th:text="${lst[0]}"></td>
-								<td th:text="${lst[2]}"></td>
-								
-								<td th:text="${#numbers.formatDecimal(lst[3], 3, 'WHITESPACE', 2,'POINT')}"></td>
-								
-							</tr>
-						
-						</tbody>
-						
-						<tfoot class="thead-dark">
+						<div class="tab-pane fade show active" id="Quant_Fact" role="tabpanel" aria-labelledby="nav_Quant_Fact">
 							
-							<tr>
-								
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								
-							</tr>
+							<br>
 							
-						</tfoot>
+							<table id="table" class="table table-bordered table-hover" style="width:100%">
+							
+								<thead class="thead-dark">
+								
+									<tr>
+										
+										<th>Code</th>
+										<th>Category</th>
+										<th>Désignation</th>
+										<th>Quantité (Q)</th>
+										
+									</tr>
+								
+								</thead>
+								
+								<tbody>
+								
+									<tr th:each="lst:${list}" >
+										
+										<td th:text="${lst[1]}"></td>
+										<td th:text="${lst[0]}"></td>
+										<td th:text="${lst[2]}"></td>
+										
+										<td th:text="${#numbers.formatDecimal(lst[3], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										
+									</tr>
+								
+								</tbody>
+								
+								<tfoot class="thead-dark">
+									
+									<tr>
+										
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										
+									</tr>
+									
+								</tfoot>
+								
+							</table>
 						
-					</table>
-				
+						</div>
+						
+						<div class="tab-pane fade" id="Quant_BL" role="tabpanel" aria-labelledby="nav_Quant_BL">
+							
+							<br>
+							
+							<table id="table1" class="table table-bordered table-hover" style="width:100%">
+							
+								<thead class="thead-dark">
+								
+									<tr>
+									
+										<th class="cc" >Code</th>
+										<th>Category</th>
+										<th>Désignation</th>
+										<th class="cc" >Quantité (Q)</th>
+										
+									</tr>
+								
+								</thead>
+								
+								<tbody>
+								
+									<tr th:each="lst:${list1}" >
+										
+										<td class="cc"  th:text="${lst[0]}"></td>
+										<td th:text="${lst[1]}+' '+${lst[2]}"></td>
+										<td th:text="${lst[3]}"></td>
+										
+										<td class="cc"  th:text="${#numbers.formatDecimal(lst[4], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										
+									</tr>
+								
+								</tbody>
+								
+								<tfoot class="thead-dark">
+									
+									<tr>
+										
+										<th class="cc" ></th>
+										<th></th>
+										<th></th>
+										<th class="cc" ></th>
+										
+									</tr>
+									
+								</tfoot>
+								
+							</table>
+						
+						</div>
+						
+						<div class="tab-pane fade" id="Quant_trans" role="tabpanel" aria-labelledby="nav_Quant_trans">
+							
+							<br>
+							
+							<table id="table2" class="table table-bordered table-hover" style="width:100%">
+							
+								<thead class="thead-dark">
+								
+									<tr>
+									
+										<th class="cc" >Code</th>
+										<th>Category</th>
+										<th>Désignation</th>
+										<th class="cc" >Quantité (Q)</th>
+										
+									</tr>
+								
+								</thead>
+								
+								<tbody>
+								
+									<tr th:each="lst:${list2}" >
+										
+										<td th:text="${lst[1]}"></td>
+										<td th:text="${lst[0]}"></td>
+										<td th:text="${lst[2]}"></td>
+										
+										<td th:text="${#numbers.formatDecimal(lst[3], 3, 'WHITESPACE', 2,'POINT')}"></td>
+										
+									</tr>
+								
+								</tbody>
+								
+								<tfoot class="thead-dark">
+									
+									<tr>
+										
+										<th class="cc" ></th>
+										<th></th>
+										<th></th>
+										<th class="cc" ></th>
+										
+									</tr>
+									
+								</tfoot>
+								
+							</table>
+							
+						</div>
+						
+					</div>
+						
 				</div>
 			
 			</div>

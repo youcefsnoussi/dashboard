@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_facture_detailRepository;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfert_interne_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoir_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_detailRepository;
 import com.commercial.entities.schema.user_menu.users;
@@ -34,6 +35,9 @@ public class history_article_selledController {
 	@Autowired
 	bon_livraison_facture_detailRepository bldRepo;
 	
+	@Autowired
+	bon_transfert_interne_detailRepository btidRepo;
+	
 	public history_article_selledController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -53,12 +57,19 @@ public class history_article_selledController {
 		
 		List <Object[]> list = new ArrayList<Object[]>();
 		
-		//System.out.println("start = "+date_debut+" / end = "+date_fin);
+		List <Object[]> list1 = new ArrayList<Object[]>();
+		
+		List <Object[]> list2 = new ArrayList<Object[]>();
 		
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
-			list = fact_detRepo.get_quantite_sold_fact(gtd.get_date(), gtd.get_date()); 
+			list = fact_detRepo.get_quantite_sold_fact(gtd.get_date(), gtd.get_date());
+			
 			list.addAll(fact_av_dRepo.get_quantite_sold_fact_av(gtd.get_date(), gtd.get_date()));
+			
+			list1 = bldRepo.get_quantite_sold_val_bl(gtd.get_date(), gtd.get_date());
+			
+			list2 = btidRepo.get_quantite_sold_bon_transfert_interne(gtd.get_date(), gtd.get_date());
 			
 			date_debut = conv.convertion_MyDate_to_InputDate(gtd.get_date());
 			
@@ -72,6 +83,12 @@ public class history_article_selledController {
 			list.addAll(fact_av_dRepo.get_quantite_sold_fact_av(conv.convertion_InputDate_to_MyDate(date_debut), 
 																conv.convertion_InputDate_to_MyDate(date_fin)));
 			
+			list1 = bldRepo.get_quantite_sold_val_bl(conv.convertion_InputDate_to_MyDate(date_debut), 
+					conv.convertion_InputDate_to_MyDate(date_fin));
+			
+			list2 = btidRepo.get_quantite_sold_bon_transfert_interne(conv.convertion_InputDate_to_MyDate(date_debut), 
+					conv.convertion_InputDate_to_MyDate(date_fin));
+			
 		}
 		
 		model.addAttribute("start", date_debut);
@@ -80,6 +97,9 @@ public class history_article_selledController {
 		
 		model.addAttribute("list", list);
 		
+		model.addAttribute("list1", list1);
+		
+		model.addAttribute("list2", list2);
 		
 		return ret;
 		
@@ -109,6 +129,7 @@ public class history_article_selledController {
 		if(date_debut.equals("0") && date_fin.equals("0")) {
 			
 			list = fact_detRepo.get_quantite_sold_val_fact(gtd.get_date(), gtd.get_date());
+			
 			list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av(gtd.get_date(), gtd.get_date()));
 			
 			list1 = bldRepo.get_quantite_sold_val_bl(gtd.get_date(), gtd.get_date());

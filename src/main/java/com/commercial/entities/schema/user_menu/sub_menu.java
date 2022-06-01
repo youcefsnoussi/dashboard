@@ -42,8 +42,7 @@ public class sub_menu implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public sub_menu(String nom_submenu, String url_submenu, int ord, com.commercial.entities.schema.user_menu.menu menu,
-			String ids_banned, String icone) {
+	public sub_menu(String nom_submenu, String url_submenu, int ord, menu menu, String ids_banned, String icone) {
 		super();
 		this.nom_submenu = nom_submenu;
 		this.url_submenu = url_submenu;

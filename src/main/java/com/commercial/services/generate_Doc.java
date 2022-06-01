@@ -491,12 +491,12 @@ public class generate_Doc {
 				mp.put("rc", fact.getRegistre_commerce().getNumero_rc());
 				mp.put("nif", fact.getRegistre_commerce().getNumero_nif());
 				mp.put("nis", fact.getRegistre_commerce().getNumero_art());
-				mp.put("user", fact.getUsers().getMatricule());
+				mp.put("user", (fact.getUsers()!=null) ? fact.getUsers().getMatricule() : "");
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", fact.getDate());
 				mp.put("ArticleLoieExoneration", fact.getRegistre_commerce().getArticleLoieExoneration());
 				mp.put("time", fact.getTime());
-				mp.put("user", fact.getUsers().getMatricule());
+				//mp.put("user", fact.getUsers().getMatricule());
 				
 				//mp.put("total_remise", df.format(fact.getBon_livraison().getCommande().getValeur_reduction()) );
 				mp.put("total_ht", df.format(fact.getMontant_ht()) );

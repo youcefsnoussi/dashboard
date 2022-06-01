@@ -19,6 +19,8 @@ public class roles  implements Serializable{
 	private Long id;
 	
 	private String nom_role;
+	
+	@Column(length=5000)
 	private String ids_banned;
 	
 	@Column(columnDefinition = "boolean default false")

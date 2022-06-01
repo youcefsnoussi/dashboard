@@ -295,7 +295,7 @@ public class history_by_client_or_rc_Controller {
 				//double sold_fin_clt = mvml.get(mvml.size()-1).getNew_sold_client();
 				double sold_fin_rc = mvml.get(mvml.size()-1).getNew_sold_rc();
 				
-				System.out.println("--->"+mvml.get(mvml.size()-1).getNew_sold_rc());
+				//System.out.println("--->"+mvml.get(mvml.size()-1).getNew_sold_rc());
 				
 				model.addAttribute("id_rc",rc);
 				model.addAttribute("rc",rcRepo.findAll());
@@ -361,7 +361,7 @@ public class history_by_client_or_rc_Controller {
 							}
 							break;
 							
-							case "Facture Avoire":
+							case "Facture Avoir":
 							{
 								
 								nums.add(fact_avoirRepo.getOne(mvm.getId_operation()).getNumero());
@@ -380,7 +380,8 @@ public class history_by_client_or_rc_Controller {
 							case "Paiement":
 							{
 								
-								nums.add(payRepo.getOne(mvm.getId_operation()).getId().toString());
+								nums.add(payRepo.getOne(mvm.getId_operation()).getId().toString()+" | "+
+										payRepo.getOne(mvm.getId_operation()).getNumero_piece().toString());
 								
 							}
 							break;

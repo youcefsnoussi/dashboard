@@ -353,6 +353,7 @@ public class create_articleController {
 		@RequestParam("lib") String lib,
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("multiplicator") double multiplicator,
+		@RequestParam("consignation") String check_c,
 		
 		@SessionAttribute("user") users user){
 		
@@ -374,13 +375,9 @@ public class create_articleController {
 		
 		unite_mesure unite_m = unite_mesureRepo.getOne(id_unite_mesure);
 		
-		boolean sub = false;
+		boolean sub = (check.equals("on")) ? true : false;
 		
-		if(check.equals("on")) {
-			
-			sub = true;
-			
-		}
+		boolean consignation = (check_c.equals("on")) ? true : false;
 		
 		//--------------------------
 		
@@ -413,6 +410,7 @@ public class create_articleController {
 				art.setSubvension(sub);
 				art.setLibelle(lib);
 				art.setMultiplicator(multiplicator);
+				art.setConsignation(consignation);
 				
 				artRepo.save(art);artRepo.flush();
 				

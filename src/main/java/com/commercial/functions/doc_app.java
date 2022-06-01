@@ -9,7 +9,9 @@ public class doc_app {
 	/*				
 	 * 						ids_banned hia les roles li yakadro yakhedmo bihom 				
 	 * 											ghlat dertha ids_banned
-	 * 				
+	 * 						
+	 * 
+	 * 						table static_data.unite id ta3ha hoa prefix f code client o facture
 	 * 
 	 * 				------------------------------  Article  ---------------------------------
 					- add_reduction => yakder yajouter reduction de prix
