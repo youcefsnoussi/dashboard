@@ -1,5 +1,6 @@
 package com.commercial.webController.vente;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
+import com.commercial.entities.schema.article.repository.article_consignation_relationRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
 import com.commercial.entities.schema.article.repository.emballage_produitRepository;
 import com.commercial.entities.schema.article.repository.magasin_articleRepository;
@@ -187,7 +189,10 @@ public class list_bl_encoursController {
 	PaletteService ps;
 	
 	@Autowired
-	ConsignationService consServ;
+	ConsignationService consService;
+	
+	@Autowired
+	article_consignation_relationRepository art_cons_relRepo;
 	
 	public list_bl_encoursController() {
 		// TODO Auto-generated constructor stub
@@ -260,7 +265,7 @@ public class list_bl_encoursController {
 		
 		if(!user.getRole().getNom_role().equals("Expédition")) {
 			
-			model.addAttribute("detail_bl", bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl)));
+			model.addAttribute("detail_bl", bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)));
 			
 		}
 		else {
@@ -328,13 +333,76 @@ public class list_bl_encoursController {
 			
 			list_art.forEach(prix_art -> {
 				
-				prix_art.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()).get(0));
+				prix_art.setTva((tva) tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0)
+							.collect(Collectors.toList()).get(0));
 				
 			});
 			
 		}
 		
+		List<List<bon_livraison_detail>> list_art_cons = new ArrayList<>();
+		
+		List<String> list_art_cons_selected_id = new ArrayList<>();
+		
+		//List<bon_livraison_detail> bld_cons = bon_l_dRepo.get_bl_detail_articles_consignation(bon_lRepo.getOne(id_bl));
+		
+		String id_arts_cons = "";
+		
+		List<bon_livraison_detail> arts_cons = new ArrayList<>();
+		
+		int index = 0;
+		
+		for(bon_livraison_detail bl_detail : bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)) ) {
+			
+			index++;
+			
+			//System.out.println("id entry "+bl_detail.getArticle().getId()+" / is CONSIGN "+bl_detail.getArticle().isConsignation());
+			
+			if(bl_detail.getArticle().isConsignation()==true) {
+				
+				//System.out.println("enter consign");
+				
+				arts_cons.add(bl_detail);
+				
+				id_arts_cons = id_arts_cons+bl_detail.getArticle().getId()+",";
+				
+			}
+			else {
+				
+				if(!arts_cons.isEmpty()) {
+					
+					list_art_cons.add(arts_cons);
+					
+					list_art_cons_selected_id.add(id_arts_cons);
+					
+				}
+				
+				id_arts_cons = "";
+				
+				arts_cons = new ArrayList<>();
+				
+			}
+			
+			if(index==bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)).size() && 
+					bl_detail.getArticle().isConsignation()==true) {
+				
+				list_art_cons.add(arts_cons);
+				
+				list_art_cons_selected_id.add(id_arts_cons);
+				
+			}
+			
+		}
+		
 		model.addAttribute("articles", list_art);
+		
+		model.addAttribute("bld_cons", list_art_cons);
+		
+		list_art_cons_selected_id.stream().forEach(s -> {
+			list_art_cons_selected_id.set(list_art_cons_selected_id.indexOf(s), s.substring(0,s.lastIndexOf(",")));
+		});
+		
+		model.addAttribute("bld_cons_id", list_art_cons_selected_id);
 		
 		return "vente/edit_bl";
 		
@@ -366,6 +434,7 @@ public class list_bl_encoursController {
 			@RequestParam("montant_redux_art_pourc") double [] montant_redux_art_pourc,
 			@RequestParam("montant_net_ht_art") double [] montant_net_ht_art,
 			@RequestParam("montant_ttc_art") double [] montant_ttc_art,
+			@RequestParam("art_consign") List<String> art_consign,
 			
 			@SessionAttribute("user") users user){
 			
@@ -460,11 +529,9 @@ public class list_bl_encoursController {
 				
 				//-------------------- tracking operation -----------------------------------
 				
-				List <bon_livraison_detail> bld = bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl));
+				List <bon_livraison_detail> bld = bon_l_dRepo.get_bl_detail_post(bon_lRepo.getOne(id_bl));
 				
 				for(int i=0;i<bld.size();i++) {
-					
-					
 					
 					bon_livraison_detail bl_d = bld.get(i);
 					
@@ -512,7 +579,12 @@ public class list_bl_encoursController {
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 						
-						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
+						if(art_cons_relRepo.if_art_consigned(artRepo.getOne(article[i])).size()!=0) {
+							
+							consService.consignationBL(bl, art_consign.get(i), rc, artRepo.getOne(article[i]), quantite[i], 
+										magasinRepo.getOne(id_magasin[i]));
+						
+						}
 						
 					}
 					
@@ -718,25 +790,25 @@ public class list_bl_encoursController {
 				
 				//-------------------- tracking operation -----------------------------------
 				
-				List<bon_livraison_detail> bld_list = bon_l_dRepo.get_bl_detail(bl);
+				List<bon_livraison_detail> bld_list = bon_l_dRepo.get_bl_all_details(bl);
 				
 				for(int i=0;i<bld_list.size();i++) {
 					
 					bon_livraison_detail bld = bld_list.get(i);
 					
 					if(!bld.getArticle().isConsignation()) {
-					
-					facture_detail fct_d = new facture_detail(fact, bld.getArticle(), bld.getQuantite(), bld.getPrix_u_ht(), 
-							bld.getMontant_ht(), bld.getTva(), bld.getMontant_tva(), bld.getMontant_ttc(), 
-							bld.getPourcentage_remise(), bld.getMontant_remise(), bld.getMontant_ht_net(), bld.getUnite_mesure());
-					
-					fact_detRepo.save(fct_d);fact_detRepo.flush();
-					
-					//----------------- Consignation -------------<
-					}
-					else{
 						
-						consServ.consignationFACT(fact, bld.getArticle(), rc, bld.getQuantite());
+						facture_detail fct_d = new facture_detail(fact, bld.getArticle(), bld.getQuantite(), bld.getPrix_u_ht(), 
+								bld.getMontant_ht(), bld.getTva(), bld.getMontant_tva(), bld.getMontant_ttc(), 
+								bld.getPourcentage_remise(), bld.getMontant_remise(), bld.getMontant_ht_net(), bld.getUnite_mesure());
+						
+						fact_detRepo.save(fct_d);fact_detRepo.flush();
+					
+					
+					}
+					else{ //----------------- Consignation -------------<
+						
+						consService.consignationFACT(fact, bld.getArticle(), rc, bld.getQuantite());
 						
 					}
 					
@@ -786,15 +858,15 @@ public class list_bl_encoursController {
 				
 				//if(user.getUnite().getIdentifiant()==1) {
 					
-					Connection_peseur cp = new Connection_peseur();
+				Connection_peseur cp = new Connection_peseur();
+				
+				if(cp.getconnection()!=null) {
 					
-					if(cp.getconnection()!=null) {
-						
-						cp.insert_fct_to_peseur(numero_fact, today);
-						
-						cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
-						
-					}
+					cp.insert_fct_to_peseur(numero_fact, today);
+					
+					cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
+					
+				}
 					
 				//}
 				

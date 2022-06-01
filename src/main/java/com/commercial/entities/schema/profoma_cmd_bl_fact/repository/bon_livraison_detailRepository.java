@@ -14,9 +14,35 @@ public interface bon_livraison_detailRepository extends JpaRepository<bon_livrai
 	
 	@Query( " FROM bon_livraison_detail bl_d "
 			
-		  + " WHERE bl_d.bon_livraison = :bl ")
+		  + " WHERE bl_d.bon_livraison = :bl AND bl_d.article.consignation = 'false' "
+		  + " ORDER BY bl_d.id ")
 		 
 	public List<bon_livraison_detail> get_bl_detail(@Param("bl") bon_livraison bl);
+	
+	//--------------------------------------------------------------------------------------
+	
+	@Query( " FROM bon_livraison_detail bl_d "
+			
+		  + " WHERE bl_d.bon_livraison = :bl  "
+		  + " ORDER BY bl_d.id ")
+		 
+	public List<bon_livraison_detail> get_bl_all_details(@Param("bl") bon_livraison bl);
+	
+	//--------------------------------------------------------------------------------------
+	
+	@Query( " FROM bon_livraison_detail bl_d "
+			
+		  + " WHERE bl_d.bon_livraison = :bl ")
+		 
+	public List<bon_livraison_detail> get_bl_detail_post(@Param("bl") bon_livraison bl);
+	
+	//--------------------------------------------------------------------------------------
+	
+	@Query( " FROM bon_livraison_detail bl_d "
+			
+		  + " WHERE bl_d.bon_livraison = :bl AND bl_d.article.consignation = 'true' ")
+		 
+	public List<bon_livraison_detail> get_bl_detail_articles_consignation(@Param("bl") bon_livraison bl);
 	
 	//--------------------------------------------------------------------------------------
 	

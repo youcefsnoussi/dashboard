@@ -208,6 +208,10 @@ public class factureRestController {
 		
 		list_art.stream().forEach( pu -> {
 			
+			double prix = pu.getPrix();
+			
+			pu.setPrix(prix * pu.getArticle().getMultiplicator());
+			
 			if(clt_rc.getRegistre_commerce().getTva()==0) {
 				
 				//System.out.println("-----<>-- "+tvaRepo.findAll().stream().filter(tva -> tva.getTaux_tva()==0).collect(Collectors.toList()));
@@ -228,6 +232,8 @@ public class factureRestController {
 				});
 				
 			}
+			
+			
 			
 		});
 		

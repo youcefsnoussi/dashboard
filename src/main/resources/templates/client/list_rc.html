@@ -107,6 +107,7 @@
 										
 										<th>Code</th>
 										<th>N° RC</th>
+										<th>Category</th>
 										<th>Nom Prénom</th>
 										<th>Sold encours</th>
 										<th>Plafond</th>
@@ -123,6 +124,7 @@
 										
 										<td th:text="${rc.code}"></td>
 										<td th:text="${rc.numero_rc}"></td>
+										<td th:text="(${rc.category} != null) ? ${rc.category.nom_category} : ''"></td>
 										<td th:text="${rc.nom}+' '+${rc.prenom}"></td>
 										<td style="text-align: right;" th:text="${#numbers.formatDecimal(rc.sold_encours, 3, 'WHITESPACE', 2,'POINT')}"></td>
 										<td style="text-align: right;" th:text="${#numbers.formatDecimal(rc.plafond, 3, 'WHITESPACE', 2,'POINT')}"></td>
@@ -142,6 +144,7 @@
 								
 									<tr>
 										
+										<th></th>
 										<th></th>
 										<th></th>
 										<th></th>

@@ -201,7 +201,7 @@ public class add_rcController {
 	
 	public String new_number_code_rc(category_client cat) {
 		
-		String ret= (!cat.getLettre().equals("EX") && !cat.getLettre().equals("CA")) ? "00001" : "0001";
+		String ret= (cat.getLettre().length()==1 ? "00001" : "0001");
 		
 		List<registre_commerce> list_c = rcRepo.last_rc_by_category(cat);
 		
@@ -210,6 +210,8 @@ public class add_rcController {
 		if(c!=null) {
 			
 			String code = c.getCode();
+			
+			System.out.println("CODE ---> "+code);
 			
 			String num = (code.length()==7) ? code.substring(2) : code.substring(3);
 			

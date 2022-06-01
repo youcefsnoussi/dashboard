@@ -327,9 +327,9 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 	//---------------------------------------------------------------------
 	
 	@Query( value=
-			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, rc.adresse, " +
-			"rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, reg.designation region, art.code, nom_category, " +
-			"art.libelle, " +
+			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, "+
+			" c_clt.nom_category AS rc_category, rc.adresse, rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, "+
+			"reg.designation region, art.code, cp.nom_category, art.libelle, " +
 			"quantite, prix_u_ht, fct_d.montant_ht, fct_d.montant_remise, fct_d.montant_ht_net, fct_d.tva, fct_d.montant_tva, " +
 			"fct_d.montant_ttc, numero, fct.matricule_camion " + 
 			" " + 
@@ -337,7 +337,8 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			" " + 
 			"JOIN proforma_cmd_bl_fact.facture fct ON fct.id = facture " + 
 			"JOIN client.registre_commerce rc ON rc.id = registre_commerce " + 
-			"JOIN client.client clt ON clt.id = client " + 
+			"JOIN client.client clt ON clt.id = client " +
+			"JOIN client.category_client c_clt ON c_clt.id = rc.category_client " + 
 			" " + 
 			"JOIN article.article art ON art.id = fct_d.article " + 
 			"JOIN article.produit prd ON prd.id = art.produit " +
@@ -353,17 +354,19 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			" " + 
 			"UNION ALL  " + 
 			" " + 
-			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, rc.adresse, " +
-			"rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, reg.designation region, art.code, nom_category, " +
+			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, "+
+			"c_clt.nom_category AS rc_category, rc.adresse, " +
+			"rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, reg.designation region, art.code, cp.nom_category, " +
 			"art.libelle, " +
 			"quantite*(-1), prix_u_ht, fct_d.montant_ht*(-1), fct_d.montant_remise, fct_d.montant_ht_net*(-1), " +
-			"fct_d.tva, fct_d.montant_tva*(-1), fct_d.montant_ttc*(-1), numero, ''  " + 
+			"fct_d.tva, fct_d.montant_tva*(-1), fct_d.montant_ttc*(-1), numero, '' " + 
 			" " + 
 			"FROM proforma_cmd_bl_fact.facture_avoir_detail fct_d " + 
 			" " + 
 			"JOIN proforma_cmd_bl_fact.facture_avoir fct ON fct.id = facture_avoir " + 
 			"JOIN client.registre_commerce rc ON rc.id = registre_commerce " + 
-			"JOIN client.client clt ON clt.id = client " + 
+			"JOIN client.client clt ON clt.id = client " +
+			"JOIN client.category_client c_clt ON c_clt.id = rc.category_client " + 
 			" " + 
 			"JOIN article.article art ON art.id = fct_d.article " + 
 			"JOIN article.produit prd ON prd.id = art.produit " +
@@ -381,17 +384,19 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			" " + 
 			"( " + 
 			" " + 
-			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, rc.adresse, " +
-			"rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, reg.designation region, art.code, nom_category, " +
+			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, " +
+			"c_clt.nom_category AS rc_category, rc.adresse, rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, " +
+			"reg.designation region, art.code, cp.nom_category, " +
 			"art.libelle, " +
 			"quantite, prix_u_ht, fct_d.montant_ht, fct_d.montant_remise, fct_d.montant_ht_net, fct_d.tva, fct_d.montant_tva, " +
-			"fct_d.montant_ttc, numero, matricule  " + 
+			"fct_d.montant_ttc, numero, matricule " + 
 			" " + 
 			"FROM proforma_cmd_bl_fact.bon_livraison_facture_detail fct_d " + 
 			" " + 
 			"JOIN proforma_cmd_bl_fact.bon_livraison_facture fct ON fct.id = bon_livraison_facture " + 
 			"JOIN client.registre_commerce rc ON rc.id = registre_commerce " + 
-			"JOIN client.client clt ON clt.id = client " + 
+			"JOIN client.client clt ON clt.id = client " +
+			"JOIN client.category_client c_clt ON c_clt.id = rc.category_client " + 
 			" " + 
 			"JOIN article.article art ON art.id = fct_d.article " + 
 			"JOIN article.produit prd ON prd.id = art.produit " +

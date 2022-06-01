@@ -6,17 +6,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.commercial.entities.schema.user_menu.repository.menuRepository;
-import com.commercial.entities.schema.user_menu.repository.sub_menuRepository;
+import com.commercial.services.DBInitialisation;
 
 @SpringBootApplication
 public class CommercialStableApplication implements CommandLineRunner {
 	
 	@Autowired
-	menuRepository menuRepo;
-	
-	@Autowired
-	sub_menuRepository subRepo;
+	DBInitialisation Dbi;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CommercialStableApplication.class, args);
@@ -26,7 +22,21 @@ public class CommercialStableApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
 		
-		System.out.println("running========");
+		Dbi.initMenu();
+		Dbi.initSubMenu();
+		Dbi.initRoles();
+		Dbi.initRolesMenu();
+		Dbi.initUsers();
+		Dbi.initRegion();
+		Dbi.initWilaya();
+		Dbi.initUniteMesure();
+		Dbi.initUnite();
+		Dbi.initTypeReglement();
+		Dbi.initTva();
+		Dbi.initModePaiement();
+		Dbi.initCauseFactureAvoir();
+		Dbi.initBanque();
+		Dbi.initCategoryClient();
 		
 	}
 	

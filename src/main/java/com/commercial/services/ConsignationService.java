@@ -77,7 +77,7 @@ public class ConsignationService {
 					
 					double price = rcc.getPrix_u_ht();
 					
-					double quant = quantite / division.get();
+					double quant = (quantite * art.getMultiplicator()) / division.get();
 					/*
 					double ht = quant*price;
 					
@@ -124,7 +124,7 @@ public class ConsignationService {
 					
 					double price = rcc.getPrix_u_ht();
 					
-					double quant = quantite / division.get();
+					double quant = (quantite * art.getMultiplicator()) / division.get();
 					/*
 					double ht = quant*price;
 					
@@ -193,7 +193,7 @@ public class ConsignationService {
 				
 					double price = rcc.getPrix_u_ht();
 					
-					double ht = quantite * price;
+					double ht = (quantite * art.getMultiplicator()) * price;
 					
 					facture_detail fact_d = new facture_detail(fact, art, quantite, price, ht, 
 							0, 0, ht, 0, 0, ht, rcc.getArticle_consignation().getUnite_mesure_vente());

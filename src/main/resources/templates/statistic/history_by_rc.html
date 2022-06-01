@@ -22,6 +22,8 @@
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
+		<script type="text/javascript" src="resources\additionalJS\MySpin.js"></script> 
+		
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\jszip.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\Table_Export\external\FileSaver.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\Table_Export\scripts\excel-gen.js"></script>
@@ -63,13 +65,16 @@
 			
 			$('[data-toggle="tooltip"]').tooltip()
 			*/
+			
+			var h = window.innerHeight;
+			
 			var datatable_config = {
 					"language": {
 				            "url": "resources/Plugins/datatable/lang/French.json"
 				    },
-					"ordering": false,
+				    "ordering": false,
 			    	"bPaginate": false,
-					"scrollY":"400px",
+					"scrollY":h-510,
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
@@ -125,11 +130,13 @@
 		 			
 		 			if(start=="" && end==""){
 		 				
+		 				BeginSpin();
 		 				window.location.replace("historic_rc?rc="+select_rc+"&start=0&end=0");
 		 				
 		 			}
 		 			if(start!="" && end!=""){
 		 				
+		 				BeginSpin();
 		 				window.location.replace("historic_rc?rc="+select_rc+"&start="+start+"&end="+end);
 		 				
 		 			}
@@ -168,7 +175,7 @@
 						
 						$("#icone").attr("class","far fa-file-invoice");
 				  break;
-				  case "Facture Avoire":
+				  case "Facture Avoir":
 					  	$('#print_content').html('<iframe id="frame" width="100%" height="900" onload="ifrhgh()" frameborder="0" src="fact_avoir?id_fact='+id_op+'"></iframe>');
 						
 						$("#title").text("Détail Facture avoire");
@@ -415,9 +422,9 @@
 								<td th:text="${hist.date}"></td>
 								<td th:text="${nums[info.index]}"></td>
 								<td th:text="${hist.type_operation}"></td>
-								<td th:if="${hist.type_operation}=='Paiement' or ${hist.type_operation}=='Facture Avoire' or ${hist.type_operation}=='Facture Ristourne'" 
+								<td th:if="${hist.type_operation}=='Paiement' or ${hist.type_operation}=='Facture Avoir' or ${hist.type_operation}=='Facture Ristourne'" 
 									th:text="${#numbers.formatDecimal(hist.montant_operation*(-1), 3, 'WHITESPACE', 2,'POINT')}"></td>
-								<td th:unless="${hist.type_operation}=='Paiement' or ${hist.type_operation}=='Facture Avoire' or ${hist.type_operation}=='Facture Ristourne'" 
+								<td th:unless="${hist.type_operation}=='Paiement' or ${hist.type_operation}=='Facture Avoir' or ${hist.type_operation}=='Facture Ristourne'" 
 									th:text="${#numbers.formatDecimal(hist.montant_operation, 3, 'WHITESPACE', 2,'POINT')}"></td>	
 								<!--  <td th:text="${#numbers.formatDecimal(hist.old_sold_client, 3, 'WHITESPACE', 0,'COMMA')}"></td> -->
 								<td th:text="${#numbers.formatDecimal(hist.old_sold_rc, 3, 'WHITESPACE', 2,'POINT')}"></td>
