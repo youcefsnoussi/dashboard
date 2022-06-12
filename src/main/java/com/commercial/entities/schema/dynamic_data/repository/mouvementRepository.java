@@ -59,7 +59,8 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 		  + " AND CAST(date as date) BETWEEN CAST(:start as date) AND CAST(:end as date)"
 		  + " ORDER BY CAST(mvm.date AS date), mvm.id ASC")
 	
-	public List<mouvement> sold_debut_periode(@Param("rc") registre_commerce rc, @Param("start") String start, @Param("end") String end);
+	public List<mouvement> sold_debut_periode(@Param("rc") registre_commerce rc, @Param("start") String start, 
+												@Param("end") String end);
 	
 	//---------------------------------------------------------------------------------
 	
@@ -79,5 +80,13 @@ public interface mouvementRepository  extends JpaRepository<mouvement, Long>{
 				  nativeQuery=true)
 	 
 	public Object GetLastSoldDateByRc(@Param("rc") long rc, @Param("date") String date);
+	
+	//----------------------------------------------------------------------------------
+	
+	@Query( " FROM mouvement mvm "
+			
+		  + " WHERE id_operation = :id_op AND type_operation = :type_op ")
+	
+	public mouvement  get_mouvement_by_operation(@Param("id_op") long id_operation, @Param("type_op") String type_operation); 
 	
 }

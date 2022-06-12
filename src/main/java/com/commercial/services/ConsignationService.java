@@ -63,6 +63,8 @@ public class ConsignationService {
 		
 		if(!rc.isConsignation()) return;
 		
+		if(id_arts_con.length()==0) return;
+		
 		String [] sp = id_arts_con.split(",");
 		
 		for (String s : sp) {
@@ -175,6 +177,71 @@ public class ConsignationService {
 			
 	}
 	
+	//--------------------------------------------------------------------------------------
+	
+	public void consignationFactEdit(facture fact, String id_arts_con, registre_commerce rc, article art, double quantite) {
+		
+		if(!rc.isConsignation()) return;
+		
+		String [] sp = id_arts_con.split(",");
+		
+		for (String s : sp) {
+			
+			Optional<rc_consignation> opt = Optional.ofNullable(rccRepo.getRcConsignation(rc, artRepo.getOne(Long.parseLong(s))));
+			
+			opt.ifPresent(rcc -> {
+				
+				Optional<Double> division = Optional.ofNullable(art_c_rRepo.getDivisioner(art, artRepo.getOne(Long.parseLong(s))));
+				
+				division.ifPresent(div -> {
+					
+					double price = rcc.getPrix_u_ht();
+					
+					double quant = (quantite * art.getMultiplicator()) / division.get();
+					/*
+					double ht = quant*price;
+					
+					bon_livraison_detail bl_d = new bon_livraison_detail(bl, rcc.getArticle_consignation(), quant,
+							price, ht, 0, 0, null, rcc.getArticle_consignation().getUnite_mesure_vente(), true, magasin);
+					
+					*/
+					
+					facture_detail fact_d = new facture_detail(fact, rcc.getArticle_consignation(), quant, price, 0, 0);
+					
+					fct_dRepo.save(fact_d);fct_dRepo.flush();
+					
+					//------------------------ DELETING AND ADDING F mouvement_consignation
+					/*
+					List<mouvement_consignation> list_mvm_c = mvm_cRepo.get_mvm_by_fact_artC(fact, rcc.getArticle_consignation());
+					
+					for (mouvement_consignation mvm_c : list_mvm_c) {
+						
+						mvm_cRepo.delete(mvm_c); mvm_cRepo.flush();
+						*/
+						String to = (quant > 0) ? "Consignation" : "Déconsignation";
+						
+						mouvement_consignation mvm_cNew = new mouvement_consignation(rcc.getRegistre_commerce(), 
+							rcc.getArticle_consignation(), fact.getDate(), fact.getTime(), quant, quant*price, 
+							rcc.getSold_physique(), rcc.getSold_valorise(), to, fact);
+						
+						mvm_cRepo.save(mvm_cNew); mvm_cRepo.flush();
+						
+					//}
+					
+					recalculeSoldConsigantionAndHistory(rcc);
+					
+				});
+				
+				
+				
+			});
+			
+		}
+		
+	}
+	
+	//--------------------------------------------------------------------------------------
+	
 	public Map<String,Double> deConsignationFACT(facture fact, List<article> arts_consignation, registre_commerce rc, double quantite) {
 		
 		Map<String,Double> result = new HashMap<String, Double>();
@@ -234,6 +301,61 @@ public class ConsignationService {
 		rcc.setSold_physique(rcc.getSold_physique() + montant_physic);
 
 		rcc.setSold_valorise(rcc.getSold_valorise() + montant_valorise);
+		
+		rccRepo.save(rcc); rccRepo.flush();
+		
+	}
+	
+	//-------------------------------------------------------------------------------------------------------
+	
+	private void recalculeSoldConsigantionAndHistory(rc_consignation rcc) {
+		
+		List<mouvement_consignation> ListMvmC = mvm_cRepo.recalculeSoldArtConsignationRc
+					(rcc.getRegistre_commerce(), rcc.getArticle_consignation());
+		
+		double finalSoldP = 0, finalSoldV = 0;
+		
+		for(int i=0; i < ListMvmC.size();i++) {
+			
+			mouvement_consignation mvmC = ListMvmC.get(i);
+			
+			if(i==0) {
+				
+				mvmC.setOld_sold_physic(0);
+				mvmC.setOld_sold_valorise(0);
+				//mvmC.setNew_sold_physic(mvmC.getOld_sold_physic() + mvmC.getMontant_physic());
+				//mvmC.setNew_sold_valorise(mvmC.getOld_sold_valorise() + mvmC.getMontant_valorise());
+				
+				mvmC.setNew_sold_physic(0 + mvmC.getMontant_physic());
+				mvmC.setNew_sold_valorise(0 + mvmC.getMontant_valorise());
+				
+				mvm_cRepo.save(mvmC); mvm_cRepo.flush();
+				
+				finalSoldP = 0 + mvmC.getMontant_physic();
+				finalSoldV = 0 + mvmC.getMontant_valorise();
+				
+			}
+			else {
+				
+				mouvement_consignation mvmCB = ListMvmC.get(i-1);
+				
+				mvmC.setOld_sold_physic(mvmCB.getNew_sold_physic());
+				mvmC.setOld_sold_valorise(mvmCB.getNew_sold_valorise());
+				
+				mvmC.setNew_sold_physic(mvmCB.getNew_sold_physic() + mvmC.getMontant_physic());
+				mvmC.setNew_sold_valorise(mvmCB.getNew_sold_valorise() + mvmC.getMontant_valorise());
+				
+				mvm_cRepo.save(mvmC); mvm_cRepo.flush();
+				
+				finalSoldP = mvmCB.getNew_sold_physic() + mvmC.getMontant_physic();
+				finalSoldV = mvmCB.getNew_sold_valorise() + mvmC.getMontant_valorise();
+				
+			}
+			
+		}
+		
+		rcc.setSold_physique(finalSoldP);
+		rcc.setSold_valorise(finalSoldV);
 		
 		rccRepo.save(rcc); rccRepo.flush();
 		

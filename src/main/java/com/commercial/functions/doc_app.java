@@ -66,7 +66,9 @@ public class doc_app {
 	 * 				- cancel_blq => annuler bon_livraison_facture
 	 * 				- edit_blq => edit bon_livraison_facture
 	 * 				- cancel_bt => annuler bon_transfert
+	 * 				- cancel_bti => annuler bon_transfert_interne
 	 * 				- fact_blfs => facturé les bls
+	 * 				
 	 * 
 	 * 				--------------------------------------------------------------------------------
 	 * 				PS : -> PRIX ARTICLE PAR CATEGORY  = -1 ma3netha manbi3oloch hedek ARTICLE
@@ -86,13 +88,12 @@ public class doc_app {
 	 * 
 	 * 			//------------------------------------- WACH NBEDEL KI NDIR MAJ l AINDEFLA 
 	 * 
-	 * 			- FILE ---> list_factureController ====>  fct ---> print_fact
 	 * 			- FILE ---> Connection_Comptabilite ===>  fct ---> conx
 	 * 			
 	 * 			//------------------------------------- WACH NBEDEL KI NDIR MAJ l Mais Server AIN Romana
 	 * 
 	 * 			- application.properties ---> DB -> commercial_mais
-	 * 			- FILE ---> vente\facturationOfBls.html ====>  fct ---> $("#fct_blf").click
+	 * 			- FILE ---> vente\facturationOfBls.html ====>  fct ---> $("#fct_blf").click // line -> 150
 	 * 
 	 */
 	

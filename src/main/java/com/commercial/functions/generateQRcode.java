@@ -65,7 +65,7 @@ public class generateQRcode {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("\n\nYou have successfully created QR Code.");
+		//System.out.println("\n\nYou have successfully created QR Code.");
 		
 		return filePath;
 		

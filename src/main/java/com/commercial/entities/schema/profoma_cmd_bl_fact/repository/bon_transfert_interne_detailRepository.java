@@ -16,7 +16,9 @@ public interface bon_transfert_interne_detailRepository extends JpaRepository<bo
 	
 			" FROM bon_transfert_interne_detail btid" +
 			
-			" WHERE CAST(btid.bon_transfert_interne.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" + 
+			" WHERE CAST(btid.bon_transfert_interne.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date) " +
+			
+			" AND btid.bon_transfert_interne.cancel = 'false' " + 
 			
 			" GROUP BY code, nom_category, libelle")
 		 

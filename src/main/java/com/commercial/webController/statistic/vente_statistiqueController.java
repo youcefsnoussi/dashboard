@@ -516,7 +516,7 @@ public class vente_statistiqueController {
 	//-----------------------------------------------------------------------------
 	
 	@RequestMapping(value="/etat_sortie_subvension")
-	public String etat_sortie_subvnsion(HttpServletRequest request,
+	public String etat_sortie_subvension(HttpServletRequest request,
 						 @RequestParam(value="start", defaultValue="0") String start,
 						 @RequestParam(value="end", defaultValue="0") String end,
 						 @SessionAttribute("user") users user,
@@ -670,11 +670,7 @@ public class vente_statistiqueController {
 						 @RequestParam(value="end", defaultValue="0") String end,
 						 @SessionAttribute("user") users user,
 						 Model model){
-		/*
-		LocalTime start_time = LocalTime.now();
 		
-		System.out.println("start ------->"+start_time);
-		*/
 		convert_string_to_date_util conv = new convert_string_to_date_util();
 		
 		get_time_date gtd = new get_time_date();
@@ -692,12 +688,7 @@ public class vente_statistiqueController {
 		model.addAttribute("end", ret_end);
 		
 		model.addAttribute("list", list);
-		/*
-		LocalTime end_time = LocalTime.now();
 		
-		System.out.println("end ------->"+end_time+" | diff ---> "+ChronoUnit.MINUTES.between(start_time, end_time)+":"+
-					ChronoUnit.SECONDS.between(start_time, end_time));
-		*/
 		return "statistic/rapport_ultra_detailler";		
 	}
 	

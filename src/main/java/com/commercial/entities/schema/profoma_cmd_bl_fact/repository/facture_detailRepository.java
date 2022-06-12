@@ -15,11 +15,27 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_detail;
 
 public interface facture_detailRepository extends JpaRepository<facture_detail, Long> {
 	
+	@Query( "DELETE FROM facture_detail fact_det "
+			
+				+ " WHERE fact_det.facture = :facture")
+		 
+	public void delete_detail_facture_by_facture(facture facture);
+	
+	//---------------------------------------------------------------------
+	
 	@Query( " FROM facture_detail fact_det "
 			
 				+ " WHERE fact_det.facture = :facture")
 		 
 	public List<facture_detail> get_facture_detail(facture facture);
+	
+	//---------------------------------------------------------------------
+	
+	@Query( " FROM facture_detail fact_det "
+			
+				+ " WHERE fact_det.facture = :facture AND fact_det.article.consignation = 'false'")
+		 
+	public List<facture_detail> get_facture_detail_without_cons(facture facture);
 	
 	//---------------------------------------------------------------------
 	
@@ -329,9 +345,10 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 	@Query( value=
 			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, "+
 			" c_clt.nom_category AS rc_category, rc.adresse, rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, "+
-			"reg.designation region, art.code, cp.nom_category, art.libelle, " +
+			"reg.designation region, art.code, cp.nom_category, scp.nom_sous_category, prd.designation, art.subvension, "+
+			"emb.nom_emballage, art.libelle, " +
 			"quantite, prix_u_ht, fct_d.montant_ht, fct_d.montant_remise, fct_d.montant_ht_net, fct_d.tva, fct_d.montant_tva, " +
-			"fct_d.montant_ttc, numero, fct.matricule_camion " + 
+			"fct_d.montant_ttc, numero, fct.matricule_camion, 'Facture' " + 
 			" " + 
 			"FROM proforma_cmd_bl_fact.facture_detail fct_d " + 
 			" " + 
@@ -344,7 +361,8 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			"JOIN article.produit prd ON prd.id = art.produit " +
 			"JOIN article.sous_category_produit scp ON scp.id = prd.sous_category_produit " + 
 			"JOIN article.category_produit cp ON cp.id = scp.category_produit " + 
-			" " + 
+			"JOIN article.emballage_produit emb ON emb.id = art.emballage_produit " +
+			"" + 
 			"JOIN static_data.wilaya w ON w.id = rc.wilaya " + 
 			"JOIN static_data.region reg ON reg.id = region " + 
 			" " + 
@@ -356,10 +374,10 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			" " + 
 			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, "+
 			"c_clt.nom_category AS rc_category, rc.adresse, " +
-			"rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, reg.designation region, art.code, cp.nom_category, " +
-			"art.libelle, " +
+			"rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, reg.designation region, art.code," +
+			" cp.nom_category, scp.nom_sous_category, prd.designation, art.subvension, emb.nom_emballage, art.libelle, " +
 			"quantite*(-1), prix_u_ht, fct_d.montant_ht*(-1), fct_d.montant_remise, fct_d.montant_ht_net*(-1), " +
-			"fct_d.tva, fct_d.montant_tva*(-1), fct_d.montant_ttc*(-1), numero, '' " + 
+			"fct_d.tva, fct_d.montant_tva*(-1), fct_d.montant_ttc*(-1), numero, '', 'Facture Avoir' " + 
 			" " + 
 			"FROM proforma_cmd_bl_fact.facture_avoir_detail fct_d " + 
 			" " + 
@@ -372,6 +390,7 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			"JOIN article.produit prd ON prd.id = art.produit " +
 			"JOIN article.sous_category_produit scp ON scp.id = prd.sous_category_produit " + 
 			"JOIN article.category_produit cp ON cp.id = scp.category_produit " + 
+			"JOIN article.emballage_produit emb ON emb.id = art.emballage_produit " +
 			" " + 
 			"join static_data.wilaya w on w.id = rc.wilaya " + 
 			"join static_data.region reg on reg.id = region " + 
@@ -386,10 +405,10 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			" " + 
 			"(SELECT date, CONCAT(clt.nom,' ',clt.prenom) client_pere, rc.code c, CONCAT(rc.nom,' ',rc.prenom) rc, " +
 			"c_clt.nom_category AS rc_category, rc.adresse, rc.numero_rc, rc.numero_art, rc.numero_nif, w.designation wilaya, " +
-			"reg.designation region, art.code, cp.nom_category, " +
-			"art.libelle, " +
+			"reg.designation region, art.code, cp.nom_category, scp.nom_sous_category, prd.designation, art.subvension, " +
+			"emb.nom_emballage,  art.libelle, " +
 			"quantite, prix_u_ht, fct_d.montant_ht, fct_d.montant_remise, fct_d.montant_ht_net, fct_d.tva, fct_d.montant_tva, " +
-			"fct_d.montant_ttc, numero, matricule " + 
+			"fct_d.montant_ttc, numero, matricule, 'Bon Livraison' " + 
 			" " + 
 			"FROM proforma_cmd_bl_fact.bon_livraison_facture_detail fct_d " + 
 			" " + 
@@ -402,7 +421,8 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			"JOIN article.produit prd ON prd.id = art.produit " +
 			"JOIN article.sous_category_produit scp ON scp.id = prd.sous_category_produit " + 
 			"JOIN article.category_produit cp ON cp.id = scp.category_produit " + 
-			" " + 
+			"JOIN article.emballage_produit emb ON emb.id = art.emballage_produit " +
+			"" + 
 			"JOIN static_data.wilaya w ON w.id = rc.wilaya " + 
 			"JOIN static_data.region reg ON reg.id = region " + 
 			" " + 

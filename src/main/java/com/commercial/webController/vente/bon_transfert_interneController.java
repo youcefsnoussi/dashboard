@@ -197,7 +197,15 @@ public class bon_transfert_interneController {
 			date_d = start; date_f = end;
 			
 		}
-		//model.addAttribute("bls", bon_lRepo.get_bl_encours());
+		
+		boolean cancel_bti = false;
+
+		//----------------------ROLE TEST---------------------------------
+		
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("cancel_bti")) 
+		{ cancel_bti = true; }
+		
+		model.addAttribute("cancel_bti", cancel_bti);
 		
 		model.addAttribute("date_d", date_d);
 		

@@ -11,7 +11,11 @@
 		
 		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
 		
-		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		<link rel="stylesheet" href="resources\Plugins\datatable\js_additional\buttons.dataTables.min.css" /> 
+		
+		<link rel="stylesheet" href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" > 
+		
+		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
 		
 		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
 		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
@@ -19,12 +23,26 @@
 		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\dataTables.buttons.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.html5.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.print.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\pdfmake.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\vfs_fonts.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
+		
 		
 		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
 		
 		
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\plugins\piexif.js"></script>
+		
 		
 		<script type="text/javascript">
 		
@@ -58,22 +76,20 @@
 					
 			}
 			
-			$('[data-toggle="tooltip"]').tooltip()
-			
 			var datatable_config = {
 					"language": {
-				            "url": "resources/Plugins/datatable/lang/French.json"
+			            "url": "resources/Plugins/datatable/lang/French.json"
 				    },
 					"ordering": true,
 			    	"bPaginate": false,
-					"scrollY":"600px",
+					"scrollY":"400px",
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			            this.api().columns([2]).every( function () {
+			            this.api().columns([1,2,3,5,6,12,13]).every( function () {
 			                var column = this;
-			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+
-			                				'.data-live-search="true" data-container="body"><option value="">Tout</option></select>')
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+ 
+	                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
 			                    .appendTo( $(column.footer()).empty() )
 			                    .on( 'change', function () {
 			                        var val = $.fn.dataTable.util.escapeRegex(
@@ -88,32 +104,30 @@
 			                column.data().unique().sort().each( function ( d, j ) {
 			                    select.append( '<option value="'+d+'">'+d+'</option>' )
 			                } );
+			                $('.selectpicker').selectpicker('refresh');
 			            } );
+			        
 			        },
 					 drawCallback: function () {
 						
+					      var api = this.api();
+					      
+					      $( api.column( 4, {page:'current'} ).footer() ).html(
+					        api.column( 4, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
 					      
 					 },
 		    };
 		 		
 		 	var table = $('#table').DataTable(datatable_config);
+		 	var table_imp = $('#table_impaye').DataTable(datatable_config);
+			
+		 	//------------------- TO RENDER table header and footer between tabs
 		 	
-			$(".print").click(function(){
-				
-				var id_bl = $(this).attr("id_bti");
-				
-				num_bl = $(this).attr("num_bti");
-				
-				$('#print_content').html('<iframe id="frame" width="100%" height="828" onload="ifrhgh()" frameborder="0" '+
-						'src="print_bti?id_bl='+id_bl+'"></iframe>');
-				
-				$("#title_bl").text("Détail N° "+num_bl);
-				
-				$("#icone_bl").attr("class","far fa-file-invoice");
-				
-				$("#bl_detail_modal").modal("show");
-				
-			});
+		 	$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+		        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+		    } );
+		 	
 			
 			$("#afficher").click(function(){
 				
@@ -132,157 +146,112 @@
 				else{
 					
 					//console.log("start = "+start+" / end = "+end);
-					window.location.replace("list_bon_transfert_interne?start="+start+"&end="+end);
+					window.location.replace("list_remboursements?date_debut="+start+"&date_fin="+end);
 					
 				}
 				
 			});
 			
-			var id_bti;
-			
-			$(".cancel").click(function(){
-				
-				id_bti = $(this).attr("id_bti");
-				var num_bti = $(this).attr("num_bti");
-				
-				$("#text_confirmation").html("Etes vous sure d'annuler le Bon de Transfert Interne N°<b>"+num_bti+"</b>  ?");
-				
-				$("#confirmation").modal('show');
-				
-			});
-			
-			$("#confirm").click(function(){
-				
-				$.ajax({
-					url : 'cancel_bti',
-					data : {
-						id_bti : id_bti
-					},
-					success : function(responseJson) {
-						
-						location.reload();
-						
-					}
-					
-				});
-				
-			});
-			
 		});
-
-		$(function () {
-		    $('#fact_detail_modal').on('shown.bs.modal', function () {
-		        /* $('#print_content').html('<iframe id="frame" width="100%" height="100%" onload="ifrhgh()" 
-		        		frameborder="0" src="/add_client"></iframe>'); */
-		    });
-		});
-
-		function ifrhgh(){
-		    var iframehght =  $("#frame").contents().height();
-		    $("#frame").height(iframehght);
-		}
 		
 		</script>
 		
 		<style type="text/css">
 		
-			.rr{
 			
-				text-align: right;
-			
-			}
 		
 		</style>
 		
 </head>
 <body>
-	
-	 <div class="container-fluid h-100"> <!-- container h-100 -->
+	<br>
+	<div class="container-fluid h-100"> <!-- h-100 -->
 		
-		<div class="card ">
+		<div class="card">
 		
+			<div class="card-header">
 			
-			<div class="card-header  text-center"> 
+				<h3 class="text-center"> <i class="far fa-reply"></i>  List des Remboursements </h3> 
+				
+			</div>
 			
-				<div class="row">
+			<div class="card-body">
+			
+				<div class="container-fluid">
 					
-					<div class="col-md-4 offset-md-1" >
+					<div class="row">
 						
-						<div class="input-group">
 						
-							<div class="input-group-append">
+						<div class="col-md-4" >
+						
+							<div class="input-group">
 							
-								<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" 
-									style="width:100%;" placeholder="DU">
+								<input id="debut" type="date" name="start" th:value="${date_d}"  class="form-control date" placeholder="DU">
 									
 								<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
 								
-								<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" 
-								style="width:100%;" placeholder="AU">
+								<input id="fin" type="date" name="end" th:value="${date_f}" class="form-control date" placeholder="AU">
 								
 								<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
-								
+									
 							</div>
 							
 						</div>
 						
 					</div>
 					
-					<div class="col-md-4 offset-md-1">
+					<hr>
 					
-						<h3 class="text-center"> <i class="far fa-clipboard-list-check"></i>  List des Bons Transfert Interne</h3>
-					
-					</div>
-					
-				</div>
-			
-			</div>
-			
-			<div class="card-body">
-			
-				<div class="container-fluid">
-					<table id="table" class="table table-bordered table-hover" style="width:100%">
+						
+						
+					<table id="table" class="table table-bordered table-hover" >
 					
 						<thead class="thead-dark">
-						
-							<tr>
 							
-								<th>N°</th>
-								<th>Date</th>
-								<th>Déstination</th>
-								<th></th>
-								
+							<tr>
+								<th width="">ID</th>
+								<th width="10%">Client</th>
+								<th width="">Code RC</th>
+								<th width="35%">RC</th>
+								<th width="22%">Montant</th>
+								<th>Mode de paiement</th>
+								<th>Banque</th>
+								<th>Date piece</th>
+								<th>Date Saisie</th>
+								<th>N° de la piece</th>
 							</tr>
 						
 						</thead>
 						
 						<tbody>
 						
-							<tr th:each="bti:${list_bti}">
+							<tr th:each="pay:${remboursements}">
 							
-								<td th:text="${bti.numero}"></td>
-								<td th:text="${bti.date}"></td>
-								<td th:text="${bti.destination}"></td>
-								<td style="text-align: center;"> 
-																 <button type="button" class="btn btn-info print" 
-																 			th:attr="id_bti=${bti.id},num_bti=${bti.numero}"> 
-																						<i class="far fa-print"></i>
-																 </button>
-																 <button th:if="${cancel_bti}==true" type="button" 
-																 	th:attr="id_bti=${bti.id},num_bti=${bti.numero}" 
-																 	class="btn btn-danger cancel" > 
-																		<i class="far fa-trash"></i>
-																 </button>  
-								</td>
-								
+								<td th:text="${pay.id}"></td>
+								<td th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
+								<td th:text="${pay.registre_commerce.code}"></td>
+								<td th:text="${pay.registre_commerce.nom}+' '+${#strings.defaultString(pay.registre_commerce.prenom,'')}"></td>
+								<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
+								<td th:text="${pay.mode_paiement.designation}"></td>
+								<td th:if="${pay.banque}==null" ></td>
+								<td th:unless="${pay.banque}==null" th:text="${pay.banque.nom_banque}"></td>
+								<td th:text="${pay.date}"></td>
+								<td th:text="${pay.date_saisie}"></td>
+								<td th:text="${pay.numero_piece}"></td>
 							</tr>
 						
 						</tbody>
 						
-						<tfoot>
+						<tfoot class="thead-dark">
 						
 							<tr>
 							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>
@@ -293,64 +262,15 @@
 						</tfoot>
 						
 					</table>
-				
+						
 				</div>
 			
 			</div>
 			
 		</div>
 		
-	</div> 
-	
-	<div id="bl_detail_modal" class="modal" tabindex="-1" role="dialog">
-	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	      		
-	      		<input type="hidden" id="id_facture">
-	      		
-	      		<div class="col-md-6">
-	      			
-	      			<div class="input-group">
-	      				<div class="input-group-prepend">
-	      					<i id="icone_bl" class="far fa-file-invoice" style="font-size:30px;margin-right:10px;" ></i>
-	      				</div>	
-	      					<h5 id="title_bl" class="modal-title" > </h5>
-			        </div>	
-	      		</div>
-	      		<!--  
-	      		<div class="col-md-4 offset-md-1">
-	      		
-	      			<button class="btn btn-info" id="print_duplicata"> <i id="icone_fact" class="far fa-print" style="font-size:22px;" ></i> 
-	      											Imprimer Duplicata</button>
-	      			<button class="btn btn-warning" id="fact_avoir"> <i id="icone_fact" class="far fa-file-invoice" style="font-size:22px;" ></i> 
-	      											Facture d'avoir </button>
-			      		
-	      		</div>
-	      		-->
-	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
-	      	
-	      </div>
-	      
-	      <div class="modal-body" >
-	         
-	         <div id="print_content">
-	         
-	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
-	         
-	         </div>
-	         
-	      </div>
-	      
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-	      </div>
-	      
-	    </div>
-	  </div>
 	</div>
+	
 	
 	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
 	
@@ -400,8 +320,6 @@
 	    
 	  </div>
 	</div>
-	
-	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
 	
 	
 	

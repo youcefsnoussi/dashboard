@@ -169,18 +169,25 @@ $(document).ready(function() {
 	        },
 	        success : function(responseJson) {
 	        	
+	        	let id_art = "";
+	        	
 				$.each(responseJson, function(key, value) {
 					
 					parrent.find("#select_consign").each(function(){
 						
-						$(this).append('<option value="'+value.article_consignation.id+'" > '+
+						$(this).append('<option value="'+value.article_consignation.id+'" selected> '+
 								value.article_consignation.libelle+' </option>');
 						
+						id_art = id_art+value.article_consignation.id+","
+						
 					});
+					
+					
 					
 				});
 				
 				parrent.find("#select_consign").selectpicker('refresh');
+				parrent.find("#art_consign").val(id_art);
 				
 			}
 		});
@@ -351,6 +358,8 @@ $(document).ready(function() {
 						*/
 						
 						let sub = (value.article.subvension==true) ? "Subventionné" : "NON Subventionné";
+						
+						/*if(value.article.code=="B0001" || value.article.code=="B0002") {console.log("pu",value.prix);}*/
 						
 						options.push('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
 								   'data-subtext=" ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
