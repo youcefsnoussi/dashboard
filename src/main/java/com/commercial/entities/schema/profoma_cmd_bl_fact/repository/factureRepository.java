@@ -20,67 +20,76 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	
 	//----------------------------------------------------------
 	
-		@Query( " FROM facture fact "
-				
-				+ " WHERE fact.etat_sold = 'false' "
-				+ " AND fact.client = :clt")
-		 
-		public List<facture> client__active_only(@Param("clt") client clt);
+	@Query( " SELECT id, numero FROM facture fact "
+			
+			+ " WHERE numero like %:num_fact ")
+	 
+	public List<Object[]> get_facts_by_num(@Param("num_fact") String num_fact);
 	
 	//----------------------------------------------------------
 	
-		@Query( " FROM facture fact "
-				
-				+ " WHERE fact.etat_sold = 'false' "
-				+ " AND fact.registre_commerce = :rc "
-				+ " ORDER BY fact.id")
-		 
-		public List<facture> get_factures_not_solde_by_rc(@Param("rc") registre_commerce rc);
+	@Query( " FROM facture fact "
+			
+			+ " WHERE fact.etat_sold = 'false' "
+			+ " AND fact.client = :clt")
+	 
+	public List<facture> client__active_only(@Param("clt") client clt);
+	
+	//----------------------------------------------------------
+	
+	@Query( " FROM facture fact "
+			
+			+ " WHERE fact.etat_sold = 'false' "
+			+ " AND fact.registre_commerce = :rc "
+			+ " ORDER BY fact.id")
+	 
+	public List<facture> get_factures_not_solde_by_rc(@Param("rc") registre_commerce rc);
 	
 	//----------------------------------------------------------
 		
-		@Query( " FROM facture fact "
-				
-				+ " WHERE fact.date = :today ")
-		 
-		public List<facture> today_facture(@Param("today") String today);
+	@Query( " FROM facture fact "
+			
+			+ " WHERE fact.date = :today ")
+	 
+	public List<facture> today_facture(@Param("today") String today);
 		
 	//----------------------------------------------------------
 	
-		@Query( " FROM facture fact "
-				
-			  + " WHERE CAST(fact.date AS date) BETWEEN (:start) AND (:end)" )
-		 
-		public List<facture> date_between_facture(@Param("start") Date start, @Param("end") Date end);
+	@Query( " FROM facture fact "
+			
+		  + " WHERE CAST(fact.date AS date) BETWEEN (:start) AND (:end)" )
+	 
+	public List<facture> date_between_facture(@Param("start") Date start, @Param("end") Date end);
 		
 		
 	//----------------------------------------------------------
 		
-		@Query( " FROM facture fact "
-				
-			  + " WHERE CAST(fact.date AS date) BETWEEN (:start) AND (:end)"
-			  
-			  + " AND registre_commerce = :rc " )
-		 
-		public List<facture> date_between_facture_rc(@Param("start") Date start, @Param("end") Date end, @Param("rc") registre_commerce rc);
+	@Query( " FROM facture fact "
+			
+		  + " WHERE CAST(fact.date AS date) BETWEEN (:start) AND (:end)"
+		  
+		  + " AND registre_commerce = :rc " )
+	 
+	public List<facture> date_between_facture_rc(@Param("start") Date start, @Param("end") Date end, 
+			@Param("rc") registre_commerce rc);
 		
 	//----------------------------------------------------------
 		
-		@Query( " FROM facture fact "
-				
-			  + " WHERE fact.notification = 'FALSE' "
-			  
-			  + " AND fact.users = :user" )
-		 
-		public List<facture> get_notification_by_user(users user);
+	@Query( " FROM facture fact "
+			
+		  + " WHERE fact.notification = 'FALSE' "
+		  
+		  + " AND fact.users = :user" )
+	 
+	public List<facture> get_notification_by_user(users user);
 		
 	//----------------------------------------------------------
 	
-		@Query( " FROM facture fact "
-				
-			  + " WHERE fact.notification = 'FALSE' " )
-		 
-		public List<facture> get_notifications_admin();
+	@Query( " FROM facture fact "
+			
+		  + " WHERE fact.notification = 'FALSE' " )
+	 
+	public List<facture> get_notifications_admin();
 		
 	//----------------------------------------------------------
 
@@ -94,7 +103,9 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	
 	//----------------------------------------------------------
 	
-	@Query( " SELECT fct.registre_commerce.code, fct.registre_commerce.numero_rc, fct.registre_commerce.nom, fct.registre_commerce.prenom,"
+	@Query( " SELECT fct.registre_commerce.code, fct.registre_commerce.numero_rc, fct.registre_commerce.nom, "
+			
+			+ "fct.registre_commerce.prenom,"
 			
 			+ " fct.registre_commerce.adresse, fct.registre_commerce.category.nom_category"
 			
@@ -102,9 +113,11 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 			
 			+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"
 			
-			+ " GROUP BY fct.registre_commerce.code, fct.registre_commerce.numero_rc, fct.registre_commerce.nom, fct.registre_commerce.prenom," + 
+			+ " GROUP BY fct.registre_commerce.code, fct.registre_commerce.numero_rc, fct.registre_commerce.nom, "
+			
+			+ "fct.registre_commerce.prenom," 
 			  
-				" fct.registre_commerce.adresse, fct.registre_commerce.category.nom_category" )
+			+ " fct.registre_commerce.adresse, fct.registre_commerce.category.nom_category" )
 	 
 	public List<Object[]> get_rc_buy(@Param("start") String start, @Param("end") String end);
 	

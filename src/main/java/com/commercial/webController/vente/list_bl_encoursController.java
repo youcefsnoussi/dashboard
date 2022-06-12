@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
@@ -329,6 +330,10 @@ public class list_bl_encoursController {
 		
 		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(rc.getCategory());
 		
+		list_art.stream().forEach(pArt -> {
+			pArt.setPrix(pArt.getPrix()*pArt.getArticle().getMultiplicator());
+		});
+		
 		if (bon_lRepo.getOne(id_bl).getRegistre_commerce().getTva()==0) {
 			
 			list_art.forEach(prix_art -> {
@@ -340,7 +345,7 @@ public class list_bl_encoursController {
 			
 		}
 		
-		List<List<bon_livraison_detail>> list_art_cons = new ArrayList<>();
+		List<List<article>> list_art_cons = new ArrayList<>();
 		
 		List<String> list_art_cons_selected_id = new ArrayList<>();
 		
@@ -348,60 +353,91 @@ public class list_bl_encoursController {
 		
 		String id_arts_cons = "";
 		
-		List<bon_livraison_detail> arts_cons = new ArrayList<>();
+		List<article> selected_arts_cons = new ArrayList<>();
 		
 		int index = 0;
 		
 		for(bon_livraison_detail bl_detail : bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)) ) {
 			
-			index++;
-			
-			//System.out.println("id entry "+bl_detail.getArticle().getId()+" / is CONSIGN "+bl_detail.getArticle().isConsignation());
-			
-			if(bl_detail.getArticle().isConsignation()==true) {
+			if(index==0 && bl_detail.getArticle().isConsignation()==false) {
 				
-				//System.out.println("enter consign");
+				selected_arts_cons = new ArrayList<>();
 				
-				arts_cons.add(bl_detail);
+				id_arts_cons = "";
+				
+			}
+			else if(index > 0 && index < bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)).size()-1 && 
+					bl_detail.getArticle().isConsignation()==false)	{
+				
+				list_art_cons.add(selected_arts_cons);
+				
+				list_art_cons_selected_id.add(id_arts_cons);
+				
+				selected_arts_cons = new ArrayList<>();
+				
+				id_arts_cons = "";
+				
+			}
+			else if(index == bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)).size()-1 && 
+					bl_detail.getArticle().isConsignation()==false) {
+				
+				list_art_cons.add(selected_arts_cons);
+				
+				list_art_cons_selected_id.add(id_arts_cons);
+				
+				list_art_cons.add(new ArrayList<>());
+				
+				list_art_cons_selected_id.add("");
+				
+			}
+			
+			if(bl_detail.getArticle().isConsignation()==true && 
+					index < bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)).size()-1) {
+				
+				selected_arts_cons.add(bl_detail.getArticle());
 				
 				id_arts_cons = id_arts_cons+bl_detail.getArticle().getId()+",";
 				
 			}
-			else {
+			else if(bl_detail.getArticle().isConsignation()==true && 
+					index == bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)).size()-1) {
 				
-				if(!arts_cons.isEmpty()) {
-					
-					list_art_cons.add(arts_cons);
-					
-					list_art_cons_selected_id.add(id_arts_cons);
-					
-				}
+				selected_arts_cons.add(bl_detail.getArticle());
 				
-				id_arts_cons = "";
+				id_arts_cons = id_arts_cons+bl_detail.getArticle().getId()+",";
 				
-				arts_cons = new ArrayList<>();
-				
-			}
-			
-			if(index==bon_l_dRepo.get_bl_all_details(bon_lRepo.getOne(id_bl)).size() && 
-					bl_detail.getArticle().isConsignation()==true) {
-				
-				list_art_cons.add(arts_cons);
+				list_art_cons.add(selected_arts_cons);
 				
 				list_art_cons_selected_id.add(id_arts_cons);
 				
 			}
 			
+			index++;
 		}
 		
 		model.addAttribute("articles", list_art);
 		
 		model.addAttribute("bld_cons", list_art_cons);
 		
-		list_art_cons_selected_id.stream().forEach(s -> {
-			list_art_cons_selected_id.set(list_art_cons_selected_id.indexOf(s), s.substring(0,s.lastIndexOf(",")));
-		});
+		//System.out.println("size --->"+list_art_cons_selected_id.size());
 		
+		list_art_cons_selected_id.stream().forEach(s -> {
+			//System.out.println("s ===>("+s+")");
+			if(!s.equals("")) {
+				list_art_cons_selected_id.set(list_art_cons_selected_id.indexOf(s), s.substring(0,s.lastIndexOf(",")));
+			}/*
+			else {
+				
+				list_art_cons_selected_id.
+				
+			}*/
+		});
+		/*
+		System.out.println("---------------------");
+		
+		System.out.println("detail_bl size --->"+bon_l_dRepo.get_bl_detail(bon_lRepo.getOne(id_bl)).size()+" \n "
+				+" bld_cons size --> "+list_art_cons.size());
+		*/
 		model.addAttribute("bld_cons_id", list_art_cons_selected_id);
 		
 		return "vente/edit_bl";

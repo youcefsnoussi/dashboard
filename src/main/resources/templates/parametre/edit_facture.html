@@ -25,25 +25,63 @@
 	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
 	
 	<script type="text/javascript" src="resources\PagesJS\vente\facture.js"></script>
-	
+	 
 	<script type="text/javascript" src="resources\additionalJS\CheckConnectionServer.js"></script>
-	    
+	
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
 			
 			let id_bl = $("#id_bl").val();
 		
-			checkConnection('edit_bl?id_bl='+id_bl);
+			//checkConnection('edit_bl?id_bl='+id_bl);
 			
-			if($("#plafond").val()=="true"){
+			$("#num_fact").keyup(function() {
 				
-				$("#title").text("Erreur !!!");
-				$("#icone").attr("class","far fa-exclamation-triangle");
-				$("#text").html("Plafond dépassée !!! ");
-				$("#error").modal('show');
+				$("#id_fact").val( 0 );
 				
-			}
+				let num_fact = $(this).val();
+				
+				if(num_fact.length > 3){
+					
+					$.ajaxSetup({async: false});
+					$.ajax({
+						url : 'get_facts_by_num',
+						data : {
+							num_fact : num_fact
+						},
+						success : function(responseJson) {
+							
+							$("#body").empty();
+							
+							if (responseJson != "null") {
+								
+								//console.log(responseJson)
+								
+								$.each(responseJson, function(key, value) {
+
+									$("#body").append('<tr>'+
+															'<td>'+
+																'<a class="link" href="#" id_fact="'+value[0]+'" >'+value[1]+'</a>'+
+															'</td>'+
+													  '</tr>');
+
+								});
+								
+								$(".link").click(function() {
+									
+									window.location.href = "edit_fact?id_fact="+$(this).attr("id_fact");
+										
+								});
+								
+							}
+							
+						}
+					});
+					
+				}
+					
+			});
 			
 			$("#subsub").click(function () {
 				
@@ -60,7 +98,7 @@
 					
 				});
 				
-				console.log(art_selected)
+				//console.log(art_selected)
 				
 				var test = 0;
 				
@@ -140,17 +178,55 @@
 	
 		<div class="card">
 			
+			<h3 class="card-header  text-center">  <i class="far fa-industry-alt"></i> Modifier facture </h3>
+			
 			<div class="card-body">
 			
-			<form id="frm" th:action="@{/edit_bl_post}" method="post" style="height: 100%" autocomplete="off">
+			<div class="row">
+			
+				<div class="col-md-5">
+					
+					<input type="text" id="num_fact" class="form-control" placeholder="Numero Facture">
+					<input type="hidden" id="id_fact" value="0">
+					
+				</div>
+				
+				
+				<div class="col-md-5 offset-md-2">
+				
+					<table class="table">
+			
+						<thead>
+						
+							<tr>
+							
+								<th>Numero Facture</th>
+							
+							</tr>
+						
+						</thead>
+						
+						<tbody id="body">
+						
+							
+						
+						</tbody>
+						
+					</table>
+				
+				</div>
+				
+			</div>
+			
+			<hr>
+			
+			<form id="frm" th:action="@{/edit_facture_post}" method="post" style="height: 100%" autocomplete="off" th:if="${fact}!=null">
 			
 					<div class="card" >
 						
-						<input type="hidden" id="plafond"  th:value="${plafond}">
+						<input type="hidden" id="id_facture" name="id_facture" th:value="${fact.id}">
 						
-						<input type="hidden" id="id_bl" name="id_bl" th:value="${bl.id}">
-						
-						<input type="hidden" id="rc" name="id_rc_clt" th:value="${bl.commande.client_registrecommerce.id}">
+						<input type="hidden" id="rc" name="id_rc_clt" th:value="${fact.client_registrecommerce.id}">
 						
 						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
 						<br>
@@ -158,15 +234,27 @@
 						<div class="card-body">
 							
 							<div class="row">
-	
+								
 								<div class="col-md-4">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text declaration"
+												style="min-width: 76px; text-align: left;">N° </span>
+										</div>
+										<input type="text" class="form-control numero_fact" name="numero_fact" id="numero_fact" 
+											th:value="${fact.numero}" disabled>
+	
+									</div>
+								</div>
+								
+								<div class="col-md-2">
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration"
 												style="min-width: 76px; text-align: left;">Code </span>
 										</div>
 										<input type="text" class="form-control  code_client"
-											name="code_client" id="code_client" th:value="${bl.registre_commerce.code}" disabled>
+											name="code_client" id="code_client" th:value="${fact.registre_commerce.code}" disabled>
 	
 									</div>
 								</div>
@@ -174,26 +262,26 @@
 									name="lib_client" value="">
 	
 	
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text declaration">Désignation</span>
+											<span class="input-group-text declaration">Client</span>
 										</div>
 										<input type="text" name="designation" id="designation" class="form-control " 
-												th:value="${bl.client.nom}+' '+${bl.client.prenom}" disabled>
+												th:value="${fact.client.nom}+' '+${fact.client.prenom}" disabled>
 	
 									</div>
 								</div>
 								
-								<div class="col-md-4">
+								<div class="col-md-3">
 								
 									<div class="input-group">
 										<div class="input-group-prepend">
 											<span class="input-group-text declaration"
 												style="text-align: right;"> <i class="far fa-calendar-alt"></i> </span>
 										</div>
-										<input type="text" class="form-control" id="date" name="date" th:value="${bl.date}" disabled>
-	
+										<input type="date" class="form-control" id="date" name="date" 
+											th:value="${fact.date}" >
 									</div>
 									
 								</div>
@@ -211,7 +299,7 @@
 												style="min-width: 130px; text-align: left;">Mode règelment </span>
 										</div>
 										<input type="text" class="form-control " name="mode_reg" id="mode_reg"
-											th:value="${bl.commande.mode_paiement.designation}"  disabled>
+											th:value="${fact.mode_paiement.designation}"  disabled>
 										
 									</div>
 								</div>
@@ -224,7 +312,7 @@
 										</div>
 										
 										<input type="text" class="form-control" name="matricule" id="matricule" 
-												th:value="${bl.matricule}"  placeholder="xxxxxx-xxx-xx"> 
+												th:value="${fact.matricule_camion}"  placeholder="xxxxxx-xxx-xx"> 
 											
 									</div>
 								</div>
@@ -242,7 +330,8 @@
 												style="min-width: 130px; text-align: left;">RC </span>
 										</div>
 										
-										<input type="text" class="form-control" name="num_rc" id="num_rc" th:value="${bl.registre_commerce.numero_rc}" disabled > 
+										<input type="text" class="form-control" name="num_rc" id="num_rc" 
+											th:value="${fact.registre_commerce.numero_rc}" disabled > 
 										
 									</div>
 								</div>
@@ -253,7 +342,8 @@
 											<span class="input-group-text declaration">Désignation</span>
 										</div>
 										<input type="text" name="designation_rc" id="designation_rc" class="form-control" 
-														th:value="${bl.registre_commerce.nom}+' '+${bl.registre_commerce.prenom}" disabled>
+														th:value="${fact.registre_commerce.nom}+' '+${fact.registre_commerce.prenom}"
+														disabled>
 	
 									</div>
 								</div>
@@ -266,7 +356,7 @@
 												style="min-width: 76px; text-align: left;">Adresse </span>
 										</div>
 										<input type="text" class="form-control " name="adresse_rc"
-											id="adresse_rc" th:value="${bl.registre_commerce.adresse}" disabled>
+											id="adresse_rc" th:value="${fact.registre_commerce.adresse}" disabled>
 									</div>
 								</div>
 	
@@ -277,10 +367,11 @@
 							<div class="col-md-4 offset-md-8">
 								<div class="input-group">
 									<div class="input-group-prepend">
-										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;"> Montant HT </span>
+										<span class="input-group-text declaration" style="min-width: 106px; text-align: left;">
+											 Montant HT </span>
 									</div>
 									<input type="text" class="form-control " name="total_ht" style="text-align: right;" id="total_ht" 
-										th:value="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+										th:value="${#numbers.formatDecimal(fact.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 								</div>
 							</div>
 	
@@ -289,10 +380,10 @@
 										<span class="input-group-text declaration" style="text-align: left;">
 										 Remise (%) </span>
 									<input type="number" step="any" class="form-control zero remise_zero" name="pourc_reduction" 
-										style="text-align: right;" id="pourc_redux" value="0" readonly>
+										style="text-align: right;" id="pourc_redux" th:value="${fact.pourcentage_reduction}" >
 									
 									<input type="text" class="form-control zero remise_zero" name="montant_reduction" 
-										style="text-align: right;" id="mnt_redux" value="0" readonly>
+										style="text-align: right;" id="mnt_redux" th:value="${fact.montant_remise}" >
 									
 									<span class="input-group-text declaration" 
 													style="min-width: 106px; text-align: left;"> Remise (Val) </span>
@@ -309,7 +400,7 @@
 										 Total HT Net </span>
 									</div>
 									<input type="text" class="form-control remise_zero" name="total_ht_net" style="text-align: right;" 
-										id="total_ht_net" th:value="${#numbers.formatDecimal(bl.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" 
+										id="total_ht_net" th:value="${#numbers.formatDecimal(fact.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" 
 										readonly="readonly">
 								</div>
 							
@@ -321,7 +412,7 @@
 										<span class="input-group-text declaration">Total TVA</span>
 									</div>
 									<input type="text" class="form-control " name="total_tva" style="text-align: right;" id="total_tva" 
-										th:value="${#numbers.formatDecimal(bl.tva, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+										th:value="${#numbers.formatDecimal(fact.montant_tva, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 								</div>
 							</div>
 	
@@ -332,7 +423,7 @@
 										<span class="input-group-text declaration">Total TTC </span>
 									</div>
 									<input type="text" class="form-control " name="total_ttc" style="text-align: right;" id="total_ttc" 
-										th:value="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" readonly>
+										th:value="${#numbers.formatDecimal(fact.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" readonly>
 										
 								</div>
 							</div>
@@ -351,7 +442,6 @@
 								<th  align="center" >Libellé</th>
 								<th  align="center"  width="8%">Um</th>
 								<th  align="center" >Qte</th>
-								<th  align="center" >Unité</th>
 								<th  align="center" >PU</th>
 								<th  align="center" >MONTANT HT</th>
 								<th  align="center" >Remise ( Val / % )</th>
@@ -362,9 +452,9 @@
 							</tr>
 						</thead>
 	
-						<tbody th:with="id_tr=${#lists.size(detail_bl)}">
+						<tbody th:with="id_tr=${#lists.size(detail_fact)}">
 	
-							<tr th:each="bl_det, i:${detail_bl}" th:attr="id='tr'+${i.index}">
+							<tr th:each="bl_det, i:${detail_fact}" th:attr="id='tr'+${i.index}">
 								
 								<td> 
 								
@@ -373,26 +463,26 @@
 									<select class="form-control selectpicker select_consign" data-style="btn btn-outline-secondary" 
 										id="select_consign" data-width="100%" name="select_consign" th:attr="id_tr='tr'+${i}" 
 										multiple data-actions-box="true" data-selected-text-format="count" 
-										th:if="${#lists.size(bld_cons)}>0"> 
+										th:if="${#lists.size(fact_cons)}>0"> 
 										
-										<option th:each="bld : ${bld_cons[i.index]}" 
-												th:value="${bld.id}" th:text="${bld.libelle}" selected></option>
+										<option th:each="bld : ${fact_cons[i.index]}" th:value="${bld.id}" 
+												th:text="${bld.libelle}" selected></option>
 										
 									</select>
 									
 									<select class="form-control selectpicker select_consign" data-style="btn btn-outline-secondary" 
 										id="select_consign" data-width="100%" name="select_consign" th:attr="id_tr='tr'+${i}" 
 										multiple data-actions-box="true" data-selected-text-format="count"
-										th:unless="${#lists.size(bld_cons)}>0"> 
+										th:unless="${#lists.size(fact_cons)}>0"> 
 										
 									</select>
 									
 									
 									<input type="hidden" id="art_consign" name="art_consign" class="art_consign" 
-										th:value="${bld_cons_id[i.index]}" th:if="${#lists.size(bld_cons_id)}>0">
+										th:value="${fact_cons_id[i.index]}" th:if="${#lists.size(fact_cons_id)}>0">
 										
 									<input type="hidden" id="art_consign" name="art_consign" class="art_consign" 
-										th:unless="${#lists.size(bld_cons_id)}>0">	
+										th:unless="${#lists.size(fact_cons_id)}>0">	
 									
 								</td>
 								
@@ -430,16 +520,7 @@
 											th:value="${bl_det.quantite}/${bl_det.article.multiplicator}"> 
 								</td>
 									
-								<td> 
-									<select class="form-control id_magasin" id="id_magasin" name="id_magasin" >
-										<option value="0">Selection</option>
 										
-										<option  th:value="${bl_det.magasin.id}" th:text="${bl_det.magasin.name}"  selected></option>
-										
-									 </select> 
-										<!--   <input class="form-control qte zero" id="magasin" name="magasin" type="text" th:value="${bl_det.magasin.name}" style="text-align: center;" disabled> 
-										<input type="hidden" id="id_magasin" class="id_magasin" name="id_magasin" th:value="${bl_det.magasin.id}"> </td>
-										-->
 								<td>
 										<input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" 
 										th:value="${bl_det.prix_u_ht}*${bl_det.article.multiplicator}" type="number" step="any" 
@@ -450,9 +531,9 @@
 								
 								<td>
 									<div class="input-group">
-										<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" readonly
+										<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" 
 											step="any" style="text-align: left;" placeholder="Val" th:value="${#numbers.formatDecimal(bl_det.montant_remise, 3, 'WHITESPACE', 2,'POINT')}">
-										<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" readonly
+										<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" 
 											type="number" step="any" style="text-align: right;" placeholder="%" th:value="${#numbers.formatDecimal(bl_det.pourcentage_remise, 3, 'WHITESPACE', 2,'POINT')}">  
 									</div>
 								</td>
@@ -502,11 +583,6 @@
 								
 								<td> <input class="form-control qte zero" id="qte" name="qte" type="number" step="any" value="0" style="text-align: right;"> </td>
 								
-								<td> 
-									<select id="id_magasin" name="id_magasin" class="form-control id_magasin">
-										
-									</select>	
-								</td>
 								
 								<td><input class="form-control prix_unitaire" id="prix_unitaire" name="prix_unitaire" type="number" step="any" style="text-align: right;" value="0" readonly> </td>
 								
@@ -515,9 +591,9 @@
 								<td>
 									<div class="input-group">
 										<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" 
-											step="any" style="text-align: left;" placeholder="Val" value="0" readonly>
+											step="any" style="text-align: left;" placeholder="Val" value="0" >
 										<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" 
-											type="number" step="any" style="text-align: right;" placeholder="%" value="0" readonly>  
+											type="number" step="any" style="text-align: right;" placeholder="%" value="0" >  
 									</div>
 								</td>
 								

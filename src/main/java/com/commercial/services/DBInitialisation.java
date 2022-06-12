@@ -137,7 +137,7 @@ public class DBInitialisation {
 			subMenuRepo.save( new sub_menu("List RC achteurs", "historic_ventes_rc?start=0&end=0", 4, menuRepo.getOne((long) 6),"", "clipboard-list") );
 			subMenuRepo.save( new sub_menu("Vente par Article Val", "historic_ventes_val?start=0&end=0", 5, menuRepo.getOne((long) 6),"", "clipboard-list") );
 			subMenuRepo.save( new sub_menu("Vente Employee", "vente_employee", 7, menuRepo.getOne((long) 3),"", "file-invoice") );
-			subMenuRepo.save( new sub_menu("List Bon Employee", "bl_encours_employee?start=0&end=0", 8, menuRepo.getOne((long) 3),"", "clipboard-list-check") );
+			subMenuRepo.save( new sub_menu("List Bon Employee", "bl_encours_employee?start=0&end=0", 9, menuRepo.getOne((long) 3),"", "clipboard-list-check") );
 			subMenuRepo.save( new sub_menu("Bon Transfert", "bon_transfert", 1, menuRepo.getOne((long) 7),"", "file-invoice") );
 			subMenuRepo.save( new sub_menu("List Bon Transfert", "list_bon_transfert?start=0&end=0", 2, menuRepo.getOne((long) 7),"", "clipboard-list-check") );
 			subMenuRepo.save( new sub_menu("Bon Transfert Interne", "bon_transfert_interne", 3, menuRepo.getOne((long) 7),"", "file-invoice") );
@@ -167,6 +167,11 @@ public class DBInitialisation {
 			subMenuRepo.save( new sub_menu("Relier Artciel Consignation", "list_art_cons", 3, menuRepo.getOne((long) 2),"", "repeat") );
 			subMenuRepo.save( new sub_menu("Relier RC Consignation", "list_rc_cons", 4, menuRepo.getOne((long) 2),"", "repeat") );
 			subMenuRepo.save( new sub_menu("Rapport Ultra Detailler", "rapport_ultra_detailler", 15, menuRepo.getOne((long) 6),"", "clipboard-list") );
+			subMenuRepo.save( new sub_menu("Recalcule sold", "recalcule", 7, menuRepo.getOne((long) 4),"", "calculator-alt") );
+			subMenuRepo.save( new sub_menu("Modifier Facture", "edit_fact", 8, menuRepo.getOne((long) 4),"", "edit") );
+			subMenuRepo.save( new sub_menu("List Remboursements", "list_remboursements", 2, menuRepo.getOne((long) 5),"", "reply") );
+			subMenuRepo.save( new sub_menu("Vente Employee RH", "bl_encours_employee_grh", 8, menuRepo.getOne((long) 3),"", "file-invoice") );
+			
 			
 			subMenuRepo.flush();
 			
@@ -182,7 +187,8 @@ public class DBInitialisation {
 			rolesRepo.save( new roles("Responsable", 
 					"/add_article/edit_article/add_client/edit_client/rc_client/edit_rc/add_rc/rc_client/add_payment" +
 					"/add_remboursement/cancel_payment/cancel_bl/facture_av/cancel_ble/cancel_blq/edit_blq/fact_blfs" +
-					"/edit_payment/edit_date_relation/dashboard/edit_matricule_fact/manipulate_plafond", false, "") );
+					"/edit_payment/edit_date_relation/dashboard/edit_matricule_fact/manipulate_plafond/cancel_bti/cancel_bt",
+					false, "") );
 			rolesRepo.save( new roles("Expédition", "/", true, "list_bl_encours") );
 			rolesRepo.save( new roles("Commercial", "/add_rc/add_payment/facture_av", false, "") );
 			rolesRepo.save( new roles("Gérant", "/", false, "") );
@@ -252,6 +258,11 @@ public class DBInitialisation {
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 52)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 53)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 54)) );
+			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 55)) );
+			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 56)) );
+			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 57)) );
+			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 58)) );
+			
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 2), subMenuRepo.getOne((long) 2)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 2), subMenuRepo.getOne((long) 3)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 2), subMenuRepo.getOne((long) 4)) );
@@ -291,7 +302,10 @@ public class DBInitialisation {
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 2), subMenuRepo.getOne((long) 49)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 2), subMenuRepo.getOne((long) 50)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 2), subMenuRepo.getOne((long) 54)) );
+			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 57)) );
+			
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 3), subMenuRepo.getOne((long) 17)) );
+			
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 4), subMenuRepo.getOne((long) 2)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 4), subMenuRepo.getOne((long) 3)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 4), subMenuRepo.getOne((long) 11)) );
@@ -306,6 +320,7 @@ public class DBInitialisation {
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 4), subMenuRepo.getOne((long) 25)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 4), subMenuRepo.getOne((long) 28)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 4), subMenuRepo.getOne((long) 29)) );
+			
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 5), subMenuRepo.getOne((long) 2)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 5), subMenuRepo.getOne((long) 11)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 5), subMenuRepo.getOne((long) 12)) );
@@ -324,6 +339,8 @@ public class DBInitialisation {
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 5), subMenuRepo.getOne((long) 42)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 5), subMenuRepo.getOne((long) 44)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 5), subMenuRepo.getOne((long) 54)) );
+			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 56)) );
+			
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 2)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 3)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 11)) );
@@ -350,6 +367,7 @@ public class DBInitialisation {
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 49)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 50)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 54)) );
+			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 56)) );
 
 			rolesMenuRepo.flush();
 			

@@ -24,7 +24,7 @@ public interface article_consignation_relationRepository extends JpaRepository<a
 	
 	@Query("FROM article_consignation_relation art_rel " +
 			"JOIN rc_consignation rcc ON rcc.article_consignation = art_rel.article_consignation " +
-			"WHERE art_rel.article = :art AND rcc.registre_commerce = :rc")
+			"WHERE art_rel.article = :art AND rcc.registre_commerce = :rc AND rcc.registre_commerce.consignation = 'true' ")
 	public List<article_consignation_relation> getArticleConsignationWithRc(@Param("art") article art, 
 			@Param("rc") registre_commerce rc);
 	

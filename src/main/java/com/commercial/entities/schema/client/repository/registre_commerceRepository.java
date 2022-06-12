@@ -18,6 +18,8 @@ public interface registre_commerceRepository extends JpaRepository<registre_comm
 	
 	public List<registre_commerce> findByConsignationTrue();
 	
+	public List<registre_commerce> findByCodeIsNotNull();
+	
 	//--------------------------------------------------------------
 	
 	@Query( " FROM registre_commerce rc "
@@ -30,8 +32,8 @@ public interface registre_commerceRepository extends JpaRepository<registre_comm
 			
 			+ " OR (nom = :nom AND prenom = :prenom)")
 	
-	public registre_commerce  if_rc_exist_db(@Param("num_rc") String num_rc, @Param("num_nif") String num_nif, @Param("num_art") String num_art, 
-												@Param("nom") String nom, @Param("prenom") String prenom);
+	public registre_commerce  if_rc_exist_db(@Param("num_rc") String num_rc, @Param("num_nif") String num_nif, 
+										@Param("num_art") String num_art, @Param("nom") String nom, @Param("prenom") String prenom);
 	
 	//---------------------
 	
