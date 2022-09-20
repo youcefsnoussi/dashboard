@@ -52,6 +52,8 @@ public class client implements Serializable{
 	
 	private String img;
 	
+	private String code;
+	
 	public client() {
 		// TODO Auto-generated constructor stub
 	}
@@ -175,6 +177,14 @@ public class client implements Serializable{
 
 	public void setImg(String img) {
 		this.img = img;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 }

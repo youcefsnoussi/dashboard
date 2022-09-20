@@ -232,7 +232,7 @@ public class RecalculeSold {
 								
 							}break;		
 						
-					case "Facture Avoire":{ 
+					case "Facture Avoir":{ 
 						
 								String sql_pg2 = "SELECT * FROM proforma_cmd_bl_fact.facture_avoir WHERE id = '"+id_opration+"' ";
 								
@@ -374,7 +374,7 @@ public class RecalculeSold {
 										
 									}break;			
 									
-							case "Facture Avoire":{
+							case "Facture Avoir":{
 								
 										double old_sold = old_sold_dyn;
 										
