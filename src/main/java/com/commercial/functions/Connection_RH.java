@@ -39,9 +39,9 @@ public class Connection_RH {
 		try {
 			Class.forName("org.postgresql.Driver"); // oracle.jdbc.driver.OracleDriver
 			
-			String url = "jdbc:postgresql://localhost:5432/grhDB";  //--> AIN ROMANA
+			//String url = "jdbc:postgresql://localhost:5432/grhDB";  //--> AIN ROMANA
 			
-			//String url = "jdbc:postgresql://192.168.1.231:5432/grhDB";
+			String url = "jdbc:postgresql://192.168.1.231:5432/grhDB";
 			
 			String username = "postgres";
 			String password = "***REMOVED***";

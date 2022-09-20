@@ -236,6 +236,7 @@
 				});
 				
 				if(test==true){
+					if(facts){
 					
 					$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
 							'src="fact_avoir_list?id_facts='+facts+'"></iframe>');
@@ -245,6 +246,14 @@
 					$("#icone_fact").attr("class","far fa-file-invoice");
 					
 					$("#fact_detail_modal").modal("show");
+					
+						}
+					else{
+						$("#title").text("Aucune facture sélectionnée");
+						$("#icone").attr("class","far fa-exclamation-triangle");
+						$("#text").html("<span> Veuillez selectionner au moins une facture <span>");
+						$("#error").modal('show');
+					}
 					
 				}
 				else{
