@@ -394,7 +394,7 @@
 					  
 					  <div class="tab-pane fade" id="list_facture" role="tabpanel" >
 					  
-					  	<iframe width="100%" height="100%" id="facture_list" frameborder="0"></iframe>
+					  	<iframe th:with="c = ${client}" width="100%" height="900" id="facture_list" frameborder="0" th:attr="src='list_fact_client?date_debut=0&date_fin=0&id_client='+${c.id}"></iframe>
 					  
 					  </div>
 					  

@@ -214,6 +214,8 @@ public class list_factureController {
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}catch(Exception e) {
+				e.printStackTrace();
 			}
 			
 		}
@@ -602,6 +604,24 @@ public class list_factureController {
 			//return "redirect:/fact_avoir?id_fact="+id_fact;
 			return "redirect:/print_fact_av?id_fact="+fact_av.getId();
 	}
+	//--------------------------------------------------------------------------------
+	
+	@RequestMapping(value="/list_fact_client")
+	public String list_fact_client(HttpServletRequest request,
+			 @SessionAttribute("user") users user,
+			 @RequestParam(value="id_client", defaultValue="0") long id_client,
+			 Model model){
 		
+		String ret = "client/clientinfo/list_fact_cl";
+				
+		List<facture> lst_fact = new ArrayList<>();
+			
+		lst_fact = factRepo.findByClientIdOrderByDateDesc(id_client,Sort.by(Sort.Direction.DESC, "date"));
+			
+		model.addAttribute("list_facture", lst_fact);
+		
+		return ret;
+		
+	}
 	
 }
