@@ -3,6 +3,7 @@ package com.commercial.entities.schema.profoma_cmd_bl_fact.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -188,4 +189,19 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 	 
 	public String GetLastDateFactByRc(@Param("rc") registre_commerce rc);
 	
+	//----------------------------------------------------------
+	@Query( " FROM facture fact "
+			
+			  + " WHERE CAST(fact.date AS date) BETWEEN (:start) AND (:end)"
+			  
+			  + " AND client = :client " )
+		 
+		public List<facture> date_between_facture_client(@Param("start") Date start, @Param("end") Date end, 
+				@Param("client") client client);
+	
+	//----------------------------------------------------------
+		
+	   
+	   public List<facture> findByClientIdOrderByDateDesc(Long client, Sort sort);
+			
 }
