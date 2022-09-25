@@ -12,7 +12,7 @@ $(document).ready(function() {
 			"scrollX": "auto",
 	        "deferRender": true,
 	        initComplete: function () {
-	            this.api().columns([0,3]).every( function () {
+	            this.api().columns([0,2,3,4,5]).every( function () {
 	                var column = this;
 	                var select = $('<select class="form-control" ><option value="">Tout</option></select>')
 	                    .appendTo( $(column.footer()).empty() )
@@ -31,6 +31,26 @@ $(document).ready(function() {
 	                } );
 	            } );
 	        },
+	        drawCallback: function () {
+				
+			      var api = this.api();
+			      
+			      $( api.column( 6, {page:'current'} ).footer() ).html(
+			        api.column( 6, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+			      );
+			      
+			      $( api.column( 7, {page:'current'} ).footer() ).html(
+			        api.column( 7, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+			      );
+			      
+			      $( api.column( 8, {page:'current'} ).footer() ).html(
+			        api.column( 8, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+			      );
+			      $( api.column( 9, {page:'current'} ).footer() ).html(
+			        api.column( 9, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+			      );
+			      
+			 },
 			
     };
  		
