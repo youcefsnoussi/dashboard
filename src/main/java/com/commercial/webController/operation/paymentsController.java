@@ -778,4 +778,25 @@ public class paymentsController {
 		
 	}
 	
+	@RequestMapping(value="/list_payment_cl")
+	public String list_paiements_clients(HttpServletRequest request,
+			 @SessionAttribute("user") users user,
+			 @RequestParam(value="id_client", defaultValue="0") long id_client,
+			 Model model){
+		
+		String ret = "client/clientinfo/list_payments_cl";
+		
+		
+		
+		//----------------------------------------------------------------
+		
+		
+		model.addAttribute("payments", payRepo.findByClientIdAndCancel(id_client, false));
+		
+		model.addAttribute("mode_payement", mode_payRepo.findAll());
+		
+		return ret;
+		
+	}
+	
 }

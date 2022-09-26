@@ -131,4 +131,8 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	 
 	public String GetLastDateFactByRc(@Param("rc") registre_commerce rc);
 	
+	//---------------------------------------------------------
+	
+	public List<paiement> findByClientIdAndCancel(Long idClient, boolean canceled);
+	
 }
