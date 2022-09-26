@@ -79,19 +79,15 @@
 					  </li>
 					  
 					  <li class="nav-item">
-					    <a class="nav-link" data-toggle="tab" href="#list_commandes" role="tab" aria-controls="info" aria-selected="true">Commandes</a>
-					  </li>
-					  
-					  <li class="nav-item">
-					    <a class="nav-link" data-toggle="tab" href="#list_bl" role="tab" aria-controls="info" aria-selected="true">Bons de livraison</a>
-					  </li>
-					  
-					  <li class="nav-item">
 					    <a class="nav-link" data-toggle="tab" href="#list_facture" role="tab" aria-controls="info" aria-selected="true">Factures</a>
 					  </li>
 					  
 					  <li class="nav-item">
 					    <a class="nav-link" data-toggle="tab" href="#list_facture_a" role="tab" aria-controls="info" aria-selected="true">Factures d'avoir</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#payment_list" role="tab" aria-controls="info" aria-selected="true">Paiements</a>
 					  </li>
 					  
 					</ul>
@@ -380,18 +376,6 @@
 					  	
 					  </div>
 					  
-					  <div class="tab-pane fade" id="list_commandes" role="tabpanel" >
-					  
-					  	<iframe width="100%" height="100%" id="commandes_list" frameborder="0"></iframe>
-					  
-					  </div>
-					  
-					  <div class="tab-pane fade" id="list_bl" role="tabpanel" >
-					  
-					  	<iframe width="100%" height="100%" id="bl_list" frameborder="0"></iframe>
-					  
-					  </div>
-					  
 					  <div class="tab-pane fade" id="list_facture" role="tabpanel" >
 					  
 					  	<iframe th:with="c = ${client}" width="100%" height="900" id="facture_list" frameborder="0" th:attr="src='list_fact_client?date_debut=0&date_fin=0&id_client='+${c.id}"></iframe>
@@ -400,7 +384,12 @@
 					  
 					  <div class="tab-pane fade" id="list_facture_a" role="tabpanel" >
 					  
-					  	<iframe width="100%" height="100%" id="facture_a_list" frameborder="0"></iframe>
+					  	<iframe th:with="c = ${client}"width="100%" height="900" id="facture_a_list" frameborder="0" th:attr="src='list_fact_avoir_client?id_client='+${c.id}"></iframe>
+					  
+					  </div>
+					  <div class="tab-pane fade" id="payment_list" role="tabpanel" >
+					  
+					  	<iframe width="100%" height="900" id="payment_list" frameborder="0"></iframe>
 					  
 					  </div>
 					  

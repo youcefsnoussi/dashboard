@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.commercial.entities.schema.article.article;
@@ -146,6 +147,29 @@ public class FactureAvoirFromMultipleFactService {
 		
 		List<facture_avoir> lst_fact_av = factAvRepo.date_between_facture_avoir(conv.convertion_from_my_date(start), 
 				conv.convertion_from_my_date(end));
+		
+		List<Map<String, Object>> ret = new ArrayList<>();
+		
+		for (facture_avoir fact_av : lst_fact_av) {
+			
+			Map<String, Object> map = new HashMap<>();
+			
+			map.put("facture_avoir", fact_av);
+			map.put("lst_facture", factRepo.get_facts_by_fact_avoir(fact_av));
+			
+			ret.add(map);
+			
+		}
+		
+		return ret;
+		
+	}
+	
+public List<Map<String, Object>> get_fact_avoir_list_client (long idClient) throws ParseException{
+		
+		
+		List<facture_avoir> lst_fact_av = factAvRepo.findByClientId(idClient, 
+				Sort.by(Sort.Direction.DESC, "date"));
 		
 		List<Map<String, Object>> ret = new ArrayList<>();
 		

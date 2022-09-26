@@ -3,10 +3,12 @@ package com.commercial.entities.schema.profoma_cmd_bl_fact.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
 
 public interface facture_avoirRepository extends JpaRepository<facture_avoir, Long> {
@@ -37,6 +39,8 @@ public interface facture_avoirRepository extends JpaRepository<facture_avoir, Lo
 			
 			+ " ORDER BY dates ASC " )
 	 
-	public List<String> get_years_db();	
+	public List<String> get_years_db();
+
+	public List<facture_avoir> findByClientId(long id_client, Sort by);	
 	
 }

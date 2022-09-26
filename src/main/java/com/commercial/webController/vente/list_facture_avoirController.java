@@ -1,11 +1,14 @@
 package com.commercial.webController.vente;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -281,5 +284,45 @@ public class list_facture_avoirController {
 	}
 	
 	//--------------------------------------------------------------------------------
+	
+//	@RequestMapping(value="/list_fact_avoir_client")
+//	public String list_fact_client(HttpServletRequest request,
+//			 @SessionAttribute("user") users user,
+//			 @RequestParam(value="id_client", defaultValue="0") long id_client,
+//			 Model model){
+//		
+//		String ret = "client/clientinfo/list_fact_avoir_cl";
+//				
+//		List<Map<String, Object>> lst_fact = factAvServ.get_fact_avoir_list_client(id_client);
+//			
+////		lst_fact = factAvServ.get_fact_avoir_list_client(id_client);
+//			
+//		model.addAttribute("list_facture", lst_fact);
+//		
+//		return ret;
+//		
+//	}
+	
+	
+	@RequestMapping(value="/list_fact_avoir_client")
+	public String list_fact_avoir_client(HttpServletRequest request,
+						 @SessionAttribute("user") users user,  @RequestParam(value="id_client", defaultValue="0") long id_client,
+						 Model model) throws ParseException{
+		
+		String ret = "client/clientinfo/list_fact_avoir_cl";
+			
+			try {
+					
+					model.addAttribute("list_facture", factAvServ.get_fact_avoir_list_client(id_client));	
+				
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		return ret;
+		
+	}
 	
 }
