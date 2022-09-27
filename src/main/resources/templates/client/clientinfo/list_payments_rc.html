@@ -25,7 +25,7 @@
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
 		
-		<script type="text/javascript" src="resources\PagesJS\client\list_payment_cl.js"></script>
+		<script type="text/javascript" src="resources\PagesJS\client\list_payment_rc.js"></script>
 		<style type="text/css">
 		
 			.rr{
@@ -51,9 +51,9 @@
 						<thead class="thead-dark">
 						
 							<tr>
-										<th th:if="${isClient}==false" >Client</th>
-										<th th:if="${isClient}==true">Code RC</th>
-										<th th:if="${isClient}==true">RC</th>
+										<th>Client</th>
+<!-- 										<th th:if="${isClient}==true">Code RC</th> -->
+<!-- 										<th th:if="${isClient}==true">RC</th> -->
 										<th>Montant</th>
 										<th>Mode de paiement</th>
 										<th>Banque</th>
@@ -71,9 +71,9 @@
 						
 							<tr th:each="pay:${payments}">
 							
-										<td th:if="${isClient}==false" th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
-										<td th:if="${isClient}==true" th:text="${pay.registre_commerce.code}"></td>
-										<td th:if="${isClient}==true" th:text="${pay.registre_commerce.nom}+' '+${#strings.defaultString(pay.registre_commerce.prenom,'')}"></td>
+										<td th:text="${pay.client.nom}+' '+${pay.client.prenom}"></td>
+<!-- 										<td th:if="${isClient}==true" th:text="${pay.registre_commerce.code}"></td> -->
+<!-- 										<td th:if="${isClient}==true" th:text="${pay.registre_commerce.nom}+' '+${#strings.defaultString(pay.registre_commerce.prenom,'')}"></td> -->
 										<td th:text="${#numbers.formatDecimal(pay.montant, 3, 'WHITESPACE', 2,'POINT')}"></td>
 										<td th:text="${pay.mode_paiement.designation}"></td>
 										<td th:if="${pay.banque}==null" ></td>
@@ -93,9 +93,9 @@
 						<tfoot class="thead-dark">
 						
 							<tr>
-								<th th:if="${isClient}==false"></th>
-								<th th:if="${isClient}==true"></th>
-								<th th:if="${isClient}==true"></th>
+								<th></th>
+<!-- 								<th th:if="${isClient}==true"></th> -->
+<!-- 								<th th:if="${isClient}==true"></th> -->
 								<th></th>
 								<th></th>
 								<th></th>

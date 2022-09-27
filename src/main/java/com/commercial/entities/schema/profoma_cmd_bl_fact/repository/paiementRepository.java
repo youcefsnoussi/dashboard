@@ -135,4 +135,17 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	
 	public List<paiement> findByClientIdAndCancel(Long idClient, boolean canceled);
 	
+	//---------------------------------------------------------
+	
+@Query( " FROM paiement pai "
+			
+				+ " WHERE pai.cancel = :canceled "
+				
+				+ " AND pai.registre_commerce.id = :rcId "
+				
+				+ " ORDER BY pai.id DESC")
+		 
+	public List<paiement> get_paiements_by_rcId(@Param("rcId") long rcId,@Param("canceled") boolean canceled);
+	
+	
 }

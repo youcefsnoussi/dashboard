@@ -778,6 +778,8 @@ public class paymentsController {
 		
 	}
 	
+	//----------------------------------------------------------------
+	
 	@RequestMapping(value="/list_payment_cl")
 	public String list_paiements_clients(HttpServletRequest request,
 			 @SessionAttribute("user") users user,
@@ -788,12 +790,31 @@ public class paymentsController {
 		
 		
 		
-		//----------------------------------------------------------------
-		
-		
 		model.addAttribute("payments", payRepo.findByClientIdAndCancel(id_client, false));
 		
 		model.addAttribute("mode_payement", mode_payRepo.findAll());
+		model.addAttribute("isClient", true);
+		
+		return ret;
+		
+	}
+	
+	//----------------------------------------------------------------
+	
+	@RequestMapping(value="/list_payment_rc")
+	public String list_paiements_rc(HttpServletRequest request,
+			 @SessionAttribute("user") users user,
+			 @RequestParam(value="id_rc", defaultValue="0") long id_rc,
+			 Model model){
+		
+		String ret = "client/clientinfo/list_payments_rc";
+		
+		
+		List<paiement> payements = payRepo.get_paiements_by_rcId(id_rc, false);
+		model.addAttribute("payments", payements);
+		
+		model.addAttribute("mode_payement", mode_payRepo.findAll());
+		model.addAttribute("isClient", false);
 		
 		return ret;
 		

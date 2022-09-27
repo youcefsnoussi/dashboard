@@ -56,19 +56,15 @@
 					  </li>
 					  
 					  <li class="nav-item">
-					    <a class="nav-link" data-toggle="tab" href="#list_commandes" role="tab" aria-controls="info" aria-selected="true">Commandes</a>
-					  </li>
-					  
-					  <li class="nav-item">
-					    <a class="nav-link" data-toggle="tab" href="#list_bl" role="tab" aria-controls="info" aria-selected="true">Bons de livraison</a>
-					  </li>
-					  
-					  <li class="nav-item">
 					    <a class="nav-link" data-toggle="tab" href="#list_facture" role="tab" aria-controls="info" aria-selected="true">Factures</a>
 					  </li>
 					  
 					  <li class="nav-item">
 					    <a class="nav-link" data-toggle="tab" href="#list_facture_a" role="tab" aria-controls="info" aria-selected="true">Factures d'avoir</a>
+					  </li>
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#list_payments" role="tab" aria-controls="info" aria-selected="true">Paiments</a>
 					  </li>
 					  
 					</ul>
@@ -631,28 +627,21 @@
 					  	
 					  </div>
 					  
-					  <div class="tab-pane fade" id="list_commandes" role="tabpanel" >
-					  
-					  	<iframe width="100%" height="100%" id="commandes_list" frameborder="0"></iframe>
-					  
-					  </div>
-					  
-					  <div class="tab-pane fade" id="list_bl" role="tabpanel" >
-					  
-					  	<iframe width="100%" height="100%" id="bl_list" frameborder="0"></iframe>
-					  
-					  </div>
 					  
 					  <div class="tab-pane fade" id="list_facture" role="tabpanel" >
 					  
-					  	<iframe width="100%" height="100%" id="facture_list" frameborder="0"></iframe>
+					  	<iframe th:with="rc = ${rc}"  width="100%" height="900" id="facture_list" frameborder="0"></iframe>
 					  
 					  </div>
 					  
 					  <div class="tab-pane fade" id="list_facture_a" role="tabpanel" >
 					  
-					  	<iframe width="100%" height="100%" id="facture_a_list" frameborder="0"></iframe>
+					  	<iframe th:with="rc = ${rc}"  width="100%" height="900" id="facture_a_list" frameborder="0"></iframe>
 					  
+					  </div>
+					  <div class="tab-pane fade" id="list_payments" role="tabpanel" >
+					  
+					  	<iframe th:with="rc = ${rc}"  width="100%" height="900" id="payment_list" frameborder="0" th:attr="src='list_payment_rc?id_rc='+${rc.id}"></iframe>
 					  </div>
 					  
 					</div>
