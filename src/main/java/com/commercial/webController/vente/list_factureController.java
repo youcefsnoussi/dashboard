@@ -624,4 +624,25 @@ public class list_factureController {
 		
 	}
 	
+	//--------------------------------------------------------------------------------
+	
+	
+	@RequestMapping(value="/list_fact_rc")
+	public String list_fact_rc(HttpServletRequest request,
+			 @SessionAttribute("user") users user,
+			 @RequestParam(value="rc", defaultValue="0") Long rc,
+			 Model model){
+		
+		String ret = "client/rcinfo/list_fact_rc";
+				
+		List<facture> lst_fact = new ArrayList<>();
+			
+		lst_fact = factRepo.getFacturesByRcId(rc);
+			
+		model.addAttribute("list_facture", lst_fact);
+		
+		return ret;
+		
+	}
+	
 }

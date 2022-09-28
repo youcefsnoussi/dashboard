@@ -187,5 +187,27 @@ public List<Map<String, Object>> get_fact_avoir_list_client (long idClient) thro
 		return ret;
 		
 	}
+
+public List<Map<String, Object>> get_fact_avoir_list_rc (long idRc) throws ParseException{
+	
+	
+	List<facture_avoir> lst_fact_av = factAvRepo.getByRcId(idRc);
+	
+	List<Map<String, Object>> ret = new ArrayList<>();
+	
+	for (facture_avoir fact_av : lst_fact_av) {
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("facture_avoir", fact_av);
+		map.put("lst_facture", factRepo.get_facts_by_fact_avoir(fact_av));
+		
+		ret.add(map);
+		
+	}
+	
+	return ret;
+	
+}
 	
 }
