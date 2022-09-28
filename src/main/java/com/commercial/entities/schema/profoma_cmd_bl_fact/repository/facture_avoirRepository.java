@@ -43,4 +43,10 @@ public interface facture_avoirRepository extends JpaRepository<facture_avoir, Lo
 
 	public List<facture_avoir> findByClientId(long id_client, Sort by);	
 	
+	
+	@Query( " FROM facture_avoir fact "
+			
+				  + " WHERE   fact.registre_commerce.id = :rcId " )
+	public List<facture_avoir> getByRcId(long rcId);	
+	
 }

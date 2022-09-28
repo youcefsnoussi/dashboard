@@ -325,4 +325,25 @@ public class list_facture_avoirController {
 		
 	}
 	
+	@RequestMapping(value="/list_fact_avoir_rc")
+	public String list_fact_avoir_rc(HttpServletRequest request,
+						 @SessionAttribute("user") users user,  @RequestParam(value="rc", defaultValue="0") long rc,
+						 Model model) throws ParseException{
+		
+		String ret = "client/rcinfo/list_fact_avoir_rc";
+			
+			try {
+					
+					model.addAttribute("list_facture", factAvServ.get_fact_avoir_list_rc(rc));	
+				
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		return ret;
+		
+	}
+	
 }

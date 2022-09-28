@@ -203,5 +203,14 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 		
 	   
 	   public List<facture> findByClientIdOrderByDateDesc(Long client, Sort sort);
+	   
+
+	//----------------------------------------------------------
+		@Query( " FROM facture fact "
+				
+				  + " WHERE  fact.registre_commerce.id = :rcId " )
+			 
+			public List<facture> getFacturesByRcId(@Param("rcId") Long rcId);
+		
 			
 }

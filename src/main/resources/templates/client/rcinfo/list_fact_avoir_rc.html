@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
+		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+		
+		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
+		
+		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+		
+		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
+		
+		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+		
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
+		
+		<script type="text/javascript" src="resources\PagesJS\client\list_facture_avoir_cl.js"></script>
+		<style type="text/css">
+		
+			.rr{
+			
+				text-align: right;
+			
+			}
+		
+		</style>
+		
+</head>
+<body>
+
+	<div class="container-fluid h-100" >
+		
+		<div class="card">
+		
+			<!--  
+			<h3 class="card-header  text-center"> <i class="far fa-repeat"></i>  Relation Client RC </h3>
+			<br>
+			-->
+			
+				<div class="card-body">
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%" >
+					
+						<thead class="thead-dark">
+						
+							<tr>
+							
+								
+								<th>N°</th>
+								<th>Date</th>
+								<th >Code </th>
+								<th>Client</th>
+								<th>Montant HT</th>
+								<th>Montant NET HT</th>
+								<th>Montant TVA</th>
+								<th>Montant TTC</th>
+								<th>Facture</th>
+								
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="list_fact:${list_facture}">
+							
+								<td th:text="${list_fact.facture_avoir.numero}"></td>
+								<td th:text="${list_fact.facture_avoir.date}"></td>
+								<td th:text="${list_fact.facture_avoir.registre_commerce.code}"></td>
+								<td th:text="${list_fact.facture_avoir.client.nom}+' '+${list_fact.facture_avoir.client.prenom}"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ht, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ht_net, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.tva, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+								<td th:text="${#numbers.formatDecimal(list_fact.facture_avoir.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}" class="rr"></td>
+<!-- 								<td th:text="${list_fact.facture}"></td> -->
+								<td style="text-align: center;"> 
+										<button id="fact" th:each="fact:${list_fact.lst_facture}" type="button" class="btn btn-info fact" 
+											th:attr="id_fact=${fact.id},num_fact=${fact.numero},title=${fact.numero}" data-toggle="tooltip" 
+											data-placement="top"> 
+												<i class="far fa-info-square"></i>
+										</button> 								 
+								</td>
+								
+							</tr>
+						
+						</tbody>
+						
+						<tfoot class="thead-dark">
+						
+							<tr>
+							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th></th>
+							</tr>
+						
+						</tfoot>
+						
+					</table>
+				
+				</div>
+			
+			
+		</div>
+		
+	</div>
+	
+	
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	
+	<div id="fact_detail_modal" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	      		
+	      		<input type="hidden" id="id_facture">
+	      		
+	      		<div class="col-md-6">
+	      			
+	      			<div class="input-group">
+	      				<div class="input-group-prepend">
+	      					<i id="icone_fact" class="far fa-file-invoice" style="font-size:30px;margin-right:10px;" ></i>
+	      				</div>	
+	      					<h5 id="title_fact" class="modal-title" > </h5>
+			        </div>	
+	      		</div>
+	      		<!--  
+	      		<div class="col-md-4 offset-md-1">
+	      		
+	      			<button class="btn btn-info" id="print_duplicata"> <i id="icone_fact" class="far fa-print" style="font-size:22px;" ></i> 
+	      											Imprimer Duplicata</button>
+	      			
+	      		</div>
+	      		-->
+	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      	
+	      </div>
+	         
+	         <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
+	         
+	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         
+	         </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+</body>
+</html>
