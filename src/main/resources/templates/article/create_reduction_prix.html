@@ -82,7 +82,7 @@
 		})
 		
 		function get_prix_art (id_client,id_article){
-			
+			console.log("get_prix_art");
 			$.ajax({
 				url : 'get_prix_by_client',
 				data : {
@@ -92,12 +92,14 @@
 				success : function(responseJson) {
 					
 					if (responseJson != "null") {
+						$("#old_price").val(responseJson);
 						
-						$.each(responseJson, function(key, value) {
+// 						$.each(responseJson, function(key, value) {
 							
-							$("#old_price").val(value);
+// 							$("#old_price").val(value);
 
-						});
+// 						}
+// 						);
 
 					}
 				}

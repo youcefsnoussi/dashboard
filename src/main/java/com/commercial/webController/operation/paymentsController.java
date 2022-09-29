@@ -807,7 +807,7 @@ public class paymentsController {
 			 @RequestParam(value="id_rc", defaultValue="0") long id_rc,
 			 Model model){
 		
-		String ret = "client/clientinfo/list_payments_rc";
+		String ret = "client/rcinfo/list_payments_rc";
 		
 		
 		List<paiement> payements = payRepo.get_paiements_by_rcId(id_rc, false);
