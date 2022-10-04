@@ -344,6 +344,38 @@ public class vente_statistiqueController {
 		
 		return "statistic/etat_vente_par_client";		
 	}
+	//TODO siham
+	@RequestMapping(value="/etat_vente_client_afficher")
+	public String etat_vente_client2(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="id_category", defaultValue="0") Long id_category,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		String ret = "statistic/etat_vente_par_client";
+		
+		get_time_date gtd = new get_time_date();
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+//		 start = conv.convertion_MyDate_to_InputDate(gtd.get_date()); 
+//		
+//		 end =  conv.convertion_MyDate_to_InputDate(gtd.get_date());
+		List<Object> data =fact_dRepo.req_stat_etat_vente_client(start,end,id_category);
+//		List<Object> data =fact_dRepo.test("01/01/2022","31/01/2022",(long) 2);
+		model.addAttribute("data",data);
+		
+		model.addAttribute("cat_prod",cat_prodRepo.findAll());
+		
+		model.addAttribute("start", start);
+		
+		model.addAttribute("end", end);
+		
+		//----------------------------------------------------------------
+		
+		return ret;
+		
+	}
 	
 	//-----------------------------------------------------------------------------
 	
