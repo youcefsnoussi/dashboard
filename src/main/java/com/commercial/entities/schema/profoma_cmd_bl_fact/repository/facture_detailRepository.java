@@ -564,4 +564,26 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 	public List<Object> req_stat_etat_vente_client(@Param("start") String start, @Param("end") String end, 
 			@Param("cat_p") category_produit cat_p);
 	*/
+	
+	@Query(value ="SELECT fact.registre_commerce id_rc, rc.numero_rc, CONCAT(rc.nom,' ',rc.prenom,' ',cc.nom_category) "
+			+ "libelle, rc.adresse, cc.lettre, SUM(fact_d.quantite) - COALESCE(	(	SELECT SUM(fact_av_d.quantite) "
+			+ "	FROM proforma_cmd_bl_fact.facture_avoir_detail fact_av_d 	JOIN proforma_cmd_bl_fact.facture_avoir fact_av "
+			+ "ON fact_av.id = facture_avoir 	JOIN article.article art ON art.id = fact_av_d.article 	"
+			+ "JOIN article.produit prd ON prd.id = art.produit 	"
+			+ "JOIN article.sous_category_produit scp ON scp.id = prd.sous_category_produit "
+			+ "	JOIN article.category_produit cp ON cp.id = scp.category_produit "
+			+ "	JOIN client.registre_commerce rc ON rc.id = fact_av.registre_commerce "
+			+ "	JOIN client.category_client cc ON cc.id = rc.category_client "
+			+ "	WHERE CAST(date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date) "
+			+ "	AND cp.id=:id_category AND fact_av.registre_commerce = fact.registre_commerce 	),0) quantite "
+			+ " FROM proforma_cmd_bl_fact.facture_detail fact_d  JOIN proforma_cmd_bl_fact.facture fact ON fact.id = facture "
+			+ " JOIN article.article art ON art.id = fact_d.article  JOIN article.produit prd ON prd.id = art.produit  "
+			+ "JOIN article.sous_category_produit scp ON scp.id = prd.sous_category_produit "
+			+ " JOIN article.category_produit cp ON cp.id = scp.category_produit "
+			+ " JOIN client.registre_commerce rc ON rc.id = fact.registre_commerce "
+			+ " JOIN client.category_client cc ON cc.id = rc.category_client "
+			+ " WHERE CAST(date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"
+			+ " AND cp.id=:id_category GROUP BY fact.registre_commerce, rc.numero_rc, CONCAT(rc.nom,' ',rc.prenom,' ',cc.nom_category) , rc.adresse, cc.lettre",nativeQuery = true)
+	public List<Object> req_stat_etat_vente_client(@Param("start") String start, @Param("end") String end,@Param("id_category") Long id_category);
+	
 }
