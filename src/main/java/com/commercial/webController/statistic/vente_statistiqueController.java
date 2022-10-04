@@ -339,7 +339,6 @@ public class vente_statistiqueController {
 		model.addAttribute("start", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
 		
 		model.addAttribute("end", conv.convertion_MyDate_to_InputDate(gtd.get_date()));
-		
 		model.addAttribute("cat_prod", cat_prodRepo.findAll());
 		
 		return "statistic/etat_vente_par_client";		
@@ -364,6 +363,7 @@ public class vente_statistiqueController {
 		List<Object> data =fact_dRepo.req_stat_etat_vente_client(start,end,id_category);
 //		List<Object> data =fact_dRepo.test("01/01/2022","31/01/2022",(long) 2);
 		model.addAttribute("data",data);
+//		model.addAttribute("catSelected",id_category);
 		
 		model.addAttribute("cat_prod",cat_prodRepo.findAll());
 		
