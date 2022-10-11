@@ -98,6 +98,21 @@ $(document).ready(function(){
 		
 	});
 	
+	$("#remis").change(function(){
+		
+		if($(this).prop("checked")){
+			
+			$("#remise").val("on");
+			
+		}
+		else{
+		
+			$("#remise").val("off");
+			
+		}
+		
+	});
+	
 	if($("#article").val()!=""){
 		
 		$("#frm").attr("action","edit_article");
@@ -141,6 +156,14 @@ $(document).ready(function(){
 			$("#consignation").val("on");
 			
 		}
+		
+		if($("#rem").val()=="true"){
+			
+			$("#remis").prop("checked",true);
+			$("#remise").val("on");
+			
+		}
+		
 		
 	}
 	

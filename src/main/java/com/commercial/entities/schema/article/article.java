@@ -65,13 +65,16 @@ public class article implements Serializable{
 	@Column(columnDefinition="double precision default 1")
 	private double multiplicator;
 	
+	@Column(columnDefinition="boolean default true")
+	private boolean remise = true;
+	
 	public article() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public article(String code, produit produit, emballage_produit emballage_produit, pesage_produit pesage_produit, 
 			String image_article, double vendu, String date_creation, unite_mesure unite_mesure_vente, boolean subvension, 
-			String libelle, boolean consignation, double multiplicator) {
+			String libelle, boolean consignation, double multiplicator, boolean remise) {
 		super();
 		this.code = code;
 		this.produit = produit;
@@ -85,6 +88,7 @@ public class article implements Serializable{
 		this.libelle = libelle;
 		this.consignation = consignation;
 		this.multiplicator = multiplicator;
+		this.remise = remise;
 	}
 
 	public Long getId() {
@@ -205,6 +209,14 @@ public class article implements Serializable{
 
 	public void setMultiplicator(double multiplicator) {
 		this.multiplicator = multiplicator;
+	}
+
+	public boolean isRemise() {
+		return remise;
+	}
+
+	public void setRemise(boolean remise) {
+		this.remise = remise;
 	}
 	
 }

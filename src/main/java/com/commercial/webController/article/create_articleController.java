@@ -228,7 +228,7 @@ public class create_articleController {
 		@RequestParam("consignation") String check_c,
 		@RequestParam("lib") String lib,
 		@RequestParam("multiplicator") double multiplicator,
-		
+		@RequestParam("remise") String check_r,
 		@SessionAttribute("user") users user){
 		
 		//------------ mazal khedma ta3 code client kifeh ngenerih --------------------//
@@ -259,6 +259,8 @@ public class create_articleController {
 		
 		boolean consignation = (check_c.equals("on")) ? true : false;
 		
+		boolean remise = (check_r.equals("on")) ? true : false;
+		
 		//--------------------------
 		
 		article art_if_code_existe = artRepo.if_code_art_exist(code_art);
@@ -270,7 +272,7 @@ public class create_articleController {
 			if(art_if_same_specs==null) {
 				
 				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(),
-						unite_mesureRepo.getOne(id_unite_mesure), sub, lib, consignation, multiplicator);
+						unite_mesureRepo.getOne(id_unite_mesure), sub, lib, consignation, multiplicator,remise);
 				
 				artRepo.save(art);
 				artRepo.flush();
@@ -354,7 +356,7 @@ public class create_articleController {
 		@RequestParam("cat_client") long [] cat_client,
 		@RequestParam("multiplicator") double multiplicator,
 		@RequestParam("consignation") String check_c,
-		
+		@RequestParam("remise") String check_r,
 		@SessionAttribute("user") users user){
 		
 		//------------ mazal khedma ta3 code client kifeh ngenerih --------------------//
@@ -378,6 +380,7 @@ public class create_articleController {
 		boolean sub = (check.equals("on")) ? true : false;
 		
 		boolean consignation = (check_c.equals("on")) ? true : false;
+		boolean remise = (check_r.equals("on")) ? true : false;
 		
 		//--------------------------
 		
@@ -411,6 +414,7 @@ public class create_articleController {
 				art.setLibelle(lib);
 				art.setMultiplicator(multiplicator);
 				art.setConsignation(consignation);
+				art.setRemise(remise);
 				
 				artRepo.save(art);artRepo.flush();
 				
