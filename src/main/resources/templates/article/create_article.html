@@ -57,6 +57,8 @@
 						
 						<input type="hidden" id="cons" th:value="${article.consignation}">
 						
+						<input type="hidden" id="rem" th:value="${article.remise}">
+						
 						<input type="hidden" id="libelle" th:value="${article.libelle}">
 						
 						<input type="hidden" id="id_emb_prod" th:value="${article.emballage_produit.id}">
@@ -193,6 +195,14 @@
 			        		
 			        		<input type="checkbox" id="consign"  class="form-control">
 			        		<input type="hidden" id="consignation" name="consignation" value="off">
+			        		
+			        	</div>
+			        	<div class="col-md-1">
+			        		
+			        		<label> Remise </label>
+			        		
+			        		<input type="checkbox" id="remis"  class="form-control">
+			        		<input type="hidden" id="remise" name="remise" value="off">
 			        		
 			        	</div>
 						

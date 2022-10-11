@@ -122,7 +122,7 @@
 	</dependencies>
 
 	<build>
-<!-- 	<finalName>Commercial</finalName> -->
+	<finalName>Commercial</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
