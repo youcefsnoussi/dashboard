@@ -7,6 +7,32 @@ $(document).ready(function() {
 	checkConnection("commande"); //-------> CheckConnectionServer
 	
 	//-------------------------------------------------------------------------------
+//	var rmse = $('option:selected', this).attr("rmse")
+//	console.log("Selected remise :   "+rmse);
+//	if(rmse && rmse=='true'){
+//		parrent.find("#redux_art_pourc").attr("readonly", false);
+//		parrent.find("#redux_art_val").attr("readonly", false);
+//	}else{
+//		parrent.find("#redux_art_pourc").attr("readonly", true);
+//		parrent.find("#redux_art_val").attr("readonly", true);
+//	}
+	var remise_fact = $("#remise_fact").val();
+	console.log("remise_fact : "+ remise_fact);
+	if(remise_fact=='true'){
+		$(".redux_art_pourc").attr("readonly", false);
+		$(".redux_art_val").attr("readonly", false);
+		$("#pourc_redux").attr("readonly", false);
+		$("#mnt_redux").attr("readonly", false);
+	}
+	else{
+		$(".redux_art_pourc").attr("readonly", true);
+		$(".redux_art_val").attr("readonly", true);
+		$("#pourc_redux").attr("readonly", true);
+		$("#mnt_redux").attr("readonly", true);
+	}
+	
+	
+	
 	
 	var getUrlParameter = function getUrlParameter(sParam) {
 	    var sPageURL = window.location.search.substring(1),

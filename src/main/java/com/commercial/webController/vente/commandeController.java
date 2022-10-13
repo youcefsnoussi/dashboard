@@ -197,6 +197,13 @@ public class commandeController {
 		
 		model.addAttribute("magasin", magasinRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
 		
+		boolean remise_fact = false;
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("remise_fact")) {
+			remise_fact = true; 
+		 }
+		
+		model.addAttribute("remise_fact", remise_fact);
+		
 		//model.addAttribute("articles", artRepo.findAll());
 		
 		//model.addAttribute("cat_client", cat_clientRepo.findAll());
@@ -253,7 +260,15 @@ public class commandeController {
 			@RequestParam("art_consign") List<String> art_consign,
 			
 			@SessionAttribute("user") users user){
-			
+		
+		boolean remise_fact = false;
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("remise_fact")) {
+			remise_fact = true; 
+		 }
+		if(!remise_fact && (pourc_reduction>0.0 || mnt_reduction>0.0)) {
+			String ret =  "403";
+			return ret;
+		}
 			commande last_cmd = cmdRepo.findFirst1ByOrderByNumeroDesc();
 			
 			String last_number = "";
