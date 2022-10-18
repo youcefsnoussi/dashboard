@@ -103,6 +103,11 @@ public class paymentsRestController {
 		
 		paiement pay = payRepo.getOne(id_payment);
 		
+		if(pay.isCancel()) {
+			ret="error";
+			return ret;
+		}
+		
 		pay.setCancel(true);
 		
 		payRepo.save(pay);payRepo.flush();
