@@ -66,11 +66,16 @@
 			var ret = getUrlParameter('ret');
 			
 			if(ret!=null){
+				console.log("ret : "+ret);
+				var message = "Annulation effectuer avec succes ";
+				if(ret=="error"){
+					 message= "Une erreur s'est produite lors de l'annulation "
+				}
 				
 				$("#title").text("Information");
 				$("#icone").attr("class","far fa-info-circle");
 				
-				$("#text").text("Annulation effectuer avec succes ");
+				$("#text").text(message);
 				
 				$("#error").modal('show');
 					
@@ -354,10 +359,10 @@
 						id_payment : id_pay
 					},
 					success : function(responseJson) {
-						
+						console.log("succuess  ret: "+ responseJson)
 						//location.reload();
 						var url = new URL(window.location.href);
-						url.searchParams.set('ret','ok');
+						url.searchParams.set('ret',responseJson);
 						window.location.href = url.href;
 						
 					}
