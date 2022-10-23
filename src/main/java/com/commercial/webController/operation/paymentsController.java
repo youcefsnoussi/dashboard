@@ -48,6 +48,8 @@ import com.commercial.entities.schema.static_data.repository.mode_paiementReposi
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.Connection_RH;
+import com.commercial.functions.ConnectionSimAgro;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
 import com.commercial.services.generate_Doc;
@@ -232,12 +234,22 @@ public class paymentsController {
 	    p.setObservation(pay.getObservation());
 	    
 	    payRepo.save(p); payRepo.flush();
+	    updatePaymentInSimAgro(p);
 	    
 	    trk.add_track("paiement", "Modification Paiement", p.getId(), user);
 	    
 	    return "redirect:/edit_payment/"+pay.getId();
 	}
 	
+	private void updatePaymentInSimAgro(paiement payment) {
+		if(ConnectionSimAgro.getconnection() != null) {
+			
+			ConnectionSimAgro.editPayementToSimAgro(payment);
+			
+		}
+		
+	}
+
 	//-------------------------------------------------------------------------------
 	
 	@Autowired
