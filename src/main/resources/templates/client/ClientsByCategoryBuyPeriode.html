@@ -44,7 +44,7 @@
 					"scrollX": "auto",
 			        "deferRender": true,
 			        initComplete: function () {
-			        	this.api().columns([2,4]).every( function () {
+			        	this.api().columns([2,4,5]).every( function () {
 			                var column = this;
 			                var select = $('<select class="selectpicker show-tick" data-width="100%" data-style="btn btn-outline-secondary" '+ 
 			                				'data-container="body" data-live-search="true" ><option title="T" value="" selected>Tout</option></select>')
@@ -190,7 +190,11 @@
 								<th>N°RC</th>
 								<th>Libelle</th>
 								<th>Adresse</th>
+								<th>Wilaya</th>
 								<th>Category</th>
+								
+								
+								
 							
 							</tr>
 						
@@ -204,6 +208,7 @@
 								<td th:text="${rc.numero_rc}"></td>
 								<td th:text="${rc.nom}+' '+${rc.prenom}"></td>
 								<td th:text="${rc.adresse}"></td>
+								<td th:text="${rc.wilaya.designation}"></td>
 								<td th:text="${rc.category.nom_category}"></td>
 							
 							</tr>
@@ -214,6 +219,7 @@
 						
 							<tr>
 							
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>
