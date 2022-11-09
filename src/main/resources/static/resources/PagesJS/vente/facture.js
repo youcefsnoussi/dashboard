@@ -332,7 +332,7 @@ $(document).ready(function() {
 		
 		$(".qte").attr("readonly", false);
 		let parrent = $("#tr20");
-//		parrent.find('#qte').attr("readonly", true);
+		parrent.find('#qte').attr("readonly", true);
 //		$(".id_magasin").empty();
 		$(".id_magasin").attr("name","id_magasin");
 		$(".unite_mesure").val("");
@@ -550,45 +550,7 @@ $(document).ready(function() {
 			}
 			
 		});
-//		$(".id_magasin").each(function() {
-//			 $(this).attr("name","id_magasin");
-//		});
-//		$(".id_magasin").each(function() {
-//			let tr = $(this).attr("id_tr");
-//			let parrent = $("#"+tr);
-////			$(this).attr("name","id_magasin");
-//			parrent.find('#id_magasin').attr("name","id_magasin");
-//			
-//		});
-		
 
-//		$(".qte").each(function() {
-//			let tr = $(this).attr("id_tr");
-//			
-//			let parrent = $("#"+tr);
-//			
-//			parrent.find('#id_magasin').empty();
-//			
-//			
-//			if($(this).val() == "" || $(this).val() == "0"){
-//				$(this).attr("name","qte");
-////				parrent.find('#id_magasin').attr("name","qte");
-////				parrent.find('#id_magasin').attr("name","qte");
-////				parrent.find('#id_magasin').attr("name","qte");
-////				parrent.find('#id_magasin').attr("name","qte");
-////				parrent.find('#id_magasin');
-////				parrent.find('#id_magasin');
-//				
-//			}
-//			else{
-//				$(this).attr("name","");
-//				
-//			}
-//			
-//		});
-//		let parrent = $("#tr20");
-//		var artselect = parrent.find('#art');
-//		art_selected.push(artselect.val());
 		
 		console.log(art_selected)
 		
@@ -647,7 +609,7 @@ $(document).ready(function() {
 		}
 		
 		//if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
-		if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || isNaN(parseFloat($("#total_ttc").val())) ){
+		if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || isNaN(parseFloat($("#total_ttc").val()))){
 		
 			test++;
 			msg = msg+"<b>- Veuillez faire une commande. </b><br>";

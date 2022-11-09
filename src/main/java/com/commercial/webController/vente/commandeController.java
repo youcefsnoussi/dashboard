@@ -401,6 +401,11 @@ public class commandeController {
 							prix_u, taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
 							magasinRepo.getOne(id_magasin[i]));
 					
+					if(art.getCode().equals("1000")) {
+						bl_d.setValidation(true);
+						bl_d.setUser_magasin_validate(user);
+					}
+					
 					bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 					
 					if(art_cons_relRepo.if_art_consigned(artRepo.getOne(article[i])).size()!=0) {

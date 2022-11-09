@@ -257,7 +257,7 @@
 												<div class="col-md-11">
 													<input type="hidden" id="type_vehicule" name="type_vehicule" value=0>
 													<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
-														name="vehicule" data-size="5" id="select_veh">
+														name="vehicule" data-size="5" id="select_veh" disabled>
 														<option  value="" selected>Matricule Interne</option>
 														<option  th:each="veh : ${vehicules}" th:value="${veh.matricule}" th:text="${veh.matricule}" th:attr="type=${veh.type}"></option>
 														
