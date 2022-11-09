@@ -255,7 +255,7 @@
 												</div>
 												
 												<div class="col-md-11">
-												
+													<input type="hidden" id="type_vehicule" name="type_vehicule" value=0>
 													<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
 														name="vehicule" data-size="5" id="select_veh">
 														<option  value="" selected>Matricule Interne</option>
@@ -416,7 +416,7 @@
 					 <input type="hidden" id="transportum"  th:value="${transport.unite_mesure_vente.nom_unite_mesure}">
 					 <input type="hidden" id="transportid_um"  th:value="${transport.unite_mesure_vente.id}">
 					 <input type="hidden" id="transportlibelle"  th:value="${transport.libelle}">
-					 <input type="hidden" id="transporttva"  th:value="0.00">
+					 <input type="hidden" id="transporttva"  th:value="19.0">
 					 
 					<table class="table" id="table" width="100%">
 						<thead class="thead-dark">
@@ -452,7 +452,7 @@
 								
 								<td> 
 									 <select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8"
-									 	data-live-search="true" name="" th:attr="id_tr='tr'+${i}">
+									 	data-live-search="true" name="art" th:attr="id_tr='tr'+${i}">
 										<option value="0" id_um="0" pu="0" tva="0" selected>Selection</option>
 									 </select> 
 								</td>
@@ -468,8 +468,8 @@
 								</td>
 								
 								<td> 
-									<select id="id_magasin" name="id_magasin" class="form-control id_magasin">
-										
+									<select id="id_magasin" name="id_magasin" class="form-control id_magasin" th:attr="id_tr='tr'+${i}" >
+										<option value="0" selected></option>
 									</select>	
 								</td>
 								

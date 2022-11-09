@@ -42,7 +42,6 @@ $(document).ready(function() {
 //	parrent.find('#art').attr("disabled", true);
 	
 	
-	
 	var getUrlParameter = function getUrlParameter(sParam) {
 	    var sPageURL = window.location.search.substring(1),
 	        sURLVariables = sPageURL.split('&'),
@@ -150,7 +149,7 @@ $(document).ready(function() {
 		$(this).parent().parent().find("#art_consign").val($(this).val());
 		
 	})
-	siham
+//	siham
 	$(".art").on("change", function(){
 		
 		let tr = $(this).attr("id_tr");
@@ -164,7 +163,7 @@ $(document).ready(function() {
 		
 		parrent.find('#id_magasin').empty();
 		
-		//$.ajaxSetup({async: false});
+		$.ajaxSetup({async: false});
 		$.ajax({
 			url: 'ajax_get_magasin_by_art',
 			//type: 'POST',
@@ -236,13 +235,13 @@ $(document).ready(function() {
 		*/
 		if($(this).val()!="0"){
 			
-			$(this).attr("name","art");
-			parrent.find('#id_magasin').attr("name","id_magasin");
+//			$(this).attr("name","art");
+//			parrent.find('#id_magasin').attr("name","id_magasin");
 			
 		}
 		else{
 			
-			$(this).attr("name","");
+//			$(this).attr("name","");
 			
 			parrent.find(".prix_unitaire").val(0);
 			
@@ -334,7 +333,8 @@ $(document).ready(function() {
 		$(".qte").attr("readonly", false);
 		let parrent = $("#tr20");
 //		parrent.find('#qte').attr("readonly", true);
-		$(".id_magasin").empty();
+//		$(".id_magasin").empty();
+		$(".id_magasin").attr("name","id_magasin");
 		$(".unite_mesure").val("");
 		$(".nom_art").val("");
 		
@@ -533,17 +533,14 @@ $(document).ready(function() {
 	$("#sub").click(function(){
 		
 		//console.log("select val -> "+$("#select_mat").val())
+//		$(".id_magasin").attr("name","id_magasin");
 		
 		var art_selected = [];
 		
 		$(".art").each(function() {
 //			let tr = $(this).attr("id_tr");
-//			
 //			let parrent = $("#"+tr);
-//			
-//			let id_art = $('option:selected', this).val();
-			
-			parrent.find('#id_magasin').empty();
+//			parrent.find('#id_magasin').attr("name","id_magasin");
 			
 			if($(this).val() == "" || $(this).val() == "0"){}
 			else{
@@ -553,17 +550,42 @@ $(document).ready(function() {
 			}
 			
 		});
-		$(".qte").each(function() {
-			
-			if($(this).val() == "" || $(this).val() == "0"){
-				$(this).attr("name","qte");
-			}
-			else{
-				$(this).attr("name","");
-				
-			}
-			
-		});
+//		$(".id_magasin").each(function() {
+//			 $(this).attr("name","id_magasin");
+//		});
+//		$(".id_magasin").each(function() {
+//			let tr = $(this).attr("id_tr");
+//			let parrent = $("#"+tr);
+////			$(this).attr("name","id_magasin");
+//			parrent.find('#id_magasin').attr("name","id_magasin");
+//			
+//		});
+		
+
+//		$(".qte").each(function() {
+//			let tr = $(this).attr("id_tr");
+//			
+//			let parrent = $("#"+tr);
+//			
+//			parrent.find('#id_magasin').empty();
+//			
+//			
+//			if($(this).val() == "" || $(this).val() == "0"){
+//				$(this).attr("name","qte");
+////				parrent.find('#id_magasin').attr("name","qte");
+////				parrent.find('#id_magasin').attr("name","qte");
+////				parrent.find('#id_magasin').attr("name","qte");
+////				parrent.find('#id_magasin').attr("name","qte");
+////				parrent.find('#id_magasin');
+////				parrent.find('#id_magasin');
+//				
+//			}
+//			else{
+//				$(this).attr("name","");
+//				
+//			}
+//			
+//		});
 //		let parrent = $("#tr20");
 //		var artselect = parrent.find('#art');
 //		art_selected.push(artselect.val());
@@ -965,6 +987,8 @@ function updateVehicules(){
 	var idWilaya =  $("#rc option:selected").attr("wilaya") ;		
 	var type =  $("#select_veh option:selected").attr("type") ;	
 	
+	$("#type_vehicule").val(type);
+	
 	console.log("updateVehicules wilaya = "+idWilaya+" type = "+type);
 	
 	if(idWilaya && type && idWilaya!=null && type!=null){
@@ -1011,7 +1035,7 @@ function updateVehicules(){
 		
 			var artselect = parrent.find('#art');
 			
-			artselect.attr("name","art");
+//			artselect.attr("name","art");
 
 			parrent.find("#unite_mesure").val($('option:selected', artselect).attr("um"));
 			parrent.find("#id_um").val($('option:selected', artselect).attr("id_um"));
@@ -1040,7 +1064,7 @@ function updateVehicules(){
 						
 						parrent.find("#id_magasin").each(function(){
 							
-							$(this).append('<option value="'+value.id+'" > '+value.name+' </option>');
+							$(this).append('<option value="'+value.id+'"  selected> '+value.name+' </option>');
 							
 						});
 						parrent.find('#id_magasin').attr("name","id_magasin");

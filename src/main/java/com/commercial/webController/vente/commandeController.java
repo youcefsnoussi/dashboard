@@ -271,7 +271,7 @@ public class commandeController {
 			@RequestParam("montant_net_ht_art") double [] montant_net_ht_art,
 			@RequestParam("montant_ttc_art") double [] montant_ttc_art,
 			@RequestParam("art_consign") List<String> art_consign,
-			
+			@RequestParam("type_vehicule") Integer type_vehicule,
 			@SessionAttribute("user") users user){
 		
 		boolean remise_fact = false;
@@ -282,6 +282,7 @@ public class commandeController {
 			String ret =  "403";
 			return ret;
 		}
+		
 			commande last_cmd = cmdRepo.findFirst1ByOrderByNumeroDesc();
 			
 			String last_number = "";
@@ -372,18 +373,29 @@ public class commandeController {
 					*/
 					
 					//System.out.println("art consignation for "+i+" -->"+ art_consign.get(i));
+					article art = artRepo.getOne(article[i]);
 					
-					prixUnitaire_article_categoryClient pu_obj = 
-							prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), artRepo.getOne(article[i]));
+					double taux_tva = 0.0;
+					double prix_u = 0.0;
+					
+					
 					
 					//--------------------> TEST IS RC EXONERE TVA <------------------------------
 					
-					double taux_tva = (rc.getTva()==0) ? 0 : pu_obj.getTva().getTaux_tva();
+					if(!art.getCode().equals("1000")) {
+						prixUnitaire_article_categoryClient pu_obj = 
+								prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), artRepo.getOne(article[i]));
+						
+					 taux_tva = (rc.getTva()==0) ? 0 : pu_obj.getTva().getTaux_tva();
 					
 					//----------------------------------------------------------------------------
 					
-					double prix_u = (!artRepo.getOne(article[i]).isConsignation()) ? pu_obj.getPrix() 
+					 prix_u = (!artRepo.getOne(article[i]).isConsignation()) ? pu_obj.getPrix() 
 							: rccRepo.getRcConsignation(rc, artRepo.getOne(article[i])).getPrix_u_ht();
+					 }else {
+						 taux_tva = 19.0;
+						 prix_u =  con_parc.getPriceByTypeAndWilaya(type_vehicule,rc.getWilaya().getId());
+					 }
 					
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i],
 							prix_u, taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
