@@ -149,7 +149,7 @@ $(document).ready(function() {
 		$(this).parent().parent().find("#art_consign").val($(this).val());
 		
 	})
-//	siham
+
 	$(".art").on("change", function(){
 		
 		let tr = $(this).attr("id_tr");
@@ -321,7 +321,7 @@ $(document).ready(function() {
 	//----------------------------------------------------------------------
 	
 	$("#rc").on("change", function(){
-		updateVehicules();
+		
 		$(".remise_zero").val(0);
 		
 		$('.art').find('option:not(:first)').remove();
@@ -393,7 +393,7 @@ $(document).ready(function() {
 		//-------------------- Update articles -----------------
 			
 		$("#redux").empty();
-		 $("#select_veh").val("");
+//		 $("#select_veh").val("");
 		 
 		
 		$.ajaxSetup({async: false});
@@ -436,7 +436,7 @@ $(document).ready(function() {
 					$(".art").selectpicker('refresh');
 					
 					$(".art").find("option").hide();
-					
+					updateVehicules();
 				}
 				
 			}
@@ -534,29 +534,34 @@ $(document).ready(function() {
 		
 		//console.log("select val -> "+$("#select_mat").val())
 //		$(".id_magasin").attr("name","id_magasin");
+		var test = 0;
+		var msg = "";
 		
 		var art_selected = [];
-		
+		var i = 0;
+		var j = 0;
 		$(".art").each(function() {
 //			let tr = $(this).attr("id_tr");
 //			let parrent = $("#"+tr);
 //			parrent.find('#id_magasin').attr("name","id_magasin");
-			
 			if($(this).val() == "" || $(this).val() == "0"){}
 			else{
-				console.log("article : "+$(this).val())
+				j=i;
+				console.log("article : "+$(this).val());
+				
 				art_selected.push($(this).val());
 				
 			}
-			
+			i++;
 		});
-
-		
+		console.log("j : "+ j);
+		console.log("art_selected.length : "+ art_selected.length);
+		if(art_selected.length==1 && j==39 ){
+			test++;
+			msg = msg+"<b>- Veuillez faire une commande. </b><br>";
+		}
 		console.log(art_selected)
 		
-		var test = 0;
-		
-		var msg = "";
 		
 		if(if_duplicate_value(art_selected)==true){
 			
