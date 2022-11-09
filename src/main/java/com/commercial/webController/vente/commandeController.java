@@ -2,6 +2,7 @@ package com.commercial.webController.vente;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
@@ -51,6 +53,7 @@ import com.commercial.entities.schema.static_data.repository.type_reglementRepos
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.ConnectionParc;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
 import com.commercial.functions.numerotation_by_year;
@@ -152,6 +155,9 @@ public class commandeController {
 	@Autowired
 	prof_cmd_bl_fact_client_rc_avoirRepository grpRepo;
 	
+	@Autowired
+	ConnectionParc con_parc;
+	
 	@RequestMapping(value="/commande")
 	public String cmd(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
@@ -166,6 +172,8 @@ public class commandeController {
 		List <client_registreCommerce> clt_rc = clt_rcRepo.ListRCwithCLIENT_active(gtd.get_date());
 		
 		List <client_registreCommerce> clt_rc_ret = new ArrayList<client_registreCommerce>();
+		
+		article transport= artRepo.findByCode("1000");
 		
 		for(int i=0; i<clt_rc.size();i++) {
 			
@@ -196,6 +204,11 @@ public class commandeController {
 		model.addAttribute("mode_paiements", mode_payRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
 		
 		model.addAttribute("magasin", magasinRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
+		
+		List<Map<String, String>> vehs = con_parc.get_vehicules();
+		
+		model.addAttribute("vehicules", vehs);
+		model.addAttribute("transport",transport);
 		
 		boolean remise_fact = false;
 		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("remise_fact")) {
@@ -305,10 +318,11 @@ public class commandeController {
 			trk.add_track("commande", "Creation commande", cmd.getId(), user);
 			
 			//-------------------- tracking operation -----------------------------------
-			
+			System.out.println("articles lengh = " + article.length);
 			for(int i=0;i<article.length;i++) {
-				
+				System.out.println("i = " + i);
 				if(quantite[i]!=0) {
+					System.out.println("qtt not null i = " + i);
 					
 					commande_detail cmd_d = new commande_detail(cmd, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], 
 							montant_tva_art[i], tva_art[i], umRepo.getOne(id_unite_mesure[i]), montant_redux_art_pourc[i], 

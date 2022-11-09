@@ -50,5 +50,7 @@ public interface articleRepository extends JpaRepository<article, Long>{
 			+ " ORDER BY art.produit.designation ASC ")
 	
 	public List<article>  select_articles_ordered();
+
+	public article findByCode(String string);
 	
 }

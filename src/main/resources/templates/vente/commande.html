@@ -102,7 +102,7 @@
 													prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
 													plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
 													adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id},
-													is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}"
+													is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}, wilaya=${rc_clt.client.wilaya.id}"
 													>
 											</option>
 											
@@ -242,6 +242,26 @@
 														<input type="hidden" id="c_type_cl" value="0">
 														
 											</div>
+												
+												</div>
+												
+											</div>
+											<hr>
+											<div class="row">
+											
+												<div class="col-md-1">
+												<input type="radio" id="radio_select_veh" name="selected" class="form-control rr" value=""> 
+												
+												</div>
+												
+												<div class="col-md-11">
+												
+													<select class="selectpicker form-control" data-style="btn btn-outline-secondary" data-live-search="true"
+														name="vehicule" data-size="5" id="select_veh">
+														<option  value="" selected>Matricule Interne</option>
+														<option  th:each="veh : ${vehicules}" th:value="${veh.matricule}" th:text="${veh.matricule}" th:attr="type=${veh.type}"></option>
+														
+													</select>
 												
 												</div>
 												
@@ -388,7 +408,16 @@
 					</div>
 					
 					<hr>
-	
+					
+<!-- 					<input type="hidden" id="transport"  th:value="${transport}" th:attr="id=${transport.id},code=${transport.code},um=${transport.unite_mesure_vente.nom_unite_mesure}, -->
+<!-- 					 id_um=${transport.unite_mesure_vente.id},libelle=${transport.libelle},tva=0.00"> -->
+					 <input type="hidden" id="transport"  th:value="${transport.id}">
+					 <input type="hidden" id="transportcode"  th:value="${transport.code}">
+					 <input type="hidden" id="transportum"  th:value="${transport.unite_mesure_vente.nom_unite_mesure}">
+					 <input type="hidden" id="transportid_um"  th:value="${transport.unite_mesure_vente.id}">
+					 <input type="hidden" id="transportlibelle"  th:value="${transport.libelle}">
+					 <input type="hidden" id="transporttva"  th:value="0.00">
+					 
 					<table class="table" id="table" width="100%">
 						<thead class="thead-dark">
 							<tr>
@@ -411,11 +440,11 @@
 						<tbody>
 	
 							<tr th:each="i : ${#numbers.sequence( 1, 20, 1)}" th:attr="id='tr'+${i}" >
-	
+<!-- 	"${i==20} -->
 								<td> 
 									<select class="form-control selectpicker select_consign" data-style="btn btn-outline-secondary" 
 										id="select_consign" data-width="100%" name="select_consign" th:attr="id_tr='tr'+${i}" 
-										multiple data-actions-box="true" data-selected-text-format="count"> 
+										multiple data-actions-box="true" data-selected-text-format="count" disabled> 
 										
 									</select>
 									<input type="hidden" id="art_consign" name="art_consign" class="art_consign">
