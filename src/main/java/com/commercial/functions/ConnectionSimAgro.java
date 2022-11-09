@@ -40,7 +40,7 @@ public static Connection getconnection() {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			System.out.println("No Connection to Comptability DB \nError Code : "+e.getErrorCode()+"\nMessage : "+e.getMessage());
+			System.out.println("No Connection to SimAgro DB \nError Code : "+e.getErrorCode()+"\nMessage : "+e.getMessage());
 			appcon = null;
 		}
 		

@@ -46,6 +46,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.paiement_fa
 import com.commercial.entities.schema.static_data.tva;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.ConnectionParc;
 import com.commercial.functions.Connection_peseur;
 import com.commercial.functions.get_time_date;
 import com.commercial.services.PaletteService;
@@ -97,6 +98,9 @@ public class factureRestController {
 	
 	@Autowired
 	PaletteService ps;
+	
+	@Autowired
+	ConnectionParc con_parc;
 	
 	public factureRestController() {
 		// TODO Auto-generated constructor stub
@@ -534,6 +538,16 @@ public class factureRestController {
 	}
 	
 	//------------------------------------------TEST CONNECTION ------------------------>
+	@RequestMapping(value="/ajax_get_price_by_type")
+	public Double getPriceByType(
+		@RequestParam("idWilaya") long idWilaya,@RequestParam("type") Integer type) throws IOException, ParseException{
+		
+		//System.out.println("ajax_get_magasin_by_art ---> id article sent  by client -->"+id_article);
+		
+	Double price = con_parc.getPriceByTypeAndWilaya(type,idWilaya);
+		
+		return price;
+	}
 	
 	@RequestMapping(value="/TestCon")
 	public void testConnection() {

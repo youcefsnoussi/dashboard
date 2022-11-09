@@ -16,6 +16,13 @@ $(document).ready(function() {
 //		parrent.find("#redux_art_pourc").attr("readonly", true);
 //		parrent.find("#redux_art_val").attr("readonly", true);
 //	}
+	
+	
+	
+	
+	
+	
+	
 	var remise_fact = $("#remise_fact").val();
 	console.log("remise_fact : "+ remise_fact);
 	if(remise_fact=='true'){
@@ -31,6 +38,8 @@ $(document).ready(function() {
 		$("#mnt_redux").attr("readonly", true);
 	}
 	
+	let parrent = $("#tr20");
+//	parrent.find('#art').attr("disabled", true);
 	
 	
 	
@@ -141,12 +150,13 @@ $(document).ready(function() {
 		$(this).parent().parent().find("#art_consign").val($(this).val());
 		
 	})
-	
+	siham
 	$(".art").on("change", function(){
 		
 		let tr = $(this).attr("id_tr");
 		
 		let parrent = $("#"+tr);
+		
 		
 		//-------------------- get unite chargement by art -----------------
 		
@@ -263,6 +273,10 @@ $(document).ready(function() {
 	//----------------------------------RADIO FUNCTIONS------------------------------------
 	
 	$("#radio_select").click(function () {
+		$("#select_veh").attr("name","");
+		$("#select_veh").val("");
+		$("#select_veh").attr('disabled',true);
+		$("#select_veh").selectpicker('refresh');
 		
 		$("#select_mat").attr("name","matricule");
 		$("#select_mat").attr('disabled',false);
@@ -280,15 +294,35 @@ $(document).ready(function() {
 		$("#select_mat").attr('disabled',true);
 		$("#select_mat").selectpicker('refresh');
 		
+		$("#select_veh").attr("name","");
+		$("#select_veh").val("");
+		$("#select_veh").attr('disabled',true);
+		$("#select_veh").selectpicker('refresh');
+		
 		$("#input_mat").attr("name","matricule");
 		$("#input_mat").attr('disabled',false);
+		
+	});
+	$("#radio_select_veh").click(function () {
+		
+		$("#select_mat").attr("name","");
+		$("#select_mat").val("");
+		$("#select_mat").attr('disabled',true);
+		$("#select_mat").selectpicker('refresh');
+		
+		$("#select_veh").attr("name","matricule");
+		$("#select_veh").attr('disabled',false);
+		$("#select_veh").selectpicker('refresh');
+		
+		$("#input_mat").attr("name","");
+		$("#input_mat").attr('disabled',true);
 		
 	});
 	
 	//----------------------------------------------------------------------
 	
 	$("#rc").on("change", function(){
-		
+		updateVehicules();
 		$(".remise_zero").val(0);
 		
 		$('.art').find('option:not(:first)').remove();
@@ -298,6 +332,8 @@ $(document).ready(function() {
 		$(".select_consign").selectpicker('refresh');
 		
 		$(".qte").attr("readonly", false);
+		let parrent = $("#tr20");
+//		parrent.find('#qte').attr("readonly", true);
 		$(".id_magasin").empty();
 		$(".unite_mesure").val("");
 		$(".nom_art").val("");
@@ -357,6 +393,8 @@ $(document).ready(function() {
 		//-------------------- Update articles -----------------
 			
 		$("#redux").empty();
+		 $("#select_veh").val("");
+		 
 		
 		$.ajaxSetup({async: false});
 		$.ajax({
@@ -499,15 +537,36 @@ $(document).ready(function() {
 		var art_selected = [];
 		
 		$(".art").each(function() {
+//			let tr = $(this).attr("id_tr");
+//			
+//			let parrent = $("#"+tr);
+//			
+//			let id_art = $('option:selected', this).val();
+			
+			parrent.find('#id_magasin').empty();
 			
 			if($(this).val() == "" || $(this).val() == "0"){}
 			else{
-				
+				console.log("article : "+$(this).val())
 				art_selected.push($(this).val());
 				
 			}
 			
 		});
+		$(".qte").each(function() {
+			
+			if($(this).val() == "" || $(this).val() == "0"){
+				$(this).attr("name","qte");
+			}
+			else{
+				$(this).attr("name","");
+				
+			}
+			
+		});
+//		let parrent = $("#tr20");
+//		var artselect = parrent.find('#art');
+//		art_selected.push(artselect.val());
 		
 		console.log(art_selected)
 		
@@ -540,7 +599,7 @@ $(document).ready(function() {
 			
 		}
 		*/
-		if($("#select_mat").val()=="" && $("#input_mat").val()=="" ){
+		if($("#select_mat").val()=="" && $("#input_mat").val()=="" && $("#select_veh").val()==""){
 			
 			test++;
 			msg = msg+"<b>- Matricule Vide. </b><br>";
@@ -671,6 +730,11 @@ $(document).ready(function() {
 			
 		}
 		
+	});
+	
+	
+	$("#select_veh").on("change", function(){
+		updateVehicules()
 	});
 	
 });
@@ -892,5 +956,104 @@ function calculeNbrPalette(){
 	
 	return result;
 	
+}
+
+
+
+function updateVehicules(){
+
+	var idWilaya =  $("#rc option:selected").attr("wilaya") ;		
+	var type =  $("#select_veh option:selected").attr("type") ;	
+	
+	console.log("updateVehicules wilaya = "+idWilaya+" type = "+type);
+	
+	if(idWilaya && type && idWilaya!=null && type!=null){
+	$.ajax({
+		url: 'ajax_get_price_by_type',
+		dataType: 'json',
+		data : {
+			idWilaya : idWilaya,
+			type : type
+        },
+        success : function(responseJson) {
+        	console.log("select_veh reponse prix : " +responseJson);
+        	
+
+    		var id= $("#transport").val();
+    		var code= $("#transportcode").val();
+    		var um= $("#transportum").val();
+    		var tva= $("#transporttva").val();
+    		var id_um= $("#transportid_um").val();
+    		var libelle= $("#transportlibelle").val();//{};
+    		
+//    		var id  = $("#transport").val();
+
+    		console.log("trsp id : "+ id);
+    		
+    		console.log("trsp code : "+ code);
+//    		
+    		
+			let parrent = $("#tr20");
+			
+			console.log("transport id : "+transport.id);
+			console.log("transport libelle : "+transport.libelle);
+			
+			
+			
+			
+//			parrent.find('#art').append('<option value="'+50+'" selected="">'+'Transport'+'</option>');
+			parrent.find('#art').append('<option value="'+id+'" code="'+code+'" '+
+					   'data-subtext=" ('+sub+')" um="'+um+'" '+
+					   'pu="'+responseJson+'" tva="'+tva+'" id_um="'+id_um+'" '+
+					   '" selected="">'+code+' | '+libelle+'</option>');
+			parrent.find('#art').selectpicker("refresh");
+			
+		
+			var artselect = parrent.find('#art');
+			
+			artselect.attr("name","art");
+
+			parrent.find("#unite_mesure").val($('option:selected', artselect).attr("um"));
+			parrent.find("#id_um").val($('option:selected', artselect).attr("id_um"));
+			parrent.find("#prix_unitaire").val($('option:selected', artselect).attr("pu"));
+			parrent.find("#tva_art").val($('option:selected', artselect).attr("tva"));
+			parrent.find("#pesage_palette").val($('option:selected', artselect).attr("pp"));
+			
+			parrent.find('#qte').val(1);
+			
+			
+			CalculeHTArticle(parrent.find('#qte') );
+			CalculeReductionArticle(parrent.find('#redux_art_val'), "valeur" );
+			CalculeTvaTtcArticle(parrent.find('#tva_art'));
+			calculeTotal ();
+			
+			$.ajax({
+				url: 'ajax_get_magasin_by_art',
+				//type: 'POST',
+				dataType: 'json',
+				data : {
+					id_article	: id
+		        },
+		        success : function(responseJson) {
+		        	
+					$.each(responseJson, function(key, value) {
+						
+						parrent.find("#id_magasin").each(function(){
+							
+							$(this).append('<option value="'+value.id+'" > '+value.name+' </option>');
+							
+						});
+						parrent.find('#id_magasin').attr("name","id_magasin");
+						
+					});
+					
+				}
+			});
+    		
+			
+		}
+	});
+	}
+
 }
 		
