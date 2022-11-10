@@ -400,7 +400,9 @@
 									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" 
 									data-size="8" data-live-search="true" name="art" th:attr="id_tr='tr'+${i.index}" >
 									
-										<option value="0"  id_um="0" pu="0" tva="0">Selection</option>
+										
+										<option th:value="${bl_det.article.id}"  th:if="${bl_det.article.code}=='1000'" selected>Transport</option>
+										<option value="0"  id_um="0" pu="0" tva="0" th:unless="${bl_det.article.code}=='1000'">Selection</option>
 										
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
@@ -411,8 +413,9 @@
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
 												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
 												 pu=${art.prix}, tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
-												 th:text="${art.article.libelle}" th:unless="${art.article.id}==${bl_det.article.id}" >
+												 th:text="${art.article.libelle}" th:unless="${art.article.id}==${bl_det.article.id} or ${bl_det.article.code}=='1000'" >
 										</option>
+										
 										
 									 </select> 
 								</td>
@@ -424,7 +427,7 @@
 								
 								<td> 
 										<input class="form-control qte zero" id="qte" name="qte" type="number" step="any" 
-										th:value="${bl_det.quantite}/${bl_det.article.multiplicator}" style="text-align: right;" >
+										th:value="${bl_det.quantite}/${bl_det.article.multiplicator}" th:readonly="${bl_det.article.code}=='1000'" style="text-align: right;" >
 										 
 										<input type="hidden" id="qte_init" class="qte_init" 
 											th:value="${bl_det.quantite}/${bl_det.article.multiplicator}"> 
