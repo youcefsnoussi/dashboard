@@ -329,6 +329,12 @@ public class list_bl_encoursController {
 		registre_commerce rc = bon_lRepo.getOne(id_bl).getRegistre_commerce();
 		
 		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(rc.getCategory());
+		for (prixUnitaire_article_categoryClient pa : list_art) {
+			if(pa.getArticle().getCode().equals("1000")) {
+			System.err.println("list_art code "+ pa.getArticle().getCode());
+			System.err.println("list_art libelle "+ pa.getArticle().getLibelle());
+			}
+		}
 		
 		list_art.stream().forEach(pArt -> {
 			pArt.setPrix(pArt.getPrix()*pArt.getArticle().getMultiplicator());
@@ -475,6 +481,7 @@ public class list_bl_encoursController {
 			@SessionAttribute("user") users user){
 			
 			bon_livraison bl = bon_lRepo.getOne(id_bl);
+			double transportPrix = 0.0;
 			/*
 			get_time_date gtd = new get_time_date();
 			
@@ -578,6 +585,9 @@ public class list_bl_encoursController {
 					bldbRepo.save(bl_db); bldbRepo.flush();
 					
 					//--------------------------------------------------------------------
+					if(bld.get(i).getArticle().getCode().equals("1000")) {
+						transportPrix = bld.get(i).getPrix_u_ht();
+					}
 					
 					bon_l_dRepo.delete(bl_d);
 					
@@ -600,18 +610,37 @@ public class list_bl_encoursController {
 								montant_ttc_art[i]);
 						*/
 						
-						prixUnitaire_article_categoryClient pu_obj = 
-							prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), artRepo.getOne(article[i]));
+						article art = artRepo.getOne(article[i]);
+						double taux_tva = 0.0;
+						double prix_u = 0.0;
+						
+						
 						
 						//--------------------> TEST IS RC EXONERE TVA <------------------------------
 						
-						double taux_tva = (rc.getTva()==0) ? 0 : pu_obj.getTva().getTaux_tva();
+						if(!art.getCode().equals("1000")) {
+							prixUnitaire_article_categoryClient pu_obj = 
+									prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), art);
+								
+						     taux_tva = (rc.getTva()==0) ? 0 : pu_obj.getTva().getTaux_tva();
+						     prix_u = pu_obj.getPrix();
+						 }else {
+							 taux_tva = 19.0;
+							 prix_u =  transportPrix;
+						 }
 						
-						//-------------------->	---------------------- <------------------------------
 						
-						bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i],
-								pu_obj.getPrix(), taux_tva, montant_redux_art_val[i],
-								artRepo.getOne(article[i]).getUnite_mesure_vente(), magasinRepo.getOne(id_magasin[i]));
+						
+						
+						
+						bon_livraison_detail bl_d = new bon_livraison_detail(bl, art, quantite[i],
+								prix_u, taux_tva, montant_redux_art_val[i],
+								art.getUnite_mesure_vente(), magasinRepo.getOne(id_magasin[i]));
+						
+						if(art.getCode().equals("1000")) {
+							bl_d.setValidation(true);
+							bl_d.setUser_magasin_validate(user);
+						}
 						
 						bon_l_dRepo.save(bl_d);bon_l_dRepo.flush();
 						
