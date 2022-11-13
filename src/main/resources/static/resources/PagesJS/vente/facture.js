@@ -554,6 +554,15 @@ $(document).ready(function() {
 			}
 			i++;
 		});
+		$(".qte").each(function() {
+			if( $(this).val()!=="" && parseFloat($(this).val()) <0 ){
+				test ++;
+				msg = msg+"<b>- Veuillez Vérifier les quantités des articles. </b><br>";
+				 $(this).css("border-color","red");
+			}
+			
+			
+		});
 		console.log("j : "+ j);
 		console.log("art_selected.length : "+ art_selected.length);
 		if(art_selected.length==1 && j==39 ){
@@ -614,7 +623,7 @@ $(document).ready(function() {
 		}
 		
 		//if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
-		if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || isNaN(parseFloat($("#total_ttc").val()))){
+		if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || parseFloat($("#total_ttc").val()) <0 || isNaN(parseFloat($("#total_ttc").val()))){
 		
 			test++;
 			msg = msg+"<b>- Veuillez faire une commande. </b><br>";
