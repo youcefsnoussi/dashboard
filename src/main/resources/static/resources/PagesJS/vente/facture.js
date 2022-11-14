@@ -436,7 +436,7 @@ $(document).ready(function() {
 					$(".art").selectpicker('refresh');
 					
 					$(".art").find("option").hide();
-					updateVehicules();
+					
 				}
 				
 			}
@@ -444,7 +444,7 @@ $(document).ready(function() {
 		
 		//-----------------------------------------------------------
 		
-		
+		updateVehicules();
 			
 	});
 	
@@ -960,12 +960,13 @@ function calculeNbrPalette(){
 
 function updateVehicules(){
 
-	var idWilaya =  $("#rc option:selected").attr("wilaya") ;		
+	var idWilaya =  $("#rc option:selected").attr("wilaya") ;	
+	var comune =  $("#rc option:selected").attr("comune") ;	
 	var type =  $("#select_veh option:selected").attr("type") ;	
 	
 	$("#type_vehicule").val(type);
 	
-	console.log("updateVehicules wilaya = "+idWilaya+" type = "+type);
+	console.log("updateVehicules wilaya = "+idWilaya+" type = "+type +" comune = "+comune);
 	
 	if(idWilaya && type && idWilaya!=null && type!=null){
 	$.ajax({
@@ -973,7 +974,8 @@ function updateVehicules(){
 		dataType: 'json',
 		data : {
 			idWilaya : idWilaya,
-			type : type
+			type : type,
+			comune : comune
         },
         success : function(responseJson) {
         	console.log("select_veh reponse prix : " +responseJson);
