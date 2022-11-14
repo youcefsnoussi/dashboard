@@ -283,6 +283,7 @@ $(document).ready(function() {
 		
 		$("#input_mat").attr("name","");
 		$("#input_mat").attr('disabled',true);
+		updateVehicules();
 		
 	});
 	
@@ -300,6 +301,7 @@ $(document).ready(function() {
 		
 		$("#input_mat").attr("name","matricule");
 		$("#input_mat").attr('disabled',false);
+		updateVehicules();
 		
 	});
 	$("#radio_select_veh").click(function () {
@@ -967,6 +969,42 @@ function updateVehicules(){
 	$("#type_vehicule").val(type);
 	
 	console.log("updateVehicules wilaya = "+idWilaya+" type = "+type +" comune = "+comune);
+	
+	if(!type || type==null){
+		console.log("type null: " +type);
+		let parrent = $("#tr20");
+		var artselect = parrent.find('#art');
+		
+//		artselect.attr("name","art");
+
+		parrent.find("#unite_mesure").val(0);
+		parrent.find("#id_um").val(0);
+		parrent.find("#prix_unitaire").val(0);
+		parrent.find("#tva_art").val(0);
+		parrent.find("#pesage_palette").val(0);
+		
+		
+		parrent.find('#qte').val(0);
+		
+		parrent.find("#remise_zero").val(0);
+		
+		parrent.find("#art").find('option:not(:first)').remove();
+		parrent.find("#art").selectpicker('refresh');
+		
+		parrent.find("#select_consign").find('option').remove();
+		parrent.find("#select_consign").selectpicker('refresh');
+		
+//		parrent.find("#id_magasin").find('option').remove();
+		parrent.find("#id_magasin").empty();
+		
+		
+		
+		CalculeHTArticle(parrent.find('#qte') );
+		CalculeReductionArticle(parrent.find('#redux_art_val'), "valeur" );
+		CalculeTvaTtcArticle(parrent.find('#tva_art'));
+		calculeTotal ();
+		
+	}
 	
 	if(idWilaya && type && idWilaya!=null && type!=null){
 	$.ajax({
