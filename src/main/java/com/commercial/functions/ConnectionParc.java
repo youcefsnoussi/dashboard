@@ -25,8 +25,9 @@ public static Connection getconnection() {
 		try {
 			Class.forName("org.postgresql.Driver"); // oracle.jdbc.driver.OracleDriver
 			
-//			String url = "jdbc:postgresql://localhost:5443/Agro_Sim"; 
+//			String url = "jdbc:postgresql://localhost:5443/Parc"; 
 			String url = "jdbc:postgresql://192.168.1.231:5432/Parc"; 
+
 			
 			String username = "postgres";
 			String password = "Admin125478";
@@ -95,9 +96,10 @@ public static List< Map<String,String> > get_vehicules(){
 	
 }
 
-public Double getPriceByTypeAndWilaya(Integer type, long idWilaya) {
+public Double getPriceByTypeAndWilaya(Integer type, String code,String comune) {
 	
 	Double price = 0.0;
+	boolean withCommune = false;
 	
 	//Connection_RH db = new Connection_RH();
 	Connection con = getconnection();
@@ -111,15 +113,32 @@ public Double getPriceByTypeAndWilaya(Integer type, long idWilaya) {
 	}
 	
 	
-	String sql = "select montant FROM sch.wilaya_transport "+
-			"WHERE id_wilaya='"+idWilaya+"' AND id_type='"+type+"' "; 
+//	String sql1 = "select montant FROM sch.wilaya_transport "+
+//			"WHERE id_wilaya='"+code+"' AND id_type='"+type+"' ";
+	Integer codeInt = Integer.valueOf(code);
+	
+	String sql = null;//"select montant FROM sch.wilaya_transport "+"WHERE id_wilaya='"+code+"' AND id_type='"+type+"' ";
+	
+	if(comune==null || comune.equals("") || comune.equals(" ")) {
+		 sql = "select montant FROM sch.wilaya_transport "+
+				"WHERE id_wilaya='"+codeInt+"' AND id_type='"+type+"' AND comune IS NULL";
+		
+	}else {
+		withCommune= true;
+		 sql = "select montant FROM sch.wilaya_transport "+
+				"WHERE id_wilaya='"+codeInt+"' AND id_type='"+type+"' AND comune='"+comune+"' "; 
+	}
+	
+	
+	
 	
 	try {
 		
 		ResultSet res = state.executeQuery(sql);
-		
 		while (res.next()) {
+			System.out.println(" res");
 			price =  res.getDouble("montant");
+			System.out.println(" res.getDouble(\"montant\")>>>>>>>>>>>>>> " + res.getDouble("montant"));
 		}
 		
 		con.close();
@@ -128,12 +147,61 @@ public Double getPriceByTypeAndWilaya(Integer type, long idWilaya) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	
+	if(price==0.0 && withCommune) {
+		return getPriceByTypeAndWilaya(type, code, "");
+	}
 	return price;
 	
 }
 
-
+//public double test() {
+//	
+//	double price = 0;
+//	
+//	Connection con = getconnection();
+//
+//		Statement state = null;
+//	try {
+//		state = con.createStatement();
+//	} catch (SQLException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//	
+//	
+//	
+//	try {
+//		
+//		
+//		String sql = "select montant  FROM sch.wilaya_transport WHERE id_wilaya='1' AND id_type='2' AND comune='REGGANE'";
+//		
+//		ResultSet res = state.executeQuery(sql);
+//		System.out.println("before "+sql);
+//		
+//		if(res.next()) {
+//			System.out.println("res.getDouble(\"montant\") "+ res.getDouble("montant"));
+//			price = res.getDouble("montant");
+//			
+//		}
+//		
+//	} catch (SQLException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//	
+//	
+//	try {
+//		
+//		con.close();
+//		
+//	} catch (SQLException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//	
+//	return price;
+//	
+//}
 	
 
 }

@@ -394,7 +394,7 @@ public class commandeController {
 							: rccRepo.getRcConsignation(rc, artRepo.getOne(article[i])).getPrix_u_ht();
 					 }else {
 						 taux_tva = 19.0;
-						 prix_u =  con_parc.getPriceByTypeAndWilaya(type_vehicule,rc.getWilaya().getId());
+						 prix_u =  con_parc.getPriceByTypeAndWilaya(type_vehicule,rc.getWilaya().getCode(),rc.getComune());
 					 }
 					
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i],

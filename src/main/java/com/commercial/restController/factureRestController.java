@@ -537,18 +537,19 @@ public class factureRestController {
 		
 	}
 	
-	//------------------------------------------TEST CONNECTION ------------------------>
+
 	@RequestMapping(value="/ajax_get_price_by_type")
 	public Double getPriceByType(
-		@RequestParam("idWilaya") long idWilaya,@RequestParam("type") Integer type) throws IOException, ParseException{
+		@RequestParam("idWilaya") String idWilaya,@RequestParam("type") Integer type,@RequestParam("comune") String comune) throws IOException, ParseException{
 		
 		//System.out.println("ajax_get_magasin_by_art ---> id article sent  by client -->"+id_article);
 		
-	Double price = con_parc.getPriceByTypeAndWilaya(type,idWilaya);
+	Double price = con_parc.getPriceByTypeAndWilaya(type,idWilaya,comune);
+//		Double price = con_parc.test(
 		
 		return price;
 	}
-	
+	//------------------------------------------TEST CONNECTION ------------------------>	
 	@RequestMapping(value="/TestCon")
 	public void testConnection() {
 		
