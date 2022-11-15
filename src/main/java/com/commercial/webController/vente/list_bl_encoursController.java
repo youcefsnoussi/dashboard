@@ -330,7 +330,7 @@ public class list_bl_encoursController {
 		
 		List <prixUnitaire_article_categoryClient> list_art = pu_a_ctRepo.get_articles_by_CatClient(rc.getCategory());
 		for (prixUnitaire_article_categoryClient pa : list_art) {
-			if(pa.getArticle().getCode().equals("1000")) {
+			if(pa.getArticle().getCode().equals("99999")) {
 			System.err.println("list_art code "+ pa.getArticle().getCode());
 			System.err.println("list_art libelle "+ pa.getArticle().getLibelle());
 			}
@@ -585,7 +585,7 @@ public class list_bl_encoursController {
 					bldbRepo.save(bl_db); bldbRepo.flush();
 					
 					//--------------------------------------------------------------------
-					if(bld.get(i).getArticle().getCode().equals("1000")) {
+					if(bld.get(i).getArticle().getCode().equals("99999")) {
 						transportPrix = bld.get(i).getPrix_u_ht();
 					}
 					
@@ -618,7 +618,7 @@ public class list_bl_encoursController {
 						
 						//--------------------> TEST IS RC EXONERE TVA <------------------------------
 						
-						if(!art.getCode().equals("1000")) {
+						if(!art.getCode().equals("99999")) {
 							prixUnitaire_article_categoryClient pu_obj = 
 									prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), art);
 								
@@ -637,7 +637,7 @@ public class list_bl_encoursController {
 								prix_u, taux_tva, montant_redux_art_val[i],
 								art.getUnite_mesure_vente(), magasinRepo.getOne(id_magasin[i]));
 						
-						if(art.getCode().equals("1000")) {
+						if(art.getCode().equals("99999")) {
 							bl_d.setValidation(true);
 							bl_d.setUser_magasin_validate(user);
 						}

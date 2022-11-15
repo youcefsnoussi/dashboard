@@ -173,7 +173,7 @@ public class commandeController {
 		
 		List <client_registreCommerce> clt_rc_ret = new ArrayList<client_registreCommerce>();
 		
-		article transport= artRepo.findByCode("1000");
+		article transport= artRepo.findByCode("99999");
 		
 		for(int i=0; i<clt_rc.size();i++) {
 			
@@ -382,7 +382,7 @@ public class commandeController {
 					
 					//--------------------> TEST IS RC EXONERE TVA <------------------------------
 					
-					if(!art.getCode().equals("1000")) {
+					if(!art.getCode().equals("99999")) {
 						prixUnitaire_article_categoryClient pu_obj = 
 								prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(rc.getCategory(), artRepo.getOne(article[i]));
 						
@@ -401,7 +401,7 @@ public class commandeController {
 							prix_u, taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
 							magasinRepo.getOne(id_magasin[i]));
 					
-					if(art.getCode().equals("1000")) {
+					if(art.getCode().equals("99999")) {
 						bl_d.setValidation(true);
 						bl_d.setUser_magasin_validate(user);
 					}
