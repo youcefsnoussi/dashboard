@@ -177,6 +177,41 @@
 				
 			});
 			
+		$("#print").click(function(){
+			
+			var start = $("#debut").val();
+			
+			var end = $("#fin").val();
+				
+				var activ= $('ul#myTab li a.active').parent().attr('id');
+			
+				
+				switch (activ){
+				
+				case "l1" : {$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+						'src="print_historic_ventes_facture?start='+start+'&end='+end+'"></iframe>'); } break;
+				
+				case "l2" : { $('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+						'src="print_historic_ventes_bls?start='+start+'&end='+end+'"></iframe>'); } break;
+				
+				case "l3" : {$('#print_content').html('<iframe id="frame" width="100%" height="828" frameborder="0" '+
+						'src="print_historic_ventes_transfert?start='+start+'&end='+end+'"></iframe>'); } break;
+				
+			}
+
+				
+				
+				
+				$("#title").text("Imprimer");
+				
+				$("#icone").attr("class","far fa-print");
+				
+				$("#display_details").modal("show");
+				
+			});	
+			
+
+			
 			/////////////////------------- END ----------------- 
 		});
 		
@@ -229,6 +264,11 @@
 							<button class="btn btn-primary" id="generate">Excel</button>
 						
 						</div>
+						<div class="col-md-1">
+							
+							<button id="print" class="btn btn-dark" type="button">Imprimer</button>
+							
+						</div>
 						
 					</div>
 					
@@ -236,17 +276,17 @@
 					
 					<ul class="nav nav-tabs" id="myTab" role="tablist">
 					
-					  <li class="nav-item">
+					  <li class="nav-item" id="l1">
 					    <a class="nav-link active" data-toggle="tab" href="#Quant_Fact" role="tab" aria-controls="info" 
 					    	aria-selected="true">Quantité Facturé</a>
 					  </li>
 					  
-					  <li class="nav-item">
+					  <li class="nav-item" id="l2">
 					    <a class="nav-link" data-toggle="tab" href="#Quant_BL" role="tab" aria-controls="info" aria-selected="true">
 					    	Quantité Bls</a>
 					  </li>
 						
-					  <li class="nav-item">
+					  <li class="nav-item" id="l3">
 					    <a class="nav-link" data-toggle="tab" href="#Quant_trans" role="tab" aria-controls="info" aria-selected="true">
 					    	Quantité Transfert</a>
 					  </li>	
@@ -256,7 +296,7 @@
 					<div class="tab-content" id="nav-tabContent">
 						
 						<div class="tab-pane fade show active" id="Quant_Fact" role="tabpanel" aria-labelledby="nav_Quant_Fact">
-							
+						
 							<br>
 							
 							<table id="table" class="table table-bordered table-hover" style="width:100%">
@@ -306,7 +346,6 @@
 						</div>
 						
 						<div class="tab-pane fade" id="Quant_BL" role="tabpanel" aria-labelledby="nav_Quant_BL">
-							
 							<br>
 							
 							<table id="table1" class="table table-bordered table-hover" style="width:100%">
@@ -356,7 +395,6 @@
 						</div>
 						
 						<div class="tab-pane fade" id="Quant_trans" role="tabpanel" aria-labelledby="nav_Quant_trans">
-							
 							<br>
 							
 							<table id="table2" class="table table-bordered table-hover" style="width:100%">
@@ -415,7 +453,8 @@
 		
 	</div>
 	
-	<div id="new_art" class="modal" tabindex="-1" role="dialog">
+	
+	<div id="display_details" class="modal" tabindex="-1" role="dialog">
 	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -437,6 +476,7 @@
 	    </div>
 	  </div>
 	</div>
+	
 	
 	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
 	

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraison_facture_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_transfert_interne_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_avoir_detailRepository;
@@ -20,6 +21,7 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.facture_det
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
+import com.commercial.services.generate_Doc;
 
 @Controller
 @SessionAttributes("user")
@@ -37,6 +39,9 @@ public class history_article_selledController {
 	
 	@Autowired
 	bon_transfert_interne_detailRepository btidRepo;
+	
+	@Autowired
+	generate_Doc gd;
 	
 	public history_article_selledController() {
 		// TODO Auto-generated constructor stub
@@ -160,6 +165,69 @@ public class history_article_selledController {
 		model.addAttribute("list1", list1);
 		
 		return ret;
+		
+	}
+	
+	@RequestMapping(value="/print_historic_ventes_facture")
+	public String print_historic_ventes_facture(HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String pdf = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start  = conv.convertion_InputDate_to_MyDate(start);
+		
+		end  = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_historic_ventes_facture(start, end);
+			
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	@RequestMapping(value="/print_historic_ventes_bls")
+	public String print_historic_ventes_bls(HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String pdf = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start  = conv.convertion_InputDate_to_MyDate(start);
+		
+		end  = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_historic_ventes_blse(start, end);
+			
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	@RequestMapping(value="/print_historic_ventes_transfert")
+	public String print_historic_ventes_transfert(HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String pdf = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start  = conv.convertion_InputDate_to_MyDate(start);
+		
+		end  = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_historic_ventes_transfert(start, end);
+			
+		return "redirect:/display_pdf?file="+pdf;
 		
 	}
 	

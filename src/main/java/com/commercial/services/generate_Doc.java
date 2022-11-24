@@ -2852,7 +2852,108 @@ public class generate_Doc {
 			
 			return "D:/Commercial/Doc/BL/BLQ.pdf";
 	
+	}
+
+	public String generate_historic_ventes_facture(String start, String end) {
+		 
+		 String destination = "D:/Commercial/Doc/STAT/historic_ventes_facture.pdf";
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\statistique\\historic_ventes_facture.jrxml");
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
+				
+				Map<String, Object> mp = new HashMap<String, Object>();
+				
+				mp.put("start", start);
+				mp.put("end", end);
+				
+				
+				
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File("D:\\Commercial\\Doc\\STAT");
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, "D:\\Commercial\\Doc\\STAT\\historic_ventes_facture.pdf");
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+
+	public String generate_historic_ventes_blse(String start, String end) {
+		Map<String, Object> mp = new HashMap<String, Object>();
+		
+		mp.put("start", start);
+		mp.put("end", end);
+		return generate("D:\\Commercial\\report\\statistique\\historic_ventes_bls.jrxml", mp, "D:\\Commercial\\Doc\\STAT",
+				"D:\\Commercial\\Doc\\STAT\\historic_ventes_bls.pdf", "D:/Commercial/Doc/STAT/historic_ventes_bls.pdf");
 	}	
+	
+	public String generate(String raport,Map<String, Object> mp,String diractory,String exportPdf,String destinationPDF) {
+		 
+		 String destination = destinationPDF;
+		 
+		 JasperDesign jdesign; 
+			try {
+				
+				jdesign = JRXmlLoader.load(raport);
+				JasperReport jreport = JasperCompileManager.compileReport(jdesign);	
+				try {
+					
+					Connection con  = localDataSource.getConnection();
+				
+					JasperPrint jprint=JasperFillManager.fillReport(jreport,  mp, con);
+					
+					File dir = new File(diractory);
+					
+				    if (!dir.exists()) dir.mkdirs();
+					
+					JasperExportManager.exportReportToPdfFile(jprint, exportPdf);
+					
+					con.close();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (JRException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return destination;
+	
+	}
+
+	public String generate_historic_ventes_transfert(String start, String end) {
+Map<String, Object> mp = new HashMap<String, Object>();
+		
+		mp.put("start", start);
+		mp.put("end", end);
+		return generate("D:\\Commercial\\report\\statistique\\historic_ventes_transfert.jrxml", mp, "D:\\Commercial\\Doc\\STAT",
+				"D:\\Commercial\\Doc\\STAT\\historic_ventes_transfert.pdf", "D:/Commercial/Doc/STAT/historic_ventes_transfert.pdf");
+	}
+
 	
 	//_____________________________________________________________ EXPORT EXCEL =========================
 	/*
