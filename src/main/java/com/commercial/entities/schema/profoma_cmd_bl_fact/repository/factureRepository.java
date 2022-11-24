@@ -13,6 +13,7 @@ import com.commercial.entities.schema.client.client;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.facture_avoir;
+import com.commercial.entities.schema.static_data.wilaya;
 import com.commercial.entities.schema.user_menu.users;
 
 public interface factureRepository extends JpaRepository<facture, Long> {
@@ -211,6 +212,31 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 				  + " WHERE  fact.registre_commerce.id = :rcId " )
 			 
 			public List<facture> getFacturesByRcId(@Param("rcId") Long rcId);
-		
+			
+	//----------------------------------------------------------		
+			
+			@Query(   " SELECT DISTINCT registre_commerce "
+					
+			+ " FROM facture fct "
+			
+			+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" 
+			
+			+ " AND fct.registre_commerce.category = :cat_c "
+			+ " AND fct.registre_commerce.wilaya = :wilaya ")
+	 
+	public List<registre_commerce> GetClientsByCategoryAndWilaya(@Param("start") String start, @Param("end") String end, 
+															@Param("cat_c") category_client cat_c,@Param("wilaya") wilaya wilaya);
+	//----------------------------------------------------------		
+	
+	@Query(   " SELECT DISTINCT registre_commerce "
+			
+	+ " FROM facture fct "
+	
+	+ " WHERE CAST(fct.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" 
+	
+	+ " AND fct.registre_commerce.wilaya = :wilaya ")
+
+	public List<registre_commerce> GetClientsByWilaya(@Param("start") String start, @Param("end") String end, @Param("wilaya") wilaya wilaya);
+
 			
 }

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.category_produit;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
+import com.commercial.entities.schema.article.repository.wilayaRepository;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.dynamic_data.mouvement;
@@ -144,6 +145,9 @@ public class generate_Doc {
 	
 	@Autowired
 	proforma_detailRepository prof_detRepo;
+	
+	@Autowired
+	private wilayaRepository wilayaRepository;
 	
 	public generate_Doc() {
 		// TODO Auto-generated constructor stub
@@ -2017,7 +2021,7 @@ public class generate_Doc {
 	
 	//------------------------------------------------------------------------------
 	
-	public String generate_rc_buyer(String start, String end, Long id_cat) {
+	public String generate_rc_buyer(String start, String end, Long id_cat, Long wilaya) {
 		 
 		 String destination = "D:/Commercial/Doc/STAT/RcBuyer.pdf";
 		 
@@ -2042,6 +2046,19 @@ public class generate_Doc {
 					
 					mp.put("condition_category", " category_client = '"+cat_cRepo.getOne(id_cat).getId()+"' " );
 					mp.put("category", cat_cRepo.getOne(id_cat).getNom_category());
+					
+				}
+				
+				if(wilaya==0) {
+					
+					mp.put("condition_wilaya", " true " );
+					mp.put("wilaya", "Tout");
+					
+				}
+				else {
+					
+					mp.put("condition_wilaya", " wilaya = '"+wilayaRepository.getOne(wilaya).getId()+"' " );
+					mp.put("wilaya", wilayaRepository.getOne(wilaya).getDesignation());
 					
 				}
 				try {

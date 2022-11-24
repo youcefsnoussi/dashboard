@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.commercial.entities.schema.article.repository.wilayaRepository;
 import com.commercial.entities.schema.client.category_client;
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.client.repository.category_clientRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.factureRepository;
+import com.commercial.entities.schema.static_data.wilaya;
 import com.commercial.entities.schema.user_menu.users;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.get_time_date;
@@ -32,6 +34,9 @@ public class ListClientsByCategory {
 	@Autowired
 	category_clientRepository cat_cRepo;
 	
+	@Autowired
+	wilayaRepository wilayaRepository;
+	
 	public ListClientsByCategory() {
 		// TODO Auto-generated constructor stub
 	}
@@ -40,6 +45,7 @@ public class ListClientsByCategory {
 	public String GetClientsByCategory( @RequestParam(value="start", defaultValue="0") String start,
 						 				@RequestParam(value="end", defaultValue="0") String end,
 						 				@RequestParam(value="cat_c", defaultValue="0") Long id_cat_c, 
+						 				@RequestParam(value="wilaya", defaultValue="0") Long wilaya, 
 										@SessionAttribute("user") users user,
 										Model model){
 		
@@ -55,11 +61,24 @@ public class ListClientsByCategory {
 		
 		List <registre_commerce> ListClients = new ArrayList<registre_commerce>();
 		
-		if(id_cat_c !=0 ) {
+		if(id_cat_c !=0 && wilaya!=0) {
+			
+			category_client cat_c = cat_cRepo.getOne(id_cat_c);
+			wilaya ww = wilayaRepository.getOne(wilaya);
+			
+			ListClients = factRepo.GetClientsByCategoryAndWilaya(start, end, cat_c,ww);
+			
+		}else if(id_cat_c !=0 ) {
 			
 			category_client cat_c = cat_cRepo.getOne(id_cat_c);
 			
 			ListClients = factRepo.GetClientsByCategory(start, end, cat_c);
+			
+		}else if(wilaya !=0 ) {
+			
+			wilaya ww = wilayaRepository.getOne(wilaya);
+			
+			ListClients = factRepo.GetClientsByWilaya(start, end, ww);
 			
 		}
 		else {
@@ -70,7 +89,9 @@ public class ListClientsByCategory {
 		
 		model.addAttribute("ListClients", ListClients);
 		model.addAttribute("CategoryClient", cat_cRepo.findAll());
+		model.addAttribute("wilayas", wilayaRepository.findAll());
 		model.addAttribute("cat_encours", id_cat_c);
+		model.addAttribute("wialaya_encours", wilaya);
 		
 		model.addAttribute("date_d", start);
 		model.addAttribute("date_f", end);
@@ -89,6 +110,7 @@ public class ListClientsByCategory {
 							 @RequestParam(value="start", defaultValue="0") String start,
 							 @RequestParam(value="end", defaultValue="0") String end,
 							 @RequestParam(value="cat_c", defaultValue="0") Long id_cat_c,
+							 @RequestParam(value="wilaya", defaultValue="0") Long wilaya,
 							 @SessionAttribute("user") users user,
 							 Model model){
 		
@@ -113,7 +135,7 @@ public class ListClientsByCategory {
 		String pdf = "";
 		
 		
-		pdf = gd.generate_rc_buyer(start, end, id_cat_c);
+		pdf = gd.generate_rc_buyer(start, end, id_cat_c,wilaya);
 			
 		
 		return "redirect:/display_pdf?file="+pdf;
