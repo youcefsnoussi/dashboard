@@ -834,7 +834,7 @@ public class vente_statistiqueController {
 		
 		end  = conv.convertion_InputDate_to_MyDate(end);
 		
-		pdf = gd.generate_vente_produit_global(start, end);
+		pdf = gd.generate_vente_produit_global_categ(start, end);
 			
 		return "redirect:/display_pdf?file="+pdf;
 		
@@ -957,6 +957,30 @@ public class vente_statistiqueController {
 		
 		pdf = gd.generate_etat_104(start, end, cat_p, user.getUnite().getNom_unite());
 		
+		return "redirect:/display_pdf?file="+pdf;
+		
+	}
+	
+	//----------------------------------------------------------------------------
+	@RequestMapping(value="/print_vente_produit_global_categ")
+	public String print_vente_produit_global_categ(HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		//String qr_code = generateQRcode.createQRcode(fact.getNumero(), "FCT");
+		
+		String pdf = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		start  = conv.convertion_InputDate_to_MyDate(start);
+		
+		end  = conv.convertion_InputDate_to_MyDate(end);
+		
+		pdf = gd.generate_vente_produit_global(start, end);
+			
 		return "redirect:/display_pdf?file="+pdf;
 		
 	}

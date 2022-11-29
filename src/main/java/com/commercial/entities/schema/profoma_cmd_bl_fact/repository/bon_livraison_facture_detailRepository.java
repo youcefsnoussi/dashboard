@@ -129,4 +129,23 @@ public interface bon_livraison_facture_detailRepository extends JpaRepository<bo
 		 
 	public List<Object[]> get_quantite_sold_val_bl(@Param("start") String start, @Param("end") String end);
 	
+	//-----------------------------------------------------------------------
+	
+		@Query( " SELECT fct_d.article.produit.sous_category_produit.category_produit.nom_category, "+
+				
+				" SUM(quantite), SUM(montant_ht), SUM(montant_remise), SUM(montant_ht_net), SUM(montant_tva), "+
+				
+				" SUM(montant_ttc)" + 
+				
+				" FROM bon_livraison_facture_detail fct_d" +
+				
+				" WHERE CAST(fct_d.bon_livraison_facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)"+
+				
+				" AND fct_d.bon_livraison_facture.factured = 'false' AND fct_d.bon_livraison_facture.cancel = 'false' " + 
+				
+				" GROUP BY nom_category")
+			 
+		public List<Object[]> get_quantite_sold_val_bl_categ(@Param("start") String start, @Param("end") String end);
+		
+	
 }
