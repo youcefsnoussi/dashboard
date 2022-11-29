@@ -194,6 +194,20 @@ public interface facture_avoir_detailRepository extends JpaRepository<facture_av
 		public List<Object[]> get_info_sold_fact_av_by_sous_category(@Param("start") String start, @Param("end") String end, 
 																@Param("scat_p") sous_category_produit scat_p);
 	
-	//----------------------------------------------------------------------
+		//----------------------------------------------------------------------
+		
+		@Query( " SELECT  fct_av_d.article.produit.sous_category_produit.category_produit.nom_category, "+
+				
+				" SUM(quantite)*(-1), SUM(montant_ht)*(-1), SUM(montant_remise)*(-1), SUM(montant_ht_net)*(-1),"+
+				
+				"SUM(montant_tva)*(-1), SUM(montant_ttc)*(-1)" + 
+				
+				" FROM facture_avoir_detail fct_av_d" +
+				
+				" WHERE CAST(fct_av_d.facture_avoir.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" + 
+				
+				" GROUP BY  nom_category")
+			 
+		public List<Object[]> get_quantite_sold_val_fact_av_categ(@Param("start") String start, @Param("end") String end);
 	
 }

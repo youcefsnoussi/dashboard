@@ -111,7 +111,7 @@ public class history_article_selledController {
 	}
 	
 	//---------------------------------------------------------------------------------
-	
+	//ici
 	@RequestMapping(value="/historic_ventes_val")
 	public String history_vente_quantite_val(HttpServletRequest request,
 						 @SessionAttribute("user") users user,
@@ -230,5 +230,62 @@ public class history_article_selledController {
 		return "redirect:/display_pdf?file="+pdf;
 		
 	}
+	
+	@RequestMapping(value="/historic_ventes_val_categ")
+	public String getHistoryquantityAndValByCategory(HttpServletRequest request,
+						 @SessionAttribute("user") users user,
+						 @RequestParam("start") String date_debut,
+						 @RequestParam("end") String date_fin,
+						 Model model){
+		
+		String ret = "statistic/selled_article_val_categ";
+		
+		get_time_date gtd = new get_time_date();
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		List <Object[]> list = new ArrayList<Object[]>();
+		
+		List <Object[]> list1 = new ArrayList<Object[]>();
+		
+		//System.out.println("start = "+date_debut+" / end = "+date_fin);
+		
+		if(date_debut.equals("0") && date_fin.equals("0")) {
+			
+			list = fact_detRepo.get_quantite_sold_val_fact_cat(gtd.get_date(), gtd.get_date());
+			
+			list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av_categ(gtd.get_date(), gtd.get_date()));
+			
+//			list1 = bldRepo.get_quantite_sold_val_bl_categ(gtd.get_date(), gtd.get_date());
+			
+			date_debut = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+			date_fin = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+		}
+		else {
+			
+			list =  fact_detRepo.get_quantite_sold_val_fact_cat(conv.convertion_InputDate_to_MyDate(date_debut), 
+					conv.convertion_InputDate_to_MyDate(date_fin));
+			list.addAll(fact_av_dRepo.get_quantite_sold_val_fact_av_categ(conv.convertion_InputDate_to_MyDate(date_debut), 
+					conv.convertion_InputDate_to_MyDate(date_fin)));
+			
+//			list1 = bldRepo.get_quantite_sold_val_bl_categ(conv.convertion_InputDate_to_MyDate(date_debut), 
+//					conv.convertion_InputDate_to_MyDate(date_fin));
+			
+		}
+		
+		model.addAttribute("start", date_debut);
+		
+		model.addAttribute("end", date_fin);
+		
+		model.addAttribute("list", list);
+		
+//		model.addAttribute("list1", list1);
+		
+		return ret;
+		
+	}
+	
 	
 }

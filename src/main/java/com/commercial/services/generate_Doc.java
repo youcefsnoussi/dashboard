@@ -2961,9 +2961,15 @@ public class generate_Doc {
 			return destination;
 	
 	}
+	
+	public String generate_vente_produit_global_categ(String start, String end) {Map<String, Object> mp = new HashMap<String, Object>();
+	mp.put("start", start);
+	mp.put("end", end);
+	return generate("D:\\Commercial\\report\\statistique\\vente_produit_global_Categ.jrxml", mp, "D:\\Commercial\\Doc\\STAT",
+			"D:\\Commercial\\Doc\\STAT\\historic_ventes_transfert.pdf", "D:/Commercial/Doc/STAT/VPG_categ.pdf");	}
 
 	public String generate_historic_ventes_transfert(String start, String end) {
-Map<String, Object> mp = new HashMap<String, Object>();
+		Map<String, Object> mp = new HashMap<String, Object>();
 		
 		mp.put("start", start);
 		mp.put("end", end);

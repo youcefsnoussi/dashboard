@@ -586,4 +586,20 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 			+ " AND cp.id=:id_category GROUP BY fact.registre_commerce, rc.numero_rc, CONCAT(rc.nom,' ',rc.prenom,' ',cc.nom_category) , rc.adresse, cc.lettre",nativeQuery = true)
 	public List<Object> req_stat_etat_vente_client(@Param("start") String start, @Param("end") String end,@Param("id_category") Long id_category);
 	
+	//---------------------------------------------------------------------
+	
+@Query( " SELECT fct_d.article.produit.sous_category_produit.category_produit.nom_category, "+
+			
+			" SUM(quantite), SUM(montant_ht), SUM(montant_remise), SUM(montant_ht_net), SUM(montant_tva), "+
+			
+			"SUM(montant_ttc)" + 
+			
+			" FROM facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" + 
+			
+			" GROUP BY  nom_category")
+		 
+	public List<Object[]> get_quantite_sold_val_fact_cat(@Param("start") String start, @Param("end") String end);
+	
 }
