@@ -602,4 +602,20 @@ public interface facture_detailRepository extends JpaRepository<facture_detail, 
 		 
 	public List<Object[]> get_quantite_sold_val_fact_cat(@Param("start") String start, @Param("end") String end);
 	
+@Query( " SELECT fct_d.article.produit.sous_category_produit.category_produit.nom_category, "+
+
+		" fct_d.article.produit.sous_category_produit.nom_sous_category, "+
+		
+			" SUM(quantite), SUM(montant_ht), SUM(montant_remise), SUM(montant_ht_net), SUM(montant_tva), "+
+			
+			"SUM(montant_ttc)" + 
+			
+			" FROM facture_detail fct_d" +
+			
+			" WHERE CAST(fct_d.facture.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" + 
+			
+			" GROUP BY  nom_category,nom_sous_category")
+		 
+	public List<Object[]> get_quantite_sold_val_fact_sous_cat(@Param("start") String start, @Param("end") String end);
+	
 }
