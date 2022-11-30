@@ -1018,82 +1018,134 @@ function updateVehicules(){
         success : function(responseJson) {
         	console.log("select_veh reponse prix : " +responseJson);
         	
-
-    		var id= $("#transport").val();
-    		var code= $("#transportcode").val();
-    		var um= $("#transportum").val();
-    		var tva= $("#transporttva").val();
-    		var id_um= $("#transportid_um").val();
-    		var libelle= $("#transportlibelle").val();//{};
-    		
-//    		var id  = $("#transport").val();
-
-    		console.log("trsp id : "+ id);
-    		
-    		console.log("trsp code : "+ code);
-//    		
-    		
-			let parrent = $("#tr20");
-			
-			console.log("transport id : "+transport.id);
-			console.log("transport libelle : "+transport.libelle);
-			
-			
-			
-			
-//			parrent.find('#art').append('<option value="'+50+'" selected="">'+'Transport'+'</option>');
-			parrent.find('#art').append('<option value="'+id+'" code="'+code+'" '+
-					   'data-subtext=" ('+sub+')" um="'+um+'" '+
-					   'pu="'+responseJson+'" tva="'+tva+'" id_um="'+id_um+'" '+
-					   '" selected="">'+code+' | '+libelle+'</option>');
-			parrent.find('#art').selectpicker("refresh");
-			
+	if(responseJson>0){
+		var id= $("#transport").val();
+		var code= $("#transportcode").val();
+		var um= $("#transportum").val();
+		var tva= $("#transporttva").val();
+		var id_um= $("#transportid_um").val();
+		var libelle= $("#transportlibelle").val();//{};
 		
-			var artselect = parrent.find('#art');
-			
-//			artselect.attr("name","art");
+//		var id  = $("#transport").val();
 
-			parrent.find("#unite_mesure").val($('option:selected', artselect).attr("um"));
-			parrent.find("#id_um").val($('option:selected', artselect).attr("id_um"));
-			parrent.find("#prix_unitaire").val($('option:selected', artselect).attr("pu"));
-			parrent.find("#tva_art").val($('option:selected', artselect).attr("tva"));
-			parrent.find("#pesage_palette").val($('option:selected', artselect).attr("pp"));
-			
-			parrent.find('#qte').val(1);
-			
-			
-			CalculeHTArticle(parrent.find('#qte') );
-			CalculeReductionArticle(parrent.find('#redux_art_val'), "valeur" );
-			CalculeTvaTtcArticle(parrent.find('#tva_art'));
-			calculeTotal ();
-			
-			$.ajax({
-				url: 'ajax_get_magasin_by_art',
-				//type: 'POST',
-				dataType: 'json',
-				data : {
-					id_article	: id
-		        },
-		        success : function(responseJson) {
-		        	
-					$.each(responseJson, function(key, value) {
+		console.log("trsp id : "+ id);
+		
+		console.log("trsp code : "+ code);
+//		
+		
+		let parrent = $("#tr20");
+		
+		console.log("transport id : "+transport.id);
+		console.log("transport libelle : "+transport.libelle);
+		
+		
+		
+		
+//		parrent.find('#art').append('<option value="'+50+'" selected="">'+'Transport'+'</option>');
+		parrent.find('#art').append('<option value="'+id+'" code="'+code+'" '+
+				   'data-subtext=" ('+sub+')" um="'+um+'" '+
+				   'pu="'+responseJson+'" tva="'+tva+'" id_um="'+id_um+'" '+
+				   '" selected="">'+code+' | '+libelle+'</option>');
+		parrent.find('#art').selectpicker("refresh");
+		
+	
+		var artselect = parrent.find('#art');
+		
+//		artselect.attr("name","art");
+
+		parrent.find("#unite_mesure").val($('option:selected', artselect).attr("um"));
+		parrent.find("#id_um").val($('option:selected', artselect).attr("id_um"));
+		parrent.find("#prix_unitaire").val($('option:selected', artselect).attr("pu"));
+		parrent.find("#tva_art").val($('option:selected', artselect).attr("tva"));
+		parrent.find("#pesage_palette").val($('option:selected', artselect).attr("pp"));
+		
+		parrent.find('#qte').val(1);
+		
+		
+		CalculeHTArticle(parrent.find('#qte') );
+		CalculeReductionArticle(parrent.find('#redux_art_val'), "valeur" );
+		CalculeTvaTtcArticle(parrent.find('#tva_art'));
+		calculeTotal ();
+		
+		$.ajax({
+			url: 'ajax_get_magasin_by_art',
+			//type: 'POST',
+			dataType: 'json',
+			data : {
+				id_article	: id
+	        },
+	        success : function(responseJson) {
+	        	
+				$.each(responseJson, function(key, value) {
+					
+					parrent.find("#id_magasin").each(function(){
 						
-						parrent.find("#id_magasin").each(function(){
-							
-							$(this).append('<option value="'+value.id+'"  selected> '+value.name+' </option>');
-							
-						});
-						parrent.find('#id_magasin').attr("name","id_magasin");
+						$(this).append('<option value="'+value.id+'"  selected> '+value.name+' </option>');
 						
 					});
+					parrent.find('#id_magasin').attr("name","id_magasin");
 					
-				}
-			});
+				});
+				
+			}
+		});
+	}
+	else{
+		var matricule =  $("#select_veh option:selected").val() ;	
+		$("#title").text("Erreur !!!");
+		$("#icone").attr("class","far fa-exclamation-triangle");
+		$("#text").html("Veuillez Ajouter un prix de transport pour le véhicule avec le matricule "+ matricule);
+		$("#error").modal('show');
+		resetTransport();
+	}
+    
     		
 			
 		}
 	});
 	}
 
+}
+function resetTransport(){
+	
+	$("#select_veh").val("");
+	$("#select_veh").selectpicker('refresh');
+	
+
+
+	let parrent = $("#tr20");
+	var artselect = parrent.find('#art');
+	
+//	artselect.attr("name","art");
+
+	parrent.find("#unite_mesure").val(0);
+	parrent.find("#id_um").val(0);
+	parrent.find("#prix_unitaire").val(0);
+	parrent.find("#tva_art").val(0);
+	parrent.find("#pesage_palette").val(0);
+	
+	
+	parrent.find('#qte').val(0);
+	
+	parrent.find("#remise_zero").val(0);
+	
+	parrent.find("#art").find('option:not(:first)').remove();
+	parrent.find("#art").selectpicker('refresh');
+	
+	parrent.find("#select_consign").find('option').remove();
+	parrent.find("#select_consign").selectpicker('refresh');
+	
+//	parrent.find("#id_magasin").find('option').remove();
+	parrent.find("#id_magasin").empty();
+	
+	
+	
+	CalculeHTArticle(parrent.find('#qte') );
+	CalculeReductionArticle(parrent.find('#redux_art_val'), "valeur" );
+	CalculeTvaTtcArticle(parrent.find('#tva_art'));
+	calculeTotal ();
+	
+
+	
 }
 		
