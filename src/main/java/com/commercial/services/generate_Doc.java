@@ -951,6 +951,7 @@ public class generate_Doc {
 			mp.put("rc", fact_av.getRegistre_commerce().getNumero_rc());
 			mp.put("nif", fact_av.getRegistre_commerce().getNumero_nif());
 			mp.put("nis", fact_av.getRegistre_commerce().getNumero_art());
+			mp.put("niss", fact_av.getRegistre_commerce().getNumero_nis());
 			mp.put("user", fact_av.getUsers().getMatricule());
 			mp.put("cat_rc", fact_av.getRegistre_commerce().getCategory().getNom_category());
 			mp.put("date", fact_av.getDate());
