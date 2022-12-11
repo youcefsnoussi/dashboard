@@ -114,6 +114,7 @@ public class add_rcController {
 		@RequestParam("num_rc") String num_rc,
 		@RequestParam("num_art") String num_art,
 		@RequestParam("num_nif") String num_nif,
+		@RequestParam("num_nis") String num_nis,
 		@RequestParam("date_emission") String date_emission,
 		@RequestParam("date_fin") String date_fin,
 		@RequestParam("adresse") String adresse,
@@ -169,7 +170,7 @@ public class add_rcController {
 			rc = new registre_commerce(nom, prenom, code_rc, cat_rc, num_rc, num_art, num_nif, date_emission, date_fin, adresse, 
 					comune, wilaya, "active", taux_tva, plafond, 0, activite, "active", banqueRepo.getOne(id_banque), 
 					type_rRepo.getOne(type_reg), mpRepo.getOne(mode_paiement), un, multipleBL, consignation);
-			
+			rc.setNumero_nis(num_nis);
 			
 			rcRepo.save(rc);rcRepo.flush();
 			

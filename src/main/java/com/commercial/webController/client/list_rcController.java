@@ -168,6 +168,7 @@ public class list_rcController {
 		@RequestParam("num_rc") String num_rc,
 		@RequestParam("num_art") String num_art,
 		@RequestParam("num_nif") String num_nif,
+		@RequestParam("num_nis") String num_nis,
 		@RequestParam("date_emission") String date_emission,
 		@RequestParam("date_fin") String date_fin,
 		@RequestParam("adresse") String adresse,
@@ -209,6 +210,7 @@ public class list_rcController {
 		rc.setNom(nom);
 		rc.setNumero_art(num_art);
 		rc.setNumero_nif(num_nif);
+		rc.setNumero_nis(num_nis);
 		rc.setNumero_rc(num_rc);
 		rc.setPlafond(plafond);
 		rc.setPrenom(prenom);

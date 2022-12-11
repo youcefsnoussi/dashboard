@@ -45,6 +45,9 @@ public class registre_commerce implements Serializable {
 
 	@Column(unique = true)
 	private String numero_nif;
+	
+	@Column(unique = true)
+	private String numero_nis;
 
 	private String date_emission;
 
@@ -346,6 +349,14 @@ public class registre_commerce implements Serializable {
 
 	public void setConsignation(boolean consignation) {
 		this.consignation = consignation;
+	}
+
+	public String getNumero_nis() {
+		return numero_nis;
+	}
+
+	public void setNumero_nis(String numero_nis) {
+		this.numero_nis = numero_nis;
 	}
 	
 }
