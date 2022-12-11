@@ -495,6 +495,7 @@ public class generate_Doc {
 				mp.put("rc", fact.getRegistre_commerce().getNumero_rc());
 				mp.put("nif", fact.getRegistre_commerce().getNumero_nif());
 				mp.put("nis", fact.getRegistre_commerce().getNumero_art());
+				mp.put("niss", fact.getRegistre_commerce().getNumero_nis());
 				mp.put("user", (fact.getUsers()!=null) ? fact.getUsers().getMatricule() : "");
 				mp.put("cat_rc", fact.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", fact.getDate());
@@ -664,7 +665,7 @@ public class generate_Doc {
 					factRepo.save(fact);factRepo.flush();
 					
 				}
-				
+				//ici
 				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\facture\\Facture_A4.jrxml");
 				
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);
