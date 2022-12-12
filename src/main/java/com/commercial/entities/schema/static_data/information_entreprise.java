@@ -50,6 +50,8 @@ public class information_entreprise implements Serializable{
 	
 	private double capitale;
 	
+	private boolean hasTransport;
+	
 	@ManyToOne
     @JoinColumn(name = "banque")
 	private banque banque;
@@ -227,6 +229,14 @@ public class information_entreprise implements Serializable{
 
 	public void setBankAccounts(String bankAccounts) {
 		BankAccounts = bankAccounts;
+	}
+
+	public boolean isHasTransport() {
+		return hasTransport;
+	}
+
+	public void setHasTransport(boolean hasTransport) {
+		this.hasTransport = hasTransport;
 	}
 
 }
