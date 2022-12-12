@@ -18,7 +18,15 @@ $(document).ready(function() {
 //	}
 	
 	
-	
+	$("#yesButtun").click(function() {
+		submit();
+		$("#transport_confirmation").modal('hide');
+	});
+	$("#noButtun").click(function() {
+		
+		$("#transport_confirmation").modal('hide');
+		
+	});
 	
 	
 	
@@ -356,10 +364,18 @@ $(document).ready(function() {
 		 $("#select_mat").attr('disabled',true);
 		 $("#select_mat").selectpicker('refresh');
 		 
+		 $("#select_veh").attr("name","");
+		 $("#select_veh").val("");
+		 $("#select_veh").attr('disabled',true);
+		 $("#select_veh").selectpicker('refresh');
+		 
 		 $("#input_mat").attr("name","matricule");
 		 $("#input_mat").attr('disabled',false);
 	     $("#radio_input").attr("checked","checked");
 	     $("#radio_select").attr("disabled",true);
+	     $("#radio_select_veh").attr("disabled",true);
+	     
+	     
 	     
 	     $("#chauffeur").css("display","block");
 	     $("#chauffeur_inp").attr("display","true");
@@ -533,201 +549,13 @@ $(document).ready(function() {
 	console.log("art == "+$(".art").val());
 	*/
 	$("#sub").click(function(){
-		
-		//console.log("select val -> "+$("#select_mat").val())
-//		$(".id_magasin").attr("name","id_magasin");
-		var test = 0;
-		var msg = "";
-		
-		var art_selected = [];
-		var i = 0;
-		var j = 0;
-		$(".art").each(function() {
-//			let tr = $(this).attr("id_tr");
-//			let parrent = $("#"+tr);
-//			parrent.find('#id_magasin').attr("name","id_magasin");
-			if($(this).val() == "" || $(this).val() == "0"){}
-			else{
-				j=i;
-				console.log("article : "+$(this).val());
-				
-				art_selected.push($(this).val());
-				
-			}
-			i++;
-		});
-		$(".qte").each(function() {
-			if( $(this).val()!=="" && parseFloat($(this).val()) <0 ){
-				test ++;
-				msg = msg+"<b>- Veuillez Vérifier les quantités des articles. </b><br>";
-				 $(this).css("border-color","red");
-			}
-			
-			
-		});
-		console.log("j : "+ j);
-		console.log("art_selected.length : "+ art_selected.length);
-		if(art_selected.length==1 && j==39 ){
-			test++;
-			msg = msg+"<b>- Veuillez faire une commande. </b><br>";
-		}
-		console.log(art_selected)
-		
-		
-		if(if_duplicate_value(art_selected)==true){
-			
-			test++;
-			msg = msg+"<b>- Article Dupliqué. </b><br>";
-			$("#code_client").css("border-color","red");
-			
-		}
-		
-		if($("#code_client").val()==""){
-			
-			test++;
-			msg = msg+"<b>- Code client incorrect. </b><br>";
-			$("#code_client").css("border-color","red");
-			
-		}
-		/*
-		if($("#mode_reg").val()==null){
-			
-			test++;
-			msg = msg+"- Selectionner un mode de regelement. <br>";
-			//$("#mode_reg").css("border-color","red");
-			$(".bs-placeholder").find('[data-id=mode_reg]').css("border-color","red");
-			
-		}
-		*/
-		if($("#select_mat").val()=="" && $("#input_mat").val()=="" && $("#select_veh").val()==""){
-			
-			test++;
-			msg = msg+"<b>- Matricule Vide. </b><br>";
-			$("#matricule").css("border-color","red");
-			
-		}
-		
-		if($("#chauffeur_inp").attr("display")=="true" && $("#chauffeur_inp").val()=="" ){
-			
-			test++;
-			msg = msg+"<b>- Chauffeur Vide. </b><br>";
-			$("#matricule").css("border-color","red");
-			
-		}
-		
-		if($("#rc").val()==""){
-			
-			test++;
-			msg = msg+"<b>- Selectionner un Registre de commerce. </b><br>";
-			//$("#rc").css("border-color","red");
-			$(".bs-placeholder").find('[data-id=rc]').css("border-color","red");
-			
-		}
-		
-		//if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
-		if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || parseFloat($("#total_ttc").val()) <0 || isNaN(parseFloat($("#total_ttc").val()))){
-		
-			test++;
-			msg = msg+"<b>- Veuillez faire une commande. </b><br>";
-			$("#total_ttc").css("border-color","red");
-			
-		}
-		
-		//console.log("test ----->"+test)
-		
-		if(test===0){
-			
-			var client_plafond = 0;
-			
-			var rc_plafond = 0;
-			
-			var palette_plafond = 0;
-			
-			var msg1 = "";
-			
-			var mnt_ttc = parseFloat( $("#total_ttc").val().replace(" ","") );
-			
-			$.ajaxSetup({async: false});
-			$.ajax({
-				url: 'ajax_test_plafond',
-				//type: 'POST',
-				dataType: 'json',
-				data : {
-					id_rc_clt : $("#rc").val(),
-					montant_ttc : $("#total_ttc").val().replaceAll(' ',''),
-					nbr_palette : calculeNbrPalette()
-		        },
-		        success : function(responseJson) {
-					
-					if (responseJson != "null") {
-							
-							console.log("plafond_client->"+responseJson.plafond_client)
-						
-							if(responseJson.plafond_client!=0){
-								
-								client_plafond++;
-								
-								msg1 = msg1+"- Plafond client dépasser <br>";
-								
-							}
-							
-							console.log("plafond_rc->"+responseJson.plafond_rc)
-							
-							if(responseJson.plafond_rc!=0){
-								
-								rc_plafond++;
-								
-								msg1 = msg1+"- Plafond RC dépasser <br>";
-								
-							}
-							/*
-							console.log("plafond_palette->"+responseJson.plafond_palette)
-							
-							if(responseJson.plafond_palette!=0){
-								
-								palette_plafond++;
-								
-								msg1 = msg1+"- Plafond Palette dépasser <br>";
-								
-							}
-							*/
-					}
-					
-				}
-			});
-			
-			//console.log("-------------------------")
-			
-			//console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
-			
-			if(client_plafond==0 && rc_plafond==0 /*&& palette_plafond==0*/){
-				
-				console.log("-----------------> SUBMIT")
-				
-				spin_it('on');
-				
-				$("#sub").prop("disabled","true");
-				
-				$("#frm").submit();
-				
-			}
-			else{
-				
-				$("#title").text("Erreur !!!");
-				$("#icone").attr("class","far fa-exclamation-triangle");
-				$("#text").html(msg1);
-				$("#error").modal('show');
-				
-			}
-			
-		}
-		else{
-			
-			$("#title").text("Erreur !!!");
-			$("#icone").attr("class","far fa-exclamation-triangle");
-			$("#text").html(msg);
-			$("#error").modal('show');
-			
+		var matricule =  $("#select_veh option:selected").val() ;
+		var hasTransport = $("#hasTransport").val() ;
+		console.log("hasTransport : "+hasTransport);
+		if(hasTransport=='true' && (matricule== undefined || matricule==null || matricule=="")){
+			$("#transport_confirmation").modal('show');
+		}else{
+			submit();
 		}
 		
 	});
@@ -1148,4 +976,206 @@ function resetTransport(){
 
 	
 }
+function submit(){
+
+	
+	//console.log("select val -> "+$("#select_mat").val())
+//	$(".id_magasin").attr("name","id_magasin");
+	var test = 0;
+	var msg = "";
+	
+	var art_selected = [];
+	var i = 0;
+	var j = 0;
+	$(".art").each(function() {
+//		let tr = $(this).attr("id_tr");
+//		let parrent = $("#"+tr);
+//		parrent.find('#id_magasin').attr("name","id_magasin");
+		if($(this).val() == "" || $(this).val() == "0"){}
+		else{
+			j=i;
+			console.log("article : "+$(this).val());
+			
+			art_selected.push($(this).val());
+			
+		}
+		i++;
+	});
+	$(".qte").each(function() {
+		if( $(this).val()!=="" && parseFloat($(this).val()) <0 ){
+			test ++;
+			msg = msg+"<b>- Veuillez Vérifier les quantités des articles. </b><br>";
+			 $(this).css("border-color","red");
+		}
+		
+		
+	});
+	console.log("j : "+ j);
+	console.log("art_selected.length : "+ art_selected.length);
+	if(art_selected.length==1 && j==39 ){
+		test++;
+		msg = msg+"<b>- Veuillez faire une commande. </b><br>";
+	}
+	console.log(art_selected)
+	
+	
+	if(if_duplicate_value(art_selected)==true){
+		
+		test++;
+		msg = msg+"<b>- Article Dupliqué. </b><br>";
+		$("#code_client").css("border-color","red");
+		
+	}
+	
+	if($("#code_client").val()==""){
+		
+		test++;
+		msg = msg+"<b>- Code client incorrect. </b><br>";
+		$("#code_client").css("border-color","red");
+		
+	}
+	/*
+	if($("#mode_reg").val()==null){
+		
+		test++;
+		msg = msg+"- Selectionner un mode de regelement. <br>";
+		//$("#mode_reg").css("border-color","red");
+		$(".bs-placeholder").find('[data-id=mode_reg]').css("border-color","red");
+		
+	}
+	*/
+	if($("#select_mat").val()=="" && $("#input_mat").val()=="" && $("#select_veh").val()==""){
+		
+		test++;
+		msg = msg+"<b>- Matricule Vide. </b><br>";
+		$("#matricule").css("border-color","red");
+		
+	}
+	
+	if($("#chauffeur_inp").attr("display")=="true" && $("#chauffeur_inp").val()=="" ){
+		
+		test++;
+		msg = msg+"<b>- Chauffeur Vide. </b><br>";
+		$("#matricule").css("border-color","red");
+		
+	}
+	
+	if($("#rc").val()==""){
+		
+		test++;
+		msg = msg+"<b>- Selectionner un Registre de commerce. </b><br>";
+		//$("#rc").css("border-color","red");
+		$(".bs-placeholder").find('[data-id=rc]').css("border-color","red");
+		
+	}
+	
+	//if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
+	if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || parseFloat($("#total_ttc").val()) <0 || isNaN(parseFloat($("#total_ttc").val()))){
+	
+		test++;
+		msg = msg+"<b>- Veuillez faire une commande. </b><br>";
+		$("#total_ttc").css("border-color","red");
+		
+	}
+	
+	//console.log("test ----->"+test)
+	
+	if(test===0){
+		
+		var client_plafond = 0;
+		
+		var rc_plafond = 0;
+		
+		var palette_plafond = 0;
+		
+		var msg1 = "";
+		
+		var mnt_ttc = parseFloat( $("#total_ttc").val().replace(" ","") );
+		
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_test_plafond',
+			//type: 'POST',
+			dataType: 'json',
+			data : {
+				id_rc_clt : $("#rc").val(),
+				montant_ttc : $("#total_ttc").val().replaceAll(' ',''),
+				nbr_palette : calculeNbrPalette()
+	        },
+	        success : function(responseJson) {
+				
+				if (responseJson != "null") {
+						
+						console.log("plafond_client->"+responseJson.plafond_client)
+					
+						if(responseJson.plafond_client!=0){
+							
+							client_plafond++;
+							
+							msg1 = msg1+"- Plafond client dépasser <br>";
+							
+						}
+						
+						console.log("plafond_rc->"+responseJson.plafond_rc)
+						
+						if(responseJson.plafond_rc!=0){
+							
+							rc_plafond++;
+							
+							msg1 = msg1+"- Plafond RC dépasser <br>";
+							
+						}
+						/*
+						console.log("plafond_palette->"+responseJson.plafond_palette)
+						
+						if(responseJson.plafond_palette!=0){
+							
+							palette_plafond++;
+							
+							msg1 = msg1+"- Plafond Palette dépasser <br>";
+							
+						}
+						*/
+				}
+				
+			}
+		});
+		
+		//console.log("-------------------------")
+		
+		//console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
+		
+		if(client_plafond==0 && rc_plafond==0 /*&& palette_plafond==0*/){
+			
+			console.log("-----------------> SUBMIT")
+			
+			spin_it('on');
+			
+			$("#sub").prop("disabled","true");
+			
+			$("#frm").submit();
+			
+		}
+		else{
+			
+			$("#title").text("Erreur !!!");
+			$("#icone").attr("class","far fa-exclamation-triangle");
+			$("#text").html(msg1);
+			$("#error").modal('show');
+			
+		}
+		
+	}
+	else{
+		
+		$("#title").text("Erreur !!!");
+		$("#icone").attr("class","far fa-exclamation-triangle");
+		$("#text").html(msg);
+		$("#error").modal('show');
+		
+	}
+	
+
+}
+
 		

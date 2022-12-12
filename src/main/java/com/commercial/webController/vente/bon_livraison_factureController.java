@@ -421,15 +421,23 @@ public class bon_livraison_factureController {
 		
 		List<bon_livraison_facture_detail> blfs_details = new ArrayList<bon_livraison_facture_detail>();
 		
-		blfs.forEach(blf -> {
-			
-			if(blf.getMontant_ht()!=0) {
+		for (bon_livraison_facture blf : blfs) {
+			if(blf.getMontant_ht()!=null && blf.getMontant_ht()!=0) {
 				
 				blfs_details.add(blfdRepo.get_detail_by_blf(blf).get(0));
 				
 			}
-			
-		});
+		}
+		
+//		blfs.forEach(blf -> {
+//			
+//			if(blf.getMontant_ht()!=0) {
+//				
+//				blfs_details.add(blfdRepo.get_detail_by_blf(blf).get(0));
+//				
+//			}
+//			
+//		});
 		
 		model.addAttribute("bls_info", blfs_details);
 		

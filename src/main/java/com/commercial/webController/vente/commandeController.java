@@ -46,7 +46,9 @@ import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livrais
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.commandeRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.commande_detailRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.prof_cmd_bl_fact_client_rc_avoirRepository;
+import com.commercial.entities.schema.static_data.information_entreprise;
 import com.commercial.entities.schema.static_data.repository.banqueRepository;
+import com.commercial.entities.schema.static_data.repository.information_entrepriseRepository;
 import com.commercial.entities.schema.static_data.repository.mode_paiementRepository;
 import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.static_data.repository.type_reglementRepository;
@@ -156,6 +158,9 @@ public class commandeController {
 	prof_cmd_bl_fact_client_rc_avoirRepository grpRepo;
 	
 	@Autowired
+	private information_entrepriseRepository information_entrepriseRepository;
+	
+	@Autowired
 	ConnectionParc con_parc;
 	
 	@RequestMapping(value="/commande")
@@ -173,7 +178,7 @@ public class commandeController {
 		
 		List <client_registreCommerce> clt_rc_ret = new ArrayList<client_registreCommerce>();
 		
-		article transport= artRepo.findByCode("99999");
+		
 		
 		for(int i=0; i<clt_rc.size();i++) {
 			
@@ -205,11 +210,17 @@ public class commandeController {
 		
 		model.addAttribute("magasin", magasinRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
 		
+		boolean hasTransport = information_entrepriseRepository.findAll().get(0).isHasTransport();
+		
+		if(hasTransport) {
+			
+		article transport= artRepo.findByCode("99999");
 		List<Map<String, String>> vehs = con_parc.get_vehicules();
 		
 		model.addAttribute("vehicules", vehs);
 		model.addAttribute("transport",transport);
-		
+		}
+		model.addAttribute("hasTransport", hasTransport);
 		boolean remise_fact = false;
 		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("remise_fact")) {
 			remise_fact = true; 
@@ -273,6 +284,8 @@ public class commandeController {
 			@RequestParam("art_consign") List<String> art_consign,
 			@RequestParam("type_vehicule") Integer type_vehicule,
 			@SessionAttribute("user") users user){
+		
+		System.out.println("COMMAAAAAAAAAANDE");
 		
 		boolean remise_fact = false;
 		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("remise_fact")) {

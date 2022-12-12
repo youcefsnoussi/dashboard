@@ -26,9 +26,9 @@ public static Connection getconnection() {
 			Class.forName("org.postgresql.Driver"); // oracle.jdbc.driver.OracleDriver
 			
 //			String url = "jdbc:postgresql://localhost:5443/Parc"; 
-			String url = "jdbc:postgresql://192.168.1.231:5432/Parc"; //AIN ROMANA
+//			String url = "jdbc:postgresql://192.168.1.231:5432/Parc"; //AIN ROMANA
 			
-//			String url = "jdbc:postgresql://10.15.15.151:5432/Parc"; //Ain Defla
+			String url = "jdbc:postgresql://10.15.15.151:5432/Parc"; //Ain Defla
 
 			
 			String username = "postgres";

@@ -412,13 +412,13 @@
 					
 <!-- 					<input type="hidden" id="transport"  th:value="${transport}" th:attr="id=${transport.id},code=${transport.code},um=${transport.unite_mesure_vente.nom_unite_mesure}, -->
 <!-- 					 id_um=${transport.unite_mesure_vente.id},libelle=${transport.libelle},tva=0.00"> -->
-					 <input type="hidden" id="transport"  th:value="${transport.id}">
-					 <input type="hidden" id="transportcode"  th:value="${transport.code}">
-					 <input type="hidden" id="transportum"  th:value="${transport.unite_mesure_vente.nom_unite_mesure}">
-					 <input type="hidden" id="transportid_um"  th:value="${transport.unite_mesure_vente.id}">
-					 <input type="hidden" id="transportlibelle"  th:value="${transport.libelle}">
-					 <input type="hidden" id="transporttva"  th:value="19.0">
-					 
+					 <input th:if="${transport}!=null" type="hidden" id="transport"  th:value="${transport.id}">
+					 <input th:if="${transport}!=null" type="hidden" id="transportcode"  th:value="${transport.code}">
+					 <input th:if="${transport}!=null" type="hidden" id="transportum"  th:value="${transport.unite_mesure_vente.nom_unite_mesure}">
+					 <input th:if="${transport}!=null"  type="hidden" id="transportid_um"  th:value="${transport.unite_mesure_vente.id}">
+					 <input th:if="${transport}!=null" type="hidden" id="transportlibelle"  th:value="${transport.libelle}">
+					 <input th:if="${transport}!=null" type="hidden" id="transporttva"  th:value="19.0">
+					  <input type="hidden" id="hasTransport"  th:value="${hasTransport}">
 					<table class="table" id="table" width="100%">
 						<thead class="thead-dark">
 							<tr>
@@ -593,6 +593,27 @@
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
 	      </div>
 	      
+	    </div>
+	  </div>
+	</div>
+	
+	<div id="transport_confirmation" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> 
+	        <h5 class="transport-title" id="transport-title">Vérification</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text">Êtes vous sure de ne pas utiliser un transport de l'entreprise?</p>
+	      </div>
+	      <div class="modal-footer">
+	       <button type="button" id="yesButtun" class="btn btn-secondary" >Oui</button>
+	        <button type="button" id="noButtun" class="btn btn-secondary" >Non</button>
+	      </div>
 	    </div>
 	  </div>
 	</div>
