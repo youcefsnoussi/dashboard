@@ -1,359 +1,749 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Application Commercial</title>
-		
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
-		
-		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
-		
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
-		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"/>
-		<link rel="stylesheet" href="resources\Plugins\kartik-v-bootstrap-fileinput\themes\explorer\theme.min.css"/> 
-		
-		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
-		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
-		
-		
-		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
-		
-		<script type="text/javascript" src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"></script>
-		
-		<script type="text/javascript" src="resources\additionalJS\saisie_num.js"></script>
-		
-		<script type="text/javascript" src="resources\PagesJS\article\create_article.js"></script>
-		
-</head>
-<body>
+  <head>
+    <meta
+      charset="utf-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Application Commercial</title>
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css"
+    />
+
+    <link
+      href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\kartik-v-bootstrap-fileinput\css\fileinput.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\kartik-v-bootstrap-fileinput\themes\explorer\theme.min.css"
+    />
+
+    <script src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+    <script src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+
+    <script
+      type="text/javascript"
+      src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\Plugins\kartik-v-bootstrap-fileinput\js\fileinput.min.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\additionalJS\saisie_num.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\PagesJS\article\create_article.js"
+    ></script>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
 	
-	<div class="container-fluid h-100"> <!-- h-100 -->
-		
-		<div class="card">
-		
-			<!--
+	<style>
+	/* a select and its "+" on one row, the button sized to itself */
+	.field-with-add{ display:flex; align-items:center; gap:6px; }
+	.field-with-add > .form-control{ flex:1 1 auto; min-width:0; }
+	.field-with-add > .inline-add{
+		flex:none; width:38px; padding:0; height:38px;
+		display:inline-flex; align-items:center; justify-content:center;
+	}
+	.field-with-add > .inline-add i{ margin:0; }
+
+	/* the create modal - inherits card/input colours from app-theme.css */
+	#inlineAddModal .modal-body{ padding:18px 20px; }
+	#inlineAddModal .form-group{ margin-bottom:14px; }
+	#inlineAddModal label{ font-size:13px; font-weight:600; }
+	#inlineAddModal .ia-error{
+		display:none; margin-top:10px; font-size:13px; font-weight:600;
+	}
+	</style>
+</head>
+  <body>
+    <div class="container-fluid h-100">
+      <!-- h-100 -->
+
+      <div class="card">
+        <!--
 			<h3 class="card-header  text-center"> <i class="far fa-bread-slice"></i>  Ajouter un article </h3>
 			<br>
 			-->
-			<form id="frm" th:action="@{/create_article}" method="post" autocomplete="off">
-				
-				<input type="hidden" id="article" th:value="${article}">
-						  
-				<div class="card-body" th:with="info = ${info_entreprise}">
-						  
-					<div th:if="${article}!=null">
-					
-						<input type="hidden" id="id_art" name="id_art" th:value="${article.id}">
-						<input type="hidden" id="code" th:value="${article.code}">
-						
-						<input type="hidden" id="id_cat_prod" th:value="${article.produit.sous_category_produit.category_produit.id}">
-						<input type="hidden" id="id_sous_cat_prod" th:value="${article.produit.sous_category_produit.id}">
-						<input type="hidden" id="id_prod" th:value="${article.produit.id}">
-						
-						<input type="hidden" id="sub" th:value="${article.subvension}">
-						
-						<input type="hidden" id="cons" th:value="${article.consignation}">
-						
-						<input type="hidden" id="rem" th:value="${article.remise}">
-						
-						<input type="hidden" id="libelle" th:value="${article.libelle}">
-						
-						<input type="hidden" id="id_emb_prod" th:value="${article.emballage_produit.id}">
-						<input type="hidden" id="id_pes_prod" th:value="${article.pesage_produit.id}">
-						<input type="hidden" id="vendu" th:value="${article.vendu}">
-						<input type="hidden" id="date_creation" th:value="${article.date_creation}">
-						<input type="hidden" id="id_unite_mesure_vente" th:value="${article.unite_mesure_vente.id}">
-						<input type="hidden" id="prices" th:value="${prices}">
-						<input type="hidden" id="id_magasin" th:value="${magasins}">
-						<input type="hidden" id="multi" th:value="${article.multiplicator}">
-					
-					</div>
-					
-							
-					<div class="row">
-					
-						<div class="col-md-3">
-						
-							<label> Category produit</label>
-							
-							<select class="form-control" id="cat_prod" name="cat_prod" required>
-							
-								<option th:each="cat_produit:${cat_produit}" th:value="${cat_produit.id}" th:text="${cat_produit.nom_category}" ></option>
-								
-							</select>
-							
-						</div>
-						
-						<div class="col-md-3">
-						
-							<label> Sous Category produit</label>
-							
-							<select class="form-control" id="sous_cat_prod" name="sous_cat_prod" required>
-								
-								
-							</select>
-							
-						</div>
-						
-						<div class="col-md-3">
-						
-							<label> Produit </label>
-							
-							<select class="form-control" id="prod" name="prod" required>
-								
-								
-							</select>
-							
-						</div>
-						
-					</div>
-					
-					<br>
-					
-					<div class="row">
-					
-						<div class="col-md-3">
-						
-							<label> Emballage produit</label>
-							
-							<select class="form-control" id="emb_prod" name="emb_prod" required>
-								
-								<option th:each="emballage:${emballage}" th:value="${emballage.id}" th:text="${emballage.nom_emballage}" ></option>
-								
-							</select>
-						
-						</div>
-						
-						<div class="col-md-3">
-						
-							<label> Unite mesure (produit)</label>
-							
-							<select class="form-control" id="pesage_prod" name="pesage_prod" required>
-								
-								<option th:each="pesage:${pesage}" th:value="${pesage.id}" th:text="${pesage.pesage}+' '+${pesage.unite_pesage}" ></option>
-								
-							</select>
-						
-						</div>
-						
-						<div class="col-md-3">
-						
-							<label> Magasin </label> <br>
-							
-							<select class="selectpicker" data-style="btn btn-outline-secondary" id="magasin" name="magasin" 
-								multiple data-width="100%" required>
-								
-								<option th:each="mag:${magasin}" th:value="${mag.id}" th:text="${mag.name}" ></option>
-								
-							</select>
-						
-						</div>
-					
-					</div>
-					
-					<br>
-					
-					<div class="row">
-					
-						<!--  <div class="col-md-3" th:if="${article}!=null"> -->
-						
-						<div class="col-md-3" >
-						
-							<label> Code </label>
-							
-							<input type="text" id="code_art" name="code_art" class="form-control"  required>
-						
-						</div>
-						
-						<div class="col-md-3">
-						 
-							<label> Unite de mesure (Vente)</label>
-							
-							<select class="form-control" id="unite_mesure_vente" name="unite_mesure_vente" required>
-								
-								<option th:each="u_m:${unite_mesure}" th:value="${u_m.id}" th:text="${u_m.nom_unite_mesure}" ></option>
-								
-							</select>
-					
-						</div>
-						
-						<div class="col-md-1">
-			        		
-			        		<label> Subvention </label>
-			        		
-			        		<input type="checkbox" id="subvension"  class="form-control">
-			        		<input type="hidden" id="subvention" name="subvention" value="off">
-			        		
-			        	</div>
-						
-						<div class="col-md-1">
-			        		
-			        		<label> Consignation </label>
-			        		
-			        		<input type="checkbox" id="consign"  class="form-control">
-			        		<input type="hidden" id="consignation" name="consignation" value="off">
-			        		
-			        	</div>
-			        	<div class="col-md-1">
-			        		
-			        		<label> Remise </label>
-			        		
-			        		<input type="checkbox" id="remis"  class="form-control">
-			        		<input type="hidden" id="remise" name="remise" value="off">
-			        		
-			        	</div>
-						
-					</div>
-					<br>
-					<div class="row">
-					
-						<div class="col-md-6">
-						
-							<label>Libellé</label>
-							
-							<input type="text" id="lib" class="form-control" name="lib" >
-							
-						</div>
-						
-						<div class="col-md-3">
-						
-							<label>Multiplicateur</label>
-							
-							<input type="number" step="any" id="multiplicator" class="form-control" name="multiplicator" value="1" >
-							
-						</div>
-						
-					</div>
-					
-					<hr>
-					<div class="row" th:if="${prices}==null">
-					
-						<div class="col-md-3">
-							
-							<label> Category client </label>
-							<hr>
-							
-							<input type="text" class="form-control" th:each="cat_client:${cat_client}" th:value="${cat_client.nom_category}" style="margin-bottom:5px" disabled>
-							<input type="hidden" name="cat_client" th:each="cat_client:${cat_client}" th:value="${cat_client.id}" >
-							
-						</div>
-						
-						<div class="col-md-3">
-						
-							<label> Prix </label>
-							<hr>
-							
-							<div class="input-group" th:each="cat_client:${cat_client}">
-							
-								<input  type="number" step="any" value="-1" name="prix_category" class="form-control saisie-1" 
-									style="margin-bottom:5px" placeholder="DA" required>
-								
-								<div class="input-group-append">
-							    	<span class="input-group-text" style="margin-bottom:5px">DA</span>
-							  	</div>
-							
-							</div>
-							
-						</div>
-						
-						<div class="col-md-3">
-							
-							<label> Taux Tva </label>
-							<hr>
-							
-							<select th:each="cat_client:${cat_client}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" required>
-								
-								<option th:each="tva:${tva}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" ></option>
-								
-							</select>
-							
-						</div>
-					
-					</div>
-					
-					<div class="row" th:unless="${prices}==null">
-					
-						<div class="col-md-3">
-							
-							<label> Category client </label>
-							<hr>
-							
-							<input type="text" class="form-control" th:each="price:${prices}" th:value="${price.category_client.nom_category}" style="margin-bottom:5px" disabled>
-							<input type="hidden" name="cat_client" th:each="price:${prices}" th:value="${price.category_client.id}" >
-							<input type="hidden" name="id_prix_u" th:each="price:${prices}" th:value="${price.id}" >
-						</div>
-						
-						<div class="col-md-3">
-						
-							<label> Prix</label>
-							<hr>
-							
-							<div class="input-group" th:each="price:${prices}">
-							
-								<input type="number" step="any" th:value="${price.prix}" name="prix_category" class="form-control saisie-1" 
-									style="margin-bottom:5px" placeholder="DA" required>
-								
-								<div class="input-group-append">
-								    <span class="input-group-text" style="margin-bottom:5px">DA</span>
-								</div>
-							
-							</div>
-							
-						</div>
-						
-						<div class="col-md-3">
-							
-							<label> Taux Tva </label>
-							<hr>
-							
-							<select th:each="price:${prices}" class="form-control" id="tva" style="margin-bottom:5px" name="tva" required>
-								
-								<option th:each="tva:${tva}" th:if="${price.tva.id}==${tva.id}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" selected></option>
-								<option th:each="tva:${tva}" th:unless="${price.tva.id}==${tva.id}" th:value="${tva.id}" th:text="${tva.taux_tva}+' %'" ></option>
-								
-							</select>
-							
-						</div>
-					
-					</div>
-					
-					<hr>
-					
-					<div class="d-flex justify-content-center">
-					
-						<input type="submit" class="btn btn-primary" value="Valider">
-					
-					</div>
-					
-				</div>
-			
-			</form>
-			
-		</div>
-		
-	</div>
-	
-	<div id="error" class="modal" tabindex="-1" role="dialog">
-	  <div class="modal-dialog" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
-	      </div>
-	      <div class="modal-body">
-	        <p id="text"></p>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
-	
+        <form
+          id="frm"
+          th:action="@{/create_article}"
+          method="post"
+          autocomplete="off"
+        >
+          <input type="hidden" id="article" th:value="${article}" />
+
+          <div class="card-body" th:with="info = ${info_entreprise}">
+            <div th:if="${article}!=null">
+              <input
+                type="hidden"
+                id="id_art"
+                name="id_art"
+                th:value="${article.id}"
+              />
+              <input type="hidden" id="code" th:value="${article.code}" />
+
+              <input
+                type="hidden"
+                id="id_cat_prod"
+                th:value="${article.produit.sous_category_produit.category_produit.id}"
+              />
+              <input
+                type="hidden"
+                id="id_sous_cat_prod"
+                th:value="${article.produit.sous_category_produit.id}"
+              />
+              <input
+                type="hidden"
+                id="id_prod"
+                th:value="${article.produit.id}"
+              />
+
+              <input type="hidden" id="sub" th:value="${article.subvension}" />
+
+              <input
+                type="hidden"
+                id="cons"
+                th:value="${article.consignation}"
+              />
+
+              <input type="hidden" id="rem" th:value="${article.remise}" />
+
+              <input type="hidden" id="libelle" th:value="${article.libelle}" />
+
+              <input
+                type="hidden"
+                id="id_emb_prod"
+                th:value="${article.emballage_produit.id}"
+              />
+              <input
+                type="hidden"
+                id="id_pes_prod"
+                th:value="${article.pesage_produit.id}"
+              />
+              <input type="hidden" id="vendu" th:value="${article.vendu}" />
+              <input
+                type="hidden"
+                id="date_creation"
+                th:value="${article.date_creation}"
+              />
+              <input
+                type="hidden"
+                id="id_unite_mesure_vente"
+                th:value="${article.unite_mesure_vente.id}"
+              />
+              <input type="hidden" id="prices" th:value="${prices}" />
+              <input type="hidden" id="id_magasin" th:value="${magasins}" />
+              <input
+                type="hidden"
+                id="multi"
+                th:value="${article.multiplicator}"
+              />
+            </div>
+
+            <div class="row">
+              <div class="col-md-3">
+                <label> Category produit</label>
+
+<div class="field-with-add">                <select
+                  class="form-control"
+                  id="cat_prod"
+                  name="cat_prod"
+                  required
+                >
+                  <option
+                    th:each="cat_produit:${cat_produit}"
+                    th:value="${cat_produit.id}"
+                    th:text="${cat_produit.nom_category}"
+                  ></option>
+                </select>
+                  <button type="button" id="add_cat_btn" class="btn btn-dark inline-add"
+                          th:if="${user != null and user.role != null and (user.role.id == 1 or user.role.id == 2)}"
+                          title="Ajouter une catégorie">
+                    <i class="far fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label> Sous Category produit</label>
+
+<div class="field-with-add">                <select
+                  class="form-control"
+                  id="sous_cat_prod"
+                  name="sous_cat_prod"
+                  required
+                ></select>
+                  <button type="button" id="add_scat_btn" class="btn btn-dark inline-add"
+                          th:if="${user != null and user.role != null and (user.role.id == 1 or user.role.id == 2)}"
+                          title="Ajouter une sous-catégorie">
+                    <i class="far fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label> Produit </label>
+
+<div class="field-with-add">                <select
+                  class="form-control"
+                  id="prod"
+                  name="prod"
+                  required
+                ></select>
+                  <button type="button" id="add_prod_btn" class="btn btn-dark inline-add"
+                          th:if="${user != null and user.role != null and (user.role.id == 1 or user.role.id == 2)}"
+                          title="Ajouter un produit">
+                    <i class="far fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+              <div class="col-md-3">
+                <label> Emballage produit</label>
+
+<div class="field-with-add">                <select
+                  class="form-control"
+                  id="emb_prod"
+                  name="emb_prod"
+                  required
+                >
+                  <option
+                    th:each="emballage:${emballage}"
+                    th:value="${emballage.id}"
+                    th:text="${emballage.nom_emballage}"
+                  ></option>
+                </select>
+                  <button type="button" id="add_emb_btn" class="btn btn-dark inline-add"
+                          th:if="${user != null and user.role != null and (user.role.id == 1 or user.role.id == 2)}"
+                          title="Ajouter un emballage">
+                    <i class="far fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label> Unite mesure (produit)</label>
+
+<div class="field-with-add">                <select
+                  class="form-control"
+                  id="pesage_prod"
+                  name="pesage_prod"
+                  required
+                >
+                  <option
+                    th:each="pesage:${pesage}"
+                    th:value="${pesage.id}"
+                    th:text="${pesage.pesage}+' '+${pesage.unite_pesage}"
+                  ></option>
+                </select>
+                  <button type="button" id="add_pes_btn" class="btn btn-dark inline-add"
+                          th:if="${user != null and user.role != null and (user.role.id == 1 or user.role.id == 2)}"
+                          title="Ajouter un pesage">
+                    <i class="far fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label> Magasin </label> <br />
+
+                <select
+                  class="selectpicker"
+                  data-style="btn btn-outline-secondary"
+                  id="magasin"
+                  name="magasin"
+                  multiple
+                  data-width="100%"
+                  required
+                >
+                  <option
+                    th:each="mag:${magasin}"
+                    th:value="${mag.id}"
+                    th:text="${mag.name}"
+                  ></option>
+                </select>
+              </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+              <!--  <div class="col-md-3" th:if="${article}!=null"> -->
+
+              <div class="col-md-3">
+                <label> Code </label>
+
+                <input
+                  type="text"
+                  id="code_art"
+                  name="code_art"
+                  class="form-control"
+                  required
+                />
+              </div>
+
+              <div class="col-md-3">
+                <label> Unite de mesure (Vente)</label>
+
+                <select
+                  class="form-control"
+                  id="unite_mesure_vente"
+                  name="unite_mesure_vente"
+                  required
+                >
+                  <option
+                    th:each="u_m:${unite_mesure}"
+                    th:value="${u_m.id}"
+                    th:text="${u_m.nom_unite_mesure}"
+                  ></option>
+                </select>
+              </div>
+
+              <div class="col-md-1">
+                <label> Subvention </label>
+
+                <input type="checkbox" id="subvension" class="form-control" />
+                <input
+                  type="hidden"
+                  id="subvention"
+                  name="subvention"
+                  value="off"
+                />
+              </div>
+
+              <div class="col-md-1">
+                <label> Consignation </label>
+
+                <input type="checkbox" id="consign" class="form-control" />
+                <input
+                  type="hidden"
+                  id="consignation"
+                  name="consignation"
+                  value="off"
+                />
+              </div>
+              <div class="col-md-1">
+                <label> Remise </label>
+
+                <input type="checkbox" id="remis" class="form-control" />
+                <input type="hidden" id="remise" name="remise" value="off" />
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="col-md-6">
+                <label>Libellé</label>
+
+                <input type="text" id="lib" class="form-control" name="lib" />
+              </div>
+
+              <div class="col-md-3">
+                <label>Multiplicateur</label>
+
+                <input
+                  type="number"
+                  step="any"
+                  id="multiplicator"
+                  class="form-control"
+                  name="multiplicator"
+                  value="1"
+                />
+              </div>
+            </div>
+
+            <br />
+            <div class="row">
+              <div class="col-md-6">
+                <label>Article Parent</label>
+                <select
+                  class="form-control selectpicker"
+                  data-live-search="true"
+                  id="parent_article_select"
+                  data-width="100%"
+                  data-style="btn btn-outline-dark"
+                >
+                  <option value="0">-- Aucun parent --</option>
+                </select>
+                <input
+                  type="hidden"
+                  id="parent_article_id"
+                  name="parent_article_id"
+                  value="0"
+                />
+              </div>
+            </div>
+
+            <hr />
+            <div class="row" th:if="${prices}==null">
+              <div class="col-md-3">
+                <label> Category client </label>
+                <hr />
+
+                <input
+                  type="text"
+                  class="form-control"
+                  th:each="cat_client:${cat_client}"
+                  th:value="${cat_client.nom_category}"
+                  style="margin-bottom: 5px"
+                  disabled
+                />
+                <input
+                  type="hidden"
+                  name="cat_client"
+                  th:each="cat_client:${cat_client}"
+                  th:value="${cat_client.id}"
+                />
+              </div>
+
+              <div class="col-md-3">
+                <label> Prix </label>
+                <hr />
+
+                <div class="input-group" th:each="cat_client:${cat_client}">
+                  <input
+                    type="number"
+                    step="any"
+                    value="-1"
+                    name="prix_category"
+                    class="form-control saisie-1"
+                    style="margin-bottom: 5px"
+                    placeholder="DA"
+                    required
+                  />
+
+                  <div class="input-group-append">
+                    <span class="input-group-text" style="margin-bottom: 5px"
+                      >DA</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label> Taux Tva </label>
+                <hr />
+
+                <select
+                  th:each="cat_client:${cat_client}"
+                  class="form-control"
+                  id="tva"
+                  style="margin-bottom: 5px"
+                  name="tva"
+                  required
+                >
+                  <option
+                    th:each="tva:${tva}"
+                    th:value="${tva.id}"
+                    th:text="${tva.taux_tva}+' %'"
+                  ></option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row" th:unless="${prices}==null">
+              <div class="col-md-3">
+                <label> Category client </label>
+                <hr />
+
+                <input
+                  type="text"
+                  class="form-control"
+                  th:each="price:${prices}"
+                  th:value="${price.category_client.nom_category}"
+                  style="margin-bottom: 5px"
+                  disabled
+                />
+                <input
+                  type="hidden"
+                  name="cat_client"
+                  th:each="price:${prices}"
+                  th:value="${price.category_client.id}"
+                />
+                <input
+                  type="hidden"
+                  name="id_prix_u"
+                  th:each="price:${prices}"
+                  th:value="${price.id}"
+                />
+              </div>
+
+              <div class="col-md-3">
+                <label> Prix</label>
+                <hr />
+
+                <div class="input-group" th:each="price:${prices}">
+                  <input
+                    type="number"
+                    step="any"
+                    th:value="${price.prix}"
+                    name="prix_category"
+                    class="form-control saisie-1"
+                    style="margin-bottom: 5px"
+                    placeholder="DA"
+                    required
+                  />
+
+                  <div class="input-group-append">
+                    <span class="input-group-text" style="margin-bottom: 5px"
+                      >DA</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label> Taux Tva </label>
+                <hr />
+
+                <select
+                  th:each="price:${prices}"
+                  class="form-control"
+                  id="tva"
+                  style="margin-bottom: 5px"
+                  name="tva"
+                  required
+                >
+                  <option
+                    th:each="tva:${tva}"
+                    th:if="${price.tva.id}==${tva.id}"
+                    th:value="${tva.id}"
+                    th:text="${tva.taux_tva}+' %'"
+                    selected
+                  ></option>
+                  <option
+                    th:each="tva:${tva}"
+                    th:unless="${price.tva.id}==${tva.id}"
+                    th:value="${tva.id}"
+                    th:text="${tva.taux_tva}+' %'"
+                  ></option>
+                </select>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="d-flex justify-content-center">
+              <input type="submit" class="btn btn-primary" value="Valider" />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="error" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <i
+              id="icone"
+              class=""
+              style="font-size: 30px; color: red; margin-right: 10px"
+            ></i>
+            <h5 class="modal-title" id="title"></h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p id="text"></p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+<!-- ===== inline create (catégorie / sous-catégorie / produit / emballage / pesage) ===== -->
+<div class="modal fade" id="inlineAddModal" tabindex="-1" role="dialog" aria-hidden="true"
+     th:if="${user != null and user.role != null and (user.role.id == 1 or user.role.id == 2)}">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="ia_title">Ajouter</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group" id="ia_grp_name">
+          <label for="ia_name" id="ia_label">Nom</label>
+          <input type="text" class="form-control" id="ia_name" autocomplete="off">
+        </div>
+
+        <!-- pesage needs a number and a unit -->
+        <div class="form-group" id="ia_grp_unit" style="display:none;">
+          <label for="ia_unit">Unité</label>
+          <input type="text" class="form-control" id="ia_unit" placeholder="KG, G, L ..." autocomplete="off">
+        </div>
+
+        <div class="alert alert-danger ia-error" id="ia_error"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-dark" id="ia_save">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+/* Create a missing reference without leaving the article form.
+   Only rendered for roles 1 and 2; every endpoint re-checks that server-side. */
+$(document).ready(function () {
+
+	var current = null;
+
+	/* what each button creates, and where the result goes */
+	var KINDS = {
+		add_cat_btn : { url:"add_cat_prod",      target:"#cat_prod",     title:"Ajouter une catégorie",
+						label:"Nom de la catégorie" },
+		add_scat_btn: { url:"add_sous_cat_prod", target:"#sous_cat_prod", title:"Ajouter une sous-catégorie",
+						label:"Nom de la sous-catégorie", parent:"#cat_prod",
+						parentMsg:"Choisissez d'abord une catégorie." },
+		add_prod_btn: { url:"add_prod",          target:"#prod",         title:"Ajouter un produit",
+						label:"Désignation du produit", parent:"#sous_cat_prod",
+						parentMsg:"Choisissez d'abord une sous-catégorie." },
+		add_emb_btn : { url:"add_emballage",     target:"#emb_prod",     title:"Ajouter un emballage",
+						label:"Nom de l'emballage" },
+		add_pes_btn : { url:"add_pesage",        target:"#pesage_prod",  title:"Ajouter un pesage",
+						label:"Pesage (nombre)", unit:true }
+	};
+
+	function showError(msg){ $("#ia_error").text(msg).show(); }
+	function clearError(){ $("#ia_error").hide().text(""); }
+
+	$(".inline-add").on("click", function () {
+
+		current = KINDS[this.id];
+		if(!current) return;
+
+		/* a child cannot be created before its parent is chosen */
+		if(current.parent){
+			var pv = $(current.parent).val();
+			if(!pv || pv === "0"){ alert(current.parentMsg); return; }
+		}
+
+		$("#ia_title").text(current.title);
+		$("#ia_label").text(current.label);
+		$("#ia_name").val("");
+		$("#ia_unit").val("");
+		$("#ia_grp_unit").toggle(!!current.unit);
+		clearError();
+
+		$("#inlineAddModal").modal("show");
+	});
+
+	$("#inlineAddModal").on("shown.bs.modal", function(){ $("#ia_name").focus(); });
+
+	/* Enter submits */
+	$("#ia_name, #ia_unit").on("keydown", function(ev){
+		if(ev.key === "Enter"){ ev.preventDefault(); $("#ia_save").click(); }
+	});
+
+	$("#ia_save").on("click", function () {
+
+		if(!current) return;
+		clearError();
+
+		var name = $.trim($("#ia_name").val());
+		if(name === ""){ showError("Ce champ est obligatoire."); return; }
+
+		var data = {};
+		if(current.unit){
+			var unit = $.trim($("#ia_unit").val());
+			if(unit === ""){ showError("L'unité est obligatoire."); return; }
+			if(isNaN(parseFloat(name.replace(",", ".")))){
+				showError("Le pesage doit être un nombre."); return;
+			}
+			data.pesage = name;
+			data.unite  = unit;
+		} else {
+			data.nom = name;
+			if(current.parent) data.id_parent = $(current.parent).val();
+		}
+
+		var $save = $(this).prop("disabled", true).text("...");
+
+		$.ajax({
+			url: current.url,
+			type: "GET",
+			data: data,
+			success: function (res) {
+
+				if(!res || res.ok !== true){
+					showError((res && res.error) ? res.error : "Impossible d'enregistrer.");
+					return;
+				}
+
+				var $sel = $(current.target);
+				if($sel.find("option[value='" + res.id + "']").length === 0){
+					$sel.append($("<option></option>").attr("value", res.id).text(res.label));
+				}
+				/* select it, and let any dependent list reload */
+				$sel.val(res.id).trigger("change");
+
+				$("#inlineAddModal").modal("hide");
+			},
+			error: function () {
+				showError("Erreur de connexion au serveur.");
+			},
+			complete: function () {
+				$save.prop("disabled", false).text("Enregistrer");
+			}
+		});
+
+	});
+
+});
+</script>
 </body>
 </html>

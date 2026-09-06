@@ -1,0 +1,3349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tableau de bord — Application Commercial</title>
+
+	<script src="resources/echarts/echarts.min.js"></script>
+
+	<style>
+		/* ============ DESIGN TOKENS ============ */
+		:root{
+			--page:#f4f6fa;
+			--surface:#ffffff;
+			--surface-2:#f1f4f9;
+			--ink-1:#131a26;
+			--ink-2:#4d5769;
+			--ink-3:#8792a6;
+			--grid:#e9edf4;
+			--axis:#d5dce7;
+			--border:#e6ebf3;
+			--primary:#2a78d6;
+			--primary-soft:#eaf2fd;
+			--good:#0a8a43;
+			--good-soft:#e6f6ed;
+			--bad:#d03b3b;
+			--bad-soft:#fdecec;
+			--shadow:0 1px 2px rgba(19,26,38,.04), 0 6px 20px rgba(19,26,38,.06);
+			--shadow-lg:0 2px 6px rgba(19,26,38,.05), 0 14px 40px rgba(19,26,38,.09);
+			--radius:16px;
+			--radius-sm:11px;
+		}
+		:root[data-theme="dark"]{
+			--page:#0b0f16;
+			--surface:#141a24;
+			--surface-2:#1c2431;
+			--ink-1:#f2f5fa;
+			--ink-2:#aab6c8;
+			--ink-3:#7d8899;
+			--grid:#222c3a;
+			--axis:#2e3a4b;
+			--border:#232d3c;
+			--primary:#4a94ee;
+			--primary-soft:rgba(74,148,238,.16);
+			--good:#28b463;
+			--good-soft:rgba(40,180,99,.14);
+			--bad:#e66767;
+			--bad-soft:rgba(230,103,103,.14);
+			--shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 22px rgba(0,0,0,.4);
+			--shadow-lg:0 2px 8px rgba(0,0,0,.45), 0 18px 46px rgba(0,0,0,.5);
+			color-scheme:dark;
+		}
+
+		*{box-sizing:border-box;}
+		html,body{margin:0;padding:0;}
+		body{
+			background:var(--page);
+			color:var(--ink-1);
+			font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+			font-size:15px;
+			line-height:1.5;
+			-webkit-font-smoothing:antialiased;
+			touch-action:manipulation;
+			transition:background .25s ease, color .25s ease;
+		}
+		button{font:inherit;cursor:pointer;}
+		:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px;}
+
+		/* top progress bar (navigation feedback) */
+		#progress{
+			position:fixed;top:0;left:0;height:3px;width:0;z-index:200;
+			background:linear-gradient(90deg,var(--primary),#1baf7a);
+			border-radius:0 3px 3px 0;
+			transition:width .35s ease;opacity:0;
+		}
+		#progress.on{opacity:1;}
+
+		.wrap{max-width:1440px;margin:0 auto;padding:18px 22px 40px;}
+
+		/* ============ HEADER ============ */
+		.page-head{
+			display:flex;align-items:flex-end;justify-content:space-between;
+			gap:16px;flex-wrap:wrap;margin-bottom:14px;
+		}
+		.page-head h1{
+			margin:0;font-size:22px;font-weight:700;letter-spacing:-.02em;
+			display:flex;align-items:center;gap:10px;
+		}
+		.page-head h1{font-size:23px;}
+		.page-head h1 .logo{
+			width:38px;height:38px;border-radius:12px;flex:none;
+			background:linear-gradient(135deg,#2a78d6,#1baf7a);color:#fff;
+			display:inline-flex;align-items:center;justify-content:center;
+			box-shadow:0 4px 14px rgba(42,120,214,.30);
+		}
+		.page-head .sub{margin:2px 0 0;font-size:13px;color:var(--ink-2);}
+		.head-actions{display:flex;gap:8px;}
+
+		.btn{
+			display:inline-flex;align-items:center;gap:7px;
+			padding:8px 14px;border-radius:var(--radius-sm);
+			border:1px solid var(--border);background:var(--surface);color:var(--ink-1);
+			font-size:13.5px;font-weight:550;min-height:38px;
+			transition:background .18s ease,border-color .18s ease,transform .1s ease;
+		}
+		.btn:hover{background:var(--surface-2);}
+		.btn:active{transform:scale(.97);}
+		.btn.primary{
+			background:var(--primary);border-color:var(--primary);color:#fff;
+			box-shadow:0 3px 10px rgba(42,120,214,.28);
+		}
+		.btn.primary:hover{filter:brightness(1.07);background:var(--primary);}
+		.btn[disabled]{opacity:.55;cursor:default;pointer-events:none;}
+		.btn .spin{
+			width:14px;height:14px;border:2px solid rgba(255,255,255,.35);
+			border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;
+		}
+		@keyframes rot{to{transform:rotate(360deg)}}
+
+		/* ============ FILTER BAR ============ */
+		.filters{
+			position:sticky;top:8px;z-index:100;
+			display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+			background:color-mix(in srgb, var(--surface) 86%, transparent);
+			backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+			border:1px solid var(--border);border-radius:var(--radius);
+			box-shadow:var(--shadow);
+			padding:10px 12px;margin-bottom:16px;
+		}
+		@supports not (background:color-mix(in srgb, red 50%, blue)){
+			.filters{background:var(--surface);}
+		}
+		.field{display:flex;align-items:center;gap:6px;}
+		.field > label{font-size:12px;color:var(--ink-3);font-weight:600;}
+		.inp{
+			border:1px solid var(--border);border-radius:var(--radius-sm);
+			background:var(--surface);color:var(--ink-1);
+			padding:7px 10px;font:inherit;font-size:13.5px;min-height:38px;
+		}
+		input[type="date"].inp{width:138px;}
+
+		/* French date field: a text box showing jj/mm/aaaa, with the native date
+		   picker sitting behind it so the calendar button still works. The real
+		   (ISO) value lives on the hidden date input and is what gets submitted. */
+		.datebox{position:relative;display:inline-flex;align-items:center;}
+		.datebox .date-fr{width:132px;padding-right:34px;}
+		.datebox input[type="date"]{
+			position:absolute;right:0;top:0;
+			width:32px;height:100%;
+			border:0;background:transparent;color:transparent;
+			padding:0;margin:0;cursor:pointer;
+		}
+		/* hide everything except the calendar button of the native input */
+		.datebox input[type="date"]::-webkit-datetime-edit,
+		.datebox input[type="date"]::-webkit-inner-spin-button,
+		.datebox input[type="date"]::-webkit-clear-button{display:none;}
+		.datebox input[type="date"]::-webkit-calendar-picker-indicator{
+			position:absolute;right:8px;top:50%;transform:translateY(-50%);
+			margin:0;padding:0;cursor:pointer;opacity:.55;
+		}
+		.datebox input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1;}
+		.date-fr.bad{border-color:var(--bad);box-shadow:0 0 0 3px rgba(208,59,59,.12);}
+		select.inp{cursor:pointer;padding-right:6px;}
+
+		.seg{
+			display:inline-flex;border:1px solid var(--border);
+			border-radius:var(--radius-sm);overflow:hidden;background:var(--surface);
+		}
+		.seg button{
+			border:0;background:transparent;color:var(--ink-2);
+			padding:8px 13px;font-size:13px;font-weight:600;min-height:38px;
+			transition:background .15s ease,color .15s ease;
+		}
+		.seg button + button{border-left:1px solid var(--border);}
+		.seg button.on{background:var(--primary);color:#fff;}
+
+		/* dropdowns (presets + categories) */
+		.dd{position:relative;}
+		.dd-panel{
+			position:absolute;top:calc(100% + 6px);left:0;min-width:230px;z-index:120;
+			background:var(--surface);border:1px solid var(--border);
+			border-radius:12px;box-shadow:var(--shadow);padding:6px;
+			display:none;
+		}
+		.dd.open .dd-panel{display:block;}
+		.dd-panel.up{top:auto;bottom:calc(100% + 6px);}
+		.dd-row{
+			display:flex;align-items:center;gap:9px;width:100%;
+			padding:8px 10px;border-radius:8px;border:0;background:transparent;
+			color:var(--ink-1);font-size:13.5px;text-align:left;
+		}
+		.dd-row:hover{background:var(--surface-2);}
+		.dd-row .chk{width:16px;flex:none;color:var(--primary);font-weight:700;visibility:hidden;}
+		.dd-row.sel .chk{visibility:visible;}
+		.dd-sep{border-top:1px solid var(--grid);margin:6px 4px;}
+		.dd-label{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13.5px;}
+		.dd-label:hover{background:var(--surface-2);}
+		.dd-label input{accent-color:var(--primary);width:15px;height:15px;cursor:pointer;}
+		.dd-mini{display:flex;gap:6px;padding:2px 4px 6px;}
+		.dd-mini button{
+			flex:1;border:1px solid var(--border);background:transparent;color:var(--ink-2);
+			border-radius:7px;padding:4px 8px;font-size:12px;font-weight:600;
+		}
+		.dd-mini button:hover{background:var(--surface-2);}
+		.caret{width:9px;height:9px;border-right:1.7px solid currentColor;border-bottom:1.7px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:2px;}
+
+		.filters .push{margin-left:auto;}
+
+		/* thin divider between the date/measure controls and the category chips */
+		.f-sep{
+			width:1px;align-self:stretch;margin:2px 4px;
+			background:var(--border);flex:none;
+		}
+
+		/* category chips - click to include/exclude, no dropdown, no Tous/Aucun pair */
+		.chips{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;}
+		.chip{
+			border:1px solid var(--border);background:var(--surface);color:var(--ink-2);
+			border-radius:20px;padding:6px 13px;font-size:13px;font-weight:550;
+			min-height:34px;line-height:1;
+			display:inline-flex;align-items:center;gap:7px;
+			transition:background .15s ease,border-color .15s ease,color .15s ease,opacity .15s ease;
+		}
+		.chip::before{
+			content:"";width:8px;height:8px;border-radius:50%;flex:none;
+			background:var(--chip, var(--ink-3));
+			transition:opacity .15s ease;
+		}
+		.chip:hover{background:var(--surface-2);color:var(--ink-1);}
+		.chip.on{
+			background:var(--primary-soft);border-color:transparent;color:var(--ink-1);font-weight:650;
+		}
+		.chip:not(.on){opacity:.55;}
+		.chip:not(.on)::before{opacity:.35;}
+		/* "Toutes" has no colour dot */
+		.chip-all::before{display:none;}
+		.chip-all.on{background:var(--ink-1);color:var(--surface);}
+
+		.f-status{
+			margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:600;
+			display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+		}
+		.f-status .sp{
+			width:13px;height:13px;border:2px solid var(--border);
+			border-top-color:var(--primary);border-radius:50%;
+			animation:rot .7s linear infinite;
+		}
+
+		.filter-error{
+			width:100%;font-size:12.5px;color:var(--bad);font-weight:600;
+			display:none;align-items:center;gap:6px;padding:0 4px;
+		}
+		.filter-error.on{display:flex;}
+
+		/* ============ KPI CARDS ============ */
+		.kpis{
+			display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+			gap:14px;margin-bottom:16px;
+		}
+		.kpi{
+			background:var(--surface);border:1px solid var(--border);
+			border-radius:var(--radius);box-shadow:var(--shadow);
+			padding:18px 20px 16px;position:relative;
+			/* NOT overflow:hidden - it clipped the sparkline's tooltip */
+			transition:transform .18s ease, box-shadow .18s ease;
+		}
+		/* the hovered card floats above its neighbours so the tooltip is not
+		   painted underneath the next card */
+		.kpi:hover{z-index:20;}
+		.kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+		/* accent bar in the card's own series color */
+		.kpi::before{
+			content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+			background:var(--accent, var(--primary));
+			border-radius:var(--radius) 0 0 var(--radius);
+			opacity:.9;
+		}
+		.kpi .k-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+		.kpi .k-label{
+			font-size:11.5px;font-weight:650;color:var(--ink-3);
+			text-transform:uppercase;letter-spacing:.07em;
+		}
+		.kpi .k-ico{
+			width:34px;height:34px;border-radius:10px;flex:none;
+			display:flex;align-items:center;justify-content:center;
+			background:var(--accent-soft, var(--primary-soft));
+			color:var(--accent, var(--primary));
+		}
+		.kpi .k-value{
+			font-weight:750;letter-spacing:-.025em;
+			margin-top:9px;line-height:1.15;color:var(--ink-1);
+			/* full figures are long; wrap rather than truncate, and the JS below
+			   drops the size so it stays on one line where it can */
+			white-space:nowrap;overflow:visible;
+			font-size:clamp(15px, 2.1vw, 29px);
+		}
+		.kpi .k-value small{font-size:14px;font-weight:600;color:var(--ink-3);margin-left:4px;}
+		.kpi .k-foot{margin-top:9px;font-size:12.5px;color:var(--ink-2);display:flex;align-items:center;gap:8px;min-height:22px;flex-wrap:wrap;}
+		.delta{
+			display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:12px;
+			padding:3px 8px;border-radius:20px;
+		}
+		.delta.up{color:var(--good);background:var(--good-soft);}
+		.delta.down{color:var(--bad);background:var(--bad-soft);}
+		.dot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block;}
+		/* sparkline tucked into the KPI card */
+		/* must accept the pointer, otherwise its tooltip can never fire */
+		.kpi .k-spark{
+			margin:8px -20px -16px;height:46px;
+			border-radius:0 0 var(--radius) var(--radius);
+			overflow:hidden;
+		}
+
+		/* ============ GRID / CARDS ============ */
+		.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;}
+		.card{
+			background:var(--surface);border:1px solid var(--border);
+			border-radius:var(--radius);box-shadow:var(--shadow);
+			padding:17px 20px 12px;min-width:0;
+			transition:box-shadow .2s ease;
+		}
+		.card:hover{box-shadow:var(--shadow-lg);}
+		.span-8{grid-column:span 8;}
+		.span-6{grid-column:span 6;}
+		.span-4{grid-column:span 4;}
+		.span-12{grid-column:span 12;}
+		.card-head{
+			display:flex;align-items:center;justify-content:space-between;
+			gap:12px;margin-bottom:8px;flex-wrap:wrap;
+		}
+		.card-head h2{
+			margin:0;font-size:15.5px;font-weight:700;letter-spacing:-.015em;
+			display:flex;align-items:center;gap:9px;
+		}
+		.card-head h2::before{
+			content:"";width:3px;height:15px;border-radius:3px;flex:none;
+			background:var(--primary);
+		}
+		.card-head .hint{font-size:12px;color:var(--ink-3);margin:2px 0 0 12px;}
+		.seg.mini button{padding:5px 12px;min-height:31px;font-size:12.5px;}
+
+		/* sparkline small-multiples */
+		.sparks{
+			grid-column:span 12;
+			display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px;
+		}
+		.spark{
+			background:var(--surface);border:1px solid var(--border);
+			border-radius:var(--radius);box-shadow:var(--shadow);
+			padding:14px 16px 0;min-width:0;position:relative;
+			transition:transform .17s ease, box-shadow .17s ease;
+		}
+		/* nothing may clip the sparkline tooltip; lift the hovered card above the rest */
+		.spark:hover{z-index:5;}
+		.spark:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+		.spark .s-name{
+			display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:650;color:var(--ink-2);
+			white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+		}
+		.spark .s-val{font-size:21px;font-weight:750;margin-top:4px;letter-spacing:-.02em;color:var(--ink-1);}
+		.spark .s-share{font-size:11.5px;color:var(--ink-3);font-weight:600;margin-top:1px;}
+		.spark .s-chart{margin:6px -16px 0;}
+
+		/* ============ TABLE ============ */
+		/* the table must fit the card: no horizontal scrolling */
+		.tbl-scroll{margin:6px 0 0;padding:0 0 8px;}
+		table.data{
+			border-collapse:collapse;width:100%;
+			/* auto layout: each column takes only the width it needs, so the
+			   font does not have to collapse to satisfy the widest one */
+			table-layout:auto;
+			font-size:14px;   /* fitTable() lowers this only if still too wide */
+			font-variant-numeric:tabular-nums;
+		}
+		table.data th, table.data td{
+			padding:9px 6px;text-align:right;
+			/* a figure must never break across two lines: keep it on one row and
+			   let the font size (below) do the fitting instead */
+			white-space:nowrap;
+			border-bottom:1px solid var(--grid);
+		}
+		/* the period column needs a little more room than the value columns */
+		/* period column: a bit wider, left aligned. No sticky positioning - the
+		   table no longer scrolls sideways, and sticky caused paint artefacts. */
+		table.data th:first-child, table.data td:first-child{
+			text-align:left;font-weight:600;
+		}
+		table.data thead th{
+			font-size:.82em;text-transform:uppercase;letter-spacing:.02em;font-weight:700;
+			color:var(--ink-3);cursor:pointer;user-select:none;
+			border-bottom:1px solid var(--axis);position:sticky;top:0;
+			background:var(--surface-2);
+			transition:color .14s ease;
+		}
+		table.data thead th:hover{color:var(--primary);}
+		table.data thead th .arrow{font-size:9px;margin-left:4px;color:var(--primary);}
+		table.data tbody tr{transition:background .12s ease;}
+		table.data tbody tr:hover td{background:var(--primary-soft);}
+		table.data tbody tr:hover td:first-child{background:var(--primary-soft);}
+		table.data tfoot td{font-weight:700;border-top:2px solid var(--axis);border-bottom:0;}
+		table.data td.tot, table.data th.tot{color:var(--primary);font-weight:700;}
+
+		/* empty state */
+		.empty{
+			grid-column:span 12;text-align:center;padding:60px 20px;
+			background:var(--surface);border:1px dashed var(--axis);border-radius:var(--radius);
+			color:var(--ink-2);
+		}
+		.empty svg{color:var(--ink-3);margin-bottom:10px;}
+		.empty p{margin:4px 0 0;font-size:14px;}
+		.empty b{font-size:16px;color:var(--ink-1);}
+
+		/* loading veil : keep the frame, dim it */
+		body.loading .kpis, body.loading .grid{opacity:.45;pointer-events:none;transition:opacity .3s ease;}
+
+		/* categories too small to render as a visible slice/block */
+		.tiny-note{
+			display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;
+			padding:8px 2px 4px;margin-top:2px;
+			border-top:1px solid var(--grid);
+			font-size:11.5px;color:var(--ink-2);
+		}
+		.tiny-note .tiny-lead{color:var(--ink-3);font-weight:600;}
+		.tiny-note .tiny-item{display:inline-flex;align-items:center;gap:6px;}
+		.tiny-note .dot{width:8px;height:8px;border-radius:50%;flex:none;}
+
+		/* ECharts needs a sized container: it measures the div on init */
+		#chartMain{height:348px;}
+		#chartDonut{height:330px;}
+		#chartStack{height:340px;}
+		.sun-holder{position:relative;}
+		#chartSun{height:520px;}
+		/* only shown once the user has drilled in - same chip as the map's reset */
+		.sun-back{
+			position:absolute;top:6px;right:6px;z-index:2;
+			display:none;align-items:center;gap:6px;
+			padding:5px 10px;border-radius:9px;
+			border:1px solid var(--border);background:var(--surface);
+			color:var(--ink-2);font:inherit;font-size:12px;font-weight:600;
+			box-shadow:var(--shadow);cursor:pointer;
+			transition:background .15s ease,color .15s ease;
+		}
+		.sun-back:hover{background:var(--surface-2);color:var(--ink-1);}
+		.sun-holder.drilled .sun-back{display:flex;}
+
+		/* map + ranked list side by side: the northern wilayas are physically tiny,
+		   so the list is the reliable way to read them */
+		.map-wrap{display:flex;gap:14px;align-items:stretch;}
+		.map-holder{position:relative;flex:1 1 auto;min-width:0;display:flex;}
+		.map-reset{
+			position:absolute;top:6px;right:6px;z-index:2;
+			display:none;align-items:center;gap:6px;
+			padding:5px 10px;border-radius:9px;
+			border:1px solid var(--border);background:var(--surface);
+			color:var(--ink-2);font:inherit;font-size:12px;font-weight:600;
+			box-shadow:var(--shadow);cursor:pointer;
+			transition:background .15s ease,color .15s ease;
+		}
+		.map-reset:hover{background:var(--surface-2);color:var(--ink-1);}
+		.map-holder.zoomed .map-reset{display:flex;}
+		#chartMap{height:520px;flex:1 1 auto;min-width:0;}
+		.map-rank{
+			flex:0 0 218px;overflow-y:auto;max-height:520px;
+			padding:2px 4px 2px 0;
+			font-size:12px;
+		}
+		.map-rank::-webkit-scrollbar{width:7px;}
+		.map-rank::-webkit-scrollbar-thumb{background:var(--axis);border-radius:7px;}
+		.mr-row{
+			display:grid;
+			grid-template-columns:16px 1fr;
+			gap:2px 8px;
+			padding:5px 7px;border-radius:8px;cursor:pointer;
+			transition:background .13s ease;
+		}
+		.mr-row:hover{background:var(--surface-2);}
+		.mr-row .mr-n{
+			flex:none;width:15px;text-align:right;
+			color:var(--ink-3);font-weight:700;font-size:11px;
+		}
+		.mr-row .mr-n{grid-row:1 / span 2;align-self:center;}
+		.mr-row .mr-name{
+			min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+			color:var(--ink-1);font-weight:550;
+		}
+		/* the full figure sits on its own line so neither it nor the wilaya
+		   name has to be truncated */
+		.mr-row .mr-val{
+			color:var(--ink-2);font-weight:650;font-variant-numeric:tabular-nums;
+			font-size:11.5px;white-space:nowrap;
+		}
+		.mr-bar{
+			height:3px;border-radius:3px;background:var(--primary);
+			margin:0 7px 5px 31px;opacity:.7;
+		}
+		/* The colour scale reads as HTML rather than inside the canvas: six
+		   bands do not fit on one row of a half-width card, and ECharts clips
+		   what overflows instead of wrapping it. */
+		.map-legend{
+			display:flex;flex-wrap:wrap;align-items:center;
+			gap:6px 14px;
+			margin:10px 2px 0;padding-top:10px;
+			border-top:1px solid var(--border);
+		}
+		.map-legend .ml-lead{
+			color:var(--ink-3);font-size:11.5px;font-weight:650;
+			letter-spacing:.02em;text-transform:uppercase;
+		}
+		.ml-item{
+			display:inline-flex;align-items:center;gap:6px;
+			font-size:11.5px;color:var(--ink-2);white-space:nowrap;
+		}
+		.ml-sw{
+			width:13px;height:13px;border-radius:4px;flex:none;
+			border:1px solid rgba(0,0,0,.10);
+		}
+		:root[data-theme="dark"] .ml-sw{border-color:rgba(255,255,255,.16);}
+
+		@media (max-width:1100px){
+			.map-wrap{flex-direction:column;}
+			.map-rank{flex:none;max-height:170px;width:100%;}
+		}
+		.spark .s-chart{height:72px;}
+
+
+		/* ============ PRODUCT DETAIL DRAWER ============ */
+		.dt-back{
+			/* above the sticky filter bar (100) and the progress bar (200),
+			   which would otherwise paint over the drawer's header */
+			position:fixed;inset:0;z-index:300;
+			background:rgba(19,26,38,.34);
+			opacity:0;transition:opacity .18s ease;
+		}
+		.dt-back.show{opacity:1;}
+		:root[data-theme="dark"] .dt-back{background:rgba(0,0,0,.55);}
+
+		.dt-pane{
+			position:fixed;top:0;right:0;bottom:0;z-index:301;
+			width:min(460px,94vw);
+			background:var(--surface);
+			border-left:1px solid var(--border);
+			box-shadow:var(--shadow-lg);
+			display:flex;flex-direction:column;
+			transform:translate3d(100%,0,0);
+			transition:transform .26s cubic-bezier(.32,.72,0,1);
+		}
+		.dt-pane.show{transform:translate3d(0,0,0);}
+
+		.dt-head{
+			flex:none;display:flex;align-items:center;gap:11px;
+			padding:17px 18px;border-bottom:1px solid var(--border);
+		}
+		.dt-dot{width:12px;height:12px;border-radius:4px;flex:none;background:var(--ink-3);}
+		.dt-title{min-width:0;flex:1;}
+		.dt-title h2{margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em;
+			white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.dt-sub{font-size:12px;color:var(--ink-3);margin-top:2px;}
+		.dt-close{
+			flex:none;width:32px;height:32px;border-radius:9px;
+			border:1px solid var(--border);background:var(--surface);color:var(--ink-2);
+			display:flex;align-items:center;justify-content:center;cursor:pointer;
+			transition:background .15s ease,color .15s ease;
+		}
+		.dt-close:hover{background:var(--surface-2);color:var(--ink-1);}
+
+		.dt-body{flex:1;overflow-y:auto;padding:16px 18px 22px;}
+		.dt-body::-webkit-scrollbar{width:9px;}
+		.dt-body::-webkit-scrollbar-thumb{background:var(--axis);border-radius:9px;}
+
+		/* headline figures */
+		.dt-kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+		.dt-kpi{
+			background:var(--surface-2);border:1px solid var(--border);
+			border-radius:var(--radius-sm);padding:11px 12px;
+		}
+		.dt-kpi .k{font-size:10.5px;font-weight:700;letter-spacing:.05em;
+			text-transform:uppercase;color:var(--ink-3);}
+		.dt-kpi .v{font-size:17px;font-weight:700;margin-top:3px;
+			font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+		.dt-kpi .v small{font-size:11.5px;font-weight:600;color:var(--ink-3);margin-left:3px;}
+
+		.dt-sec{margin-top:17px;}
+		.dt-sec > h3{
+			margin:0 0 9px;font-size:11px;font-weight:700;letter-spacing:.05em;
+			text-transform:uppercase;color:var(--ink-3);
+		}
+		.dt-chart{height:132px;}
+
+		/* a simple ranked bar list, used for periods / wilayas / sous-categories */
+		.dt-row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:5px 0;}
+		.dt-row + .dt-row{border-top:1px solid var(--grid);}
+		.dt-row .n{font-size:12.5px;color:var(--ink-1);white-space:nowrap;
+			overflow:hidden;text-overflow:ellipsis;}
+		.dt-row .v{font-size:12.5px;font-weight:650;color:var(--ink-1);
+			font-variant-numeric:tabular-nums;white-space:nowrap;}
+		.dt-row .track{grid-column:1 / -1;height:3px;border-radius:3px;background:var(--grid);}
+		.dt-row .fill{height:3px;border-radius:3px;}
+		.dt-row .pct{font-size:11px;color:var(--ink-3);}
+
+		.dt-empty{color:var(--ink-3);font-size:12.5px;padding:6px 0;}
+
+		/* one article: libellé + amount on a line, code beneath, bar under both */
+		.dt-art{display:block;}
+		.dt-art-head{display:flex;align-items:baseline;gap:10px;}
+		.dt-art-head .n{
+			flex:1;min-width:0;font-size:12.5px;color:var(--ink-1);
+			white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+		}
+		.dt-art-head .v{
+			flex:none;font-size:12.5px;font-weight:650;color:var(--ink-1);
+			font-variant-numeric:tabular-nums;white-space:nowrap;
+		}
+		.dt-art-code{font-size:11px;color:var(--ink-3);margin:1px 0 3px;}
+
+		/* charts hint that they are clickable */
+		.card canvas{cursor:default;}
+
+		@media (max-width:640px){
+			.dt-pane{width:100vw;}
+			.dt-kpis{grid-template-columns:1fr;}
+		}
+
+		/* ============ RESPONSIVE ============ */
+		@media (max-width:1100px){
+			.span-8,.span-6,.span-4{grid-column:span 12;}
+			.kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+		}
+		@media (max-width:640px){
+			.wrap{padding:12px 12px 30px;}
+			.kpis{grid-template-columns:1fr;}
+			.filters{position:static;}
+			.datebox .date-fr{width:124px;}
+		}
+		@media (prefers-reduced-motion: reduce){
+			*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+		}
+		@media print{
+			.filters,.head-actions,#progress{display:none !important;}
+			.card,.kpi,.spark{box-shadow:none;}
+			body{background:#fff;}
+		}
+	</style>
+</head>
+<body>
+
+	<div id="progress"></div>
+
+	<div class="wrap">
+
+		<!-- ================= HEADER ================= -->
+		<header class="page-head">
+			<div>
+				<h1>
+					<span class="logo">
+						<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+							<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>
+						</svg>
+					</span>
+					Tableau de bord
+				</h1>
+				<p class="sub" id="periodSummary">—</p>
+			</div>
+			<div class="head-actions">
+				<!-- Exporter / Imprimer : désactivés (absents du tableau de bord d'origine).
+				     Pour les réactiver : décommenter ce bloc + le bloc "CSV export"
+				     et la ligne btnPrint dans le script plus bas.
+				<button class="btn" id="btnCsv" type="button" title="Exporter le tableau en CSV">
+					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+					Exporter
+				</button>
+				<button class="btn" id="btnPrint" type="button" title="Imprimer">
+					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>
+					Imprimer
+				</button>
+				-->
+
+			</div>
+		</header>
+
+		<!-- ================= FILTERS (one row, scopes everything below) ================= -->
+		<section class="filters" aria-label="Filtres">
+
+			<div class="dd" id="ddPreset">
+				<button class="btn" type="button" id="btnPreset" aria-haspopup="true">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4m8-4v4"/></svg>
+					Période <span class="caret"></span>
+				</button>
+				<div class="dd-panel" role="menu"></div>
+			</div>
+
+			<div class="field">
+				<label for="startFr">Du</label>
+				<div class="datebox">
+					<input class="inp date-fr" id="startFr" type="text" inputmode="numeric"
+						   placeholder="jj/mm/aaaa" maxlength="10" autocomplete="off">
+					<input id="start" type="date" th:value="${start}" tabindex="-1" aria-hidden="true">
+				</div>
+			</div>
+			<div class="field">
+				<label for="endFr">Au</label>
+				<div class="datebox">
+					<input class="inp date-fr" id="endFr" type="text" inputmode="numeric"
+						   placeholder="jj/mm/aaaa" maxlength="10" autocomplete="off">
+					<input id="end" type="date" th:value="${end}" tabindex="-1" aria-hidden="true">
+				</div>
+			</div>
+
+			<!-- granularity is fixed to monthly; kept as a hidden field so the
+			     request the server receives is unchanged -->
+			<input type="hidden" id="nbr_days" value="m">
+
+			<div class="seg" role="group" aria-label="Type de valeur">
+				<button type="button" id="segQte" data-tv="1">Quantité</button>
+				<button type="button" id="segVal" data-tv="2">Valeur</button>
+			</div>
+
+			<span class="f-sep" aria-hidden="true"></span>
+
+			<!-- categories as toggle chips: click one to turn it off/on, no menu -->
+			<div class="chips" id="catChips" role="group" aria-label="Catégories">
+				<button type="button" class="chip chip-all" id="catAll">Toutes</button>
+				<button type="button" class="chip" th:each="c : ${cat_prod}"
+						th:attr="data-id=${c.id}"
+						th:classappend="${#lists.contains(cat_selected, c.id)} ? ' on' : ''"
+						th:text="${c.nom_category}"></button>
+			</div>
+
+			<span class="f-status" id="fStatus" aria-live="polite"></span>
+
+			<div class="filter-error" id="filterError" role="alert">
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/></svg>
+				<span id="filterErrorTxt"></span>
+			</div>
+		</section>
+
+		<!-- ================= KPI ================= -->
+		<section class="kpis" id="kpis" aria-label="Indicateurs clés"></section>
+
+		<!-- ================= CHARTS ================= -->
+		<main class="grid" id="content">
+
+			<article class="card span-8" id="cardMain">
+				<div class="card-head">
+					<div>
+						<h2 id="mainTitle">Évolution par catégorie</h2>
+						<div class="hint" id="mainHint"></div>
+					</div>
+					<div class="seg mini" role="group" aria-label="Type de graphique">
+						<button type="button" id="mLine" class="on">Courbes</button>
+						<button type="button" id="mBar">Barres</button>
+					</div>
+				</div>
+				<div id="chartMain"></div>
+				<div id="mainTiny" class="tiny-note"></div>
+			</article>
+
+			<article class="card span-4" id="cardDonut">
+				<div class="card-head">
+					<div>
+						<h2 id="shareTitle">Répartition</h2>
+						<div class="hint" id="shareHint">Part de chaque catégorie · cliquez pour le détail</div>
+					</div>
+					<div class="seg mini" role="group" aria-label="Type de répartition">
+						<button type="button" id="sTree" class="on">Blocs</button>
+						<button type="button" id="sDonut">Anneau</button>
+					</div>
+				</div>
+				<div id="chartDonut"></div>
+				<div id="shareTiny" class="tiny-note"></div>
+			</article>
+
+			<article class="card span-12" id="cardStack">
+				<div class="card-head">
+					<div>
+						<h2 id="compoTitle">Comparaison par période</h2>
+						<div class="hint" id="compoHint">Chaque barre se lit directement sur l'axe</div>
+					</div>
+					<div class="seg mini" role="group" aria-label="Type de composition">
+						<button type="button" id="cGroup" class="on">Côte à côte</button>
+						<button type="button" id="cStack">Empilé</button>
+						<button type="button" id="cStack100">100 %</button>
+						<button type="button" id="cHeat">Intensité</button>
+					</div>
+				</div>
+				<div id="chartStack"></div>
+			</article>
+
+			<article class="card span-6" id="cardMap">
+				<div class="card-head">
+					<div>
+						<h2>Carte des ventes</h2>
+						<div class="hint" id="mapHint">Par wilaya · survolez pour le détail</div>
+					</div>
+				</div>
+				<div class="map-wrap">
+					<div class="map-holder">
+						<div id="chartMap"></div>
+						<button type="button" id="mapReset" class="map-reset" title="Recentrer la carte">
+							<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+								 stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>
+							</svg>
+							Recentrer
+						</button>
+					</div>
+					<div id="mapRank" class="map-rank" aria-label="Classement des wilayas"></div>
+				</div>
+				<div id="mapLegend" class="map-legend" aria-label="Legende des couleurs"></div>
+				<div id="mapTiny" class="tiny-note"></div>
+			</article>
+
+			<article class="card span-6" id="cardSun">
+				<div class="card-head">
+					<div>
+						<h2>Hiérarchie des produits</h2>
+						<div class="hint" id="sunHint">Catégorie → sous-catégorie · cliquez pour explorer · double-cliquez pour le détail</div>
+					</div>
+				</div>
+				<div class="sun-holder">
+					<div id="chartSun"></div>
+					<button type="button" id="sunBack" class="sun-back" title="Revenir à toutes les catégories">
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							 stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>
+						</svg>
+						Tout afficher
+					</button>
+				</div>
+				<div id="sunTiny" class="tiny-note"></div>
+			</article>
+
+			<section class="sparks" id="sparkGrid" aria-label="Détail par catégorie"></section>
+
+			<article class="card span-12" id="cardTable">
+				<div class="card-head">
+					<div>
+						<h2>Tableau détaillé</h2>
+						<div class="hint" id="tableHint">Cliquez sur une colonne pour trier</div>
+					</div>
+				</div>
+				<div class="tbl-scroll">
+					<table class="data" id="dataTable"></table>
+				</div>
+			</article>
+
+			<div class="empty" id="emptyState" hidden>
+				<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+				<p><b>Aucune donnée sur cette période</b></p>
+				<p>Modifiez les dates ou les catégories : l'affichage se met à jour automatiquement.</p>
+			</div>
+
+		</main>
+
+		<!-- ============ PRODUCT DETAIL (opens on any chart click) ============ -->
+		<div id="detailBack" class="dt-back" hidden></div>
+		<aside id="detailPane" class="dt-pane" hidden aria-labelledby="dtName" role="dialog" aria-modal="true">
+			<header class="dt-head">
+				<span class="dt-dot" id="dtDot"></span>
+				<div class="dt-title">
+					<h2 id="dtName">—</h2>
+					<div class="dt-sub" id="dtSub"></div>
+				</div>
+				<button type="button" class="dt-close" id="dtClose" title="Fermer" aria-label="Fermer">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+						 stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+				</button>
+			</header>
+			<div class="dt-body" id="dtBody"></div>
+		</aside>
+	</div>
+
+	<!-- ============ SERVER DATA (Thymeleaf inline) ============ -->
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	var RAW = {
+		weeks:    /*[[${weeks}]]*/ [],
+		cats:     /*[[${cats}]]*/ [],
+		list:     /*[[${list}]]*/ [],
+		breakdown:/*[[${breakdown}]]*/ [],
+		articles: /*[[${articles}]]*/ [],
+		typeVal:  /*[[${type_val}]]*/ 1,
+		nbrDays:  /*[[${nbr_days}]]*/ "6",
+		start:    /*[[${start}]]*/ "",
+		end:      /*[[${end}]]*/ ""
+	};
+	/*]]>*/
+	</script>
+
+	<!-- ============ APP ============ -->
+	<script>
+	(function(){
+	"use strict";
+
+	/* ---------- theme ---------- */
+	var THEME_KEY = "dash_theme";
+	function getTheme(){ try{ return localStorage.getItem(THEME_KEY) || "light"; }catch(e){ return "light"; } }
+	function setTheme(t){
+		try{ localStorage.setItem(THEME_KEY, t); }catch(e){}
+		document.documentElement.setAttribute("data-theme", t);
+	}
+	setTheme(getTheme());
+
+	/* The sidebar owns the toggle. When it changes the theme, re-render so the
+	   charts pick up the new axis/grid/tooltip colours (CSS alone cannot restyle
+	   a canvas). renderAll is defined further down, hence the guard. */
+	/* What the canvases were last DRAWN with. The guard below has to compare
+	   against this, not against localStorage (the shell writes it before
+	   posting) and not against data-theme (the shell sets that directly on this
+	   document to avoid a one-tick lag). Both are already updated by the time
+	   the message lands, so either would make the handler bail and leave the
+	   charts painted in the old theme. */
+	var CHARTS_THEME = getTheme();
+
+	window.addEventListener("message", function(ev){
+		if(ev.origin !== window.location.origin) return;
+		var m = ev.data;
+		if(!m || m.type !== "theme") return;
+		var next = (m.value === "dark") ? "dark" : "light";
+		if(next === CHARTS_THEME) return;          /* charts already match */
+		setTheme(next);
+		CHARTS_THEME = next;
+		if(typeof renderAll === "function"){
+			THEME_SWAP = true;
+			try{ renderAll(); }
+			finally{ THEME_SWAP = false; }
+		}
+	});
+
+	var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	/* true only while charts are being rebuilt purely because the theme changed */
+	var THEME_SWAP = false;
+
+	/* ---------- palette (validated categorical slots, light/dark steps) ---------- */
+	var SLOTS = [
+		["#2a78d6","#3987e5"], /* blue    */
+		["#eb6834","#d95926"], /* orange  */
+		["#1baf7a","#199e70"], /* aqua    */
+		["#eda100","#c98500"], /* yellow  */
+		["#e87ba4","#d55181"], /* magenta */
+		["#008300","#008300"], /* green   */
+		["#4a3aa7","#9085e9"], /* violet  */
+		["#e34948","#e66767"]  /* red     */
+	];
+	var GRAY = ["#898781","#898781"];
+	/* color follows the entity : fixed slot per known category, never re-ranked on filter */
+	var NAME_SLOT = {
+		"Farine":0, "Semoule":1, "Couscous":2,
+		"Pates Longue":3, "Pates Courtes":4,
+		"Son":5, "Pain":6, "Transport":7
+	};
+
+	/* ---------- helpers ---------- */
+	var nf2 = new Intl.NumberFormat("fr-FR",{minimumFractionDigits:0, maximumFractionDigits:2});
+	var nf0 = new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0});
+	/* money is always written with 2 decimals, even when they are ",00" - a column
+	   where some rows show cents and others do not reads as inconsistent */
+	var nfMoney = new Intl.NumberFormat("fr-FR",{minimumFractionDigits:2, maximumFractionDigits:2});
+	function fmt(v){ return (IS_VAL ? nfMoney : nf2).format(v || 0); }
+	function compact(v){
+		var a = Math.abs(v||0);
+		if(a >= 1e9) return nf2.format(v/1e9)+" Md";
+		if(a >= 1e6) return nf2.format(v/1e6)+" M";
+		if(a >= 1e4) return nf0.format(v/1e3)+" k";
+		return nf0.format(v);
+	}
+	function el(tag, cls, txt){
+		var e = document.createElement(tag);
+		if(cls) e.className = cls;
+		if(txt !== undefined) e.textContent = txt;
+		return e;
+	}
+	function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+	/* Tooltip / axis number formats. UNIT is assigned further down, so these read
+	   it when called, never capture it at definition time. */
+	function tipFmt(v){ return fmt(v) + (UNIT ? " " + UNIT : ""); }
+	/* Full value with the unit - never abbreviated. Abbreviations like "3,96 Md"
+	   hide the figure people actually came to read. */
+	function compactUnit(v){ return fmt(v) + (UNIT ? " " + UNIT : ""); }
+	function axisFmt(v){ return compact(v); }
+
+	/* ---------- parse server model ---------- */
+	/* weeks: "Période 3 = 15/08/2026 21/08/2026" -> short "15/08 → 21/08" */
+	var PERIODS = (RAW.weeks || []).map(function(w, i){
+		var m = /=\s*(\d{2}\/\d{2}\/\d{4})\s+(\d{2}\/\d{2}\/\d{4})/.exec(w || "");
+		var from = m ? m[1] : "", to = m ? m[2] : "";
+		var sameYear = from.slice(6) === to.slice(6);
+		return {
+			full: w || ("Période " + (i+1)),
+			from: from, to: to,
+			label: from && to ? (from.slice(0,5) + " → " + to.slice(0,5) + (sameYear ? "" : " (" + to.slice(6) + ")")) : ("P" + (i+1))
+		};
+	});
+
+	var nSeries = 0;
+	(RAW.list || []).forEach(function(row){ if(row && row.length > nSeries) nSeries = row.length; });
+
+	var seriesNames = [];      /* reassigned below once empty categories are dropped */
+	for(var i = 0; i < nSeries; i++){
+		seriesNames.push((RAW.cats && RAW.cats[i]) ? RAW.cats[i] : ("Série " + (i+1)));
+	}
+
+	/* stable color assignment : known names keep their slot, others take free slots, overflow -> gray */
+	var usedSlots = {};
+	seriesNames.forEach(function(n){ if(NAME_SLOT.hasOwnProperty(n)) usedSlots[NAME_SLOT[n]] = true; });
+	var colorOf = {};
+	var free = [];
+	for(var s = 0; s < SLOTS.length; s++){ if(!usedSlots[s]) free.push(s); }
+	seriesNames.forEach(function(n){
+		if(NAME_SLOT.hasOwnProperty(n)) colorOf[n] = SLOTS[NAME_SLOT[n]];
+		else if(free.length)            colorOf[n] = SLOTS[free.shift()];
+		else                            colorOf[n] = GRAY;
+	});
+	function colorsFor(names){
+		var mode = getTheme() === "dark" ? 1 : 0;
+		return names.map(function(n){ return (colorOf[n] || GRAY)[mode]; });
+	}
+
+	/* series data : list[p][i] = [periodLabel, value] */
+	var SERIES = seriesNames.map(function(name, i){
+		return {
+			name: name,
+			data: PERIODS.map(function(_, p){
+				var row = RAW.list[p];
+				return (row && row[i] && typeof row[i][1] === "number") ? row[i][1] : 0;
+			})
+		};
+	});
+
+	/* Drop categories with NOTHING to show, once, for every chart.
+	   A zero series still draws - an invisible bar that occupies a slot in a
+	   group, or a line pinned flat on the axis beneath the other flat lines -
+	   and that is what made clicks land on the wrong product ("always opens
+	   Palette"). Removing them here fixes every chart at once instead of
+	   patching each one, and keeps seriesNames aligned with SERIES. */
+	(function dropEmptySeries(){
+		var keep = [];
+		SERIES.forEach(function(s, i){
+			for(var z = 0; z < s.data.length; z++){
+				if((Number(s.data[z]) || 0) !== 0){ keep.push(i); return; }
+			}
+		});
+		if(keep.length === SERIES.length || !keep.length) return;   /* nothing to do */
+		SERIES      = keep.map(function(i){ return SERIES[i]; });
+		seriesNames = keep.map(function(i){ return seriesNames[i]; });
+	})();
+
+	var seriesTotals = SERIES.map(function(s){ return s.data.reduce(function(a,b){ return a+b; }, 0); });
+	var periodTotals = PERIODS.map(function(_, p){
+		return SERIES.reduce(function(a, s){ return a + s.data[p]; }, 0);
+	});
+	var grandTotal = periodTotals.reduce(function(a,b){ return a+b; }, 0);
+
+	var IS_VAL = (Number(RAW.typeVal) === 2);
+	var UNIT = IS_VAL ? "DA" : "";
+	var MEASURE = IS_VAL ? "Valeur" : "Quantité";
+
+	/* ---------- header summary ---------- */
+	/* the server splits a single month into weeks so the curve has a shape */
+	var granLabel = (String(RAW.nbrDays) === "m") ? "Par mois" : "Par semaine";
+	var firstP = PERIODS[0], lastP = PERIODS[PERIODS.length-1];
+	document.getElementById("periodSummary").textContent =
+		(firstP && lastP ? "Du " + firstP.from + " au " + lastP.to + "  ·  " : "") +
+		granLabel + "  ·  " + MEASURE + (IS_VAL ? " (DA)" : "") + "  ·  " +
+		PERIODS.length + " période" + (PERIODS.length > 1 ? "s" : "");
+
+	/* ---------- filters init ---------- */
+
+	/* Filters apply on their own — no "Afficher" needed. Category ticks are
+	   debounced so several boxes can be checked in a row before one reload. */
+	var applyTimer = null;
+	function autoApply(delay){
+		clearTimeout(applyTimer);
+		applyTimer = setTimeout(submit, delay === undefined ? 700 : delay);
+	}
+
+	/* always monthly, whatever the URL asked for */
+	document.getElementById("nbr_days").value = "m";
+	var typeVal = Number(RAW.typeVal) || 1;
+	function paintSeg(){
+		document.getElementById("segQte").className = (typeVal===1) ? "on" : "";
+		document.getElementById("segVal").className = (typeVal===2) ? "on" : "";
+	}
+	paintSeg();
+	document.getElementById("segQte").addEventListener("click", function(){ if(typeVal===1) return; typeVal=1; paintSeg(); autoApply(0); });
+	document.getElementById("segVal").addEventListener("click", function(){ if(typeVal===2) return; typeVal=2; paintSeg(); autoApply(0); });
+
+	/* dropdown open/close */
+	function wireDD(id){
+		var dd = document.getElementById(id);
+		dd.querySelector("button.btn").addEventListener("click", function(ev){
+			ev.stopPropagation();
+			var was = dd.classList.contains("open");
+			document.querySelectorAll(".dd.open").forEach(function(o){ o.classList.remove("open"); });
+			if(!was){
+				dd.classList.add("open");
+				placePanel(dd);
+			}
+		});
+		dd.querySelector(".dd-panel").addEventListener("click", function(ev){ ev.stopPropagation(); });
+	}
+
+	/* Open upwards when the panel would not fit below (the dashboard often sits
+	   low inside the app's iframe, where a downward panel gets cut off). */
+	function placePanel(dd){
+		var panel = dd.querySelector(".dd-panel");
+		panel.classList.remove("up");
+		var r = panel.getBoundingClientRect();
+		var btn = dd.querySelector("button.btn").getBoundingClientRect();
+		var spaceBelow = window.innerHeight - btn.bottom;
+		if(r.height > spaceBelow - 12 && btn.top > r.height + 12){
+			panel.classList.add("up");
+		}
+	}
+	window.addEventListener("resize", function(){
+		document.querySelectorAll(".dd.open").forEach(placePanel);
+	});
+	wireDD("ddPreset");
+	document.addEventListener("click", function(){
+		document.querySelectorAll(".dd.open").forEach(function(o){ o.classList.remove("open"); });
+	});
+
+	/* ---- category chips ---- */
+	function catChips(){
+		return Array.prototype.slice.call(document.querySelectorAll("#catChips .chip[data-id]"));
+	}
+	function selectedIds(){
+		return catChips().filter(function(c){ return c.classList.contains("on"); })
+						 .map(function(c){ return c.getAttribute("data-id"); });
+	}
+	function refreshChips(){
+		var chips = catChips();
+		var on = chips.filter(function(c){ return c.classList.contains("on"); }).length;
+		/* "Toutes" lights up only when every category is active */
+		document.getElementById("catAll").classList.toggle("on", on === chips.length);
+	}
+	/* paint each chip's dot in that category's own series colour */
+	function paintChips(){
+		var mode = getTheme() === "dark" ? 1 : 0;
+		catChips().forEach(function(c){
+			var name = c.textContent.trim();
+			var pair = colorOf[name];
+			/* a category with no data this period has no assigned slot yet */
+			c.style.setProperty("--chip", pair ? pair[mode] : (NAME_SLOT.hasOwnProperty(name)
+				? SLOTS[NAME_SLOT[name]][mode] : GRAY[mode]));
+		});
+	}
+	/* double-click a chip -> that product's detail (single click still filters) */
+	catChips().forEach(function(c){
+		c.title = "Cliquer pour filtrer · double-cliquer pour le détail";
+		c.addEventListener("dblclick", function(ev){
+			ev.preventDefault();
+			openDetail(c.textContent.trim());
+		});
+	});
+
+	catChips().forEach(function(c){
+		c.addEventListener("click", function(){
+			var chips = catChips();
+			var allOn = chips.every(function(x){ return x.classList.contains("on"); });
+			var onCount = chips.filter(function(x){ return x.classList.contains("on"); }).length;
+			var isOn = c.classList.contains("on");
+
+			if(allOn){
+				/* everything showing -> clicking one ISOLATES it */
+				chips.forEach(function(x){ x.classList.toggle("on", x === c); });
+			}
+			else if(!isOn){
+				/* add this category to the current selection */
+				c.classList.add("on");
+			}
+			else if(onCount > 1){
+				/* remove it, as long as something stays selected */
+				c.classList.remove("on");
+			}
+			else {
+				/* clicking the only selected one back off -> show everything again */
+				chips.forEach(function(x){ x.classList.add("on"); });
+			}
+
+			refreshChips();
+			autoApply();
+		});
+	});
+	document.getElementById("catAll").addEventListener("click", function(){
+		var chips = catChips();
+		var allOn = chips.every(function(c){ return c.classList.contains("on"); });
+		chips.forEach(function(c){ c.classList.add("on"); });
+		refreshChips();
+		if(!allOn) autoApply();
+	});
+	refreshChips();
+
+	/* date presets */
+	function iso(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+	var today = new Date();
+	function monthStart(offset){ return new Date(today.getFullYear(), today.getMonth()+offset, 1); }
+	function monthEnd(offset){ return new Date(today.getFullYear(), today.getMonth()+offset+1, 0); }
+	var PRESETS = [
+		{ label:"Ce mois-ci",        s: monthStart(0),  e: monthEnd(0) },
+		{ label:"Mois dernier",      s: monthStart(-1), e: monthEnd(-1) },
+		{ label:"3 derniers mois",   s: monthStart(-2), e: monthEnd(0) },
+		{ label:"6 derniers mois",   s: monthStart(-5), e: monthEnd(0) },
+		{ label:"Cette année",       s: new Date(today.getFullYear(),0,1),   e: new Date(today.getFullYear(),11,31) },
+		{ label:"Année dernière",    s: new Date(today.getFullYear()-1,0,1), e: new Date(today.getFullYear()-1,11,31) }
+	];
+	var presetPanel = document.querySelector("#ddPreset .dd-panel");
+	PRESETS.forEach(function(p){
+		var b = el("button","dd-row");
+		b.type = "button";
+		var chk = el("span","chk","✓");
+		b.appendChild(chk);
+		b.appendChild(document.createTextNode(p.label));
+		if(RAW.start === iso(p.s) && RAW.end === iso(p.e)) b.classList.add("sel");
+		b.addEventListener("click", function(){
+			document.getElementById("start").value = iso(p.s);
+			document.getElementById("end").value   = iso(p.e);
+			/* keep the French display in step with the preset */
+			var sFr = document.getElementById("startFr");
+			var eFr = document.getElementById("endFr");
+			if(sFr) sFr.value = isoToFr(iso(p.s));
+			if(eFr) eFr.value = isoToFr(iso(p.e));
+			document.getElementById("ddPreset").classList.remove("open");
+			submit();
+		});
+		presetPanel.appendChild(b);
+	});
+
+	/* validation + submit */
+	function showError(msg){
+		var e = document.getElementById("filterError");
+		document.getElementById("filterErrorTxt").textContent = msg;
+		e.classList.add("on");
+	}
+	function clearError(){ document.getElementById("filterError").classList.remove("on"); }
+
+	function submit(){
+		clearError();
+		var s = document.getElementById("start").value;
+		var e = document.getElementById("end").value;
+		if(!s || !e){ showError("Veuillez sélectionner les deux dates."); return; }
+		if(s > e){ showError("La date de début doit précéder la date de fin."); return; }
+		var ids = selectedIds();
+		var g = document.getElementById("nbr_days").value;
+
+		/* loading : keep the frame, dim it, feed the progress bar */
+		document.body.classList.add("loading");
+		var status = document.getElementById("fStatus");
+		status.textContent = "";
+		status.appendChild(el("span","sp"));
+		status.appendChild(document.createTextNode("Mise à jour…"));
+		var bar = document.getElementById("progress");
+		bar.classList.add("on");
+		var w = 8;
+		bar.style.width = w + "%";
+		setInterval(function(){ w = Math.min(w + (90 - w) * 0.08, 90); bar.style.width = w + "%"; }, 350);
+
+		window.location.href = "dashboard?start=" + s + "&end=" + e +
+			"&nbr_days=" + encodeURIComponent(g) +
+			"&type_val=" + typeVal +
+			"&list_category=" + ids.join(",");
+	}
+	/* ---- French date display (jj/mm/aaaa) over the ISO value ---- */
+	function isoToFr(iso){
+		if(!iso || iso.length < 10) return "";
+		var p = iso.split("-");
+		return p[2] + "/" + p[1] + "/" + p[0];
+	}
+	function frToIso(fr){
+		var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((fr || "").trim());
+		if(!m) return "";
+		var d = +m[1], mo = +m[2], y = +m[3];
+		if(mo < 1 || mo > 12 || d < 1 || d > 31) return "";
+		var iso = m[3] + "-" + m[2] + "-" + m[1];
+		/* reject impossible dates like 31/02. Build the date in UTC explicitly:
+		   "2026-03-15T00:00:00" parses as LOCAL time, so getUTCDate() could roll
+		   back a day in negative-offset timezones and reject a valid date. */
+		var chk = new Date(Date.UTC(y, mo - 1, d));
+		if(chk.getUTCDate() !== d || (chk.getUTCMonth() + 1) !== mo || chk.getUTCFullYear() !== y) return "";
+		return iso;
+	}
+
+	["start","end"].forEach(function(id){
+		var hidden = document.getElementById(id);
+		var shown  = document.getElementById(id + "Fr");
+		if(!hidden || !shown) return;
+
+		/* seed the visible field from the value the server rendered */
+		shown.value = isoToFr(hidden.value);
+
+		/* type digits -> auto-insert the slashes */
+		shown.addEventListener("input", function(){
+			var digits = shown.value.replace(/\D/g, "").slice(0, 8);
+			var out = digits;
+			if(digits.length > 4)      out = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
+			else if(digits.length > 2) out = digits.slice(0,2) + "/" + digits.slice(2);
+			shown.value = out;
+			shown.classList.remove("bad");
+
+			var iso = frToIso(out);
+			if(iso){
+				hidden.value = iso;
+				autoApply(600);
+			}
+		});
+
+		/* flag an incomplete/invalid entry when the user leaves the field */
+		shown.addEventListener("blur", function(){
+			if(!shown.value){ shown.classList.remove("bad"); return; }
+			var iso = frToIso(shown.value);
+			if(iso){ hidden.value = iso; shown.classList.remove("bad"); }
+			else   { shown.classList.add("bad"); }
+		});
+
+		shown.addEventListener("keydown", function(ev){
+			if(ev.key === "Enter"){ ev.preventDefault(); autoApply(0); }
+		});
+
+		/* picking from the native calendar updates the French text */
+		hidden.addEventListener("change", function(){
+			shown.value = isoToFr(hidden.value);
+			shown.classList.remove("bad");
+			autoApply(0);
+		});
+	});
+
+	["start","end"].forEach(function(id){
+		var input = document.getElementById(id);
+		input.addEventListener("keydown", function(ev){ if(ev.key === "Enter") autoApply(0); });
+		/* a picked date fires "change"; typing one fires it too, so debounce a little */
+		input.addEventListener("change", function(){ autoApply(500); });
+	});
+
+	/* désactivé avec le bouton Imprimer
+	document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
+	*/
+
+	/* ---------- KPI ---------- */
+	function icon(path){
+		return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+	}
+	function deltaChip(cur, prev){
+		if(!isFinite(prev) || prev === 0) return "";
+		var pct = (cur - prev) / Math.abs(prev) * 100;
+		var up = pct >= 0;
+		var span = el("span", "delta " + (up ? "up" : "down"));
+		span.innerHTML = (up
+			? icon('<path d="M12 19V5m0 0-6 6m6-6 6 6"/>')
+			: icon('<path d="M12 5v14m0 0-6-6m6 6 6-6"/>'))
+			+ " " + (up ? "+" : "") + nf2.format(pct) + " %";
+		return span;
+	}
+	function kpiCard(label, iconPath, valueHtml, footNodes, accent, accentSoft){
+		var card = el("div","kpi");
+		if(accent){
+			card.style.setProperty("--accent", accent);
+			card.style.setProperty("--accent-soft", accentSoft || "var(--primary-soft)");
+		}
+		var top = el("div","k-top");
+		top.appendChild(el("div","k-label", label));
+		var ico = el("div","k-ico");
+		ico.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + iconPath + '</svg>';
+		top.appendChild(ico);
+		var v = el("div","k-value");
+		v.innerHTML = valueHtml;
+		var f = el("div","k-foot");
+		(footNodes || []).forEach(function(n){
+			if(typeof n === "string") f.appendChild(document.createTextNode(n));
+			else if(n) f.appendChild(n);
+		});
+		card.appendChild(top); card.appendChild(v); card.appendChild(f);
+		return card;
+	}
+	function buildKpis(){
+		var host = document.getElementById("kpis");
+		host.textContent = "";
+		if(grandTotal === 0 && PERIODS.length === 0) return;
+
+		var unitTag = UNIT ? ' <small>' + UNIT + '</small>' : '';
+		var dark = getTheme() === "dark";
+
+		/* 1 - total, with last vs previous period trend + trend sparkline */
+		var last = periodTotals[periodTotals.length-1];
+		var prev = periodTotals[periodTotals.length-2];
+		var foot1 = [];
+		var d = (periodTotals.length >= 2) ? deltaChip(last, prev) : "";
+		if(d){ foot1.push(d); foot1.push("vs période précédente"); }
+		else  foot1.push(PERIODS.length + " période" + (PERIODS.length>1?"s":""));
+		var totalCard = kpiCard(MEASURE + " totale",
+			'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+			fmt(grandTotal) + unitTag, foot1,
+			css("--primary"), css("--primary-soft"));
+		var sparkMount = el("div","k-spark");
+		totalCard.appendChild(sparkMount);
+		host.appendChild(totalCard);
+		/* The trend strip: a line across the periods, or - when a single period is
+		   selected and there is no trend to draw - the category split for that
+		   period, so the card is never blank. Both are hoverable. */
+		var kb = baseOpts();
+		sparkMount.style.height = "46px";
+		var kc = echarts.init(sparkMount, null, { renderer:"canvas" });
+		charts.push(kc);
+		var kcColor = css("--primary");
+
+		if(PERIODS.length > 1){
+			kc.setOption({
+				animationDuration: REDUCED ? 0 : 700,
+				grid:{ left:2, right:2, top:6, bottom:2 },
+				xAxis:{ type:"category", show:false,
+					data: PERIODS.map(function(p){ return p.label; }), boundaryGap:false },
+				yAxis:{ type:"value", show:false },
+				tooltip: tipBox(kb, {
+					trigger:"axis",
+					/* render into <body> so the card cannot clip it, and keep it
+					   below the strip so the KPI figure stays readable */
+					appendToBody: true,
+					confine: false,
+					position: function(pt, params, dom, rect, size){
+						var w = size.contentSize[0], h = size.contentSize[1];
+						var vw = size.viewSize[0], vh = size.viewSize[1];
+						var pad = 8;
+						/* centre on the cursor, then keep it inside the window -
+						   on the leftmost KPI the centred position is off-screen */
+						var x = pt[0] - w / 2;
+						if(x < pad) x = pad;
+						if(x + w > vw - pad) x = Math.max(pad, vw - pad - w);
+						/* below the cursor, or above it when there is no room */
+						var y = pt[1] + 14;
+						if(y + h > vh - pad) y = pt[1] - h - 14;
+						if(y < pad) y = pad;
+						return [x, y];
+					},
+					axisPointer:{ type:"line", lineStyle:{ color: kb.axis } },
+					formatter: function(ps){
+						if(!ps.length) return "";
+						var per = PERIODS[ps[0].dataIndex];
+						return '<div style="font-size:11.5px;font-weight:700;color:' + kb.ink3 +
+							   ';margin-bottom:3px;white-space:nowrap">' + (per ? per.full : "") + '</div>' +
+							   '<b style="font-size:13.5px;white-space:nowrap">' + tipFmt(ps[0].value) + '</b>';
+					}
+				}),
+				series:[{
+					type:"line", data: periodTotals, smooth:true,
+					showSymbol:false, symbol:"circle", symbolSize:7,
+					lineStyle:{ width:2, color:kcColor },
+					areaStyle:{ color: new echarts.graphic.LinearGradient(0,0,0,1,[
+						{ offset:0, color: kcColor + "4d" },
+						{ offset:1, color: kcColor + "00" }]) }
+				}]
+			});
+		}
+		else if(SERIES.length > 1){
+			/* one period: show what made up the total, biggest first */
+			var order = seriesNames.map(function(n,i){ return i; })
+				.filter(function(i){ return seriesTotals[i] > 0; })
+				.sort(function(a,z){ return seriesTotals[z] - seriesTotals[a]; });
+			kc.setOption({
+				animationDuration: REDUCED ? 0 : 600,
+				grid:{ left:2, right:2, top:8, bottom:2 },
+				xAxis:{ type:"category", show:false,
+					data: order.map(function(i){ return seriesNames[i]; }) },
+				yAxis:{ type:"value", show:false },
+				tooltip: tipBox(kb, {
+					trigger:"item",
+					formatter: function(pt){
+						var pct = grandTotal ? (pt.value / grandTotal * 100) : 0;
+						return '<div style="font-weight:700;margin-bottom:2px">' + pt.name + '</div>' +
+							   '<b>' + tipFmt(pt.value) + '</b> · ' + nf2.format(pct) + ' %';
+					}
+				}),
+				series:[{
+					type:"bar", barMaxWidth:14,
+					itemStyle:{ borderRadius:[3,3,0,0] },
+					data: order.map(function(i){
+						return { value: seriesTotals[i],
+								 name: seriesNames[i],
+								 itemStyle:{ color: colorsFor([seriesNames[i]])[0] } };
+					})
+				}]
+			});
+		}
+
+		/* 2 - average per period */
+		var avg = PERIODS.length ? grandTotal / PERIODS.length : 0;
+		host.appendChild(kpiCard("Moyenne / période",
+			'<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+			fmt(avg) + unitTag,
+			["sur " + PERIODS.length + " période" + (PERIODS.length>1?"s":"")],
+			dark ? "#199e70" : "#1baf7a", dark ? "rgba(25,158,112,.16)" : "#e6f7f0"));
+
+		/* 3 - best period */
+		var bi = 0;
+		periodTotals.forEach(function(v,i){ if(v > periodTotals[bi]) bi = i; });
+		host.appendChild(kpiCard("Meilleure période",
+			'<path d="M8 21h8m-4-4v4m-7-17h14v5a7 7 0 0 1-14 0zM5 4H3v3a4 4 0 0 0 4 4M19 4h2v3a4 4 0 0 1-4 4"/>',
+			(PERIODS[bi] ? PERIODS[bi].label : "—"),
+			[fmt(periodTotals[bi] || 0) + (UNIT ? " " + UNIT : "")],
+			dark ? "#c98500" : "#eda100", dark ? "rgba(201,133,0,.16)" : "#fdf3e0"));
+
+		/* 4 - top category, or the period low when only one category is in play
+		   (a single category is always "top" at 100 %, which tells you nothing) */
+		if(SERIES.length > 1){
+			var ti = 0;
+			seriesTotals.forEach(function(v,i){ if(v > seriesTotals[ti]) ti = i; });
+			var share = grandTotal ? (seriesTotals[ti] / grandTotal * 100) : 0;
+			var topColor = colorsFor([seriesNames[ti]])[0];
+			var dot = el("span","dot"); dot.style.background = topColor;
+			host.appendChild(kpiCard("Top catégorie",
+				'<path d="m12 2 3 6.6 7 .9-5.2 4.8L18.2 21 12 17.4 5.8 21l1.4-6.7L2 9.5l7-.9z"/>',
+				(seriesNames[ti] || "—"),
+				[dot, fmt(seriesTotals[ti] || 0) + (UNIT ? " " + UNIT : "") + "  ·  " + nf2.format(share) + " %"],
+				topColor));
+		} else {
+			var li = 0;
+			periodTotals.forEach(function(v,i){ if(v < periodTotals[li]) li = i; });
+			host.appendChild(kpiCard("Période la plus faible",
+				'<path d="M22 17 13.5 8.5l-5 5L2 7"/><path d="M16 17h6v-6"/>',
+				(PERIODS[li] ? PERIODS[li].label : "—"),
+				[fmt(periodTotals[li] || 0) + (UNIT ? " " + UNIT : "")],
+				dark ? "#e66767" : "#d03b3b", dark ? "rgba(230,103,103,.16)" : "#fdecec"));
+		}
+	}
+
+	/* ---------- charts ---------- */
+	/* ============================================================
+	   CHART LAYER — Apache ECharts
+	   Same data, same filters. Every chart is built from SERIES /
+	   PERIODS / BREAKDOWN, which come straight from the controller.
+	   ============================================================ */
+
+	var charts = [];
+	function destroyCharts(){
+		charts.forEach(function(c){ try{ c.dispose(); }catch(e){} });
+		charts = [];
+	}
+	function mount(id){
+		var node = document.getElementById(id);
+		if(!node) return null;
+		/* Dispose whatever is already on this node. destroyCharts() only knows
+		   about instances in `charts`, and buildMap() also runs from the geo
+		   loader outside renderAll() - so a node could still hold a live older
+		   instance. echarts.init() would then hand that one back, complete with
+		   its previous series, and clicks would resolve against stale data. */
+		try{
+			var old = echarts.getInstanceByDom(node);
+			if(old) old.dispose();
+		}catch(e){}
+		var c = echarts.init(node, null, { renderer:"canvas" });
+		charts.push(c);
+		return c;
+	}
+	window.addEventListener("resize", function(){
+		charts.forEach(function(c){ try{ c.resize(); }catch(e){} });
+		/* the card width changed, so the table has to be re-fitted */
+		var t = document.getElementById("dataTable");
+		if(t && t.rows.length) fitTable(t);
+	});
+
+	function baseOpts(){
+		return {
+			surface: css("--surface"),
+			grid:    css("--grid"),
+			axis:    css("--axis"),
+			ink1:    css("--ink-1"),
+			ink2:    css("--ink-2"),
+			ink3:    css("--ink-3"),
+			font:    'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif',
+			/* A theme switch rebuilds every chart with the SAME data, so animating
+			   it in just makes the change feel slow. Only animate a real render. */
+			anim:    !REDUCED && !THEME_SWAP
+		};
+	}
+
+	/* a floating tooltip card that matches the app's own surfaces */
+	function tipBox(b, extra){
+		var o = {
+			backgroundColor: b.surface,
+			borderWidth: 0,
+			padding: [10, 14],
+			extraCssText: "box-shadow:0 10px 34px rgba(19,26,38,.18);border-radius:13px;",
+			textStyle: { color: b.ink1, fontFamily: b.font, fontSize: 13 },
+			/* Keep every tooltip inside its chart. ECharts defaults this to
+			   false, which let the wide map tooltip run off the left edge of the
+			   window with the wilaya name cut in half. Defaulting it here covers
+			   every chart, including any added later; the KPI sparkline overrides
+			   it because its own chart is only 72px tall. */
+			confine: true
+		};
+		if(extra){ for(var k in extra){ o[k] = extra[k]; } }
+		return o;
+	}
+	function axisLabel(b){
+		return { color: b.ink3, fontFamily: b.font, fontSize: 11.5 };
+	}
+	function legendOpts(b){
+		return {
+			bottom: 0, itemWidth: 11, itemHeight: 11, icon: "circle",
+			itemGap: 16,
+			textStyle: { color: b.ink2, fontFamily: b.font, fontSize: 12.5 }
+		};
+	}
+	/* fade a hex colour to a transparent version of itself */
+	function alphaHex(hex, aa){ return hex + aa; }
+
+	/* ---------- 1. évolution par catégorie ---------- */
+	var mainType = "line";       /* line | bar */
+	var mainStack = false;       /* separate by default: each curve reads on the axis */
+
+	function buildMain(){
+		var b = baseOpts();
+		var c = mount("chartMain");
+		if(!c) return;
+		var isBar = (mainType === "bar");
+
+		/* which series are big enough to be drawn as their own line */
+		var mainMax = 0;
+		SERIES.forEach(function(s){
+			s.data.forEach(function(v){ var a = Math.abs(Number(v) || 0); if(a > mainMax) mainMax = a; });
+		});
+		function mainVisible(s){
+			if(!mainMax) return true;
+			/* A peak test is not enough: Pain peaks at 1.1 % of the leader in
+			   week 1 and is ZERO for the rest, so most of its line lies flat on
+			   the axis on top of the other flat lines. Require the series to be
+			   distinguishable for MOST of the range, not at a single point. */
+			var seen = 0;
+			s.data.forEach(function(v){
+				if((Math.abs(Number(v) || 0) / mainMax) >= 0.005) seen++;
+			});
+			return s.data.length ? (seen / s.data.length) >= 0.5 : false;
+		}
+		var mainDrawn = SERIES.filter(mainVisible);
+		var cols = colorsFor(mainDrawn.map(function(s){ return s.name; }));
+
+		c.setOption({
+			color: cols,
+			animationDuration: b.anim ? 800 : 0,
+			animationEasing: "cubicOut",
+			/* full period range in the header, every category listed with its
+			   value and its share of that period */
+			tooltip: tipBox(b, {
+				trigger: "axis",
+				axisPointer: { type: isBar ? "shadow" : "line",
+					lineStyle:{ color: b.axis },
+					shadowStyle:{ color:"rgba(42,120,214,.06)" } },
+				formatter: function(ps){
+					if(!ps.length) return "";
+					var idx = ps[0].dataIndex;
+					var per = PERIODS[idx];
+					var tot = periodTotals[idx] || 0;
+					var out = '<div style="font-size:11.5px;font-weight:700;color:' + b.ink3 +
+							  ';margin-bottom:6px">' + (per ? per.full : "") + '</div>';
+					ps.slice().sort(function(a, z){ return z.value - a.value; })
+						.forEach(function(pt){
+							var share = tot ? (pt.value / tot * 100) : 0;
+							out += '<div style="display:flex;align-items:center;gap:10px;padding:2px 0">' +
+								   '<span style="width:12px;height:12px;border-radius:3px;flex:none;background:' +
+								   pt.color + '"></span>' +
+								   '<span style="color:' + b.ink2 + '">' + pt.seriesName + '</span>' +
+								   '<b style="margin-left:auto">' + tipFmt(pt.value) + '</b>' +
+								   '<span style="color:' + b.ink3 + ';font-size:11.5px">' +
+								   nf0.format(share) + ' %</span></div>';
+						});
+					out += '<div style="display:flex;gap:10px;margin-top:6px;padding-top:6px;' +
+						   'border-top:1px solid ' + b.grid + '">' +
+						   '<span style="color:' + b.ink2 + ';font-weight:600">Total période</span>' +
+						   '<b style="margin-left:auto">' + tipFmt(tot) + '</b></div>';
+					return out;
+				}
+			}),
+			legend: legendOpts(b),
+			grid: { left: 8, right: 22, top: 16, bottom: 52, containLabel: true },
+			xAxis: {
+				type: "category",
+				data: PERIODS.map(function(p){ return p.label; }),
+				boundaryGap: isBar,
+				axisLine: { lineStyle:{ color: b.axis } },
+				axisTick: { show:false },
+				axisLabel: Object.assign(axisLabel(b), {
+					rotate: PERIODS.length > 8 ? 32 : 0, hideOverlap: true })
+			},
+			yAxis: {
+				type: "value",
+				splitLine: { lineStyle:{ color: b.grid } },
+				axisLabel: Object.assign(axisLabel(b), { formatter: compact })
+			},
+			/* Series too small to be distinguishable are dropped here and named
+			   in the note below the chart. At 0.4 % of the leader they land on
+			   the same pixel row as their neighbours, so they cannot be read or
+			   clicked - drawing them only made other lines unclickable. */
+			series: SERIES.filter(function(s){ return mainVisible(s); }).map(function(s, i){
+				var base = {
+					name: s.name,
+					data: s.data,
+					emphasis: { focus: "series" },
+					stack: mainStack ? "total" : null
+				};
+				if(isBar){
+					return Object.assign(base, {
+						type: "bar",
+						barMaxWidth: 42,
+						itemStyle: { borderRadius: mainStack ? 0 : [6,6,0,0],
+							borderColor: b.surface, borderWidth: mainStack ? 1.5 : 0 }
+					});
+				}
+				return Object.assign(base, {
+					type: "line",
+					smooth: true, symbol: "circle", symbolSize: 8,
+					/* With a single period there is no line to draw - only dots.
+					   Force the markers on so the chart is still readable. */
+					showSymbol: PERIODS.length < 2,
+					lineStyle: { width: 2.4 },
+					areaStyle: mainStack
+						? { opacity:.85, color: new echarts.graphic.LinearGradient(0,0,0,1,[
+							{ offset:0, color: alphaHex(cols[i], "cc") },
+							{ offset:1, color: alphaHex(cols[i], "14") }]) }
+						/* a light wash when separate, so overlapping lines stay readable */
+						: { opacity:.15, color: new echarts.graphic.LinearGradient(0,0,0,1,[
+							{ offset:0, color: cols[i] },
+							{ offset:1, color: alphaHex(cols[i], "00") }]) }
+				});
+			})
+		});
+
+		/* name whatever was too small to draw, with its total, so nothing is
+		   silently lost from the page */
+		var mtn = document.getElementById("mainTiny");
+		if(mtn){
+			mtn.textContent = "";
+			var dropped = SERIES.filter(function(x){ return !mainVisible(x); })
+				.map(function(x){
+					var t = 0;
+					x.data.forEach(function(v){ t += Number(v) || 0; });
+					return { name:x.name, total:t };
+				})
+				.filter(function(x){ return x.total > 0; })
+				.sort(function(a, z){ return z.total - a.total; });
+
+			if(!dropped.length){ mtn.style.display = "none"; }
+			else {
+				mtn.style.display = "";
+				mtn.appendChild(el("span", "tiny-lead", "Trop petit pour la courbe :"));
+				dropped.forEach(function(d){
+					var chip = el("span", "tiny-item");
+					var dot = el("span", "dot");
+					dot.style.background = colorsFor([d.name])[0];
+					chip.appendChild(dot);
+					chip.appendChild(document.createTextNode(
+						d.name + " " + fmt(d.total) + (UNIT ? " " + UNIT : "")));
+					mtn.appendChild(chip);
+				});
+			}
+		}
+
+		/* click anywhere on a line or bar -> that product's detail */
+		c.__stacked = mainStack;
+		/* unstacked bars are drawn side by side, like the "grouped" mode below */
+		c.__grouped = (isBar && !mainStack);
+		onPick(c, function(p){ return p.seriesName; }, true);
+	}
+
+	/* ---------- 2. répartition : treemap | donut ---------- */
+	function shareData(){
+		var order = seriesNames.map(function(n,i){ return i; })
+			.sort(function(a,z){ return seriesTotals[z] - seriesTotals[a]; });
+		return order.filter(function(i){ return seriesTotals[i] > 0; })
+			.map(function(i){
+				return { name: seriesNames[i], value: seriesTotals[i],
+						 itemStyle:{ color: colorsFor([seriesNames[i]])[0] } };
+			});
+	}
+
+	function buildTreemap(){
+		var b = baseOpts();
+		var c = mount("chartDonut");
+		if(!c) return;
+		var data = shareData();
+		if(!data.length) return;
+
+		c.setOption({
+			animationDuration: b.anim ? 700 : 0,
+			tooltip: tipBox(b, { trigger:"item",
+				formatter: function(p){
+					var pct = grandTotal ? (p.value / grandTotal * 100) : 0;
+					return p.name + "<br/><b>" + fmt(p.value) + (UNIT ? " " + UNIT : "") +
+						   "</b> · " + nf2.format(pct) + " %";
+				} }),
+			series: [{
+				type: "treemap",
+				roam: false, nodeClick: false, breadcrumb: { show:false },
+				left: 4, right: 4, top: 6, bottom: 6,
+				/* Reading order, not just area.
+				   sort:"desc" alone only decides how much AREA each block gets -
+				   the squarified layout then still placed Pain (19.8 %) below
+				   Son (17.2 %), so the eye read them out of order. A narrow
+				   squareRatio makes the layout lay blocks out column-first, which
+				   genuinely reads biggest -> smallest left to right while still
+				   filling the card with usable shapes. */
+				sort: "desc",
+				squareRatio: 0.01,
+				/* Thin separators: the blocks are already distinct colours, and a
+				   thick gap reads as a pale frame against saturated fills. */
+				itemStyle: { borderColor: b.surface, borderWidth: 1, gapWidth: 2, borderRadius: 5 },
+				/* keep tiny categories rendered instead of dropped: without this
+				   a 0.02 % block (~4x4 px) is culled and looks "missing" */
+				visibleMin: 0,
+				childrenVisibleMin: 0,
+				label: {
+					fontFamily: b.font, fontSize: 12.5, fontWeight: 600, color: "#fff",
+					formatter: function(p){
+						var pct = grandTotal ? (p.value / grandTotal * 100) : 0;
+						/* only label blocks with room for the text */
+						return pct < 4 ? p.name : p.name + "\n" + nf2.format(pct) + " %";
+					}
+				},
+				emphasis: { itemStyle:{ borderColor: b.ink1, borderWidth: 2 } },
+				data: data
+			}]
+		});
+
+		onPick(c, function(p){ return p.name; });
+	}
+
+	/* The donut's inner hole is ~58% of its width; long totals need smaller type
+	   so they do not spill over the ring. */
+	function donutFontSize(txt){
+		var n = (txt || "").length;
+		if(n <= 9)  return 24;
+		if(n <= 12) return 20;
+		if(n <= 15) return 17;
+		if(n <= 18) return 15;
+		return 13;
+	}
+
+	/* Categories below ~1.5% cannot be read off a ring or a treemap block at
+	   this size. Rather than pretend otherwise, list them as text under the
+	   chart with their real value. */
+	function renderTinyNote(){
+		var host = document.getElementById("shareTiny");
+		if(!host) return;
+		host.textContent = "";
+		var tiny = shareData().filter(function(d){
+			return grandTotal && (d.value / grandTotal * 100) < 1.5;
+		});
+		if(!tiny.length){ host.style.display = "none"; return; }
+		host.style.display = "";
+		var lead = el("span", "tiny-lead", "Trop petit pour l'affichage :");
+		host.appendChild(lead);
+		tiny.forEach(function(d){
+			var pct = grandTotal ? (d.value / grandTotal * 100) : 0;
+			var chip = el("span", "tiny-item");
+			var dot = el("span", "dot");
+			dot.style.background = d.itemStyle.color;
+			chip.appendChild(dot);
+			chip.appendChild(document.createTextNode(
+				d.name + " " + fmt(d.value) + (UNIT ? " " + UNIT : "") +
+				" (" + nf2.format(pct) + " %)"));
+			host.appendChild(chip);
+		});
+	}
+
+	function buildDonut(){
+		var b = baseOpts();
+		var c = mount("chartDonut");
+		if(!c) return;
+		/* Keep every category that is actually visible. Only genuinely tiny
+		   slivers (< 1% and beyond the 8th) fold into "Autres", so nothing a
+		   reader would look for silently disappears. */
+		var data = shareData(), shown = [], other = 0, otherCount = 0;
+		data.forEach(function(d, i){
+			var pct = grandTotal ? (d.value / grandTotal * 100) : 0;
+			if(i < 8 || pct >= 1){ shown.push(d); }
+			else { other += d.value; otherCount++; }
+		});
+		if(other > 0){
+			shown.push({
+				name: "Autres (" + otherCount + ")",
+				value: other,
+				itemStyle: { color:"#8792a6" }
+			});
+		}
+
+		c.setOption({
+			animationDuration: b.anim ? 800 : 0,
+			tooltip: tipBox(b, { trigger:"item",
+				formatter: function(p){
+					return p.name + "<br/><b>" + fmt(p.value) + (UNIT ? " " + UNIT : "") +
+						   "</b> · " + nf2.format(p.percent) + " %";
+				} }),
+			legend: legendOpts(b),
+			/* The total sits in its own centred graphic rather than on the slices'
+			   labels: a slice label only hides for the slice being hovered, so the
+			   others kept drawing and the text overlapped. */
+			graphic: [{
+				type: "text", left: "center", top: "37%", silent: true, z: 2,
+				style: {
+					/* the exact figure, never abbreviated: this is the headline
+					   number and "9,66 Md" hides what people came to read */
+					text: fmt(grandTotal), textAlign: "center",
+					fill: b.ink1,
+					/* shrink the type as the number gets longer so it always fits
+					   inside the ring */
+					font: "700 " + donutFontSize(fmt(grandTotal)) + "px " + b.font
+				}
+			}, {
+				type: "text", left: "center", top: "47%", silent: true, z: 2,
+				style: {
+					text: UNIT ? ("Total " + UNIT) : "Total", textAlign: "center",
+					fill: b.ink3, font: "12px " + b.font
+				}
+			}],
+			series: [{
+				type: "pie",
+				radius: ["58%", "80%"], center: ["50%", "44%"],
+				avoidLabelOverlap: true, padAngle: 1,
+				/* A 0.16 % slice is 0.58 deg - thinner than the gap between
+				   slices, so it would never be visible or clickable. minAngle
+				   gives every non-zero category a hittable sliver. The tooltip
+				   and legend still report the true value and percentage. */
+				minAngle: 3,
+				itemStyle: { borderRadius: 8, borderColor: b.surface, borderWidth: 2 },
+				label: { show: false },
+				labelLine: { show: false },
+				emphasis: { scale: true, scaleSize: 12, label: { show: false } },
+				data: shown
+			}]
+		});
+
+		onPick(c, function(p){ return p.name; });
+	}
+
+	/* ---------- 3. composition : stack | 100% | heatmap ---------- */
+	var COMPO_H = 340;   /* every mode uses this height, so switching never shifts the page */
+
+	/* mode: "group" (bars side by side, each read off the axis - the default,
+	   because a stacked bar's height is a SUM and that misleads people),
+	   "stack" (cumulative) or "pct" (share of each period). */
+	function buildStack(mode){
+		var b = baseOpts();
+		var c = mount("chartStack");
+		if(!c) return;
+		var cols = colorsFor(seriesNames);
+		var last = SERIES.length - 1;
+		var pct = (mode === "pct");
+		var grouped = (mode === "group");
+
+		/* for 100 % mode, convert each period to a share of its own total */
+		var data = SERIES.map(function(s){
+			if(!pct) return s.data;
+			return s.data.map(function(v, p){
+				return periodTotals[p] ? (v / periodTotals[p] * 100) : 0;
+			});
+		});
+
+		c.setOption({
+			color: cols,
+			animationDuration: b.anim ? 800 : 0,
+			animationEasing: "cubicOut",
+			tooltip: tipBox(b, {
+				trigger: "axis",
+				axisPointer: { type:"shadow", shadowStyle:{ color:"rgba(42,120,214,.06)" } },
+				formatter: function(ps){
+					if(!ps.length) return "";
+					var idx = ps[0].dataIndex;
+					var p0 = PERIODS[idx];
+					var out = '<div style="font-size:11.5px;font-weight:700;color:' + b.ink3 +
+							  ';margin-bottom:6px">' + (p0 ? p0.full : "") + "</div>";
+					ps.slice().reverse().forEach(function(s){
+						var real = SERIES[s.seriesIndex].data[s.dataIndex];
+						out += '<div style="display:flex;align-items:center;gap:10px;padding:2px 0">' +
+							   '<span style="width:13px;height:13px;border-radius:4px;background:' + s.color + '"></span>' +
+							   '<span style="color:' + b.ink2 + '">' + s.seriesName + '</span>' +
+							   '<b style="margin-left:auto">' + fmt(real) + (UNIT ? " " + UNIT : "") +
+							   (pct ? "  (" + nf2.format(s.value) + " %)" : "") + "</b></div>";
+					});
+					/* stacked only: the bar's height is this total, not any single
+					   category — spell it out so the axis is never a surprise */
+					if(!pct && !grouped){
+						out += '<div style="display:flex;gap:10px;margin-top:6px;padding-top:6px;' +
+							   'border-top:1px solid ' + b.grid + '">' +
+							   '<span style="color:' + b.ink2 + ';font-weight:600">Total période</span>' +
+							   '<b style="margin-left:auto">' + fmt(periodTotals[idx]) +
+							   (UNIT ? " " + UNIT : "") + "</b></div>";
+					}
+					return out;
+				}
+			}),
+			legend: legendOpts(b),
+			grid: { left: 8, right: 22, top: 16, bottom: 52, containLabel: true },
+			xAxis: {
+				type: "category",
+				data: PERIODS.map(function(p){ return p.label; }),
+				axisLine: { lineStyle:{ color: b.axis } },
+				axisTick: { show:false },
+				axisLabel: Object.assign(axisLabel(b), {
+					rotate: PERIODS.length > 8 ? 32 : 0, hideOverlap: true })
+			},
+			yAxis: {
+				type: "value",
+				max: pct ? 100 : null,
+				splitLine: { lineStyle:{ color: b.grid } },
+				axisLabel: Object.assign(axisLabel(b), {
+					formatter: pct ? function(v){ return v + " %"; } : compact })
+			},
+			/* SERIES no longer contains empty categories - they are dropped once,
+			   where it is built - so everything here is genuinely drawable. */
+			series: SERIES.map(function(s, i){
+				return {
+					name: s.name, type: "bar",
+					stack: grouped ? null : "total",
+					barMaxWidth: grouped ? 26 : 64,
+					barGap: grouped ? "12%" : null,
+					emphasis: { focus: "series" },
+					itemStyle: {
+						borderColor: b.surface,
+						borderWidth: grouped ? 0 : 1.5,
+						borderRadius: grouped ? [4,4,0,0] : ((i === last) ? [6,6,0,0] : 0)
+					},
+					/* when stacked, print the period total on top of the last
+					   segment so it is obvious the bar's height is a sum */
+					label: (!grouped && i === last && !pct && PERIODS.length <= 14) ? {
+						show: true, position: "top",
+						formatter: function(p){ return compactUnit(periodTotals[p.dataIndex]); },
+						color: b.ink2, fontFamily: b.font, fontSize: 11.5, fontWeight: 600
+					} : { show: false },
+					data: data[i]
+				};
+			})
+		});
+
+		/* "grouped" bars sit side by side; the other modes stack. In 100 %
+		   mode the plotted numbers are shares, so hand those over too. */
+		c.__stacked = (mode !== "group");
+		c.__grouped = grouped;
+		c.__plotted = data;
+		onPick(c, function(p){ return p.seriesName; }, true);
+	}
+
+	function buildHeat(){
+		var b = baseOpts();
+		var c = mount("chartStack");
+		if(!c) return;
+
+		/* strongest category at the top; each row shaded against ITS OWN max so a
+		   single huge category cannot wash every other row out */
+		var order = seriesNames.map(function(n,i){ return i; })
+			.sort(function(a,z){ return seriesTotals[a] - seriesTotals[z]; });
+
+		var cells = [], rowNames = [];
+		order.forEach(function(si, y){
+			rowNames.push(seriesNames[si]);
+			var vals = SERIES[si].data;
+			var max = Math.max.apply(null, vals.concat([0]));
+			vals.forEach(function(v, x){
+				cells.push({ value:[x, y, max > 0 ? (v / max * 100) : 0], real: v });
+			});
+		});
+
+		c.setOption({
+			animationDuration: b.anim ? 700 : 0,
+			tooltip: tipBox(b, { trigger:"item",
+				formatter: function(p){
+					var per = PERIODS[p.value[0]];
+					return (per ? per.full : "") + "<br/>" + rowNames[p.value[1]] +
+						   " : <b>" + fmt(p.data.real) + (UNIT ? " " + UNIT : "") + "</b>";
+				} }),
+			grid: { left: 8, right: 22, top: 12, bottom: 46, containLabel: true },
+			xAxis: {
+				type: "category",
+				data: PERIODS.map(function(p){ return p.label; }),
+				splitArea: { show:false },
+				axisLine: { show:false }, axisTick: { show:false },
+				axisLabel: Object.assign(axisLabel(b), {
+					rotate: PERIODS.length > 8 ? 32 : 0, hideOverlap: true })
+			},
+			yAxis: {
+				type: "category", data: rowNames,
+				splitArea: { show:false },
+				axisLine: { show:false }, axisTick: { show:false },
+				axisLabel: Object.assign(axisLabel(b), { fontSize: 12 })
+			},
+			visualMap: {
+				show: false, min: 0, max: 100,
+				inRange: { color: ["#eaf2fd", "#2a78d6"] }
+			},
+			series: [{
+				type: "heatmap",
+				data: cells,
+				itemStyle: { borderColor: b.surface, borderWidth: 2, borderRadius: 4 },
+				label: {
+					show: PERIODS.length <= 14,
+					fontFamily: b.font, fontSize: 11, fontWeight: 600,
+					formatter: function(p){
+						return (!p.data.real) ? "" : compactUnit(p.data.real);
+					},
+					color: "auto"
+				},
+				emphasis: { itemStyle:{ borderColor: css("--primary"), borderWidth: 2 } }
+			}]
+		});
+
+		/* heat cells carry [x, y, v]; y indexes the product */
+		onPick(c, function(p){
+			var yi = p.value && p.value.length > 1 ? p.value[1] : -1;
+			return seriesNames[yi];
+		});
+	}
+
+	/* ---------- 4. carte des wilayas ----------
+	   The GeoJSON ships with the app (no network at runtime). Its wilaya names
+	   differ in spelling from the database, and it predates the 10 wilayas
+	   created in 2019, so names are normalised and aliased; anything that still
+	   cannot be placed on the map is listed as text under it rather than being
+	   silently dropped. */
+	var DZ_GEO_LOADED = false;
+
+	/* DB spelling -> map spelling (checked against the 48 names in the geojson) */
+	var WILAYA_ALIAS = {
+		"CHELEF":"CHLEF",
+		"TAMENRASSET":"TAMANGHASSET",
+		"DJIJEL":"JIJEL",
+		"SIDI BELABBES":"SIDI BEL ABBES",
+		"EL BAYED":"EL BAYADH",
+		"B BOU ARRERIDJ":"BORDJ BOU ARRERIDJ",
+		"EL TAREF":"EL TARF",
+		"KHENCHLA":"KHENCHELA",
+		"AIN TIMOUCHENT":"AIN TEMOUCHENT",
+		/* the normaliser drops "." and turns "'" into a space, so these are the
+		   forms it actually produces for "B.BOU ARRERIDJ" and "EL M'GHAIR" */
+		"BBOU ARRERIDJ":"BORDJ BOU ARRERIDJ"
+	};
+	/* wilayas created in 2019: not present on a 48-province map. Fold each into
+	   the wilaya it was split from so its sales still appear somewhere sensible. */
+	var WILAYA_2019 = {
+		"TIMIMOUN":"ADRAR",
+		"BORDJ BADJI MOKHTAR":"ADRAR",
+		"OULED DJELLAL":"BISKRA",
+		"BENI ABBES":"BECHAR",
+		"IN SALAH":"TAMANGHASSET",
+		"IN GUEZZAM":"TAMANGHASSET",
+		"TOUGGOURT":"OUARGLA",
+		"DJANET":"ILLIZI",
+		"EL MGHAIR":"EL OUED",
+		"EL M GHAIR":"EL OUED",
+		"EL MENIAA":"GHARDAIA"
+	};
+
+	function normWilaya(s){
+		s = (s || "").toUpperCase();
+		/* strip accents so BÉNI ABBÈS == BENI ABBES */
+		s = s.normalize ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : s;
+		s = s.replace(/[-']/g, " ").replace(/[^A-Z ]/g, "");
+		return s.replace(/\s+/g, " ").trim();
+	}
+	/* Normalised name -> the exact string used inside the GeoJSON ("BLIDA" ->
+	   "Blida"). Built once the map is registered; ECharts matches on the raw
+	   feature name, so sending the uppercase form matches nothing. */
+	var GEO_NAME_BY_NORM = {};
+	function indexGeoNames(){
+		try{
+			var gm = echarts.getMap("algeria");
+			if(!gm || !gm.geoJson) return;
+			gm.geoJson.features.forEach(function(f){
+				var real = f.properties && f.properties.name;
+				if(real) GEO_NAME_BY_NORM[normWilaya(real)] = real;
+			});
+		}catch(e){}
+	}
+
+	function mapWilayaName(raw){
+		var n = normWilaya(raw);
+		if(WILAYA_ALIAS[n]) n = WILAYA_ALIAS[n];
+		else if(WILAYA_2019[n]) n = WILAYA_2019[n];
+		/* return the map's own spelling so the value actually binds to a shape */
+		return GEO_NAME_BY_NORM[n] || n;
+	}
+
+	/* Bounding-box centre of the Algeria geojson. Used to restore the default
+	   view: ECharts will not clear a centre once one has been set. */
+	var HOME_CENTER_CACHE = null;
+	function mapHomeCenter(){
+		if(HOME_CENTER_CACHE) return HOME_CENTER_CACHE;
+		try{
+			var gm = echarts.getMap("algeria");
+			if(!gm || !gm.geoJson) return null;
+			var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+			function scan(c, depth){
+				if(depth === 1){
+					for(var i = 0; i < c.length; i++){
+						var p = c[i];
+						if(p[0] < minX) minX = p[0];
+						if(p[0] > maxX) maxX = p[0];
+						if(p[1] < minY) minY = p[1];
+						if(p[1] > maxY) maxY = p[1];
+					}
+				} else {
+					for(var j = 0; j < c.length; j++) scan(c[j], depth - 1);
+				}
+			}
+			gm.geoJson.features.forEach(function(f){
+				var g = f.geometry;
+				scan(g.coordinates, g.type === "Polygon" ? 2 : 3);
+			});
+			/* NB: the space after the opening bracket is REQUIRED. A bracket
+			   immediately followed by a parenthesis is Thymeleaf's inline
+			   unescaped-expression marker, and it would try to parse the rest
+			   of this line as an expression (500s the whole page). */
+			HOME_CENTER_CACHE = [ (minX + maxX) / 2, (minY + maxY) / 2 ];
+		}catch(e){ HOME_CENTER_CACHE = null; }
+		return HOME_CENTER_CACHE;
+	}
+
+	function buildMap(){
+		var host = document.getElementById("cardMap");
+
+		/* Aggregate by wilaya AND keep the per-category split, so the tooltip can
+		   show what actually sold there rather than just one number. */
+		var byWil = {}, byWilCat = {}, merged = {};
+		(RAW.breakdown || []).forEach(function(r){
+			var cat = r[0], sub = r[1], raw = r[2], v = Number(r[3]) || 0;
+			if(v <= 0) return;
+			var target = mapWilayaName(raw);
+			byWil[target] = (byWil[target] || 0) + v;
+
+			if(!byWilCat[target]) byWilCat[target] = {};
+			/* Pates is charted per sous-category, so label it the same way here */
+			var label = (cat === "Pates" && sub) ? (cat + " " + sub) : cat;
+			byWilCat[target][label] = (byWilCat[target][label] || 0) + v;
+
+			var n = normWilaya(raw);
+			if(WILAYA_2019[n]) merged[raw] = (merged[raw] || 0) + v;
+		});
+
+		var names = Object.keys(byWil);
+		if(!names.length){ host.style.display = "none"; return; }
+		host.style.display = "";
+		if(!DZ_GEO_LOADED) return;
+
+		var vals = names.map(function(n){ return byWil[n]; });
+		var maxV = Math.max.apply(null, vals);
+		var mapTotal = vals.reduce(function(a, b){ return a + b; }, 0);
+
+		/* Colour = share of total sales, in fixed bands. Quantile/rank buckets
+		   were misleading here: the Sahara wilayas are enormous on screen, so
+		   giving them a strong colour for a tiny rank made them dominate the
+		   map. Fixed share bands keep the meaning honest - a big desert wilaya
+		   with 0.1 % of sales stays visibly faint. */
+		var MAP_BANDS = [
+			{ pct: 0.5,  color: "#d7f0e4", label: "< 0,5 %" },
+			{ pct: 2,    color: "#7fd4ab", label: "0,5 – 2 %" },
+			{ pct: 5,    color: "#eda100", label: "2 – 5 %" },
+			{ pct: 10,   color: "#eb6834", label: "5 – 10 %" },
+			{ pct: 25,   color: "#d93a3a", label: "10 – 25 %" },
+			{ pct: 1e9,  color: "#8f1d1d", label: "> 25 %" }
+		];
+		var mapPieces = MAP_BANDS.map(function(band, bi){
+			var lo = bi === 0 ? 0 : mapTotal * MAP_BANDS[bi - 1].pct / 100;
+			var hi = band.pct >= 1e9 ? undefined : mapTotal * band.pct / 100;
+			return { min: lo, max: hi, color: band.color, label: band.label };
+		});
+
+		var b = baseOpts();
+		var c = mount("chartMap");
+		if(!c) return;
+
+		document.getElementById("mapHint").textContent =
+			MEASURE + (IS_VAL ? " en DA" : "") + " par wilaya · couleur = part des ventes";
+
+		c.setOption({
+			animationDuration: b.anim ? 700 : 0,
+			tooltip: tipBox(b, { trigger:"item",
+				formatter: function(p){
+					if(p.value === undefined || isNaN(p.value)){
+						return '<div style="font-weight:700">' + p.name + '</div>' +
+							   '<div style="color:' + b.ink3 + '">aucune vente sur la période</div>';
+					}
+					var pct = mapTotal ? (p.value / mapTotal * 100) : 0;
+					var out = '<div style="font-size:13.5px;font-weight:700;margin-bottom:2px">' +
+							  p.name + '</div>' +
+							  '<div style="color:' + b.ink2 + ';margin-bottom:7px">' +
+							  '<b style="color:' + b.ink1 + ';font-size:14px">' + fmt(p.value) +
+							  (UNIT ? " " + UNIT : "") + '</b> · ' + nf2.format(pct) + ' % des ventes</div>';
+
+					/* what actually sold there, biggest first */
+					var split = byWilCat[p.name] || {};
+					var rows = Object.keys(split).sort(function(a, z){ return split[z] - split[a]; });
+					if(rows.length){
+						out += '<div style="border-top:1px solid ' + b.grid + ';padding-top:6px">';
+						rows.forEach(function(k){
+							var col = (colorOf[k] || GRAY)[getTheme() === "dark" ? 1 : 0];
+							var share = p.value ? (split[k] / p.value * 100) : 0;
+							out += '<div style="display:flex;align-items:center;gap:8px;padding:2px 0">' +
+								   '<span style="width:10px;height:10px;border-radius:3px;flex:none;background:' + col + '"></span>' +
+								   '<span style="color:' + b.ink2 + '">' + k + '</span>' +
+								   '<b style="margin-left:auto">' + fmt(split[k]) + '</b>' +
+								   '<span style="color:' + b.ink3 + ';font-size:11.5px">' +
+								   nf0.format(share) + ' %</span></div>';
+						});
+						out += '</div>';
+					}
+					return out;
+				} }),
+			/* One wilaya (Blida) is ~40 % of everything, so a linear scale paints
+			   17 of 21 almost white. Quantile buckets colour by RANK instead, so
+			   every wilaya with sales gets a clearly distinct shade. */
+			/* show:false - the swatches are drawn as HTML in #mapLegend, which
+			   can wrap; the canvas legend was being clipped at this width */
+			visualMap: {
+				type: "piecewise",
+				show: false,
+				pieces: mapPieces,
+				outOfRange: { color: b.grid }
+			},
+			series: [{
+				id: "wilayas",
+				type: "map", map: "algeria",
+				/* Zoom only, no free panning: dragging could push the country
+				   completely out of the card. The whole country is visible at
+				   rest; the taller card makes the northern wilayas readable. */
+				roam: "scale", scaleLimit: { min: 1, max: 6 },
+				left: 2, right: 2, top: 8, bottom: 8,
+				label: { show:false },
+				select: { disabled: true },
+				emphasis: {
+					label: { show:false },
+					itemStyle: {
+						/* keep the wilaya's own colour, just make it pop */
+						borderColor: b.ink1, borderWidth: 2,
+						shadowBlur: 14, shadowColor: "rgba(19,26,38,.45)"
+					}
+				},
+				itemStyle: {
+					borderColor: b.surface, borderWidth: 1,
+					/* clearly "no data", distinct from every colour in the scale */
+					areaColor: getTheme() === "dark" ? "#222c3a" : "#e9edf4"
+				},
+				nameProperty: "name",
+				data: names.map(function(n){ return { name:n, value: byWil[n] }; })
+			}]
+		});
+
+		/* Wheel-zoom re-centres on the pointer, so zooming back out can leave the
+		   country parked off-frame (panning is disabled, so it would be stuck).
+		   Snap the view back to its default whenever we return to ~1x. */
+		var holder = document.querySelector(".map-holder");
+		/* the geographic middle of the country, so "reset" always lands the same
+		   way (center:null does not clear a centre ECharts has already stored) */
+		var HOME_CENTER = mapHomeCenter();
+		function resetMapView(){
+			c.setOption({ series: [{ id:"wilayas", zoom:1, center: HOME_CENTER }] });
+			if(holder) holder.classList.remove("zoomed");
+		}
+		c.off("georoam");
+		c.on("georoam", function(){
+			var ser = (c.getOption().series || [])[0];
+			if(!ser) return;
+			var z = ser.zoom || 1;
+			if(z <= 1.02) resetMapView();
+			else if(holder) holder.classList.add("zoomed");
+		});
+		var resetBtn = document.getElementById("mapReset");
+		if(resetBtn){
+			resetBtn.onclick = resetMapView;
+		}
+
+		/* ---- colour scale, as HTML so it can wrap ---- */
+		var leg = document.getElementById("mapLegend");
+		if(leg){
+			leg.textContent = "";
+			leg.appendChild(el("span", "ml-lead", "Part des ventes"));
+			MAP_BANDS.forEach(function(band){
+				var item = el("span", "ml-item");
+				var sw = el("span", "ml-sw");
+				sw.style.background = band.color;
+				item.appendChild(sw);
+				item.appendChild(document.createTextNode(band.label));
+				leg.appendChild(item);
+			});
+			/* wilayas with no sales are painted differently - say so */
+			var none = el("span", "ml-item");
+			var nsw = el("span", "ml-sw");
+			nsw.style.background = getTheme() === "dark" ? "#222c3a" : "#e9edf4";
+			none.appendChild(nsw);
+			none.appendChild(document.createTextNode("Aucune vente"));
+			leg.appendChild(none);
+		}
+
+		/* ---- ranked list: the reliable way to read the small northern wilayas ---- */
+		var rank = document.getElementById("mapRank");
+		if(rank){
+			rank.textContent = "";
+			names.slice().sort(function(a, z){ return byWil[z] - byWil[a]; })
+				.forEach(function(n, i){
+					var row = el("div", "mr-row");
+					row.appendChild(el("span", "mr-n", String(i + 1)));
+					row.appendChild(el("span", "mr-name", n));
+					row.appendChild(el("span", "mr-val", compactUnit(byWil[n])));
+					row.title = n + " : " + fmt(byWil[n]) + (UNIT ? " " + UNIT : "");
+					/* hovering a row highlights that wilaya on the map */
+					row.addEventListener("mouseenter", function(){
+						c.dispatchAction({ type:"highlight", name:n });
+						c.dispatchAction({ type:"showTip", seriesIndex:0, name:n });
+					});
+					row.addEventListener("mouseleave", function(){
+						c.dispatchAction({ type:"downplay", name:n });
+						c.dispatchAction({ type:"hideTip" });
+					});
+					rank.appendChild(row);
+
+					var bar = el("div", "mr-bar");
+					bar.style.width = Math.max(3, (byWil[n] / maxV) * 140) + "px";
+					bar.style.background = (colorOf[seriesNames[0]] || GRAY)[getTheme() === "dark" ? 1 : 0];
+					bar.style.background = css("--primary");
+					rank.appendChild(bar);
+				});
+		}
+
+		/* be explicit about the 2019 wilayas that had to be folded in */
+		var note = document.getElementById("mapTiny");
+		if(note){
+			var keys = Object.keys(merged);
+			note.textContent = "";
+			if(!keys.length){ note.style.display = "none"; }
+			else {
+				note.style.display = "";
+				note.appendChild(el("span","tiny-lead","Rattachée à la wilaya d'origine :"));
+				keys.sort(function(a,z){ return merged[z] - merged[a]; }).forEach(function(k){
+					var chip = el("span","tiny-item");
+					chip.appendChild(document.createTextNode(
+						k + " \u2192 " + WILAYA_2019[normWilaya(k)] +
+						" (" + fmt(merged[k]) + (UNIT ? " " + UNIT : "") + ")"));
+					note.appendChild(chip);
+				});
+			}
+		}
+	}
+
+	/* ---------- 5. hiérarchie (sunburst) : catégorie -> sous-catégorie ---------- */
+	/* --- sunburst label helpers --------------------------------------------
+	   A slice's arc length is what decides whether text fits. These scale the
+	   font down for narrow slices and trim long names, so labels degrade
+	   gracefully instead of disappearing. */
+	function sunShare(p){
+		var t = (p && p.treePathInfo && p.treePathInfo.length)
+			? p.treePathInfo[0].value : 0;
+		return (t && p.value) ? (p.value / t) : 0;
+	}
+	function sunFont(p, big, small){
+		var share = sunShare(p);
+		if(share >= 0.12) return big;
+		if(share >= 0.06) return big - 1;
+		if(share >= 0.03) return small + 0.5;
+		return small;
+	}
+	function sunLabel(p, maxChars){
+		var share = sunShare(p);
+		/* below ~1.2% of the whole there is simply no arc to write on */
+		if(share < 0.012) return "";
+		var name = p.name || "";
+		/* A tangential label runs ALONG the arc, so the usable character budget
+		   scales with the slice's share. Without this, two narrow neighbours
+		   (e.g. "Suppérieur" + "Panifiable") overlap each other. */
+		var budget = maxChars;
+		if(share < 0.16) budget = Math.min(budget, 10);
+		if(share < 0.10) budget = Math.min(budget, 8);
+		if(share < 0.06) budget = Math.min(budget, 6);
+		if(share < 0.04) budget = Math.min(budget, 4);
+		if(name.length > budget) name = name.slice(0, Math.max(2, budget - 1)) + "…";
+		return name;
+	}
+
+	/* categories/sub-categories too small to label, written out as text */
+	function renderSunTiny(rows, total){
+		var host = document.getElementById("sunTiny");
+		if(!host) return;
+		host.textContent = "";
+		var tiny = [];
+		rows.forEach(function(cat){
+			(cat.children || []).forEach(function(k){
+				if(total && (k.value / total) < 0.012){
+					tiny.push({ name: cat.name + " " + k.name, value: k.value,
+								color: k.itemStyle.color });
+				}
+			});
+		});
+		if(!tiny.length){ host.style.display = "none"; return; }
+		host.style.display = "";
+		host.appendChild(el("span", "tiny-lead", "Trop petit pour l'affichage :"));
+		tiny.sort(function(a,z){ return z.value - a.value; }).forEach(function(d){
+			var pct = total ? (d.value / total * 100) : 0;
+			var chip = el("span", "tiny-item");
+			var dot = el("span", "dot");
+			dot.style.background = d.color;
+			chip.appendChild(dot);
+			chip.appendChild(document.createTextNode(
+				d.name + " " + fmt(d.value) + (UNIT ? " " + UNIT : "") +
+				" (" + nf2.format(pct) + " %)"));
+			host.appendChild(chip);
+		});
+	}
+
+	function buildSun(){
+		var b = baseOpts();
+		var host = document.getElementById("cardSun");
+
+		var bySub = {}, catTot = {};
+		(RAW.breakdown || []).forEach(function(r){
+			var cat = r[0], sub = r[1], v = Number(r[3]) || 0;
+			if(v <= 0) return;
+			var k = cat + "|" + sub;
+			bySub[k] = (bySub[k] || 0) + v;
+			catTot[cat] = (catTot[cat] || 0) + v;
+		});
+
+		var cats = Object.keys(catTot).sort(function(a,z){ return catTot[z] - catTot[a]; });
+		if(!cats.length){
+			host.style.display = "none";
+			var st = document.getElementById("sunTiny");
+			if(st) st.style.display = "none";
+			return;
+		}
+		host.style.display = "";
+
+		/* lighten a hex colour towards white, for the sub-category ring */
+		function lighten(hex, amount){
+			var n = parseInt(hex.slice(1), 16);
+			var r = (n >> 16) & 255, g = (n >> 8) & 255, bl = n & 255;
+			r = Math.round(r + (255 - r) * amount);
+			g = Math.round(g + (255 - g) * amount);
+			bl = Math.round(bl + (255 - bl) * amount);
+			return "#" + ((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1);
+		}
+
+		var data = cats.map(function(cat){
+			var color = colorsFor([cat])[0];
+			var subs = Object.keys(bySub)
+				.filter(function(k){ return k.indexOf(cat + "|") === 0; })
+				.sort(function(a,z){ return bySub[z] - bySub[a]; });
+			return {
+				name: cat, value: catTot[cat], itemStyle: { color: color },
+				children: subs.map(function(k, i){
+					return {
+						name: k.split("|")[1],
+						value: bySub[k],
+						itemStyle: { color: lighten(color, .22 + i * 0.16) }
+					};
+				})
+			};
+		});
+
+		var sunTotal = data.reduce(function(a, d){ return a + d.value; }, 0);
+		renderSunTiny(data, sunTotal);
+
+		var c = mount("chartSun");
+		if(!c) return;
+		c.setOption({
+			animationDuration: b.anim ? 800 : 0,
+			tooltip: tipBox(b, { trigger:"item",
+				formatter: function(p){
+					var pct = grandTotal ? (p.value / grandTotal * 100) : 0;
+					return p.name + "<br/><b>" + fmt(p.value) + (UNIT ? " " + UNIT : "") +
+						   "</b> · " + nf2.format(pct) + " %";
+				} }),
+			series: [{
+				type: "sunburst",
+				radius: ["14%", "88%"], center: ["50%", "50%"],
+				sort: null,
+				/* Drill-down is back. The sunburst has no breadcrumb (that is a
+				   treemap feature), so the way out is the centre hole plus the
+				   "Tout afficher" button that appears once you are inside. */
+				nodeClick: "rootToNode",
+				emphasis: { focus: "ancestor" },
+				itemStyle: { borderColor: b.surface, borderWidth: 2, borderRadius: 5 },
+				/* Labels shrink (and shorten) instead of vanishing. ECharts drops a
+				   label when it will not fit the arc, so minAngle is lowered and the
+				   text is sized/trimmed to the slice it has to live in. Anything
+				   still too small is listed as text under the chart. */
+				label: {
+					fontFamily: b.font, color: "#fff", minAngle: 2,
+					overflow: "truncate", width: 70,
+					/* never let two labels collide: if it cannot be placed
+					   cleanly it is dropped, and the tooltip still has it */
+					hideOverlap: true
+				},
+				levels: [
+					{},
+					{ r0:"14%", r:"52%", label:{
+						rotate: 0, fontWeight: 600,
+						fontSize: function(p){ return sunFont(p, 12, 9); },
+						formatter: function(p){ return sunLabel(p, 12); }
+					} },
+					{ r0:"54%", r:"86%", label:{
+						rotate: "tangential",
+						fontSize: function(p){ return sunFont(p, 11, 8.5); },
+						formatter: function(p){ return sunLabel(p, 14); }
+					} }
+				],
+				data: data
+			}]
+		});
+
+		/* Resolve a slice to the product the charts know it by: an outer slice
+		   is a sous-categorie, so prefer "Cat Sub" when that is how it is
+		   charted, else fall back to the category itself. */
+		function sunProduct(p){
+			var nm = p.name;
+			if(seriesNames.indexOf(nm) >= 0) return nm;
+			var parent = p.treePathInfo && p.treePathInfo.length > 1
+				? p.treePathInfo[p.treePathInfo.length - 2].name : null;
+			if(parent){
+				var joined = parent + " " + nm;
+				if(seriesNames.indexOf(joined) >= 0) return joined;
+				if(seriesNames.indexOf(parent) >= 0) return parent;
+			}
+			return null;
+		}
+
+		var holder = document.querySelector(".sun-holder");
+		function sunAtTop(){
+			try{
+				var vr = c.getModel().getSeriesByIndex(0).getViewRoot();
+				return !vr || !vr.parentNode;      /* no parent == top level */
+			}catch(e){ return true; }
+		}
+		function syncSunBack(){
+			if(holder) holder.classList.toggle("drilled", !sunAtTop());
+		}
+		function sunReset(){
+			/* An empty sunburstRootToNode is a NO-OP - it needs a target. Go
+			   through the series model, which is what ECharts uses internally,
+			   then force a repaint: changing the view root does not schedule
+			   one on its own. */
+			try{
+				var sm = c.getModel().getSeriesByIndex(0);
+				var rootNode = sm.getData().tree.root;
+				c.dispatchAction({ type:"sunburstRootToNode", seriesIndex:0, targetNode: rootNode });
+				if(sm.getViewRoot() !== rootNode && sm.resetViewRoot){
+					sm.resetViewRoot(rootNode);
+					c.setOption(c.getOption(), false, true);
+				}
+			}catch(e){
+				/* last resort: rebuild the chart from scratch */
+				try{ buildSun(); }catch(e2){}
+			}
+			syncSunBack();
+		}
+
+		/* Single click drills in - ECharts does that itself. We only watch it so
+		   the "back" button can appear. A second click within 300 ms means the
+		   user wants the detail instead. */
+		var sunLast = 0;
+		c.on("click", function(p){
+			var now = Date.now();
+			var isDouble = (now - sunLast) < 300;
+			sunLast = now;
+
+			if(isDouble){
+				var name = sunProduct(p);
+				if(name) openDetail(name);
+				return;
+			}
+			/* let ECharts finish re-rooting before we read where we are */
+			setTimeout(syncSunBack, 60);
+		});
+
+		var sunBackBtn = document.getElementById("sunBack");
+		if(sunBackBtn) sunBackBtn.onclick = sunReset;
+		syncSunBack();
+	}
+
+	/* ---------- 6. sparklines par catégorie ---------- */
+	function buildSparks(){
+		var host = document.getElementById("sparkGrid");
+		host.textContent = "";
+		var b = baseOpts();
+		var mode = getTheme() === "dark" ? 1 : 0;
+
+		SERIES.forEach(function(s, i){
+			var color = (colorOf[s.name] || GRAY)[mode];
+			var card = el("div","spark");
+			var nameRow = el("div","s-name");
+			var dot = el("span","dot"); dot.style.background = color;
+			nameRow.appendChild(dot);
+			nameRow.appendChild(document.createTextNode(s.name));
+			var val = el("div","s-val", fmt(seriesTotals[i]) + (UNIT ? " " + UNIT : ""));
+			var share = el("div","s-share",
+				(grandTotal ? nf2.format(seriesTotals[i] / grandTotal * 100) : "0") + " % du total");
+			var box = el("div","s-chart");
+			box.style.height = "72px";
+			card.appendChild(nameRow); card.appendChild(val); card.appendChild(share); card.appendChild(box);
+			/* the whole card opens this product's detail */
+			card.style.cursor = "pointer";
+			card.setAttribute("role", "button");
+			card.setAttribute("tabindex", "0");
+			card.title = "Voir le détail de " + s.name;
+			card.addEventListener("click", function(){ openDetail(s.name); });
+			card.addEventListener("keydown", function(ev){
+				if(ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); openDetail(s.name); }
+			});
+			host.appendChild(card);
+
+			var c = echarts.init(box, null, { renderer:"canvas" });
+			charts.push(c);
+			c.setOption({
+				animationDuration: b.anim ? 600 : 0,
+				grid: { left:0, right:0, top:6, bottom:0 },
+				tooltip: tipBox(b, { trigger:"axis",
+					axisPointer:{ type:"line", lineStyle:{ color:b.axis } },
+					formatter: function(ps){
+						if(!ps.length) return "";
+						var p = PERIODS[ps[0].dataIndex];
+						return (p ? p.full : "") + "<br/><b>" +
+							   fmt(ps[0].value) + (UNIT ? " " + UNIT : "") + "</b>";
+					} }),
+				xAxis: { type:"category", show:false,
+					data: PERIODS.map(function(p){ return p.label; }), boundaryGap:false },
+				yAxis: { type:"value", show:false },
+				series: [{
+					type:"line", data:s.data, smooth:true,
+					/* a lone point needs its marker or the card looks empty */
+					showSymbol: PERIODS.length < 2, symbolSize:7,
+					lineStyle:{ width:2.2, color:color },
+					areaStyle:{ color: new echarts.graphic.LinearGradient(0,0,0,1,[
+						{ offset:0, color: alphaHex(color, "57") },
+						{ offset:1, color: alphaHex(color, "00") }]) }
+				}]
+			});
+		});
+	}
+
+	/* ---------- table ---------- */
+	var sortCol = -1, sortDir = 1;
+	function buildTable(){
+		var t = document.getElementById("dataTable");
+		t.textContent = "";
+
+		var thead = el("thead"), trh = el("tr");
+		/* the unit is stated once in the card subtitle, not on every column:
+		   repeating "(DA)" nine times forced the whole table to shrink */
+		var cols = ["Période"].concat(seriesNames).concat(["Total"]);
+		var hint = document.getElementById("tableHint");
+		if(hint){
+			hint.textContent = UNIT
+				? "Valeurs en " + UNIT + " · cliquez sur une colonne pour trier"
+				: "Cliquez sur une colonne pour trier";
+		}
+		cols.forEach(function(c, i){
+			var th = el("th", i === cols.length-1 ? "tot" : "", c);
+			th.scope = "col";
+			if(i === sortCol) th.appendChild(el("span","arrow", sortDir > 0 ? "▲" : "▼"));
+			th.addEventListener("click", function(){
+				if(sortCol === i) sortDir = -sortDir; else { sortCol = i; sortDir = 1; }
+				buildTable();
+			});
+			trh.appendChild(th);
+		});
+		thead.appendChild(trh); t.appendChild(thead);
+
+		var rows = PERIODS.map(function(p, pi){
+			return { label: p.label, full: p.full, vals: SERIES.map(function(s){ return s.data[pi]; }), total: periodTotals[pi], idx: pi };
+		});
+		if(sortCol === 0)                rows.sort(function(a,z){ return (a.idx - z.idx) * sortDir; });
+		else if(sortCol === cols.length-1) rows.sort(function(a,z){ return (a.total - z.total) * sortDir; });
+		else if(sortCol > 0)             rows.sort(function(a,z){ return (a.vals[sortCol-1] - z.vals[sortCol-1]) * sortDir; });
+
+		var tbody = el("tbody");
+		rows.forEach(function(r){
+			var tr = el("tr");
+			var td0 = el("td","", r.label); td0.title = r.full;
+			tr.appendChild(td0);
+			r.vals.forEach(function(v){ tr.appendChild(el("td","", fmt(v))); });
+			tr.appendChild(el("td","tot", fmt(r.total)));
+			tbody.appendChild(tr);
+		});
+		t.appendChild(tbody);
+
+		var tfoot = el("tfoot"), trf = el("tr");
+		trf.appendChild(el("td","", "Total"));
+		seriesTotals.forEach(function(v){ trf.appendChild(el("td","", fmt(v))); });
+		trf.appendChild(el("td","tot", fmt(grandTotal)));
+		tfoot.appendChild(trf); t.appendChild(tfoot);
+
+		/* Guarantee the fit. Nothing wraps any more, so with many categories the
+		   row could still be wider than the card; step the font down until it
+		   fits (CSS clamp alone cannot measure the real content). */
+		fitTable(t);
+	}
+
+	function fitTable(t){
+		var box = t.parentNode;
+		if(!box) return;
+		var size = 14;
+		t.style.fontSize = size + "px";
+		/* a couple of px of slack so a sub-pixel rounding does not trigger scroll */
+		while(t.scrollWidth > box.clientWidth - 2 && size > 11.5){
+			size -= 0.5;
+			t.style.fontSize = size + "px";
+		}
+	}
+
+	/* ---------- CSV export : desactive avec le bouton Exporter ----------
+	document.getElementById("btnCsv").addEventListener("click", function(){
+		var sep = ";";
+		var num = function(v){ return String((v || 0).toFixed(2)).replace(".", ","); };
+		var lines = [];
+		var uSuf = UNIT ? " (" + UNIT + ")" : "";
+		lines.push(["Période"]
+			.concat(seriesNames.map(function(n){ return n + uSuf; }))
+			.concat(["Total" + uSuf])
+			.map(function(c){ return '"' + c.replace(/"/g,'""') + '"'; }).join(sep));
+		PERIODS.forEach(function(p, pi){
+			lines.push(['"' + p.full.replace(/"/g,'""') + '"']
+				.concat(SERIES.map(function(s){ return num(s.data[pi]); }))
+				.concat([num(periodTotals[pi])]).join(sep));
+		});
+		lines.push(['"Total"'].concat(seriesTotals.map(num)).concat([num(grandTotal)]).join(sep));
+		var blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type:"text/csv;charset=utf-8;" });
+		var a = document.createElement("a");
+		a.href = URL.createObjectURL(blob);
+		a.download = "tableau_de_bord_" + (RAW.start || "") + "_" + (RAW.end || "") + ".csv";
+		document.body.appendChild(a); a.click();
+		setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+	});
+	---------------------------------------------------------------------- */
+
+	/* ---------- main chart type toggle ---------- */
+	document.getElementById("mLine").addEventListener("click", function(){
+		if(mainType === "line") return;
+		mainType = "line";
+		this.classList.add("on"); document.getElementById("mBar").classList.remove("on");
+		renderAll();
+	});
+	document.getElementById("mBar").addEventListener("click", function(){
+		if(mainType === "bar") return;
+		mainType = "bar";
+		this.classList.add("on"); document.getElementById("mLine").classList.remove("on");
+		renderAll();
+	});
+
+	/* ---------- share / composition mode toggles ---------- */
+	var shareType = "tree";     /* tree | donut */
+	/* "group" is the default: side-by-side bars each read straight off the axis.
+	   Stacked bars mislead - their height is a sum, not any one category. */
+	var compoType = "group";    /* group | stack | stack100 | heat */
+
+	function pickSeg(activeId, ids){
+		ids.forEach(function(id){
+			document.getElementById(id).classList.toggle("on", id === activeId);
+		});
+	}
+	/* keep the buttons in step with the starting modes */
+	pickSeg(shareType === "tree" ? "sTree" : "sDonut", ["sTree","sDonut"]);
+	document.getElementById("sTree").addEventListener("click", function(){
+		if(shareType === "tree") return;
+		shareType = "tree"; pickSeg("sTree", ["sTree","sDonut"]); renderAll();
+	});
+	document.getElementById("sDonut").addEventListener("click", function(){
+		if(shareType === "donut") return;
+		shareType = "donut"; pickSeg("sDonut", ["sTree","sDonut"]); renderAll();
+	});
+	var COMPO_IDS = ["cGroup","cStack","cStack100","cHeat"];
+	var COMPO_BTN = { group:"cGroup", stack:"cStack", stack100:"cStack100", heat:"cHeat" };
+	pickSeg(COMPO_BTN[compoType], COMPO_IDS);
+	document.getElementById("cGroup").addEventListener("click", function(){
+		if(compoType === "group") return;
+		compoType = "group"; pickSeg("cGroup", COMPO_IDS); renderAll();
+	});
+	document.getElementById("cStack").addEventListener("click", function(){
+		if(compoType === "stack") return;
+		compoType = "stack"; pickSeg("cStack", COMPO_IDS); renderAll();
+	});
+	document.getElementById("cStack100").addEventListener("click", function(){
+		if(compoType === "stack100") return;
+		compoType = "stack100"; pickSeg("cStack100", COMPO_IDS); renderAll();
+	});
+	document.getElementById("cHeat").addEventListener("click", function(){
+		if(compoType === "heat") return;
+		compoType = "heat"; pickSeg("cHeat", COMPO_IDS); renderAll();
+	});
+
+	/* ---------- render orchestration ---------- */
+	/* ---------- product detail drawer ---------- */
+
+	/* The charts show "Pates Longue"; RAW.breakdown stores cat "Pates" + sub
+	   "Longue". Return the pair so breakdown rows can be matched either way. */
+	function detailKeys(name){
+		var i = name.indexOf(" ");
+		if(i > 0){
+			var head = name.slice(0, i), tail = name.slice(i + 1);
+			return { cat: head, sub: tail, label: name };
+		}
+		return { cat: name, sub: null, label: name };
+	}
+
+	/* the ARTICLES (libellés) that make up this product, biggest first.
+	   RAW.articles rows are [category, sous-category, libellé, code, value]. */
+	function detailArticles(name){
+		var k = detailKeys(name);
+		var acc = {};
+		(RAW.articles || []).forEach(function(r){
+			var v = Number(r[4]) || 0;
+			if(v <= 0) return;
+			var match = (r[0] === name) ||
+						(k.sub && r[0] === k.cat && r[1] === k.sub);
+			if(!match) return;
+			var lib = r[2] || "—";
+			if(!acc[lib]) acc[lib] = { v:0, code:r[3] };
+			acc[lib].v += v;
+		});
+		return Object.keys(acc)
+			.map(function(lib){ return [lib, acc[lib].v, acc[lib].code]; })
+			.sort(function(a, b){ return b[1] - a[1]; });
+	}
+
+	/* every breakdown row belonging to this product */
+	function detailRows(name){
+		var k = detailKeys(name);
+		return (RAW.breakdown || []).filter(function(r){
+			if(Number(r[3]) <= 0) return false;
+			if(r[0] === name) return true;                       /* plain category   */
+			if(k.sub && r[0] === k.cat && r[1] === k.sub) return true;  /* "Pates Longue" */
+			return false;
+		});
+	}
+
+	function detailBar(host, rows, total, color){
+		if(!rows.length){
+			host.appendChild(el("div", "dt-empty", "Aucune donnée sur la période."));
+			return;
+		}
+		var max = rows[0][1];
+		rows.forEach(function(r){
+			var row = el("div", "dt-row");
+			row.appendChild(el("span", "n", r[0]));
+			row.appendChild(el("span", "v", fmt(r[1]) + (UNIT ? " " + UNIT : "")));
+			var track = el("div", "track");
+			var fill = el("div", "fill");
+			fill.style.width = Math.max(2, (r[1] / (max || 1)) * 100) + "%";
+			fill.style.background = color;
+			track.appendChild(fill);
+			row.appendChild(track);
+			host.appendChild(row);
+		});
+	}
+
+	var lastFocus = null;
+
+	function closeDetail(){
+		var pane = document.getElementById("detailPane");
+		var back = document.getElementById("detailBack");
+		pane.classList.remove("show");
+		back.classList.remove("show");
+		window.setTimeout(function(){
+			pane.hidden = true; back.hidden = true;
+		}, 260);
+		if(lastFocus && lastFocus.focus) { try{ lastFocus.focus(); }catch(e){} }
+	}
+
+	function openDetail(name){
+		if(!name) return;
+		var idx = seriesNames.indexOf(name);
+		if(idx < 0) return;                    /* not a product we charted */
+
+		lastFocus = document.activeElement;
+
+		var pane = document.getElementById("detailPane");
+		var back = document.getElementById("detailBack");
+		var body = document.getElementById("dtBody");
+		var col  = colorsFor([name])[0];
+
+		document.getElementById("dtName").textContent = name;
+		document.getElementById("dtDot").style.background = col;
+
+		var total = seriesTotals[idx] || 0;
+		var share = grandTotal ? (total / grandTotal * 100) : 0;
+		document.getElementById("dtSub").textContent =
+			MEASURE + " · " + PERIODS.length + " période" + (PERIODS.length > 1 ? "s" : "");
+
+		body.textContent = "";
+
+		/* ---- headline figures ---- */
+		var vals = SERIES[idx].data;
+		var avg = vals.length ? total / vals.length : 0;
+		var bi = 0;
+		vals.forEach(function(v, i){ if(v > vals[bi]) bi = i; });
+
+		var kpis = el("div", "dt-kpis");
+		function kpi(label, value, sub){
+			var c = el("div", "dt-kpi");
+			c.appendChild(el("div", "k", label));
+			var v = el("div", "v");
+			v.appendChild(document.createTextNode(value));
+			/* a real space, so the figure and its unit do not run together */
+			if(sub){ var sm = document.createElement("small"); sm.textContent = " " + sub; v.appendChild(sm); }
+			c.appendChild(v);
+			kpis.appendChild(c);
+		}
+		kpi("Total", fmt(total), UNIT || null);
+		kpi("Part du total", nf2.format(share) + " %");
+		kpi("Moyenne / période", fmt(avg), UNIT || null);
+		kpi("Meilleure période", PERIODS[bi] ? PERIODS[bi].label : "—");
+		body.appendChild(kpis);
+
+		/* ---- the articles that make up this product ----
+		   These are the libellés from "Liste des articles", with what each one
+		   sold over the range - far more use than repeating the evolution
+		   curve that is already on the page. */
+		var artRows = detailArticles(name);
+		var sec1 = el("div", "dt-sec");
+		sec1.appendChild(el("h3", null, "Articles (" + artRows.length + ")"));
+		if(!artRows.length){
+			sec1.appendChild(el("div", "dt-empty", "Aucun article vendu sur la période."));
+		} else {
+			var artMax = artRows[0][1];
+			artRows.forEach(function(r){
+				var row = el("div", "dt-row dt-art");
+				var head = el("div", "dt-art-head");
+				head.appendChild(el("span", "n", r[0]));
+				head.appendChild(el("span", "v", fmt(r[1]) + (UNIT ? " " + UNIT : "")));
+				row.appendChild(head);
+				if(r[2]) row.appendChild(el("div", "dt-art-code", "Code " + r[2]));
+				var track = el("div", "track");
+				var fill = el("div", "fill");
+				fill.style.width = Math.max(2, (r[1] / (artMax || 1)) * 100) + "%";
+				fill.style.background = col;
+				track.appendChild(fill);
+				row.appendChild(track);
+				sec1.appendChild(row);
+			});
+		}
+		body.appendChild(sec1);
+
+		/* ---- per period ---- */
+		var sec2 = el("div", "dt-sec");
+		sec2.appendChild(el("h3", null, "Par période"));
+		var perRows = PERIODS.map(function(p, i){ return [p.label, vals[i] || 0]; })
+			.filter(function(r){ return r[1] > 0; })
+			.sort(function(a, b){ return b[1] - a[1]; });
+		detailBar(sec2, perRows, total, col);
+		body.appendChild(sec2);
+
+		/* ---- per wilaya ---- */
+		var rows = detailRows(name);
+		var byWil = {};
+		rows.forEach(function(r){
+			var w = mapWilayaName(r[2]);
+			byWil[w] = (byWil[w] || 0) + Number(r[3]);
+		});
+		var wilRows = Object.keys(byWil).map(function(w){ return [w, byWil[w]]; })
+			.sort(function(a, b){ return b[1] - a[1]; });
+
+		var sec3 = el("div", "dt-sec");
+		sec3.appendChild(el("h3", null, "Par wilaya"));
+		detailBar(sec3, wilRows.slice(0, 12), total, col);
+		if(wilRows.length > 12){
+			sec3.appendChild(el("div", "dt-empty",
+				"+ " + (wilRows.length - 12) + " autres wilayas"));
+		}
+		body.appendChild(sec3);
+
+		/* ---- sous-categories, only when the product actually has several ---- */
+		var bySub = {};
+		(RAW.breakdown || []).forEach(function(r){
+			if(r[0] !== name) return;                 /* only a plain category splits */
+			if(Number(r[3]) <= 0) return;
+			var sub = r[1] || "—";
+			bySub[sub] = (bySub[sub] || 0) + Number(r[3]);
+		});
+		var subRows = Object.keys(bySub).map(function(k){ return [k, bySub[k]]; })
+			.sort(function(a, b){ return b[1] - a[1]; });
+		if(subRows.length > 1){
+			var sec4 = el("div", "dt-sec");
+			sec4.appendChild(el("h3", null, "Par sous-catégorie"));
+			detailBar(sec4, subRows, total, col);
+			body.appendChild(sec4);
+		}
+
+		/* ---- show it ---- */
+		back.hidden = false; pane.hidden = false;
+		void pane.offsetHeight;
+		back.classList.add("show"); pane.classList.add("show");
+		document.getElementById("dtClose").focus();
+	}
+
+	/* close: button, backdrop, Escape */
+	document.getElementById("dtClose").addEventListener("click", closeDetail);
+	document.getElementById("detailBack").addEventListener("click", closeDetail);
+	document.addEventListener("keydown", function(ev){
+		if(ev.key === "Escape" && !document.getElementById("detailPane").hidden) closeDetail();
+	});
+
+	/* Wire a chart up so clicking a product opens its detail. Each chart names
+	   the product differently, hence the per-chart name picker. */
+	function onPick(chart, pick, axisMode){
+		if(!chart) return;
+
+		/* ECharts' own click fires first, but its hit-test has a tolerance
+		   radius: near a crossing it happily reports the neighbouring series.
+		   On the axis charts we therefore only REMEMBER its guess - the pixel
+		   pass below decides - otherwise clicking Semoule opened Pates Courtes.
+		   On the shape charts (treemap, donut, sunburst, map) the native hit is
+		   exact, so it still acts directly. */
+		var handled = false;
+		var nativeGuess = null;
+		chart.on("click", function(p){
+			var name = pick(p);
+			if(!name) return;
+			if(axisMode){ nativeGuess = name; return; }   /* decided below */
+			handled = true;
+			openDetail(name);
+		});
+
+		chart.getZr().on("mousemove", function(ev){
+			var hit = chart.containPixel({ seriesIndex:0 }, [ev.offsetX, ev.offsetY]);
+			chart.getZr().setCursorStyle(hit ? "pointer" : "default");
+		});
+
+		if(!axisMode) return;
+
+		/* Fallback for the axis charts: anywhere inside the plot area counts.
+		   Work out which period was clicked, then which series' value at that
+		   period is closest to the clicked height. */
+		chart.getZr().on("click", function(ev){
+			/* the native handler already dealt with it */
+			if(handled){ handled = false; return; }
+
+			var pt = [ev.offsetX, ev.offsetY];
+			if(!chart.containPixel({ gridIndex: 0 }, pt)) return;
+
+			var data;
+			try{ data = chart.convertFromPixel({ gridIndex: 0 }, pt); }catch(e){ return; }
+			if(!data) return;
+
+			var lastP = PERIODS.length - 1;
+			var best = null;
+
+			if(chart.__grouped){
+				/* Side-by-side bars: the series is decided by WHERE IN THE SLOT
+				   the click landed, not by height. Count the bars the CHART
+				   draws - using the page's full series list named the wrong
+				   product whenever fewer were plotted. */
+				var barNames = [];
+				try{
+					(( chart.getOption() || {}).series || []).forEach(function(sr){
+						if(sr && sr.name) barNames.push(sr.name);
+					});
+				}catch(e){}
+				if(!barNames.length) return;
+
+				var pi = Math.round(data[0]);
+				if(pi < 0) pi = 0;
+				if(pi > lastP) pi = lastP;
+				var frac = data[0] - pi + 0.5;          /* 0 .. 1 across the slot */
+				if(frac < 0) frac = 0;
+				if(frac > 0.999) frac = 0.999;
+				var bi = Math.floor(frac * barNames.length);
+				if(bi > barNames.length - 1) bi = barNames.length - 1;
+				if(bi < 0) bi = 0;
+				openDetail(barNames[bi]);
+				nativeGuess = null;
+				return;
+			} else {
+				/* Measure in PIXELS against each drawn line.
+				   Data-space maths got this wrong twice: the lines are smoothed
+				   (so they are not where a straight interpolation says), and the
+				   near-zero series overlap each other. Pixel distance to the
+				   actual polyline is what "I clicked on that line" means, and it
+				   already accounts for smoothing, stacking and 100 % mode. */
+				var stacked = chart.__stacked;
+
+				/* Read what is ACTUALLY DRAWN, not the page's SERIES array. If
+				   the two ever disagree - a stale instance, a re-render between
+				   binding and clicking - an index into SERIES names the wrong
+				   product. The chart's own option cannot be out of date. */
+				var drawn = [];
+				try{
+					var o = chart.getOption() || {};
+					(o.series || []).forEach(function(sr){
+						if(sr && sr.data && sr.name) drawn.push({ name: sr.name, data: sr.data });
+					});
+				}catch(e){}
+				if(!drawn.length) return;
+
+				var nPts = 0;
+				drawn.forEach(function(d){ if(d.data.length > nPts) nPts = d.data.length; });
+
+				function pixelsFor(si){
+					var pts = [];
+					for(var i = 0; i < nPts; i++){
+						var at;
+						if(stacked){
+							/* a stacked band is drawn at the sum up to and including it */
+							at = 0;
+							for(var k = 0; k <= si; k++){ at += Number(drawn[k].data[i]) || 0; }
+						} else {
+							at = Number(drawn[si].data[i]) || 0;
+						}
+						var px = chart.convertToPixel({ gridIndex:0 }, [i, at]);
+						if(px) pts.push(px);
+					}
+					return pts;
+				}
+
+				/* distance from the click to a segment, in pixels */
+				function segDist(px, py, ax, ay, bx, by){
+					var dx = bx - ax, dy = by - ay;
+					var len2 = dx*dx + dy*dy;
+					var t = len2 ? (((px-ax)*dx + (py-ay)*dy) / len2) : 0;
+					if(t < 0) t = 0; else if(t > 1) t = 1;
+					var cx = ax + dx*t, cy = ay + dy*t;
+					return Math.sqrt((px-cx)*(px-cx) + (py-cy)*(py-cy));
+				}
+
+				/* Nearest line wins, full stop. An earlier version preferred the
+				   larger value when two lines were within a few pixels - that
+				   made big categories steal ties from the line actually under
+				   the cursor (clicking Semoule opened Pates Courtes), so
+				   distance is the only criterion. */
+				var bestD = Infinity;
+
+				drawn.forEach(function(sr, si){
+					var pts = pixelsFor(si);
+					var d = Infinity;
+
+					if(pts.length === 1){
+						d = Math.sqrt(Math.pow(pt[0]-pts[0][0],2) + Math.pow(pt[1]-pts[0][1],2));
+					} else {
+						for(var i = 0; i < pts.length - 1; i++){
+							var dd = segDist(pt[0], pt[1], pts[i][0], pts[i][1], pts[i+1][0], pts[i+1][1]);
+							if(dd < d) d = dd;
+						}
+					}
+
+					if(d < bestD){ bestD = d; best = si; }
+				});
+			}
+
+			/* the pixel measurement is authoritative; the native guess is only
+			   a fallback for the rare case where nothing could be measured.
+			   Names come from the chart, so they always match what was drawn. */
+			var pickedName = null;
+			if(best !== null){
+				pickedName = chart.__grouped
+					? (seriesNames[best] || null)      /* bars: index is the series order */
+					: ((drawn[best] && drawn[best].name) || null);
+			}
+			if(pickedName) openDetail(pickedName);
+			else if(nativeGuess) openDetail(nativeGuess);
+			nativeGuess = null;
+		});
+	}
+
+	function renderAll(){
+		destroyCharts();
+		paintChips();
+		var empty = (PERIODS.length === 0 || SERIES.length === 0 || grandTotal === 0);
+		["cardMain","cardDonut","cardStack","cardMap","cardSun","sparkGrid","cardTable"].forEach(function(id){
+			document.getElementById(id).style.display = empty ? "none" : "";
+		});
+		document.getElementById("emptyState").hidden = !empty;
+		/* with nothing to show, "best period 0" and "top category —" are just noise */
+		document.getElementById("kpis").style.display = empty ? "none" : "";
+		if(empty) return;
+		buildKpis();
+
+		/* Set the widths BEFORE rendering: a chart measures its container on init,
+		   so changing the span afterwards would leave it at the old width.
+		   "Part of the whole" needs a whole - one category is always 100 %. */
+		var multi = SERIES.length > 1;
+		var mainCard = document.getElementById("cardMain");
+		document.getElementById("cardDonut").style.display = multi ? "" : "none";
+		if(!multi){
+			var tn = document.getElementById("shareTiny");
+			if(tn) tn.style.display = "none";
+		}
+		mainCard.classList.toggle("span-8", multi);
+		mainCard.classList.toggle("span-12", !multi);
+
+		document.getElementById("mainHint").textContent =
+			MEASURE + (IS_VAL ? " en DA" : "") + " par catégorie et par période";
+		buildMain();
+
+		if(multi){
+			renderTinyNote();
+			if(shareType === "tree"){
+				document.getElementById("shareHint").textContent =
+					"Taille du bloc = part de la catégorie";
+				buildTreemap();
+			} else {
+				document.getElementById("shareHint").textContent =
+					"Part de chaque catégorie sur la période";
+				buildDonut();
+			}
+		}
+
+		if(SERIES.length > 1){
+			document.getElementById("cardStack").style.display = "";
+			var hint = document.getElementById("compoHint");
+			if(compoType === "heat"){
+				hint.textContent = "Plus la case est foncée, plus le volume est élevé";
+				buildHeat();
+			} else if(compoType === "stack100"){
+				hint.textContent = "Part de chaque catégorie dans le total de la période";
+				buildStack("pct");
+			} else if(compoType === "stack"){
+				hint.textContent = "Barres cumulées : la hauteur totale = le total de la période";
+				buildStack("stack");
+			} else {
+				hint.textContent = "Chaque barre se lit directement sur l'axe";
+				buildStack("group");
+			}
+		}
+		else document.getElementById("cardStack").style.display = "none";
+
+		/* flow + hierarchy: only meaningful with the sous-category / wilaya
+		   breakdown, and each hides itself when that data is empty */
+		buildMap();
+		buildSun();
+
+		buildSparks();
+		buildTable();
+	}
+
+	/* Register the Algeria map, then redraw it. Deliberately after every chart
+	   function is defined, and outside the critical path: if the file is missing
+	   the rest of the dashboard still renders normally. */
+	(function loadAlgeriaMap(){
+		try{
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "resources/echarts/algeria-wilayas.json", true);
+			xhr.onload = function(){
+				if(xhr.status < 200 || xhr.status >= 300) return;
+				try{
+					echarts.registerMap("algeria", JSON.parse(xhr.responseText));
+					indexGeoNames();
+					DZ_GEO_LOADED = true;
+					buildMap();
+				}catch(e){}
+			};
+			xhr.send();
+		}catch(e){}
+	})();
+
+	renderAll();
+
+	})();
+	</script>
+</body>
+</html>

@@ -110,10 +110,11 @@ public class bon_livraison_facture_detail implements Serializable {
 		this.magasin = magasin;
 		
 		this.montant_ht = this.quantite * prix_u_ht;
-		this.montant_tva = montant_ht * (tva / 100);
-		this.montant_ttc = montant_ht + montant_tva;
-		this.pourcentage_remise = (montant_remise * 100) / montant_ht;
 		this.montant_ht_net = montant_ht - montant_remise;
+		
+		this.montant_tva = montant_ht_net * (tva / 100);
+		this.montant_ttc = montant_ht_net + montant_tva;
+		this.pourcentage_remise = (montant_remise * 100) / montant_ht;
 		
 		this.user_magasin_validate = null;
 		this.validation = false;

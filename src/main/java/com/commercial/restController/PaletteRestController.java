@@ -1,7 +1,7 @@
 package com.commercial.restController;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,47 +9,51 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.commercial.entities.schema.client.client;
-import com.commercial.entities.schema.client.repository.clientRepository;
+import com.commercial.entities.schema.client.gestion_palette;
+import com.commercial.entities.schema.user_menu.users;
 import com.commercial.services.PaletteService;
 
 @CrossOrigin()
 @RestController
-
+@SessionAttributes("admin")
 public class PaletteRestController {
 	
 	@Autowired
 	PaletteService ps;
 	
-	@Autowired
-	clientRepository cltRepo;
-	
 	public PaletteRestController() {
-		// TODO Auto-generated constructor stub
 	}
 	
-	
-	@GetMapping(value="/getClientsPalette")
-	public List<client> getClientsPalette(){
-		/*
-		System.out.println("access get client");
-		
-		List<client> lstClientsPal = cltRepo.client_vente_palette();
-		*/
-		return new ArrayList<>();
-		
+	/**
+	 * Returns list of clients with palette balance data (since 2026-01-01)
+	 */
+	@GetMapping(value="/getClientsPaletteData")
+	public List<Map<String, Object>> getClientsPaletteData() {
+		return ps.getClientsPaletteData();
 	}
 	
+	/**
+	 * Returns palette history for a specific RC (outgoing + returns)
+	 */
+	@GetMapping(value="/getPaletteHistory")
+	public List<Map<String, Object>> getPaletteHistory(@RequestParam("numero_rc") String numeroRc) {
+		return ps.getPaletteHistory(numeroRc);
+	}
+	
+	/**
+	 * Record a palette return
+	 */
 	@PostMapping(value="/retourPalette")
-	public void retourPalette(
-			@RequestParam("id_client") long id_client,
-			@RequestParam("nbr_palette") long nbr_palette
-			) 
-	{
+	public gestion_palette retourPalette(
+			@RequestParam("client_rc") String clientRc,
+			@RequestParam("client_name") String clientName,
+			@RequestParam("quantity") double quantity,
+			@SessionAttribute("user") users user) {
 		
-		//ps.paletteIN(nbr_palette, cltRepo.getOne(id_client));
-		
+		return ps.recordReturn(clientRc, clientName, quantity, user.getId());
 	}
 	
 }

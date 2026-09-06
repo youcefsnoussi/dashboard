@@ -30,6 +30,7 @@ public class bon_livraison_employee  implements Serializable {
 	private String prenom_employee;
 	
 	private String date;
+	
 	private String time;
 	
 	@Column(unique = true)
@@ -62,13 +63,17 @@ public class bon_livraison_employee  implements Serializable {
 	@Column(columnDefinition="boolean default false")
 	boolean factured = false;
 	
+	private String cardNumber;
+
+	private String type_rc;
+	
 	public bon_livraison_employee() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public bon_livraison_employee(String matricule_employee, String nom_employee, String prenom_employee, String date,
 			String time, String numero, String link_pdf, facture facture, users users, int etat_livraison, double montant_ht, 
-			double montant_tva, double montant_ttc, boolean cancel) {
+			double montant_tva, double montant_ttc, boolean cancel, String cardNumber, String type_rc) {
 		super();
 		this.matricule_employee = matricule_employee;
 		this.nom_employee = nom_employee;
@@ -84,10 +89,12 @@ public class bon_livraison_employee  implements Serializable {
 		this.montant_tva = montant_tva;
 		this.montant_ttc = montant_ttc;
 		this.cancel = cancel;
+		this.cardNumber = cardNumber;
+		this.type_rc = type_rc;
 	}
 	
 	public bon_livraison_employee(String matricule_employee, String nom_employee, String prenom_employee, String date,
-			String time, String numero, users users) {
+			String time, String numero, users users, String cardNumber, String type_rc) {
 		super();
 		this.matricule_employee = matricule_employee;
 		this.nom_employee = nom_employee;
@@ -99,6 +106,8 @@ public class bon_livraison_employee  implements Serializable {
 		this.facture = null;
 		this.users = users;
 		this.etat_livraison = 0;
+		this.cardNumber = cardNumber;
+		this.type_rc = type_rc;
 	}
 	
 	public Long getId() {
@@ -228,5 +237,27 @@ public class bon_livraison_employee  implements Serializable {
 	public void setFactured(boolean factured) {
 		this.factured = factured;
 	}
+
+	public String getCardNumber() {
+		return cardNumber;
+	}
+
+	public void setCardNumber(String cardNumber) {
+		this.cardNumber = cardNumber;
+	}
+
+	public String getType_rc() {
+		return type_rc;
+	}
+
+	public void setType_rc(String type_rc) {
+		this.type_rc = type_rc;
+	}
+
+	public void setMontant_ttc(double montant_ttc) {
+		this.montant_ttc = montant_ttc;
+	}
+	
+	
 	
 }

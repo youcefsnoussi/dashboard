@@ -72,9 +72,8 @@ public class WebController {
 		
 		//---------------------------- add user information ---------------------------
 		String user_name = request.getUserPrincipal().getName();
-		
 		users user  = userrepository.find_user_byusername(user_name); 
-		
+		System.out.println("user"+user_name);
 		model.addAttribute("user", user); //----------------- adding user object to session
 		
 		roles role = user.getRole();//roles_repository.getOne(user.getId_role().getId());
@@ -265,7 +264,6 @@ public class WebController {
 	
 	@RequestMapping(value="/login")
 	public String login(){
-		
 		return "login";
 		
 	}

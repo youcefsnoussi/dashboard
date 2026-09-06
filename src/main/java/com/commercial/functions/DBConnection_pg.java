@@ -20,13 +20,13 @@ public class DBConnection_pg {
 			
 			//String url = "jdbc:postgresql://localhost:5432/commercial"; //----------------> Local
 			
-			//String url = "jdbc:postgresql://192.168.1.231:5432/commercial"; //----------> Server
+			String url = "jdbc:postgresql://localhost:5432/commercial"; //----------> Server
 			
 			//String url = "jdbc:postgresql://192.168.1.231:5432/commercial_mais"; //----------> Server Mais
 			
 			//String url = "jdbc:postgresql://192.168.1.231:5432/commercial_comodities"; //----------> Server Comodities
 			
-			String url = "jdbc:postgresql://10.15.15.151:5432/commercial"; //-----------> AinDefla
+			//String url = "jdbc:postgresql://10.15.15.151:5432/commercial"; //-----------> AinDefla
 			
 			String username = "postgres";
 			String password = "***REMOVED***";

@@ -129,7 +129,9 @@ public class paymentsController {
 		
 		//model.addAttribute("client", clientRepo.findAll());
 		
-		model.addAttribute("clt_rc",c_rcRepo.findAll());
+		/* one query instead of ~1900: the two @ManyToOne sides are EAGER by
+		   default, so a plain findAll() over ~930 rows hammered the remote DB */
+		model.addAttribute("clt_rc",c_rcRepo.find_all_with_client_and_rc());
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
 		
@@ -161,7 +163,9 @@ public class paymentsController {
 		
 		//model.addAttribute("client", clientRepo.findAll());
 		
-		model.addAttribute("clt_rc",c_rcRepo.findAll());
+		/* one query instead of ~1900: the two @ManyToOne sides are EAGER by
+		   default, so a plain findAll() over ~930 rows hammered the remote DB */
+		model.addAttribute("clt_rc",c_rcRepo.find_all_with_client_and_rc());
 		
 		//model.addAttribute("unite", uniteRepo.findAll());
 		
@@ -455,15 +459,13 @@ public class paymentsController {
 			
 			//System.out.println("banc = "+banque.getNom_banque()+" / "+num_piece+" / "+date+" / "+montant+" / "+rcRepo.getOne(id_rc).getNom());
 			
-			List<paiement> p = payRepo.if_payment_already_exist(banque, num_piece, cc.convertion_InputDate_to_MyDate(date), 
-											/*montant,*/ rcRepo.getOne(id_rc));
-			
+			List<paiement> p = payRepo.if_payment_already_exist(banque, num_piece);			
 			System.out.println("if pay exist "+p.size());
 			
 			long id_pay = 0;
 			
 			if(p.size()==0) {
-				
+				 
 				paiement pay = new paiement(clientRepo.getOne(id_client), rcRepo.getOne(id_rc), montant, 
 											cc.convertion_InputDate_to_MyDate(date), gtd.get_date(), gtd.get_time(), mode_payRepo.getOne(mode_pay),
 						banque, user, num_piece, img_path, false, obs, info_supp_bank, false, montant);

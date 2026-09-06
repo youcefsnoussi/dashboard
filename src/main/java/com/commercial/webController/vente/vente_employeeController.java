@@ -1,6 +1,7 @@
 package com.commercial.webController.vente;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ import com.commercial.entities.schema.static_data.repository.tva_Repository;
 import com.commercial.entities.schema.static_data.repository.uniteRepository;
 import com.commercial.entities.schema.static_data.repository.unite_mesureRepository;
 import com.commercial.entities.schema.user_menu.users;
+import com.commercial.functions.ConnectionGRHLogistique;
 import com.commercial.functions.Connection_RH;
 import com.commercial.functions.convert_string_to_date_util;
 import com.commercial.functions.generateQRcode;
@@ -76,6 +78,9 @@ public class vente_employeeController {
 	
 	@Autowired
 	Connection_RH con_rh;
+
+	@Autowired
+	ConnectionGRHLogistique con_logistique;
 	
 	//------------------------------------------------------------
 	
@@ -184,6 +189,8 @@ public class vente_employeeController {
 		
 	}
 	
+	//--------------------------------------------------------
+	
 	@RequestMapping(value="/vente_employee_grh")
 	public String vente_employee_grh(HttpServletRequest request,
 						 @RequestParam("id_ble") long id_ble,
@@ -199,6 +206,28 @@ public class vente_employeeController {
 		model.addAttribute("ble", ble_rh);
 		
 		model.addAttribute("ble_detail", ble_rh_d);
+		
+		return ret;
+		
+	}
+
+	//--------------------------------------------------------
+
+	@RequestMapping(value="/vente_employee_logistique")
+	public String vente_employee_logistique(HttpServletRequest request,
+					 @RequestParam("id_ble") long id_ble,
+					 @SessionAttribute("user") users user,
+					 Model model){
+		
+		String ret = "vente/vente_employee_logistique";
+		
+		bon_livraison_employee ble_log = con_logistique.get_ble_logistique_id(id_ble);
+		
+		List <bon_livraison_detail_employee> ble_log_d = con_logistique.get_detail_ble_logistique(id_ble);
+		
+		model.addAttribute("ble", ble_log);
+		
+		model.addAttribute("ble_detail", ble_log_d);
 		
 		return ret;
 		
@@ -261,7 +290,7 @@ public class vente_employeeController {
 		bon_livraison_employee ble = new bon_livraison_employee(matricule, nom, prenom, date, time, numero, "", null, user, 0, 
 										montant_ht, montant_tva, montant_ttc, false);
 		*/
-		bon_livraison_employee ble = new bon_livraison_employee(matricule, nom, prenom, date, time, numero, user);
+		bon_livraison_employee ble = new bon_livraison_employee(matricule, nom, prenom, date, time, numero, user, null, null);
 		
 		bleRepo.save(ble); bleRepo.flush();
 		
@@ -317,6 +346,7 @@ public class vente_employeeController {
 			
 			@RequestParam("id_bl_grh") long id_bl_grh,
 			@RequestParam("employee") String employee,
+			@RequestParam("card_number") String cardNumber,
 			//@RequestParam("tva") double tva,
 			@RequestParam("total_tva") double montant_tva,
 			@RequestParam("total_ttc") double montant_ttc,
@@ -368,7 +398,8 @@ public class vente_employeeController {
 		bon_livraison_employee ble = new bon_livraison_employee(matricule, nom, prenom, date, time, numero, "", null, user, 0, 
 										montant_ht, montant_tva, montant_ttc, false);
 		*/
-		bon_livraison_employee ble = new bon_livraison_employee(matricule, nom, prenom, date, time, numero, user);
+		bon_livraison_employee ble = new bon_livraison_employee
+						(matricule, nom, prenom, date, time, numero, user, cardNumber, "Agro");
 		
 		bleRepo.save(ble); bleRepo.flush();
 		
@@ -412,6 +443,92 @@ public class vente_employeeController {
 		
 		con_rh.update_ble_grh(ble, id_bl_grh);
 		
+		return "redirect:/print_ble?id_bl="+ble.getId();
+		
+	}
+
+	//-------------------------------------------------------------
+
+	@RequestMapping(value="/new_commande_employee_logistique",method=RequestMethod.POST)
+	public String new_commande_employee_logistique_Post(HttpServletRequest req,
+
+			@RequestParam("id_bl_logistique") long id_bl_logistique,
+			@RequestParam("employee") String employee,
+			@RequestParam("card_number") String cardNumber,
+			@RequestParam("total_tva") double montant_tva,
+			@RequestParam("total_ttc") double montant_ttc,
+			@RequestParam("total_ht") double montant_ht,
+
+			@RequestParam(name = "art", defaultValue = "0") long [] article,
+			@RequestParam(name = "id_um", defaultValue = "0") long [] id_unite_mesure,
+			@RequestParam(name = "montant_ht_art", defaultValue = "0") double [] montant_ht_art,
+			@RequestParam(name = "tva_art", defaultValue = "0") double [] tva_art,
+			@RequestParam(name = "prix_unitaire", defaultValue = "0") double [] prix_u_ht,
+			@RequestParam(name = "qte", defaultValue = "0") double [] quantite,
+			@RequestParam(name = "tva_art", defaultValue = "0") double [] montant_tva_art,
+
+			@SessionAttribute("user") users user){
+
+		get_time_date gtd = new get_time_date();
+
+		numerotation_by_year nby = new numerotation_by_year();
+
+		bon_livraison_employee last_ble = bleRepo.findFirst1ByOrderByNumeroDesc();
+
+		String last_number = "";
+
+		if(last_ble!=null) {
+			
+			last_number = last_ble.getNumero();
+			
+		}
+
+		String numero = nby.return_num_BonSortie(last_number, user.getUnite().getId());
+
+		String [] s = employee.split("/");
+
+		String date = gtd.get_date(), time = gtd.get_time();
+
+		String matricule = s[0];
+
+		String nom = s[1];
+
+		String prenom = s[2];
+
+		bon_livraison_employee ble = new bon_livraison_employee
+					(matricule, nom, prenom, date, time, numero, user, cardNumber , "Logistique");	
+
+		bleRepo.save(ble); bleRepo.flush();
+
+		trk.add_track("bon_livraison_employee", "Creation commande pour employée logistique", ble.getId(), user);
+
+		for(int i=0;i<article.length;i++) {
+			
+			if(quantite[i]!=0) {
+				prixUnitaire_article_categoryClient pu_obj = 
+						prix_u_art_catcRepo.get_prix_articles_by_CatClient_Object(cat_clientRepo.get_category_by_name("Personnel"), 
+						artRepo.getOne(article[i]));
+				
+				bon_livraison_detail_employee ble_d = new bon_livraison_detail_employee(ble, artRepo.getOne(article[i]), quantite[i],
+						pu_obj.getPrix(), pu_obj.getTva().getTaux_tva(), user, artRepo.getOne(article[i]).getUnite_mesure_vente(), 
+						null);
+
+				ble_dRepo.save(ble_d);ble_dRepo.flush();
+				
+			}
+			
+		}
+
+		List<Double[]> sum_details = ble_dRepo.get_sum_for_ble(ble);
+		
+		ble.setMontant_ht(sum_details.get(0)[0]);
+		ble.setMontant_tva(sum_details.get(0)[1]);
+		ble.setMontant_ttc(sum_details.get(0)[2]);
+		
+		bleRepo.save(ble); bleRepo.flush();
+
+		con_logistique.update_ble_logistique(ble, id_bl_logistique);
+
 		return "redirect:/print_ble?id_bl="+ble.getId();
 		
 	}
@@ -502,6 +619,9 @@ public class vente_employeeController {
 		model.addAttribute("date_d", date_d);
 		
 		model.addAttribute("date_f", date_f);
+
+
+		
 		
 		//----------------------ROLE TEST---------------------------------
 		
@@ -518,6 +638,65 @@ public class vente_employeeController {
 		
 	}
 	
+	//-----------------------------------------------------------------------------
+
+	@RequestMapping(value="/bl_encours_employee_log")
+	public String list_bls_encours_employee_2 (HttpServletRequest request,
+						 @RequestParam("start") String start,
+						 @RequestParam("end") String end,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		String ret = "vente/list_bl_employee_log";
+		
+		get_time_date gtd = new get_time_date();
+		
+		String date_d = "", date_f = "";
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		if(start.equals("0") && end.equals("0")) {
+			
+			model.addAttribute("list_ble", bleRepo.date_between_ble(gtd.get_date(), gtd.get_date()));
+			
+			date_d = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+			
+			date_f = conv.convertion_MyDate_to_InputDate(gtd.get_date());
+		}
+		else {
+			
+			date_d = conv.convertion_InputDate_to_MyDate(start);
+			date_f = conv.convertion_InputDate_to_MyDate(end);
+			
+			model.addAttribute("list_ble", bleRepo.date_between_ble_logistique(date_d, date_f));
+			
+			date_d = start; date_f = end;
+			
+		}
+		//model.addAttribute("bls", bon_lRepo.get_bl_encours());
+		
+		model.addAttribute("date_d", date_d);
+		
+		model.addAttribute("date_f", date_f);
+
+
+		
+		
+		//----------------------ROLE TEST---------------------------------
+		
+		boolean cancel_ble = false;
+		
+		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("cancel_ble")) 
+		{ cancel_ble = true; }
+		
+		model.addAttribute("cancel_ble", cancel_ble);
+		
+		//----------------------------------------------------------------
+		
+		return ret;
+		
+	}
+
 	//-----------------------------------------------------------------------------
 	
 	@RequestMapping(value="/bl_encours_employee_grh")
@@ -543,6 +722,34 @@ public class vente_employeeController {
 		
 		model.addAttribute("date_f", date_f);
 		
+		return ret;
+		
+	}
+	
+	//----------------------------------------------------------------------------- 
+
+	@RequestMapping(value="/bl_encours_employee_logistique")
+	public String list_bls_encours_employee_logistique (HttpServletRequest request,
+					 @RequestParam(name="start", defaultValue="0") String start,
+					 @RequestParam(name="end", defaultValue="0") String end,
+					 @SessionAttribute("user") users user,
+					 Model model){
+		
+		String ret = "vente/list_bl_employee_logistique";
+		
+		get_time_date gtd = new get_time_date();
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		String date_d = (start.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : start; 
+		
+		String date_f = (end.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : end;
+		
+		model.addAttribute("list_ble", con_logistique.get_ble_logistique(date_d, date_f));
+		
+		model.addAttribute("date_d", date_d);
+		
+		model.addAttribute("date_f", date_f);
 		
 		return ret;
 		
@@ -575,15 +782,36 @@ public class vente_employeeController {
 	
 	//-----------------------------------------------------------------------------
 	
+	@RequestMapping(value="validation_ble_detail")
+	public String validation_ble_detail(HttpServletRequest request,
+						 @SessionAttribute("user") users user,
+						 @RequestParam(name = "card_number", defaultValue = "") String cardNumber,
+						 
+						 Model model){
+		
+		List<bon_livraison_detail_employee> ble_d = new ArrayList<>();
+		
+		ble_d = ble_dRepo.get_ble_details_by_card_number(cardNumber);
+		
+		model.addAttribute("ble_d", ble_d);
+		
+		model.addAttribute("cardNumber", (cardNumber!=null) ? cardNumber : "");
+		
+		String ret = "vente/validation_ble_detail";
+		
+		return ret;
+		
+	}
 	
 	//-------------------------------------------------------------------------------
 	
 	@RequestMapping(value="facture_ble")
 	public String facture_ble(HttpServletRequest request,
-						 @SessionAttribute("user") users user,
-						 @RequestParam("start") String start,
-						 @RequestParam("end") String end,
-						 Model model){
+					 @SessionAttribute("user") users user,
+					 @RequestParam("start") String start,
+					 @RequestParam("end") String end,
+					 @RequestParam(name = "type_rc", defaultValue = "Agro") String type_rc,
+					 Model model){
 		
 		String date_d = "", date_f = "";
 		
@@ -592,15 +820,20 @@ public class vente_employeeController {
 		date_d = conv.convertion_InputDate_to_MyDate(start);
 		date_f = conv.convertion_InputDate_to_MyDate(end);
 		
-		List<Object[]> sample_all_detail_ble = ble_dRepo.get_cumule_facture_ble(date_d, date_f);
+		List<Object[]> sample_all_detail_ble = ble_dRepo.get_cumule_facture_ble(date_d, date_f, type_rc);
 		
 		List<Map<String, Object>> ret_all_details_ble = new ArrayList<Map<String, Object>>();
 		
-		List<Object []> total = ble_dRepo.get_total_facture_ble(date_d, date_f);
+		List<Object []> total = ble_dRepo.get_total_facture_ble(date_d, date_f, type_rc);
 		
-		System.out.println(total.get(0).length+", ");
+		double montant_ht = 0, montant_tva = 0, montant_ttc = 0;
 		
-		double montant_ht = (double)total.get(0)[0], montant_tva = (double)total.get(0)[1], montant_ttc = (double)total.get(0)[2];
+		if(!total.isEmpty() && total.get(0) != null) {
+			Object[] totals = total.get(0);
+			montant_ht = (totals[0] != null) ? ((Number)totals[0]).doubleValue() : 0;
+			montant_tva = (totals[1] != null) ? ((Number)totals[1]).doubleValue() : 0;
+			montant_ttc = (totals[2] != null) ? ((Number)totals[2]).doubleValue() : 0;
+		}
 		
 		for(int i=0; i<sample_all_detail_ble.size(); i++) {
 			
@@ -644,6 +877,8 @@ public class vente_employeeController {
 		
 		model.addAttribute("date_f", date_f);
 		
+		model.addAttribute("type_rc", type_rc);
+		
 		String ret = "vente/info_facture_employee";
 		
 		return ret;
@@ -658,6 +893,7 @@ public class vente_employeeController {
 		
 		@RequestParam("date_d") String date_d,
 		@RequestParam("date_f") String date_f,
+		@RequestParam("type_rc") String type_rc,
 		
 		@SessionAttribute("user") users user){
 		
@@ -669,7 +905,7 @@ public class vente_employeeController {
 		
 		//-------------------- get details ------------------------------
 		
-		List<Object[]> sample_all_detail_ble = ble_dRepo.get_cumule_facture_ble(date_d, date_f);
+		List<Object[]> sample_all_detail_ble = ble_dRepo.get_cumule_facture_ble(date_d, date_f, type_rc);
 		
 		List<Map<String, Object>> ret_all_details_ble = new ArrayList<Map<String, Object>>();
 		
@@ -803,7 +1039,7 @@ public class vente_employeeController {
 		
 		//---------------------------------------------- update bs sortie emp to factured------------------------------
 		
-		List<bon_livraison_employee> bls_emp = bleRepo.get_ble_factured(date_d, date_f);
+		List<bon_livraison_employee> bls_emp = bleRepo.get_ble_factured(date_d, date_f, type_rc);
 		
 		for(int i=0;i<bls_emp.size();i++) {
 			

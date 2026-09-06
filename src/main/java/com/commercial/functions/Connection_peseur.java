@@ -23,6 +23,9 @@ public class Connection_peseur {
 			
 						
 			String url = "jdbc:mysql://localhost:3306/peseur";
+			
+		//	String url = "jdbc:mysql://192.168.31.2:3306/peseur";
+
 			//String url = "jdbc:postgresql://192.168.1.231:5432/process";
 			
 			//System.out.println("URL ============>"+url);

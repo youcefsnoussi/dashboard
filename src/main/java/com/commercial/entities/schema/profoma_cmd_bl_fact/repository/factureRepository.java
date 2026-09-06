@@ -70,7 +70,7 @@ public interface factureRepository extends JpaRepository<facture, Long> {
 			
 		  + " WHERE CAST(fact.date AS date) BETWEEN (:start) AND (:end)"
 		  
-		  + " AND registre_commerce = :rc " )
+		  + " AND registre_commerce = :rc order by numero asc" )
 	 
 	public List<facture> date_between_facture_rc(@Param("start") Date start, @Param("end") Date end, 
 			@Param("rc") registre_commerce rc);

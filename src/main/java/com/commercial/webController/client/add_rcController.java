@@ -135,9 +135,11 @@ public class add_rcController {
 		
 		convert_string_to_date_util ctd = new convert_string_to_date_util();
 		
-		registre_commerce rc = rcRepo.if_rc_exist_db(num_rc, num_nif, num_art, nom, prenom);
+	//	registre_commerce rc = rcRepo.if_rc_exist_db(num_rc, num_nif, num_art, nom, prenom);
 		
-		String ret = "exist";
+	registre_commerce rc = null;
+
+	String ret = "exist";
 		
 		date_emission = ctd.convertion_InputDate_to_MyDate(date_emission);
 		
@@ -204,13 +206,12 @@ public class add_rcController {
 		
 		String ret= (cat.getLettre().length()==1 ? "00001" : "0001");
 		
-		List<registre_commerce> list_c = rcRepo.last_rc_by_category(cat);
+		String letter = cat.getLettre();
+		String last_code = rcRepo.last_rc_by_code("[0-9]"+letter+"[0-9]+$");
 		
-		registre_commerce c = (list_c.size() != 0) ? list_c.get(list_c.size()-1) : null;
-		
-		if(c!=null) {
+		if(last_code!=null) {
 			
-			String code = c.getCode();
+			String code = last_code;
 			
 			System.out.println("CODE ---> "+code);
 			

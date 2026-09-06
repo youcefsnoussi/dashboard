@@ -119,7 +119,7 @@ public interface facture_avoir_detailRepository extends JpaRepository<facture_av
 			
 				" CONCAT(fct_av_d.facture_avoir.registre_commerce.nom,' ',fct_av_d.facture_avoir.registre_commerce.prenom) AS concat, "+
 				
-				" SUM(quantite), prix_u_ht, SUM(montant_ht), SUM(montant_tva), SUM(montant_ttc)" + 
+				" SUM(quantite)*(-1), prix_u_ht, SUM(montant_ht)*(-1), SUM(montant_tva)*(-1), SUM(montant_ttc)*(-1)" + 
 				
 				" FROM facture_avoir_detail fct_av_d" +
 				
@@ -152,10 +152,27 @@ public interface facture_avoir_detailRepository extends JpaRepository<facture_av
 	
 	//----------------------------------------------------------------------
 	
+	/* Dashboard: single aggregate query over the whole range (avoir amounts negated,
+	   same convention as the per-category queries below). */
+	@Query( value = " SELECT cp.id AS cat_id, cp.nom_category AS cat_nom, " +
+			" scp.nom_sous_category AS scat_nom, fa.date AS jour, " +
+			" SUM(fad.quantite)*(-1) AS total_qte, SUM(fad.montant_ht)*(-1) AS total_ht " +
+			" FROM proforma_cmd_bl_fact.facture_avoir_detail fad " +
+			" JOIN proforma_cmd_bl_fact.facture_avoir fa ON fa.id = fad.facture_avoir " +
+			" JOIN article.article a ON a.id = fad.article " +
+			" JOIN article.produit p ON p.id = a.produit " +
+			" JOIN article.sous_category_produit scp ON scp.id = p.sous_category_produit " +
+			" JOIN article.category_produit cp ON cp.id = scp.category_produit " +
+			" WHERE CAST(fa.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date) " +
+			" GROUP BY cp.id, cp.nom_category, scp.nom_sous_category, fa.date ", nativeQuery = true)
+	public List<Object[]> get_dashboard_sums_by_day(@Param("start") String start, @Param("end") String end);
+
+	//----------------------------------------------------------------------
+
 	@Query( " SELECT fct_av_d.article.produit.sous_category_produit.category_produit.nom_category, "+
-			
-			" SUM(quantite)*(-1), SUM(montant_ht)*(-1)" + 
-	
+
+			" SUM(quantite)*(-1), SUM(montant_ht)*(-1)" +
+
 			" FROM facture_avoir_detail fct_av_d" +
 			
 			" WHERE CAST(fct_av_d.facture_avoir.date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +

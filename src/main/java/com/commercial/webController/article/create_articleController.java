@@ -20,6 +20,7 @@ import com.commercial.entities.schema.article.Magasin;
 import com.commercial.entities.schema.article.article;
 import com.commercial.entities.schema.article.emballage_produit;
 import com.commercial.entities.schema.article.magasin_article;
+import com.commercial.entities.schema.article.parent_article_mapping;
 import com.commercial.entities.schema.article.pesage_produit;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.produit;
@@ -93,6 +94,9 @@ public class create_articleController {
 	
 	@Autowired
 	track_operations trk;
+	
+	@Autowired
+	parent_article_mappingRepository parentMappingRepo;
 	
 	@RequestMapping(value="/add_art")
 	public String add_new_article(HttpServletRequest request,
@@ -229,6 +233,7 @@ public class create_articleController {
 		@RequestParam("lib") String lib,
 		@RequestParam("multiplicator") double multiplicator,
 		@RequestParam("remise") String check_r,
+		@RequestParam(value = "parent_article_id", required = false, defaultValue = "0") long parent_article_id,
 		@SessionAttribute("user") users user){
 		
 		//------------ mazal khedma ta3 code client kifeh ngenerih --------------------//
@@ -261,22 +266,24 @@ public class create_articleController {
 		
 		boolean remise = (check_r.equals("on")) ? true : false;
 		
+
 		//--------------------------
 		
 		article art_if_code_existe = artRepo.if_code_art_exist(code_art);
 		
 		if(art_if_code_existe==null) {
 			
-			article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, sub);
+			//article art_if_same_specs = artRepo.if_art_same_spec_exist(produit, emb_produit, pes_produit, sub);
 			
-			if(art_if_same_specs==null) {
+			// if(art_if_same_specs==null) {
+
 				
 				article art = new article(code_art, produit, emb_produit, pes_produit, "", 0, gtd.get_date(),
-						unite_mesureRepo.getOne(id_unite_mesure), sub, lib, consignation, multiplicator,remise);
+					unite_mesureRepo.getOne(id_unite_mesure), sub, lib, consignation, multiplicator, remise);
 				
 				artRepo.save(art);
 				artRepo.flush();
-				
+
 				//-------------------- tracking operation -----------------------------------
 				
 				trk.add_track("article", "Ajout nouveau article", art.getId(), user);
@@ -318,12 +325,20 @@ public class create_articleController {
 					//}
 				}
 				
-			}
-			else {
+				// ===================== SAVE PARENT ARTICLE MAPPING =====================
+				if(parent_article_id > 0) {
+					article parentArt = artRepo.getOne(parent_article_id);
+					parent_article_mapping mapping = new parent_article_mapping(parentArt, art);
+					parentMappingRepo.save(mapping); parentMappingRepo.flush();
+				}
+				// ===================== END PARENT MAPPING =====================
 				
-				ret = "same_specs";
+			// }
+			// else {
 				
-			}
+			// 	ret = "same_specs";
+				
+			// }
 			
 		}
 		else {
@@ -357,6 +372,7 @@ public class create_articleController {
 		@RequestParam("multiplicator") double multiplicator,
 		@RequestParam("consignation") String check_c,
 		@RequestParam("remise") String check_r,
+		@RequestParam(value = "parent_article_id", required = false, defaultValue = "0") long parent_article_id,
 		@SessionAttribute("user") users user){
 		
 		//------------ mazal khedma ta3 code client kifeh ngenerih --------------------//
@@ -381,7 +397,6 @@ public class create_articleController {
 		
 		boolean consignation = (check_c.equals("on")) ? true : false;
 		boolean remise = (check_r.equals("on")) ? true : false;
-		
 		//--------------------------
 		
 		//article art_if_code_existe = artRepo.if_code_art_exist(code_art);
@@ -480,6 +495,18 @@ public class create_articleController {
 					//-------------------- tracking operation ---------------------------------------------
 					
 				}
+				
+				// ===================== SAVE/UPDATE PARENT ARTICLE MAPPING =====================
+				parent_article_mapping existingMapping = parentMappingRepo.findByChildArticle(art);
+				if(existingMapping != null) {
+					parentMappingRepo.delete(existingMapping); parentMappingRepo.flush();
+				}
+				if(parent_article_id > 0 && parent_article_id != id_art) {
+					article parentArt = artRepo.getOne(parent_article_id);
+					parent_article_mapping mapping = new parent_article_mapping(parentArt, art);
+					parentMappingRepo.save(mapping); parentMappingRepo.flush();
+				}
+				// ===================== END PARENT MAPPING =====================
 				
 			//}
 			//else {

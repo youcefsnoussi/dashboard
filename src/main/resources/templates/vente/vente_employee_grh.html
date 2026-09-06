@@ -26,6 +26,8 @@
 	    
 	<script type="text/javascript" src="resources\PagesJS\vente\vente_employee.js"></script>  
 	      
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
 	</head>
 
 	<body >
@@ -52,7 +54,9 @@
 				<form id="frm" th:action="@{/new_commande_employee_grh}" method="post" style="height: 100%" autocomplete="off">
 					
 					<input type="hidden" id="id_bl_grh" name="id_bl_grh" th:value="${ble.id}">
-	
+					
+					<input type="hidden" id="card_number" name="card_number" th:value="${ble.cardNumber}">
+					
 	
 					<div class="card">
 					

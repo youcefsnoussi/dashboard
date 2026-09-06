@@ -1,111 +1,698 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta charset="utf-8">
+	<link href="resources/Plugins/Font-Awsom-Pro-5.8.2/css/all.css" rel="stylesheet">
+	<style>
+		/* ================= SIDEBAR ================= */
+		:root{
+			--sb-w:280px;
+			--sb-bg:#ffffff;
+			--sb-bg-2:#f1f4f9;
+			--sb-ink:#1c2434;
+			--sb-muted:#7b8598;
+			--sb-line:#e8ecf2;
+			--sb-accent:#2a78d6;
+			--sb-accent-soft:#eaf2fd;
+			--sb-danger:#d03b3b;
+			--sb-shadow:rgba(23,35,60,.14);
+			--sb-scroll:#d6dce6;
+			--sb-logout-soft:#fdeced;
+		}
+		/* dark theme: driven by the dashboard's toggle, which stamps
+		   data-theme="dark" on this document via postMessage */
+		:root[data-theme="dark"]{
+			--sb-bg:#141a24;
+			--sb-bg-2:#1c2431;
+			--sb-ink:#f2f5fa;
+			--sb-muted:#8b96a8;
+			--sb-line:#232d3c;
+			--sb-accent:#4a94ee;
+			--sb-accent-soft:rgba(74,148,238,.16);
+			--sb-danger:#e66767;
+			--sb-shadow:rgba(0,0,0,.5);
+			--sb-scroll:#2e3a4b;
+			--sb-logout-soft:rgba(230,103,103,.14);
+			color-scheme:dark;
+		}
+		#app-sidebar, #app-sidebar *{box-sizing:border-box;}
+		#app-sidebar ul, #app-sidebar li, #app-sidebar p,
+		#app-sidebar h1, #app-sidebar h2, #app-sidebar h3{margin:0;padding:0;list-style:none;}
+		/* The sidebar is positioned, not part of the flex flow, and the page is
+		   pushed with padding on <body>. Sliding it uses transform only, so the
+		   browser never re-lays-out (and never repaints the iframe) mid-animation. */
+		#app-sidebar{
+			position:fixed;top:0;left:0;
+			width:var(--sb-w);height:100vh;height:100dvh;
+			display:flex;flex-direction:column;
+			background:var(--sb-bg);color:var(--sb-ink);
+			font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+			font-size:14px;line-height:1.5;
+			border-right:1px solid var(--sb-line);
+			transform:translate3d(0,0,0);
+			will-change:transform;
+			z-index:1000;
+		}
+		/* armed after first paint so the initial state never animates in;
+		   same curve and duration as the shell and the edge tab */
+		body.sb-ready #app-sidebar{transition:transform .42s cubic-bezier(.32,.72,0,1);}
+		#app-sidebar.collapsed{transform:translate3d(calc(var(--sb-w) * -1),0,0);}
+		#app-sidebar a{text-decoration:none;color:inherit;}
+		#app-sidebar button{font:inherit;color:inherit;background:none;border:0;margin:0;cursor:pointer;}
+		#app-sidebar img{display:block;}
 
-		<link rel="stylesheet" href="resources\Plugins\materialize\css\materialize.min.css" />
-		<!--  <link rel="stylesheet" href="resources\Plugins\materialize\icon\materializ_icon.css" /> -->
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
-		
-		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
-		
-		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
-		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
-		<script  src="resources\Plugins\materialize\js\materialize.min.js"></script>
-		
-		<script type="text/javascript" src="resources\PagesJS\navbar.js"></script>
-		<link rel="stylesheet" href="resources\PagesCSS\navbar.css" />
-		
-<title></title>
+		/* brand */
+		.sb-brand{
+			display:flex;align-items:center;gap:13px;
+			padding:22px 22px 20px;flex:none;
+		}
+		.sb-brand .logo{
+			width:40px;height:40px;border-radius:12px;flex:none;
+			background:linear-gradient(135deg,#2a78d6,#1baf7a);
+			display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;
+			box-shadow:0 4px 12px rgba(42,120,214,.28);
+		}
+		.sb-brand .t{font-weight:700;font-size:16px;letter-spacing:-.01em;}
+		.sb-brand .s{font-size:11.5px;color:var(--sb-muted);margin-top:1px;}
+		.sb-fold{
+			margin-left:auto;width:32px;height:32px;border-radius:9px;flex:none;
+			display:flex;align-items:center;justify-content:center;color:var(--sb-muted);
+			transition:background .15s ease,color .15s ease;
+		}
+		.sb-fold:hover{background:var(--sb-bg-2);color:var(--sb-ink);}
+
+		/* theme toggle: same chip as the fold button, sat just before it.
+		   margin-left:auto lives on this one now so the pair stays right-aligned. */
+		.sb-theme{
+			margin-left:auto;width:32px;height:32px;border-radius:9px;flex:none;
+			display:flex;align-items:center;justify-content:center;color:var(--sb-muted);
+			transition:background .15s ease,color .15s ease;
+		}
+		.sb-theme:hover{background:var(--sb-bg-2);color:var(--sb-ink);}
+		/* a mouse click left the button focused, so it looked stuck "on";
+		   keep a ring for keyboard users only */
+		.sb-theme:focus{outline:none;}
+		.sb-theme:focus-visible{outline:2px solid var(--sb-accent);outline-offset:2px;}
+		.sb-fold:focus{outline:none;}
+		.sb-fold:focus-visible{outline:2px solid var(--sb-accent);outline-offset:2px;}
+		/* the fold button no longer needs to claim the free space */
+		.sb-brand .sb-fold{margin-left:2px;}
+
+		/* user */
+		.sb-user{
+			display:flex;align-items:center;gap:13px;
+			margin:0 16px 8px;padding:13px 14px;flex:none;
+			background:var(--sb-bg-2);border-radius:14px;
+		}
+		.sb-user img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;background:var(--sb-bg-2);}
+		.sb-user .fallback{
+			width:40px;height:40px;border-radius:50%;flex:none;display:none;
+			align-items:center;justify-content:center;background:var(--sb-accent-soft);
+			color:var(--sb-accent);font-weight:700;font-size:16px;text-transform:uppercase;
+		}
+		.sb-user .u{min-width:0;}
+		.sb-user .n{font-weight:650;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.sb-user .r{font-size:12px;color:var(--sb-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+		/* nav */
+		.sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 16px 18px;overscroll-behavior:contain;}
+		.sb-nav::-webkit-scrollbar{width:9px;}
+		.sb-nav::-webkit-scrollbar-thumb{background:var(--sb-scroll);border-radius:9px;border:3px solid var(--sb-bg);}
+		.sb-nav::-webkit-scrollbar-thumb:hover{background:var(--sb-muted);}
+		.sb-nav::-webkit-scrollbar-track{background:transparent;}
+
+		.sb-link{
+			display:flex;align-items:center;gap:13px;width:100%;
+			padding:11px 14px;border-radius:11px;margin-bottom:5px;
+			color:var(--sb-ink);cursor:pointer;
+			transition:background .14s ease,color .14s ease;
+			-webkit-tap-highlight-color:transparent;
+		}
+		.sb-link i{width:20px;text-align:center;font-size:16px;color:var(--sb-muted);flex:none;transition:color .14s ease;}
+		.sb-link:hover{background:var(--sb-bg-2);}
+		.sb-link:hover i{color:var(--sb-ink);}
+		.sb-link.active{background:var(--sb-accent-soft);color:var(--sb-accent);font-weight:600;}
+		.sb-link.active i{color:var(--sb-accent);}
+		.sb-link .lbl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;}
+
+		.badge-pill{
+			flex:none;min-width:21px;height:21px;padding:0 7px;border-radius:11px;
+			background:var(--sb-danger);color:#fff;font-size:11px;font-weight:700;
+			display:inline-flex;align-items:center;justify-content:center;
+		}
+		.badge-pill:empty{display:none;}
+
+		.sb-sep{
+			font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+			color:var(--sb-muted);padding:22px 14px 9px;user-select:none;
+		}
+
+		/* groups */
+		.grp{margin-bottom:5px;}
+		.grp-h{
+			display:flex;align-items:center;gap:13px;width:100%;
+			padding:11px 14px;border-radius:11px;color:var(--sb-ink);
+			transition:background .14s ease;text-align:left;
+		}
+		.grp-h:hover{background:var(--sb-bg-2);}
+		.grp-h > i{width:20px;text-align:center;font-size:16px;color:var(--sb-muted);flex:none;}
+		.grp-h .lbl{flex:1;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+		.grp-h .chev{
+			flex:none;width:8px;height:8px;border-right:1.7px solid var(--sb-muted);border-bottom:1.7px solid var(--sb-muted);
+			transform:rotate(-45deg);transition:transform .2s ease;margin-right:3px;
+		}
+		.grp.open .grp-h{background:var(--sb-bg-2);}
+		.grp.open .grp-h .chev{transform:rotate(45deg);}
+		.grp-b{
+			display:grid;grid-template-rows:0fr;transition:grid-template-rows .22s ease;
+		}
+		.grp.open .grp-b{grid-template-rows:1fr;}
+		.grp-b > .inner{overflow:hidden;min-height:0;}
+		.grp-b .sb-link{
+			margin:3px 0 3px 17px;padding:9px 13px;
+			border-left:2px solid var(--sb-line);border-radius:0 10px 10px 0;
+		}
+		.grp-b .sb-link i{font-size:14px;width:18px;}
+		.grp-b .sb-link .lbl{font-size:13.5px;}
+		.grp-b .sb-link.active{border-left-color:var(--sb-accent);}
+		.grp-b .inner > :first-child{margin-top:5px;}
+		.grp-b .inner > :last-child{margin-bottom:7px;}
+
+		/* footer / logout */
+		.sb-foot{flex:none;padding:14px 16px 18px;border-top:1px solid var(--sb-line);}
+		.sb-logout{
+			display:flex;align-items:center;gap:13px;width:100%;
+			padding:11px 14px;border-radius:11px;color:var(--sb-danger);font-weight:600;
+			transition:background .14s ease;
+		}
+		.sb-logout i{width:20px;text-align:center;font-size:16px;}
+		.sb-logout:hover{background:var(--sb-logout-soft);}
+
+		/* Edge handle: a slim tab that rides the sidebar's edge and toggles it.
+		   It travels with the same transform + timing as the sidebar, so the two
+		   move as one piece. */
+		.sb-open-btn{
+			position:fixed;top:50%;left:var(--sb-w);z-index:1001;
+			width:22px;height:88px;padding:0;
+			border:1px solid var(--sb-line);border-left:0;
+			border-radius:0 12px 12px 0;
+			background:var(--sb-bg);color:var(--sb-muted);
+			box-shadow:2px 0 14px var(--sb-shadow);
+			display:flex;align-items:center;justify-content:center;
+			cursor:pointer;
+			transform:translate3d(0,-50%,0);
+			transition:width .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease;
+		}
+		body.sb-ready .sb-open-btn{
+			transition:transform .42s cubic-bezier(.32,.72,0,1),
+					   width .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease;
+		}
+		body.sb-hidden .sb-open-btn{
+			transform:translate3d(calc(var(--sb-w) * -1),-50%,0);
+		}
+		/* chevron: points right when closed (pull to open), left when open */
+		.sb-open-btn::before{
+			content:"";width:7px;height:7px;flex:none;
+			border-right:2px solid currentColor;border-top:2px solid currentColor;
+			transform:rotate(-135deg) translate(-1px,1px);
+			transition:transform .42s cubic-bezier(.32,.72,0,1);
+		}
+		body.sb-hidden .sb-open-btn::before{
+			transform:rotate(45deg) translate(-1px,1px);
+		}
+		.sb-open-btn:hover{
+			width:30px;background:var(--sb-accent);color:#fff;
+			border-color:var(--sb-accent);
+			box-shadow:3px 0 18px rgba(42,120,214,.35);
+		}
+		.sb-open-btn:active{width:26px;}
+		/* a wider invisible strip so the pointer finds the tab easily */
+		.sb-open-btn::after{
+			content:"";position:absolute;top:-14px;bottom:-14px;left:0;width:34px;
+		}
+
+		/* standalone logout (one_interface users) */
+		.solo-logout{
+			position:fixed;top:12px;left:12px;z-index:1001;
+			width:42px;height:42px;border-radius:12px;
+			background:var(--sb-bg);color:var(--sb-danger);border:1px solid var(--sb-line);
+			box-shadow:0 4px 16px var(--sb-shadow);
+			display:flex;align-items:center;justify-content:center;font-size:16px;
+		}
+		.solo-logout:hover{background:var(--sb-bg-2);}
+
+		/* Hover-to-open: an invisible strip down the left edge. Pointing at it
+		   opens the menu; leaving the menu closes it again. Only while the user
+		   has not pinned the sidebar open with the tab. */
+		.sb-hotzone{
+			position:fixed;top:0;left:0;width:14px;height:100vh;height:100dvh;
+			z-index:999;display:none;
+		}
+		body.sb-hidden .sb-hotzone{display:block;}
+		/* while open by hover only, the menu floats above the page */
+		#app-sidebar.peek{box-shadow:8px 0 30px rgba(23,35,60,.18);}
+		:root[data-theme="dark"] #app-sidebar.peek{box-shadow:8px 0 34px rgba(0,0,0,.55);}
+
+		/* backdrop (mobile) */
+		.sb-backdrop{
+			position:fixed;inset:0;background:rgba(8,11,18,.55);z-index:999;
+			opacity:0;pointer-events:none;transition:opacity .2s ease;
+		}
+		@media (max-width:992px){
+			#app-sidebar{
+				transform:translate3d(-102%,0,0);
+				box-shadow:0 0 40px rgba(23,35,60,.28);
+			}
+			#app-sidebar.mobile-open{transform:translate3d(0,0,0);}
+			body.sb-mobile-open .sb-backdrop{opacity:1;pointer-events:auto;}
+		}
+		@media (prefers-reduced-motion: reduce){
+			#app-sidebar,.grp-b,.grp-h .chev{transition:none !important;}
+		}
+	</style>
 </head>
 <body>
 
-	<ul id="slide-out" class="sidenav">
-    <li>
-	    <div class="user-view">
-	    
-	     	<div class="background">
-	       		<img src="resources\images\welcome\fond-noir-de-bois-en-i_1024x576.jpg" >
-	     	</div>
-	     	
-		    <img class="circle" th:src="'display_img?link='+${user.image}">
-		    <span class="white-text name" th:text="${user.role.nom_role} +' : '+ ${user.username}"></span>
-		    <span class="white-text email"></span> 
-		  
-	    </div>
-    </li>
-    
-    <li >
-    	
-    	<ul class="collapsible expandable">
-    		
-    		<li>
-    		
-    			 <a style="color:red" class="sidenav-close" th:href="notif" target="frame" th:if="${one_interface}==false">
-    			 	<i class="far fa-bell" style="font-size: 25px;color:red;"></i>
-   			 		Notification 
-   			 		<span style="color:red" class="badge" th:text="${notification}"></span> 
-    			 </a>
-    		
-    		</li>
-    		
-    		<li>
-    		
-    			 <a class="sidenav-close" th:href="acceuil" target="frame" th:if="${one_interface}==false">
-    			 	<i class="far fa-home" style="font-size: 25px;"></i>
-    			 	Acceuil 
-    			 </a>
-    		
-    		</li>
-    		
-    		<li th:each="menu:${list_menu}" th:with="id_menu=${menu[0]}">
-    		
-    			<div class="collapsible-header" > 
-    				<b th:text="${menu[1]}"></b> 
-    				<span th:attr="id=${menu[1]}" class="badge" style="color:red;"></span> 
-    			</div>
-      			<div class="collapsible-body">
-      			
-      				<ul th:each="sub_menu:${list_submenu}" >
-      				
-      					<li class="" th:each="sub:${sub_menu}" th:object="${sub}" th:if="${sub[3]} == ${menu[0]}">
-      					
-      						 <a class="sidenav-close li_drop" th:href="${sub[1]}" target="frame" >  
-      						 		<i th:attr="class='far fa-'+${sub[4]}+''" style="font-size: 25px;"></i> 
-      						 		<label style="color:black;font-size: 13px;" th:text="${sub[0]}"></label>
-      						 		<span class="badge" style="color:red;" th:attr="id=${#strings.replace(sub[0], ' ', '')}"></span> 
-      						 </a>
-      							<!-- <i class="material-icons" >[[${sub[4]}]]</i> // [[${sub[0]}]]-->
-      					</li>
-      					
-      				</ul>
-      				
-      			</div>
-    		
-    		</li>
-    	
-    	</ul>
-    	
-    </li>
-    
-  </ul>
-  
-  <a href="#" data-target="slide-out" class="sidenav-trigger btn-floating btn-large waves-light blue" th:if="${one_interface}==false" 
-  	style="position:absolute;top:3px;left:3px;">
-  	<i class="fas fa-arrow-alt-from-left"></i>
-  </a>
-  
-  <a th:href="@{/logout}" class="btn-floating btn-large waves-effect waves-light blue" style="position:absolute;top:3px;left:61px;" 
-  	th:if="${one_interface}==false">
-  	<i class="fas fa-door-open"></i>
-  </a>
-  
-  <a th:href="@{/logout}" class="btn-floating btn-large waves-effect waves-light blue" style="position:absolute;top:3px;left:3px;" 
-  	th:unless="${one_interface}==false">
-  	<i class="fas fa-door-open"></i>
-  </a>
-  
-  
+	<aside id="app-sidebar" th:if="${one_interface}==false">
+
+		<div class="sb-brand">
+			<span class="logo" aria-hidden="true">
+				<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+					 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M4 19V11M9.5 19V6M15 19v-5M20.5 19V8"/>
+				</svg>
+			</span>
+			<div>
+				<div class="t">Commercial</div>
+				<div class="s">Gestion des ventes</div>
+			</div>
+			<button class="sb-theme" id="sbTheme" type="button" title="Mode sombre" aria-label="Basculer le mode sombre">
+				<svg id="sbMoon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+					 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+				</svg>
+				<svg id="sbSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+					 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+					<circle cx="12" cy="12" r="4.2"/>
+					<path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+				</svg>
+			</button>
+			<button class="sb-fold" id="sbFold" type="button" title="Réduire le menu" aria-label="Réduire le menu">
+				<i class="far fa-angle-double-left"></i>
+			</button>
+		</div>
+
+		<div class="sb-user">
+			<img th:src="'display_img?link='+${user.image}" alt=""
+				 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+			<span class="fallback" th:text="${#strings.substring(user.username,0,1)}"></span>
+			<div class="u">
+				<div class="n" th:text="${user.username}"></div>
+				<div class="r" th:text="${user.role.nom_role}"></div>
+			</div>
+		</div>
+
+		<nav class="sb-nav" id="sbNav">
+
+			<a class="sb-link" th:href="notif" target="frame">
+				<i class="far fa-bell"></i>
+				<span class="lbl">Notification</span>
+				<span class="badge-pill" th:text="${notification}"></span>
+			</a>
+
+			<!-- the route stays /acceuil (DB + backend); only the label is corrected -->
+			<a class="sb-link" th:href="acceuil" target="frame">
+				<i class="far fa-home"></i>
+				<span class="lbl">Accueil</span>
+			</a>
+
+			<a class="sb-link" th:href="stock" target="frame">
+				<i class="far fa-warehouse"></i>
+				<span class="lbl">Stock</span>
+			</a>
+
+			<a class="sb-link" th:href="gestion_palette" target="frame">
+				<i class="far fa-pallet-alt"></i>
+				<span class="lbl">Gestion Palettes</span>
+			</a>
+
+			<div class="sb-sep">Menu</div>
+
+			<div class="grp" th:each="menu:${list_menu}">
+				<button class="grp-h" type="button">
+					<i class="far fa-folder" data-auto-icon></i>
+					<span class="lbl" th:text="${menu[1]}"></span>
+					<span class="badge-pill" th:attr="id=${menu[1]}"></span>
+					<span class="chev"></span>
+				</button>
+				<div class="grp-b">
+					<div class="inner">
+						<th:block th:each="sub_menu:${list_submenu}">
+							<a class="sb-link"
+							   th:each="sub:${sub_menu}"
+							   th:if="${sub[3]} == ${menu[0]}"
+							   th:href="${sub[1]}"
+							   target="frame">
+								<i th:attr="class='far fa-'+${sub[4]}"></i>
+								<span class="lbl" th:text="${sub[0]}"></span>
+								<span class="badge-pill" th:attr="id=${#strings.replace(sub[0], ' ', '')}"></span>
+							</a>
+						</th:block>
+					</div>
+				</div>
+			</div>
+
+		</nav>
+
+		<div class="sb-foot">
+			<a class="sb-logout" th:href="@{/logout}">
+				<i class="far fa-sign-out-alt"></i>
+				<span>Déconnexion</span>
+			</a>
+		</div>
+
+	</aside>
+
+	<div class="sb-hotzone" id="sbHotzone" th:if="${one_interface}==false"></div>
+
+	<div class="sb-backdrop" id="sbBackdrop" th:if="${one_interface}==false"></div>
+
+	<button class="sb-open-btn" id="sbOpen" type="button" th:if="${one_interface}==false"
+			title="Ouvrir le menu" aria-label="Ouvrir le menu"></button>
+
+	<a class="solo-logout" th:href="@{/logout}" th:unless="${one_interface}==false"
+	   title="Déconnexion" aria-label="Déconnexion">
+		<i class="far fa-sign-out-alt"></i>
+	</a>
+
+	<script>
+	(function(){
+		"use strict";
+		var sb = document.getElementById("app-sidebar");
+
+		/* The dashboard lives in an iframe and owns the theme toggle. It posts the
+		   chosen theme up here so the shell matches. Applied to <html> as
+		   data-theme, which the :root[data-theme="dark"] block above picks up. */
+		function applyTheme(t){
+			if(t !== "dark") t = "light";
+			document.documentElement.setAttribute("data-theme", t);
+			try{ localStorage.setItem("dash_theme", t); }catch(e){}
+			/* swap the icon to show what the next click will do */
+			var mo = document.getElementById("sbMoon"), su = document.getElementById("sbSun");
+			if(mo && su){
+				mo.style.display = (t === "light") ? "" : "none";
+				su.style.display = (t === "dark")  ? "" : "none";
+			}
+			var btn = document.getElementById("sbTheme");
+			if(btn) btn.title = (t === "dark") ? "Mode clair" : "Mode sombre";
+		}
+
+		/* The page itself lives in an iframe, so tell it about the change too.
+
+		   postMessage alone is ASYNCHRONOUS: the shell would repaint on this tick
+		   and the iframe only on a later one, which reads as the sidebar and the
+		   page changing colour a beat apart. The frame is same-origin, so set the
+		   attribute on its document directly first - that repaints in the same
+		   frame as the shell - and still post the message afterwards so the page
+		   can react (the dashboard re-renders its charts on it). */
+		function pushThemeToFrame(t){
+			var f = document.getElementById("frame");
+			if(!f) return;
+			try{
+				var doc = f.contentDocument;
+				if(doc && doc.documentElement){
+					doc.documentElement.setAttribute("data-theme", t);
+				}
+			}catch(e){}
+			try{
+				if(f.contentWindow){
+					f.contentWindow.postMessage({ type:"theme", value:t }, window.location.origin);
+				}
+			}catch(e){}
+		}
+
+		try{ applyTheme(localStorage.getItem("dash_theme") || "light"); }catch(e){}
+
+		var themeBtn = document.getElementById("sbTheme");
+		if(themeBtn){
+			themeBtn.addEventListener("click", function(){
+				var next = (document.documentElement.getAttribute("data-theme") === "dark")
+						 ? "light" : "dark";
+				applyTheme(next);
+				pushThemeToFrame(next);
+				/* a click leaves the button focused, which reads as "stuck on";
+				   keyboard users keep their ring via :focus-visible */
+				this.blur();
+			});
+		}
+
+		window.addEventListener("message", function(ev){
+			/* same-origin only: the iframe and this page are served together */
+			if(ev.origin !== window.location.origin) return;
+			var d = ev.data;
+			if(d && d.type === "theme") applyTheme(d.value);
+		});
+
+		if(!sb) return;
+
+		var mqMobile = window.matchMedia("(max-width: 992px)");
+		var KEY = "sb_collapsed";
+
+		function isMobile(){ return mqMobile.matches; }
+
+		var shell = document.getElementById("shell");
+		var animTimer = null;
+
+		function applyDesktopState(collapsed){
+			sb.classList.toggle("collapsed", collapsed);
+			document.body.classList.toggle("sb-hidden", collapsed);
+		}
+
+		/* Slide without ever resizing the iframe mid-motion: freeze the shell at
+		   its CURRENT pixel width, let it translate, then release the width once
+		   the frame has stopped moving. Resizing an iframe repaints it in coarse
+		   steps, which is what looked blocky. */
+		function animateDesktop(collapsed){
+			if(!shell || !document.body.classList.contains("sb-ready")){
+				applyDesktopState(collapsed);
+				return;
+			}
+			clearTimeout(animTimer);
+
+			var startW = shell.getBoundingClientRect().width;
+			document.body.style.setProperty("--shell-w", startW + "px");
+			document.body.classList.add("sb-anim");
+
+			/* let the frozen width take effect before the transform changes */
+			requestAnimationFrame(function(){
+				applyDesktopState(collapsed);
+			});
+
+			/* must outlast the .42s slide, or the frozen width is released
+			   while the panel is still moving and the frame jumps */
+			animTimer = setTimeout(function(){
+				document.body.classList.remove("sb-anim");
+				document.body.style.removeProperty("--shell-w");
+			}, 460);
+		}
+		/* Starts collapsed: the menu opens only when the user pulls the edge tab.
+		   Once they choose a state it is remembered, so "0" means they opened it. */
+		function storedCollapsed(){
+			try{ return localStorage.getItem(KEY) !== "0"; }catch(e){ return true; }
+		}
+		function store(collapsed){
+			try{ localStorage.setItem(KEY, collapsed ? "1" : "0"); }catch(e){}
+		}
+
+		if(!isMobile()){
+			applyDesktopState(storedCollapsed());
+		} else {
+			document.body.classList.add("sb-hidden");
+		}
+
+		/* arm the slide transition only once the initial state has painted,
+		   otherwise the sidebar animates in on every page load */
+		requestAnimationFrame(function(){
+			requestAnimationFrame(function(){ document.body.classList.add("sb-ready"); });
+		});
+
+		document.getElementById("sbFold").addEventListener("click", function(){
+			if(isMobile()){ closeMobile(); return; }
+			animateDesktop(true); store(true);
+		});
+
+		/* the edge tab toggles: it opens the menu, and closes it again */
+		document.getElementById("sbOpen").addEventListener("click", function(){
+			if(isMobile()){
+				sb.classList.contains("mobile-open") ? closeMobile() : openMobile();
+				return;
+			}
+			var collapsed = sb.classList.contains("collapsed");
+			animateDesktop(!collapsed); store(!collapsed);
+		});
+
+		function openMobile(){
+			sb.classList.add("mobile-open");
+			document.body.classList.add("sb-mobile-open");
+			document.body.classList.remove("sb-hidden");
+		}
+		function closeMobile(){
+			sb.classList.remove("mobile-open");
+			document.body.classList.remove("sb-mobile-open");
+			document.body.classList.add("sb-hidden");
+		}
+		document.getElementById("sbBackdrop").addEventListener("click", closeMobile);
+
+		mqMobile.addListener ? mqMobile.addListener(sync) : mqMobile.addEventListener("change", sync);
+		function sync(){
+			if(isMobile()){
+				sb.classList.remove("collapsed");
+				closeMobile();
+			} else {
+				sb.classList.remove("mobile-open");
+				document.body.classList.remove("sb-mobile-open");
+				applyDesktopState(storedCollapsed());
+			}
+		}
+
+		/* ---- hover to open ----------------------------------------------------
+		   Pointing at the left edge peeks the menu open; moving away closes it.
+		   A menu the user pinned open with the tab is never auto-closed. */
+		var hot = document.getElementById("sbHotzone");
+		var peekTimer = null;
+
+		function peekOpen(){
+			if(isMobile()) return;
+			if(!sb.classList.contains("collapsed")) return;   /* already pinned open */
+			clearTimeout(peekTimer);
+			sb.classList.add("peek");
+			animateDesktop(false);
+		}
+		function peekClose(){
+			if(isMobile()) return;
+			if(!sb.classList.contains("peek")) return;        /* pinned, leave it */
+			clearTimeout(peekTimer);
+			peekTimer = setTimeout(function(){
+				sb.classList.remove("peek");
+				animateDesktop(true);
+			}, 300);
+		}
+
+		if(hot){
+			hot.addEventListener("mouseenter", peekOpen);
+		}
+		sb.addEventListener("mouseenter", function(){ clearTimeout(peekTimer); });
+		sb.addEventListener("mouseleave", peekClose);
+
+		/* clicking the tab pins the state: drop peek so it stops auto-closing */
+		var openBtn = document.getElementById("sbOpen");
+		if(openBtn){
+			openBtn.addEventListener("click", function(){ sb.classList.remove("peek"); });
+		}
+		/* Choosing a page used to DROP "peek" so the menu would not vanish
+		   mid-click - but peekClose() bails when "peek" is absent, so the menu
+		   then stayed open forever no matter where the pointer went.
+
+		   The page loads in an iframe, so nothing here is going away and there
+		   is nothing to protect: keep "peek" and let the normal mouseleave
+		   close it. Whichever way you leave the menu, it behaves the same. */
+		sb.addEventListener("click", function(ev){
+			var a = ev.target.closest ? ev.target.closest("a.sb-link, a.sb-logout") : null;
+			if(!a || !sb.contains(a)) return;
+			/* the pointer is usually still over the menu here; close once it
+			   actually leaves, or shortly after if it never moves */
+			clearTimeout(peekTimer);
+			peekTimer = setTimeout(function(){
+				if(sb.matches(":hover")) return;   /* still pointing at it */
+				sb.classList.remove("peek");
+				animateDesktop(true);
+			}, 450);
+		});
+
+		/* give each menu group an icon that matches its name (falls back to folder) */
+		var GROUP_ICONS = [
+			[/vente|caisse/i,                    "fa-shopping-basket"],
+			[/factur/i,                          "fa-file-invoice-dollar"],
+			[/client|tiers/i,                    "fa-users"],
+			[/article|produit|stock|magasin/i,   "fa-boxes"],
+			[/operation|paiement|versement/i,    "fa-exchange-alt"],
+			[/statis|rapport|etat|état|bilan/i,  "fa-chart-pie"],
+			[/param|config|reglage|réglage/i,    "fa-sliders-h"],
+			[/utilisateur|user|role/i,           "fa-user-shield"],
+			[/livraison|transport|camion/i,      "fa-truck"],
+			[/achat|fournisseur/i,               "fa-dolly"],
+			[/compta|finance|tva/i,              "fa-calculator"]
+		];
+		sb.querySelectorAll("[data-auto-icon]").forEach(function(ico){
+			var head = ico.closest(".grp-h");
+			var name = head ? head.querySelector(".lbl").textContent : "";
+			for(var i = 0; i < GROUP_ICONS.length; i++){
+				if(GROUP_ICONS[i][0].test(name)){
+					ico.className = "far " + GROUP_ICONS[i][1];
+					break;
+				}
+			}
+		});
+
+		/* menu groups: independent open/close, remembered between pages */
+		var OPEN_KEY = "sb_open_groups";
+		function readOpen(){
+			try{ return JSON.parse(localStorage.getItem(OPEN_KEY) || "[]"); }catch(e){ return []; }
+		}
+		function writeOpen(names){
+			try{ localStorage.setItem(OPEN_KEY, JSON.stringify(names)); }catch(e){}
+		}
+		var openNames = readOpen();
+		var groups = sb.querySelectorAll(".grp");
+		groups.forEach(function(g){
+			var head = g.querySelector(".grp-h");
+			var name = head.querySelector(".lbl").textContent.trim();
+			if(openNames.indexOf(name) !== -1) g.classList.add("open");
+			head.addEventListener("click", function(){
+				g.classList.toggle("open");
+				var names = [];
+				groups.forEach(function(o){
+					if(o.classList.contains("open")){
+						names.push(o.querySelector(".grp-h .lbl").textContent.trim());
+					}
+				});
+				writeOpen(names);
+			});
+		});
+
+		/* active link highlight (remembered) + auto-close on mobile */
+		var ACTIVE_KEY = "sb_active";
+		var links = sb.querySelectorAll("a.sb-link");
+		var savedActive = "";
+		try{ savedActive = localStorage.getItem(ACTIVE_KEY) || ""; }catch(e){}
+		links.forEach(function(a){
+			var href = a.getAttribute("href") || "";
+			if(savedActive && href === savedActive) a.classList.add("active");
+			a.addEventListener("click", function(){
+				links.forEach(function(o){ o.classList.remove("active"); });
+				a.classList.add("active");
+				try{ localStorage.setItem(ACTIVE_KEY, href); }catch(e){}
+				if(isMobile()) closeMobile();
+			});
+		});
+
+		/* unpaid-payments badge (same endpoint/ids as the old navbar) */
+		try{
+			fetch("get_pay_impaye", { credentials: "same-origin" })
+				.then(function(r){ return r.json(); })
+				.then(function(d){
+					var res = "";
+					if(d !== null && typeof d === "object"){
+						Object.keys(d).forEach(function(key){ res = d[key]; });
+					}
+					var a = document.getElementById("Operation");
+					var b = document.getElementById("listedespaiements");
+					if(a) a.textContent = res;
+					if(b) b.textContent = res;
+				})
+				.catch(function(){});
+		}catch(e){}
+	})();
+	</script>
 </body>
 </html>

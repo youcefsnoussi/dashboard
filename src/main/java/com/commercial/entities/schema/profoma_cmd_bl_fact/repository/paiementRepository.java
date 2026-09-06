@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.client.registre_commerce;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.paiement;
 import com.commercial.entities.schema.static_data.banque;
 
@@ -42,14 +43,14 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 			
 			+ " AND LOWER(pay.numero_piece) = LOWER(:num_piece) "
 			
-			+ " AND pay.date = :date "
+		//	+ " AND pay.date = :date "
 			
 			//+ " AND pay.montant = :montant " 
 			
-			+ " AND pay.registre_commerce = :rc ")  /* // , @Param("rc") registre_commerce rc "*/
+		/*	+ " AND pay.registre_commerce = :rc "*/)  /* // , @Param("rc") registre_commerce rc "*/
 	
-	public List<paiement> if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece, @Param("date") String date, 
-			/*@Param("montant") double montant,*/ @Param("rc") registre_commerce rc);
+	public List<paiement> if_payment_already_exist(@Param("bank") banque bank, @Param("num_piece") String num_piece/*, @Param("date") String date, */
+			/*@Param("montant") double montant,*/ /*@Param("rc") registre_commerce rc*/);
 	
 	//------------------------------------------------------------------
 	
@@ -88,6 +89,21 @@ public interface paiementRepository extends JpaRepository<paiement, Long> {
 	public List<paiement> get_paiements_not_canceled_by_rc(@Param("rc") registre_commerce rc);
 	
 	//----------------------------------------------------------
+	
+	@Query( " FROM paiement pai "
+			
+				+ " WHERE pai.cancel = 'false' "
+				
+				+ " AND pai.registre_commerce = :rc "
+				
+				+ " AND CAST(pai.date_saisie AS date) <= CAST(:fct_date AS date) "
+				
+				+ " ORDER BY pai.id DESC")
+		 
+	public List<paiement> get_paiements_not_canceled_by_rc_with_date_facture(@Param("rc") registre_commerce rc, @Param("fct_date") String date_facture);
+	
+	//----------------------------------------------------------
+	
 	
 	@Query( " FROM paiement pai "
 			

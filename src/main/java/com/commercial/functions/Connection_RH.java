@@ -39,9 +39,10 @@ public class Connection_RH {
 		try {
 			Class.forName("org.postgresql.Driver"); // oracle.jdbc.driver.OracleDriver
 			
-			//String url = "jdbc:postgresql://localhost:5432/grhDB";  //--> AIN ROMANA
-			
-			String url = "jdbc:postgresql://192.168.1.231:5432/grhDB";
+			 String url = "jdbc:postgresql://192.168.1.231:5432/grhDB";  //--> AIN ROMANA
+			// String url = "jdbc:postgresql://192.168.51.15:5433/grhDB"; 
+	
+		  //  String url = "jdbc:postgresql://localhost:5443/grhDB2";
 			
 			String username = "postgres";
 			String password = "***REMOVED***";
@@ -136,41 +137,45 @@ public class Connection_RH {
 		
 		Connection con = getconnection();
 
-	
-  		Statement state = null;
-		try {
-			state = con.createStatement();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if(con != null) {
 		
-		String sql = " SELECT * FROM commercial.bon_livraison_employee ble " + 
-						"WHERE traiter = 'false' " +
-						"AND date_saisie BETWEEN CAST('"+start+"' AS date) AND CAST('"+end+"' AS date) "; 
-		
-		try {
-			
-			ResultSet res = state.executeQuery(sql);
-			
-			while (res.next()) {
-				
-				bon_livraison_employee ble = new bon_livraison_employee(res.getString("matricule_employee"), 
-						res.getString("nom_employee"), res.getString("prenom_employee"), res.getString("date_saisie"), 
-						res.getString("heure_saisie"), "", "", null, null, 0, res.getDouble("montant_ht"), 
-						res.getDouble("montant_tva"), res.getDouble("montant_ttc"), false);
-				
-				ble.setId(res.getLong("id"));
-				
-				list_ble_emp.add(ble);
-				
+	  		Statement state = null;
+			try {
+				state = con.createStatement();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+		
+			String sql = " SELECT * FROM commercial.bon_livraison_employee ble " + 
+							"WHERE traiter = 'false' AND annul = 'false' " +
+							"AND date_saisie BETWEEN CAST('"+start+"' AS date) AND CAST('"+end+"' AS date) "; 
 			
-			con.close();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				String type_rc = "Agro";
+				ResultSet res = state.executeQuery(sql);
+				
+				while (res.next()) {
+					
+					bon_livraison_employee ble = new bon_livraison_employee(res.getString("matricule_employee"), 
+							res.getString("nom_employee"), res.getString("prenom_employee"), res.getString("date_saisie"), 
+							res.getString("heure_saisie"), "", "", null, null, 0, res.getDouble("montant_ht"), 
+							res.getDouble("montant_tva"), res.getDouble("montant_ttc"), false, 
+							res.getString("card_number"), type_rc);
+					
+					ble.setId(res.getLong("id"));
+					
+					list_ble_emp.add(ble);
+					
+				}
+				
+				con.close();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		}
 		
 		return list_ble_emp;
@@ -197,7 +202,8 @@ public class Connection_RH {
 						"WHERE id='"+id_ble+"' AND traiter = 'false' "; 
 		
 		try {
-			
+			String type_rc = "Agro";
+
 			ResultSet res = state.executeQuery(sql);
 			
 			while (res.next()) {
@@ -205,7 +211,9 @@ public class Connection_RH {
 				ble_emp = new bon_livraison_employee(res.getString("matricule_employee"), 
 						res.getString("nom_employee"), res.getString("prenom_employee"), res.getString("date_saisie"), 
 						res.getString("heure_saisie"), "", "", null, null, 0, res.getDouble("montant_ht"), 
-						res.getDouble("montant_tva"), res.getDouble("montant_ttc"), false);
+						res.getDouble("montant_tva"), res.getDouble("montant_ttc"), false, 
+						res.getString("card_number"), type_rc
+					);
 				
 				ble_emp.setId(res.getLong("id"));
 				
@@ -224,7 +232,7 @@ public class Connection_RH {
 	
 	//-------------------------------------------------
 	
-	public  List< bon_livraison_detail_employee > get_detail_ble_grh(long id_ble){
+	public  List<bon_livraison_detail_employee> get_detail_ble_grh(long id_ble){
 		
 		List <bon_livraison_detail_employee> list_ble_detail_emp = new ArrayList <bon_livraison_detail_employee> ();
 		
@@ -240,7 +248,7 @@ public class Connection_RH {
 		
 		String sql = " SELECT * FROM commercial.bon_livraison_detail_employee ble_d " +
 						"JOIN commercial.bon_livraison_employee ble ON ble.id = bon_livraison_employee " + 
-						"WHERE bon_livraison_employee = '"+id_ble+"' AND traiter = 'false' "; 
+						"WHERE bon_livraison_employee = '"+id_ble+"' AND traiter = 'false' AND annul = 'false' "; 
 		
 		try {
 			
@@ -284,9 +292,14 @@ public class Connection_RH {
 		}
 		
 		String sql = " UPDATE commercial.bon_livraison_employee " + 
-					 " SET  traiter='true', user_traiter='"+ble.getUsers().getUsername()+"', date_traiter='"+gtd.get_date()+"', " +
-					 " heure_traiter='"+gtd.get_time()+"', id_bon_commercial='"+ble.getId()+"' " + 
-					 " WHERE id = '"+id_ble_grh+"' "; 
+             " SET  traiter='true', "
+           + " user_traiter='" + ble.getUsers().getUsername() + "', "
+           + " date_traiter='" + gtd.get_date() + "', "
+           + " heure_traiter='" + gtd.get_time() + "', "
+           + " id_bon_commercial='" + ble.getId() + "' "
+           + " WHERE id = '" + id_ble_grh + "' ";
+
+		
 		
 		try {
 			

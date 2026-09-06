@@ -19,8 +19,10 @@ public class Connection_Comptabilite {
 		try {
 			Class.forName("org.postgresql.Driver"); // oracle.jdbc.driver.OracleDriver
 			
-			//String url = "jdbc:postgresql://localhost:5432/comptabilite"; //  Ain Romana
-			String url = "jdbc:postgresql://192.168.1.231:5432/comptabilite"; //  Ain Defla
+		//	String url = "jdbc:postgresql://localhost:5432/comptabilite"; //  Ain Romana
+		//	String url = "jdbc:postgresql://192.168.1.231:5432/comptabilite"; //  Ain Defla
+			
+			String url = "jdbc:postgresql://192.168.1.231:5432/comptabilite";
 			
 			String username = "postgres";
 			String password = "***REMOVED***";

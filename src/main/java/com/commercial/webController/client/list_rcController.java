@@ -288,7 +288,9 @@ public class list_rcController {
 		}
 		else {
 			
-			list_clt_rc = crcRepo.findAll();
+			/* JOIN FETCH: the two @ManyToOne sides are EAGER, so a plain
+			   findAll() over ~930 rows meant ~1900 round trips to the DB */
+			list_clt_rc = crcRepo.find_all_with_client_and_rc();
 			
 		}
 		

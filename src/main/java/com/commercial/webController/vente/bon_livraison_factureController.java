@@ -373,6 +373,7 @@ public class bon_livraison_factureController {
 					cp.insert_fct_to_peseur(numero_blf, today);
 					
 				}
+				
 				//------------------- zyada
 				//cp.update_bl_fact_son(bl.getNumero(), fact.getNumero());
 				

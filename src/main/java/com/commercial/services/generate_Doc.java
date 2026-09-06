@@ -155,6 +155,27 @@ public class generate_Doc {
 	
 	DecimalFormat df = new DecimalFormat("#,##0.00",  new DecimalFormatSymbols(Locale.FRENCH));
 	
+	private String getCommandeObservationFromFacture(facture fact) {
+		
+		if(fact.getBon_livraison() != null && fact.getBon_livraison().getCommande() != null) {
+			return fact.getBon_livraison().getCommande().getObservation();
+		}
+		
+		List<bon_livraison_facture> blfs = blfRepo.get_blf_by_facture(fact);
+		
+		if(blfs != null) {
+			for(bon_livraison_facture blf : blfs) {
+				if(blf.getCommande() != null
+						&& blf.getCommande().getObservation() != null
+						&& !blf.getCommande().getObservation().trim().isEmpty()) {
+					return blf.getCommande().getObservation();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public String generate_BL(long id_bl, String numero, String matricule, String qr_code) {
 		 
 		 String destination = "D:/Commercial/Doc/BL/BL.pdf";
@@ -193,6 +214,8 @@ public class generate_Doc {
 					mp.put("Matricule", matricule);
 					mp.put("client", bl.getRegistre_commerce().getNom()+" "+
 							bl.getRegistre_commerce().getPrenom());
+					
+				//	mp.put("adresse_client", bl.getRegistre_commerce().getAdresse());
 					
 					mp.put("date",bl.getDate());
 					
@@ -298,7 +321,12 @@ public class generate_Doc {
 				mp.put("matricule", fact.getMatricule_camion());
 				mp.put("nom_client", fact.getRegistre_commerce().getNom()+" "+fact.getRegistre_commerce().getPrenom()
 						);
-				mp.put("adresse", fact.getRegistre_commerce().getAdresse());
+				String adresseFact = fact.getRegistre_commerce().getAdresse();
+				String observationFact = getCommandeObservationFromFacture(fact);
+				if(observationFact != null && !observationFact.trim().isEmpty()) {
+					adresseFact = observationFact;
+				}
+				mp.put("adresse", adresseFact);
 				mp.put("rc", fact.getRegistre_commerce().getNumero_rc());
 				mp.put("nif", fact.getRegistre_commerce().getNumero_nif());
 				mp.put("nis", fact.getRegistre_commerce().getNumero_art());
@@ -491,7 +519,17 @@ public class generate_Doc {
 				mp.put("matricule", fact.getMatricule_camion());
 				mp.put("nom_client",fact.getRegistre_commerce().getNom()+" "+fact.getRegistre_commerce().getPrenom()+" "+
 						fact.getRegistre_commerce().getCategory().getNom_category());
-				mp.put("adresse_client", fact.getRegistre_commerce().getAdresse());
+				String adresseClient = fact.getRegistre_commerce().getAdresse();
+				if(fact.getBon_livraison() != null && fact.getBon_livraison().getCommande() != null) {
+					String observation = fact.getBon_livraison().getCommande().getObservation();
+					System.out.println("Observation11: " + observation);
+					if(observation != null && observation.length() > 2) {
+						System.out.println("Observation: " + observation);
+						adresseClient = observation;
+					}
+				}
+				
+				mp.put("adresse_client", adresseClient);
 				mp.put("rc", fact.getRegistre_commerce().getNumero_rc());
 				mp.put("nif", fact.getRegistre_commerce().getNumero_nif());
 				mp.put("nis", fact.getRegistre_commerce().getNumero_art());
@@ -573,7 +611,9 @@ public class generate_Doc {
 					
 					//List<paiement> lst_pay = paiRepo.get_payments_date_rc(fact.getDate(), fact.getRegistre_commerce());
 					
-					List<paiement> lst_pay = paiRepo.get_paiements_not_canceled_by_rc( fact.getRegistre_commerce());
+					//List<paiement> lst_pay = paiRepo.get_paiements_not_canceled_by_rc( fact.getRegistre_commerce());
+					
+					List<paiement> lst_pay = paiRepo.get_paiements_not_canceled_by_rc_with_date_facture(fact.getRegistre_commerce(), fact.getDate());
 					
 					System.out.println("---------------------->"+lst_pay.size());
 					
@@ -589,8 +629,8 @@ public class generate_Doc {
 						paiement pay = lst_pay.get(0);
 						
 						String info_supp = "";
-						
-						if(pay.getInfo_supp_banque()!=null) {info_supp = pay.getInfo_supp_banque();}
+					
+							if(pay.getInfo_supp_banque()!=null) {info_supp = pay.getInfo_supp_banque();}
 						
 						reglem += " "+pay.getBanque().getNom_banque()+" "+info_supp+" "+pay.getNumero_piece()+" "+df.format(pay.getMontant())+" DA";
 						
@@ -602,7 +642,9 @@ public class generate_Doc {
 				
 				String mode_pay = "";
 				
-				List<paiement> lst_pay = paiRepo.get_paiements_not_canceled_by_rc(fact.getRegistre_commerce());
+				//List<paiement> lst_pay = paiRepo.get_paiements_not_canceled_by_rc(fact.getRegistre_commerce());
+				
+				List<paiement> lst_pay = paiRepo.get_paiements_not_canceled_by_rc_with_date_facture(fact.getRegistre_commerce(), fact.getDate());
 				
 				if(lst_pay.size()==0) {
 					
@@ -2155,6 +2197,7 @@ public class generate_Doc {
 				mp.put("rc", blf.getRegistre_commerce().getNumero_rc());
 				mp.put("nif", blf.getRegistre_commerce().getNumero_nif());
 				mp.put("nis", blf.getRegistre_commerce().getNumero_art());
+				mp.put("niss", blf.getRegistre_commerce().getNumero_nis());
 				mp.put("user", blf.getUsers().getMatricule());
 				mp.put("cat_rc", blf.getRegistre_commerce().getCategory().getNom_category());
 				mp.put("date", blf.getDate());
@@ -2174,6 +2217,7 @@ public class generate_Doc {
 				mp.put("total_remise", df.format(blf.getMontant_remise()) );
 				
 				mp.put("qr_path", qr_code );
+				mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
 				
 				//---------------------- Entreprise INFO -------------------------------
 				
@@ -2181,11 +2225,12 @@ public class generate_Doc {
 				mp.put("capitale", df.format(infoeRepo.getOne((long)1 ).getCapitale()) );
 				mp.put("adresse", infoeRepo.getOne((long)1 ).getAdresse_facturation() );
 				mp.put("tel", infoeRepo.getOne((long)1 ).getTelephone() );
+				mp.put("fax", infoeRepo.getOne((long)1 ).getFax() );
 				mp.put("num_rc", infoeRepo.getOne((long)1 ).getNum_rc() );
 				mp.put("num_art", infoeRepo.getOne((long)1 ).getNum_art() );
 				mp.put("num_nif", infoeRepo.getOne((long)1 ).getNum_nif() );
-				
-				mp.put("logo_path", infoeRepo.getOne((long)1 ).getChemain_logo() );
+				mp.put("num_nis", infoeRepo.getOne((long)1 ).getNum_nis() );
+				mp.put("BankAccounts", infoeRepo.getOne((long)1 ).getBankAccounts() );
 				
 				//----------------------- ajout virgule f lettre ta3 shkoupi ------------------
 				
@@ -2840,7 +2885,7 @@ public class generate_Doc {
 				
 				mp.put("cumule_tva", cumule_tva);
 				
-				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\Bon Livraison\\BLQ.jrxml");
+				jdesign = JRXmlLoader.load("D:\\Commercial\\report\\Bon Livraison\\BLF.jrxml");
 					
 				
 				JasperReport jreport = JasperCompileManager.compileReport(jdesign);

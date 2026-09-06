@@ -47,4 +47,23 @@ public interface bon_livraisonRepository extends JpaRepository<bon_livraison, Lo
 		 
 	public List<bon_livraison> get_bl_encours_by_clt(@Param("clt") client clt);
 	
+	
+	/*@Query(value="SELECT SUM(bl.montant_ttc) FROM proforma_cmd_bl_fact.bon_livraison bl "
+		       + "WHERE bl.etat_livraison = '0' AND bl.registre_commerce = :rc AND bl.cancel = 'FALSE'", nativeQuery=true )
+	public Double getTotalMontantTtcByRc(@Param("rc") registre_commerce rc);
+	
+	
+	@Query(value="SELECT SUM(bl.montant_ttc) FROM proforma_cmd_bl_fact.bon_livraison_facture bl "
+		       + "WHERE bl.etat_livraison = '0' AND bl.registre_commerce = :rc AND bl.cancel = 'FALSE'", nativeQuery=true )
+	public Double getTotalMontantTtcBlfByRc(@Param("rc") registre_commerce rc);*/
+	
+	
+	@Query(value="SELECT SUM(montant_ttc) FROM ("
+	           + "  SELECT bl.montant_ttc FROM proforma_cmd_bl_fact.bon_livraison bl "
+	           + "  WHERE bl.etat_livraison = '0' AND bl.registre_commerce = :rc AND bl.cancel = 'FALSE' "
+	           + "  UNION ALL "
+	           + "  SELECT blf.montant_ttc FROM proforma_cmd_bl_fact.bon_livraison_facture blf "
+	           + "  WHERE blf.etat_livraison = '0' AND blf.registre_commerce = :rc AND blf.cancel = 'FALSE'"
+	           + ") AS combined", nativeQuery=true)
+	public Double getTotalMontantTtcByRcTEST(@Param("rc") registre_commerce rc);
 }

@@ -1,113 +1,262 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
-		<title> </title>
-		
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
-		<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
-		
-		<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css" />  
-		
-		<link rel="stylesheet" href="resources\Plugins\datatable\js_additional\buttons.dataTables.min.css" />  
-		
-		<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
-		
-		<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
-		<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
-		
-		<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\sum().js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\dataTables.buttons.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.html5.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.print.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
-		
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\pdfmake.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\vfs_fonts.js"></script>
-		<script type="text/javascript" src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"></script>
-		
-		<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
-		
-		
-		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
-		<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
-		
-		<script type="text/javascript" >
-		
-		
-		$(document).ready(function() {
-			
-			
-			
-			var h = window.innerHeight;
-			
-			var datatable_config = {
-					"language": {
-				            "url": "resources/Plugins/datatable/lang/French.json"
-				    },
-					"ordering": true,
-			    	"bPaginate": false,
-					"scrollY":h-350,
-					"scrollX": "auto",
-			        "deferRender": true,
-			        //dom: '<"top"B l f>rt<"bottom"ip>',
-	                 dom: 'Bfrtip',
-	                 buttons: [
-	                        /*   {
+  <head>
+    <meta
+      charset="utf-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title> </title>
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\datatable\js_additional\buttons.dataTables.min.css"
+    />
+
+    <link
+      href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css"
+      rel="stylesheet"
+    />
+
+    <script src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+    <script src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js\jquery.dataTables.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\sum().js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\dataTables.buttons.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\buttons.html5.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\buttons.print.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\pdfmake.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\vfs_fonts.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\buttons.colVis.min.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\additionalJS\drahem.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"
+    ></script>
+
+    <style type="text/css">
+      .filter-bar {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 14px 18px 10px;
+        margin-bottom: 16px;
+      }
+      .filter-bar label {
+        font-weight: 600;
+        font-size: 0.82rem;
+        color: #495057;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .filter-bar .bootstrap-select .dropdown-toggle {
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+      .filter-bar .btn-reset {
+        margin-top: 22px;
+      }
+      .row-hidden {
+        display: none !important;
+      }
+    </style>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        var h = window.innerHeight;
+
+        // ---- Populate filter selects from table data attributes ----
+        var categories = [];
+        var codes = [];
+        $('#table tbody tr').each(function () {
+          var cat = $(this).data('category');
+          var code = String($(this).attr('data-code') || '');
+          if (cat && categories.indexOf(cat) === -1) categories.push(cat);
+          if (code && codes.indexOf(code) === -1) codes.push(code);
+        });
+        categories.sort();
+        codes.sort();
+
+        $.each(categories, function (i, val) {
+          $('#filter-category').append(
+            '<option value="' + val + '">' + val + '</option>',
+          );
+        });
+        $.each(codes, function (i, val) {
+          $('#filter-code').append(
+            '<option value="' + val + '">' + val + '</option>',
+          );
+        });
+
+        $('#filter-category').selectpicker('refresh');
+        $('#filter-code').selectpicker('refresh');
+
+        // ---- Apply filter ----
+        function applyFilters() {
+          var selCats = $('#filter-category').val(); // array or null
+          var selCodes = $('#filter-code').val(); // array or null
+          var noCat = !selCats || selCats.length === 0;
+          var noCode = !selCodes || selCodes.length === 0;
+
+          $('#table tbody tr').each(function () {
+            var rowCat = $(this).data('category');
+            var rowCode = String($(this).attr('data-code') || '');
+            var catOk = noCat || selCats.indexOf(rowCat) !== -1;
+            var codeOk = noCode || selCodes.indexOf(rowCode) !== -1;
+            $(this).toggleClass('row-hidden', !(catOk && codeOk));
+          });
+        }
+
+        $('#filter-category, #filter-code').on(
+          'changed.bs.select',
+          function () {
+            applyFilters();
+          },
+        );
+
+        $('#btn-reset-filters').click(function () {
+          $('#filter-category').selectpicker('deselectAll');
+          $('#filter-code').selectpicker('deselectAll');
+          applyFilters();
+        });
+
+        var datatable_config = {
+          language: {
+            url: 'resources/Plugins/datatable/lang/French.json',
+          },
+          ordering: true,
+          bPaginate: false,
+          scrollY: h - 350,
+          scrollX: 'auto',
+          deferRender: true,
+          //dom: '<"top"B l f>rt<"bottom"ip>',
+          dom: 'Bfrtip',
+          buttons: [
+            /*   {
 	                               extend: 'print',
 	                               footer: true,
 	                               exportOptions: {
 	                                   columns: ':visible'
 	                               }
 	                           },'excelHtml5',*/
-	                           {
-	                               extend: 'pdfHtml5',
-	                               orientation: 'landscape',
-	                               pageSize: 'LEGAL',
-	                               title : [{text: 'SIM AGRO SPA'+'\n'+
-	                               				  'Listing des Prix', style: 'header' } ],
-	                            /*   title :[
+            {
+              extend: 'pdfHtml5',
+              orientation: 'landscape',
+              pageSize: 'LEGAL',
+              title: [
+                {
+                  text: 'SIM AGRO SPA' + '\n' + 'Listing des Prix',
+                  style: 'header',
+                },
+              ],
+              /*   title :[
 	                            	    { text: 'This is a header', style: 'header' },
 	                            	    'No styling here, this is a standard paragraph',
 	                            	    { text: 'Another text', style: 'anotherStyle' },
 	                            	    { text: 'Multiple styles applied', style: [ 'header', 'anotherStyle' ] }
-	                            	],	 */		
-	                               filename: 'Listing des Prix',
-	                               exportOptions: {
-	                                   columns: ':visible'
-	                               }
-	                           }
-	                           ,'colvis'
-	                       ], 
-	                       
-			        initComplete: function () {
-			            this.api().columns([1,2,3,4]).every( function () {
-			                var column = this;
-			                var select = $('<select class="form-control" ><option value=""></option></select>')
-			                    .appendTo( $(column.footer()).empty() )
-			                    .on( 'change', function () {
-			                        var val = $.fn.dataTable.util.escapeRegex(
-			                            $(this).val()
-			                        );
-			 
-			                        column
-			                            .search( val ? '^'+val+'$' : '', true, false )
-			                            .draw();
-			                    } );
-			 
-			                column.data().unique().sort().each( function ( d, j ) {
-			                    select.append( '<option value="'+d+'">'+d+'</option>' )
-			                } );
-			            } );
-			        },
-					 drawCallback: function () {
-						
-					      var api = this.api();
-					      /*
+	                            	],	 */
+              filename: 'Listing des Prix',
+              exportOptions: {
+                columns: ':visible',
+                rows: ':not(.row-hidden)',
+              },
+            },
+            'colvis',
+          ],
+
+          initComplete: function () {
+            this.api()
+              .columns([1, 2, 3, 4])
+              .every(function () {
+                var column = this;
+                var select = $(
+                  '<select class="form-control" ><option value=""></option></select>',
+                )
+                  .appendTo($(column.footer()).empty())
+                  .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex($(this).val());
+
+                    column
+                      .search(val ? '^' + val + '$' : '', true, false)
+                      .draw();
+                  });
+
+                column
+                  .data()
+                  .unique()
+                  .sort()
+                  .each(function (d, j) {
+                    select.append(
+                      '<option value="' + d + '">' + d + '</option>',
+                    );
+                  });
+              });
+          },
+          drawCallback: function () {
+            var api = this.api();
+            /*
 					      $( api.column( 2, {page:'current'} ).footer() ).html(
 					        api.column( 2, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
@@ -116,151 +265,208 @@
 					        api.column( 3, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
 					      );
 					      */
-					 },
-		    };
-		 		
-		 	var table = $('#table').DataTable(datatable_config);
-			
-			$("#add_art").click(function(){
-				
-				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="add_art"></iframe>');
-				
-				$("#title").text("Nouveau Article");
-				
-				$("#icone").attr("class","far fa-bread-slice");
-				             
-				$("#new_art").modal("show");
-				
-			});
-			
-			$("#add_redux_prix").click(function(){ 
-				
-				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="new_reduction"></iframe>');
-				
-				$("#title").text("Nouvelle Réduction");
-				
-				$("#icone").attr("class","far fa-user-tag");
-				             
-				$("#new_art").modal("show");
-				
-			});
-			
-			$(".edit").click(function(){
-				
-				var id_art = $(this).attr("id_art");
-				
-				$('#print_content').html('<iframe id="frame" width="" height="" frameborder="0" src="edit_art?id_art='+id_art+' "></iframe>');
-				
-				$("#title").text("Détail Article");
-				
-				$("#icone").attr("class","far fa-file-edit");
-				
-				$("#new_art").modal("show");
-				
-			});
-			
-			$("#closee").click(function () {
-				
-				location.reload();
-				
-			})
-			
-			/////////////////------------- END ----------------- 
-		});
-		
-		</script>
-		
-		<style type="text/css">
-		
-			.cc{
-			
-				text-align: center;
-			
-			}
-		
-		</style>
-		
-</head>
-<body>
-	
-	<div class="container-fluid h-100">
-		
-		<div class="card">
-		
-			
-			<h3 class="card-header  text-center"> <i class="far fa-list-alt"></i>  List des Articles </h3>
-			<br>
-			
-			<div class="card-body">
-			
-				<div class="container-fluid">
-					
-					<table id="table" class="table table-bordered table-hover" style="width:100%">
-					
-						<thead class="thead-dark">
-						
-							<tr>
-								
-								<th class="cc">Code</th>
-								<th class="cc">Désignation</th>
-								<th  class="cc" th:each="cat_c:${cat_client}" th:text="${cat_c.nom_category}+' (HT/Q)'"></th>
-								
-							</tr>
-						
-						</thead>
-						
-						<tbody>
-						
-							<tr th:each="art, i:${articles}" >
-								
-								<td th:text="${art.code}" class="cc"></td>
-								<td th:text="${art.libelle}" class="cc"></td>
-								
-								<td th:each="prix:${list_prix[i.index]}"  class="cc">
-									<span th:if="${prix.prix}!=(-1)" th:text="${prix.prix}"></span>
-									<span th:unless="${prix.prix}!=(-1)" th:text="'/'"></span> 
-								</td>
-								
-							</tr>
-						
-						</tbody>
-						
-					</table>
-				
-				</div>
-			
-			</div>
-			
-		</div>
-		
-	</div>
-	
-	<div id="new_art" class="modal" tabindex="-1" role="dialog">
-	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <i class="far fa-user-alt" style="font-size:30px;margin-right:10px;" id="icone"></i> <h5 class="modal-title" id="title"> Nouveau Client </h5>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
-	      </div>
-	      
-	      <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
-	        
-	         <!--  <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>  -->
-	        
-	      </div>
-	      
-	      <div class="modal-footer">
-	        <button type="button" id="closee" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
-	
-	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
-	
-	
-	
-</body>
+          },
+        };
+
+        var table = $('#table').DataTable(datatable_config);
+
+        $('#add_art').click(function () {
+          $('#print_content').html(
+            '<iframe id="frame" width="" height="" frameborder="0" src="add_art"></iframe>',
+          );
+
+          $('#title').text('Nouveau Article');
+
+          $('#icone').attr('class', 'far fa-bread-slice');
+
+          $('#new_art').modal('show');
+        });
+
+        $('#add_redux_prix').click(function () {
+          $('#print_content').html(
+            '<iframe id="frame" width="" height="" frameborder="0" src="new_reduction"></iframe>',
+          );
+
+          $('#title').text('Nouvelle Réduction');
+
+          $('#icone').attr('class', 'far fa-user-tag');
+
+          $('#new_art').modal('show');
+        });
+
+        $('.edit').click(function () {
+          var id_art = $(this).attr('id_art');
+
+          $('#print_content').html(
+            '<iframe id="frame" width="" height="" frameborder="0" src="edit_art?id_art=' +
+              id_art +
+              ' "></iframe>',
+          );
+
+          $('#title').text('Détail Article');
+
+          $('#icone').attr('class', 'far fa-file-edit');
+
+          $('#new_art').modal('show');
+        });
+
+        $('#closee').click(function () {
+          location.reload();
+        });
+
+        /////////////////------------- END -----------------
+      });
+    </script>
+
+    <style type="text/css">
+      .cc {
+        text-align: center;
+      }
+      /* filter styles injected above */
+    </style>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
+  <body>
+    <div class="container-fluid h-100">
+      <div class="card">
+        <h3 class="card-header text-center">
+          <i class="far fa-list-alt"></i> List des Articles
+        </h3>
+        <br />
+
+        <div class="card-body">
+          <div class="container-fluid">
+            <!-- ===== FILTER BAR ===== -->
+            <div class="filter-bar">
+              <div class="row align-items-end">
+                <div class="col-md-4">
+                  <label
+                    ><i class="far fa-layer-group"></i> Catégorie Article</label
+                  >
+                  <select
+                    id="filter-category"
+                    class="selectpicker form-control"
+                    multiple
+                    data-live-search="true"
+                    data-actions-box="true"
+                    data-selected-text-format="count > 1"
+                    data-count-selected-text="{0} catégories"
+                    data-width="100%"
+                    title="Toutes les catégories"
+                  ></select>
+                </div>
+                <div class="col-md-5">
+                  <label><i class="far fa-barcode"></i> Code Article</label>
+                  <select
+                    id="filter-code"
+                    class="selectpicker form-control"
+                    multiple
+                    data-live-search="true"
+                    data-actions-box="true"
+                    data-selected-text-format="count > 1"
+                    data-count-selected-text="{0} codes"
+                    data-width="100%"
+                    title="Tous les codes"
+                  ></select>
+                </div>
+                <div class="col-md-2">
+                  <button
+                    id="btn-reset-filters"
+                    class="btn btn-outline-secondary btn-block btn-reset"
+                  >
+                    <i class="far fa-times-circle"></i> Réinitialiser
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- ===== END FILTER BAR ===== -->
+
+            <table
+              id="table"
+              class="table table-bordered table-hover"
+              style="width: 100%"
+            >
+              <thead class="thead-dark">
+                <tr>
+                  <th class="cc">Code</th>
+                  <th class="cc">Désignation</th>
+                  <th
+                    class="cc"
+                    th:each="cat_c:${cat_client}"
+                    th:text="${cat_c.nom_category}+' (HT/Q)'"
+                  ></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr
+                  th:each="art, i:${articles}"
+                  th:attr="data-category=${art.produit.sous_category_produit.category_produit.nom_category}, data-code=${art.code}"
+                >
+                  <td th:text="${art.code}" class="cc"></td>
+                  <td th:text="${art.libelle}" class="cc"></td>
+
+                  <td th:each="prix:${list_prix[i.index]}" class="cc">
+                    <span
+                      th:if="${prix.prix}!=(-1)"
+                      th:text="${#numbers.formatDecimal(prix.prix, 1, 'WHITESPACE', 2, 'COMMA')}"
+                    ></span>
+                    <span th:unless="${prix.prix}!=(-1)" th:text="'/'"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="new_art" class="modal" tabindex="-1" role="dialog">
+      <div
+        class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75"
+        role="document"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <i
+              class="far fa-user-alt"
+              style="font-size: 30px; margin-right: 10px"
+              id="icone"
+            ></i>
+            <h5 class="modal-title" id="title">Nouveau Client</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div
+            class="modal-body embed-responsive embed-responsive-16by9"
+            style="overflow-y: hidden"
+            id="print_content"
+          >
+            <!--  <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/add_client"></iframe>  -->
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              id="closee"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+  </body>
 </html>

@@ -1,5 +1,7 @@
 package com.commercial.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,7 +113,13 @@ public class DBInitialisation {
 	
 	public void initSubMenu () {
 		
-		if( subMenuRepo.findAll().size() == 0 ) {
+		List<sub_menu> existingSubMenus = subMenuRepo.findAll();
+		boolean logistiqueExists = existingSubMenus.stream()
+			.anyMatch(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("Vente Employee Logistique"));
+		boolean logistiqueListExists = existingSubMenus.stream()
+			.anyMatch(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("List BL Employee Logistique"));
+		
+		if( existingSubMenus.size() == 0 ) {
 			
 			subMenuRepo.save( new sub_menu("Information de l'entreprise", "info_ent", 1, menuRepo.getOne((long) 4),"", "align-justify") );
 			subMenuRepo.save( new sub_menu("Liste des articles", "list_art", 1, menuRepo.getOne((long) 2),"", "th-list") );
@@ -171,10 +179,24 @@ public class DBInitialisation {
 			subMenuRepo.save( new sub_menu("Modifier Facture", "edit_fact", 8, menuRepo.getOne((long) 4),"", "edit") );
 			subMenuRepo.save( new sub_menu("List Remboursements", "list_remboursements", 2, menuRepo.getOne((long) 5),"", "reply") );
 			subMenuRepo.save( new sub_menu("Vente Employee RH", "bl_encours_employee_grh", 8, menuRepo.getOne((long) 3),"", "file-invoice") );
+			subMenuRepo.save( new sub_menu("Vente Employee Logistique", "bl_encours_employee_logistique", 9, menuRepo.getOne((long) 3),"", "file-invoice") );
+			subMenuRepo.save( new sub_menu("List BL Employee Logistique", "bl_encours_employee_logistique", 10, menuRepo.getOne((long) 3),"", "clipboard-list-check") );
 			
 			
 			subMenuRepo.flush();
 			
+		}
+		else {
+			boolean newItemAdded = false;
+			if (!logistiqueExists) {
+				subMenuRepo.save( new sub_menu("Vente Employee Logistique", "bl_encours_employee_logistique", 9, menuRepo.getOne((long) 3),"", "file-invoice") );
+				newItemAdded = true;
+			}
+			if (!logistiqueListExists) {
+				subMenuRepo.save( new sub_menu("List BL Employee Logistique", "bl_encours_employee_logistique", 10, menuRepo.getOne((long) 3),"", "clipboard-list-check") );
+				newItemAdded = true;
+			}
+			if (newItemAdded) { subMenuRepo.flush(); }
 		}
 		
 	}
@@ -261,6 +283,20 @@ public class DBInitialisation {
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 55)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 56)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 57)) );
+			sub_menu logistique = subMenuRepo.findAll().stream()
+				.filter(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("Vente Employee Logistique"))
+				.findFirst()
+				.orElse(null);
+			sub_menu logistiqueList = subMenuRepo.findAll().stream()
+				.filter(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("List BL Employee Logistique"))
+				.findFirst()
+				.orElse(null);
+			if (logistique != null) {
+				rolesMenuRepo.save(new roles_menu(rolesRepo.getOne((long) 1), logistique));
+			}
+			if (logistiqueList != null) {
+				rolesMenuRepo.save(new roles_menu(rolesRepo.getOne((long) 1), logistiqueList));
+			}
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 58)) );
 			
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 2), subMenuRepo.getOne((long) 2)) );
@@ -368,9 +404,32 @@ public class DBInitialisation {
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 50)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 6), subMenuRepo.getOne((long) 54)) );
 			rolesMenuRepo.save( new roles_menu(rolesRepo.getOne((long) 1), subMenuRepo.getOne((long) 56)) );
-
 			rolesMenuRepo.flush();
-			
+		}
+		else {
+			sub_menu logistique = subMenuRepo.findAll().stream()
+				.filter(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("Vente Employee Logistique"))
+				.findFirst()
+				.orElse(null);
+			sub_menu logistiqueList = subMenuRepo.findAll().stream()
+				.filter(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("List BL Employee Logistique"))
+				.findFirst()
+				.orElse(null);
+			boolean logistiqueRoleExists = rolesMenuRepo.findAll().stream()
+				.anyMatch(rm -> rm.getSubmenu() != null && rm.getSubmenu().getNom_submenu() != null
+					&& rm.getSubmenu().getNom_submenu().equalsIgnoreCase("Vente Employee Logistique"));
+			boolean logistiqueListRoleExists = rolesMenuRepo.findAll().stream()
+				.anyMatch(rm -> rm.getSubmenu() != null && rm.getSubmenu().getNom_submenu() != null
+					&& rm.getSubmenu().getNom_submenu().equalsIgnoreCase("List BL Employee Logistique"));
+			if (logistique != null && !logistiqueRoleExists) {
+				rolesMenuRepo.save(new roles_menu(rolesRepo.getOne((long) 1), logistique));
+				rolesMenuRepo.flush();
+			}
+			if (logistiqueList != null && !logistiqueListRoleExists) {
+				rolesMenuRepo.save(new roles_menu(rolesRepo.getOne((long) 1), logistiqueList));
+				rolesMenuRepo.flush();
+			}
+
 		}
 		
 	}

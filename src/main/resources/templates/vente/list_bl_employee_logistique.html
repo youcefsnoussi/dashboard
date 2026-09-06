@@ -1,0 +1,433 @@
+<!doctype html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta
+      charset="utf-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Application Commercial</title>
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css"
+    />
+
+    <link
+      href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css"
+      rel="stylesheet"
+    />
+
+    <script src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+    <script src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js\jquery.dataTables.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\sum().js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\additionalJS\drahem.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"
+    ></script>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        var getUrlParameter = function getUrlParameter(sParam) {
+          var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+          for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+              return sParameterName[1] === undefined
+                ? true
+                : decodeURIComponent(sParameterName[1]);
+            }
+          }
+        };
+
+        var ret = getUrlParameter('ret');
+
+        if (ret != null) {
+          $('#title').text('Information');
+          $('#icone').attr('class', 'far fa-info-circle');
+
+          $('#text').text('Annulation effectuer avec succes ');
+
+          $('#error').modal('show');
+        }
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        var datatable_config = {
+          language: {
+            url: 'resources/Plugins/datatable/lang/French.json',
+          },
+          ordering: true,
+          bPaginate: false,
+          scrollY: '600px',
+          scrollX: 'auto',
+          deferRender: true,
+          columnDefs: [{ width: '7%', targets: 8 }],
+          initComplete: function () {
+            this.api()
+              .columns([2, 7])
+              .every(function () {
+                var column = this;
+                var select = $(
+                  '<select class="selectpicker " data-width="fit" data-style="btn btn-outline-secondary" ' +
+                    ' data-live-search="true" data-container="body"><option value="">Tout</option></select>',
+                )
+                  .appendTo($(column.footer()).empty())
+                  .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex($(this).val());
+
+                    column
+                      .search(val ? '^' + val + '$' : '', true, false)
+                      .draw();
+                  });
+
+                column
+                  .data()
+                  .unique()
+                  .sort()
+                  .each(function (d, j) {
+                    select.append(
+                      '<option value="' + d + '">' + d + '</option>',
+                    );
+                  });
+                $('.selectpicker').selectpicker('refresh');
+              });
+          },
+          drawCallback: function () {
+            var api = this.api();
+
+            $(api.column(4, { page: 'current' }).footer()).html(
+              api
+                .column(4, { page: 'current' })
+                .data()
+                .sum()
+                .formatMoney(2, ',', ' '),
+            );
+
+            $(api.column(5, { page: 'current' }).footer()).html(
+              api
+                .column(5, { page: 'current' })
+                .data()
+                .sum()
+                .formatMoney(2, ',', ' '),
+            );
+
+            $(api.column(6, { page: 'current' }).footer()).html(
+              api
+                .column(6, { page: 'current' })
+                .data()
+                .sum()
+                .formatMoney(2, ',', ' '),
+            );
+          },
+        };
+
+        var table = $('#table').DataTable(datatable_config);
+
+        $('.info').click(function () {
+          var id_bl = $(this).attr('id_bl');
+
+          num_bl = $(this).attr('num_bl');
+
+          $('#print_content').html(
+            '<iframe id="frame" width="100%" height="828" frameborder="0" ' +
+              'src="/vente_employee_logistique?id_ble=' +
+              id_bl +
+              '"></iframe>',
+          );
+
+          $('#title_bl').text('Détail BL N° ' + num_bl);
+
+          $('#icone_bl').attr('class', 'far fa-file-invoice');
+
+          $('#bl_detail_modal').modal('show');
+        });
+
+        $('#afficher').click(function () {
+          var start = $('#debut').val();
+
+          var end = $('#fin').val();
+
+          if (start == '' || end == '') {
+            $('#title').text('Erreur !!!');
+            $('#icone').attr('class', 'far fa-exclamation-triangle');
+            $('#text').html(
+              '<span> Veuillez selectionner les dates !!! <span>',
+            );
+            $('#error').modal('show');
+          } else {
+            //console.log("start = "+start+" / end = "+end);
+            window.location.replace(
+              'bl_encours_employee_logistique?start=' + start + '&end=' + end,
+            );
+          }
+        });
+
+        $('#close').click(function () {
+          var start = $('#debut').val();
+
+          var end = $('#fin').val();
+          //console.log("start = "+start+" / end = "+end);
+          window.location.replace(
+            'bl_encours_employee_logistique?start=' + start + '&end=' + end,
+          );
+        });
+      });
+    </script>
+
+    <style type="text/css">
+      .rr {
+        text-align: right;
+      }
+    </style>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
+  <body>
+    <div class="container-fluid h-100">
+      <!-- container h-100 -->
+
+      <div class="card">
+        <div class="card-header text-center">
+          <div class="row">
+            <div class="col-md-4 offset-md-1">
+              <div class="input-group">
+                <input
+                  id="debut"
+                  type="date"
+                  name="start"
+                  th:value="${date_d}"
+                  class="form-control date"
+                  style=""
+                  placeholder="DU"
+                />
+
+                <span class="input-group-text declaration"
+                  ><i class="far fa-calendar-alt"></i>
+                </span>
+
+                <input
+                  id="fin"
+                  type="date"
+                  name="end"
+                  th:value="${date_f}"
+                  class="form-control date"
+                  style=""
+                  placeholder="AU"
+                />
+
+                <button
+                  id="afficher"
+                  name="afficher"
+                  class="btn btn-dark"
+                  type="button"
+                >
+                  Afficher
+                </button>
+              </div>
+            </div>
+
+            <div class="col-md-4 offset-md-1">
+              <h3 class="text-center">
+                <i class="far fa-clipboard-list-check"></i> List des Bons Sortie
+                Logistique
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="container-fluid">
+            <table
+              id="table"
+              class="table table-bordered table-hover"
+              style="width: 100%"
+            >
+              <thead class="thead-dark">
+                <tr>
+                  <th>N°</th>
+                  <th>Date</th>
+                  <th>Matricule</th>
+                  <th>Employée</th>
+                  <th>Montant HT</th>
+                  <th>Montant TVA</th>
+                  <th>Montant TTC</th>
+                  <th>N° Facture</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr th:each="bl,iter:${list_ble}">
+                  <td th:text="${iter.count}"></td>
+                  <td th:text="${bl.date}"></td>
+                  <td th:text="${bl.matricule_employee}"></td>
+                  <td
+                    th:text="${bl.nom_employee}+' '+${bl.prenom_employee}"
+                  ></td>
+                  <td
+                    th:text="${#numbers.formatDecimal(bl.montant_ht, 3, 'WHITESPACE', 2,'POINT')}"
+                    class="rr"
+                  ></td>
+                  <td
+                    th:text="${#numbers.formatDecimal(bl.montant_tva, 3, 'WHITESPACE', 2,'POINT')}"
+                    class="rr"
+                  ></td>
+                  <td
+                    th:text="${#numbers.formatDecimal(bl.montant_ttc, 3, 'WHITESPACE', 2,'POINT')}"
+                    class="rr"
+                  ></td>
+                  <td
+                    th:text="(${bl.facture} != null) ? ${bl.facture.numero} : 'Non facturé'"
+                  ></td>
+                  <td style="text-align: center; width: 10%">
+                    <button
+                      type="button"
+                      class="btn btn-warning info"
+                      th:attr="id_bl=${bl.id},num_bl=${bl.numero}"
+                    >
+                      <i class="far fa-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+
+              <tfoot class="thead-dark">
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th class="rr"></th>
+                  <th class="rr"></th>
+                  <th class="rr"></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="error"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="title">
+              <i id="icone" class="far fa-exclamation-triangle"></i>
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="text">Modal body text goes here.</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal fade bd-example-modal-lg"
+      id="bl_detail_modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalCenterTitle"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="title_bl">
+              <i id="icone_bl" class="far fa-info"></i>
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="print_content"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+              id="close"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

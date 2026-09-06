@@ -242,7 +242,9 @@
 		</script>
 		
 		
-</head>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
 <body>
 	
 	<div class="container-fluid h-100"> <!-- h-100 -->
@@ -323,7 +325,7 @@
 								<th></th>
 								<th></th>
 								<th> <input type="text" id="sold_debut_rc" class="form-control" 
-								th:value="${#numbers.formatDecimal(sold_fin_rc, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								th:value="${#numbers.formatDecimal(sold_fin_rc, 3, 'WHITESPACE', 2,'COMMA')}" readonly> </th>
 								<th>⮜ Sold Début RC</th> -->
 								<th></th>
 								<th></th>
@@ -414,9 +416,9 @@
 								<th></th>
 								<th>Sold Final Client ➤</th>
 								<th> <input type="text" id="sold_fin_clt" class="form-control" 
-								th:value="${#numbers.formatDecimal(sold_fin_clt, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								th:value="${#numbers.formatDecimal(sold_fin_clt, 3, 'WHITESPACE', 2,'COMMA')}" readonly> </th>
 								<!--  <th> <input type="text" id="sold_fin_rc" class="form-control" 
-								th:value="${#numbers.formatDecimal(sold_fin_rc, 3, 'WHITESPACE', 0,'COMMA')}" readonly> </th>
+								th:value="${#numbers.formatDecimal(sold_fin_rc, 3, 'WHITESPACE', 2,'COMMA')}" readonly> </th>
 								<th>⮜ Sold Final RC</th> -->
 								<!-- 
 								<th></th>
