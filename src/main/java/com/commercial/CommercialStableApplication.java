@@ -27,6 +27,7 @@ public class CommercialStableApplication extends SpringBootServletInitializer im
 		Dbi.initSubMenu();
 		Dbi.initRoles();
 		Dbi.initRolesMenu();
+		Dbi.initRolesMenuPrevisionIa();
 		Dbi.initUsers();
 		Dbi.initRegion();
 		Dbi.initWilaya();
