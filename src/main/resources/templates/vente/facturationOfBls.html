@@ -424,7 +424,9 @@
 		
 		</style>
 		
-</head>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
 <body>
 	
 	 <div class="container-fluid h-100"> <!-- container h-100 -->
@@ -632,7 +634,7 @@
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
 									th:text="${bl_info.magasin.name}"></td>	
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}" 
-									th:text="${bl_info.quantite}" id="qunatite">
+									th:text="${#numbers.formatDecimal(bl_info.quantite, 1, 'WHITESPACE', 2, 'POINT')}" id="qunatite">
 								</td>
 									<!-- th:text="${#numbers.formatDecimal(bl_info.quantite, 2, 'WHITESPACE', 3,'POINT')}" -->
 								<td th:each="bl_info : ${bls_info}" th:object="${bl_info}" th:if="${bl_info.bon_livraison_facture}==${bl}">

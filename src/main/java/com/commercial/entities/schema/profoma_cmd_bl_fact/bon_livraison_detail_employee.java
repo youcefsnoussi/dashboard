@@ -1,6 +1,7 @@
 package com.commercial.entities.schema.profoma_cmd_bl_fact;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,6 +47,9 @@ public class bon_livraison_detail_employee implements Serializable{
 	private double montant_ttc;
 	
 	private double tva;
+	
+	@Column(name = "update_date")
+	private LocalDateTime updateDate;
 	
 	@ManyToOne
 	@JoinColumn(name = "users")
@@ -205,5 +209,13 @@ public class bon_livraison_detail_employee implements Serializable{
 	public void setMagasin(Magasin magasin) {
 		this.magasin = magasin;
 	}
+	
+	   public LocalDateTime getUpdateDate() {
+	        return updateDate;
+	    }
+
+	    public void setUpdateDate(LocalDateTime updateDate) {
+	        this.updateDate = updateDate;
+	    }
 	
 }

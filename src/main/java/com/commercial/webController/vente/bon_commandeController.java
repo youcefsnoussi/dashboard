@@ -1,5 +1,6 @@
 package com.commercial.webController.vente;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -147,13 +148,11 @@ public class bon_commandeController {
 						 @SessionAttribute("user") users user,
 						 Model model){
 		
-		get_time_date gtd = new get_time_date();
-		
 		String ret = "vente/bon_commande";
 		
 		//model.addAttribute("clients", clientRepo.client_active_only());
 		
-		model.addAttribute("clients", clt_rcRepo.ListRCwithCLIENT_active(gtd.get_date()));
+		model.addAttribute("clients", clt_rcRepo.ListRCwithCLIENT_active(LocalDate.now().toString()));
 		
 		//model.addAttribute("articles", artRepo.findAll());
 		

@@ -30,6 +30,7 @@ public class users implements Serializable{
 	private String prenom;
 	private String image = "resources/images/welcome/no_image.png";
 	private boolean active = true;
+	private Boolean canEditStockJournalier = false;
 	
 	@ManyToOne
     @JoinColumn(name = "role")
@@ -119,6 +120,14 @@ public class users implements Serializable{
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public boolean isCanEditStockJournalier() {
+		return Boolean.TRUE.equals(canEditStockJournalier);
+	}
+
+	public void setCanEditStockJournalier(Boolean canEditStockJournalier) {
+		this.canEditStockJournalier = (canEditStockJournalier == null) ? false : canEditStockJournalier;
 	}
 
 	public roles getRole() {

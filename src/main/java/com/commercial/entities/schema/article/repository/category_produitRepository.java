@@ -12,7 +12,9 @@ import com.commercial.entities.schema.article.category_produit;
 public interface category_produitRepository extends JpaRepository<category_produit, Long>{
 	
 	List<category_produit> findByIdIn(List<Long> ids_category);
-	
+
+@Query("SELECT c FROM category_produit c ORDER BY c.nom_category ASC")
+List<category_produit> findVenteBaseStockOrderByNomCategory();	
 	//-------------------------------------------------------------------------------------------
 	
 	@Query(   " FROM category_produit cat_prod "

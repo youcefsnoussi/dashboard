@@ -16,6 +16,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 @Configuration
 
 @EnableWebSecurity
@@ -44,12 +51,15 @@ public class security_config extends WebSecurityConfigurerAdapter{
 		*/
 		http
         .authorizeRequests()
-        	.antMatchers("/resources/**").permitAll()
+        	.antMatchers("/manual-login").permitAll() 
+        	.antMatchers("/display_img/**").permitAll() 
+        	.antMatchers("/resources/**","/login/**").permitAll()
         	.anyRequest().authenticated()
         .and()
         .headers()
         .frameOptions().disable()	
         .and()
+        .csrf().disable()
         .formLogin()
         	.loginPage("/login").permitAll()
         .and().logout();//.invalidateHttpSession(true).clearAuthentication(true).deleteCookies("auth_code", "JSESSIONID");
@@ -63,4 +73,29 @@ public class security_config extends WebSecurityConfigurerAdapter{
         //.httpBasic();
 	}
 	
+	 @Bean
+	    public CorsFilter corsFilter() {
+	        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	        CorsConfiguration config = new CorsConfiguration();
+	        config.setAllowCredentials(true);
+	        config.addAllowedOrigin("*");
+	        config.addAllowedHeader("*");
+	        config.addAllowedMethod("*");
+	        source.registerCorsConfiguration("/**", config);
+	        return new CorsFilter(source);
+	    }
+	
+	 
+	 @Bean
+	    public WebMvcConfigurer corsConfigurer() {
+	        return new WebMvcConfigurer() {
+	            @Override
+	            public void addCorsMappings(CorsRegistry registry) {
+	                registry.addMapping("/**") // Allow CORS on all endpoints
+	                        .allowedOrigins("http://105.96.0.95:9090") // Specify your front-end origin
+	                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Specify allowed methods
+	                        .allowCredentials(true);
+	            }
+	        };
+	    }
 }

@@ -33,6 +33,10 @@
 	$(document).ready(function() {
 			
 			let id_bl = $("#id_bl").val();
+			var rcCategoryId = $("#rc_category_id").val();
+			if(rcCategoryId){
+				window.rcCategoryId = rcCategoryId.toString();
+			}
 		
 			checkConnection('edit_bl?id_bl='+id_bl);
 			
@@ -46,6 +50,12 @@
 			}
 			
 			$("#subsub").click(function () {
+				if(typeof hasBlockingAlerts === 'function' && hasBlockingAlerts()){
+					if(typeof showCommandeValidationBlockedAlert === 'function'){
+						showCommandeValidationBlockedAlert();
+					}
+					return;
+				}
 				
 				var art_selected = [];
 				
@@ -100,7 +110,8 @@
 				
 			});
 			
-		
+			initializeExistingArticles();
+			
 	});
 	
 	function if_duplicate_value (arr){
@@ -122,10 +133,57 @@
 		return false;
 		
 	}
+
+	function initializeExistingArticles(){
+		$(".art").each(function(){
+			var select = $(this);
+			var rowId = select.attr("id_tr");
+			var articleId = select.val();
+			if(!rowId || !articleId || articleId == "0"){
+				return;
+			}
+			var rowElement = $("#"+rowId);
+			if(rowElement.length){
+				var initialQtyInput = rowElement.find(".qte_init");
+				var parsedQty = initialQtyInput.length ? parseFloat(initialQtyInput.val()) : 0;
+				var initialQty = (isFinite(parsedQty) && parsedQty > 0) ? parsedQty : 0;
+				rowElement.data("initial-quantity", initialQty);
+				rowElement.data("initial-article", articleId);
+				var initialCategory = $('option:selected', select).attr('data-category-id');
+				rowElement.data("initial-category", initialCategory);
+				rowElement.data("is-edit-baseline", true);
+			}
+			if(typeof clearAlertsForRow === 'function'){
+				clearAlertsForRow(rowId);
+			}
+			var venteBaseStock = $('option:selected', select).attr('data-vente-stock') === 'true';
+			var categoryId = $('option:selected', select).attr('data-category-id');
+			$("#"+rowId).data("vente-base-stock", venteBaseStock ? 'true' : 'false');
+			$("#"+rowId).data("selected-article", articleId);
+			if(typeof registerRowCategory === 'function'){
+				registerRowCategory(rowId, categoryId);
+			}
+			if(typeof fetchStockJournalier === 'function'){
+				fetchStockJournalier(articleId, rowId);
+			}
+			if(typeof fetchCategorySoldQuantity === 'function'){
+				fetchCategorySoldQuantity(categoryId, venteBaseStock, rowId);
+			}
+		});
+		setTimeout(function(){
+			$(".qte").each(function(){
+				if(typeof enforceCategoryLimit === 'function'){
+					enforceCategoryLimit(this);
+				}
+			});
+		}, 350);
+	}
 	
 	</script>
 	      
 	      
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
 	</head>
 
 	<body >
@@ -151,6 +209,7 @@
 						<input type="hidden" id="id_bl" name="id_bl" th:value="${bl.id}">
 						
 						<input type="hidden" id="rc" name="id_rc_clt" th:value="${bl.commande.client_registrecommerce.id}">
+						<input type="hidden" id="rc_category_id" th:value="${bl.registre_commerce.category.id}">
 						
 						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
 						<br>
@@ -401,18 +460,22 @@
 									data-size="8" data-live-search="true" name="art" th:attr="id_tr='tr'+${i.index}" >
 									
 										
-										<option th:value="${bl_det.article.id}"  th:if="${bl_det.article.code}=='99999'" selected>Transport</option>
-										<option value="0"  id_um="0" pu="0" tva="0" th:unless="${bl_det.article.code}=='99999'">Selection</option>
+										<option th:value="${bl_det.article.id}" th:if="${bl_det.article.code}=='99999'" data-vente-stock="false" selected>Transport</option>
+										<option value="0" id_um="0" pu="0" tva="0" data-vente-stock="false" th:unless="${bl_det.article.code}=='99999'">Selection</option>
 										
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
-												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
-												 pu=${art.prix}, tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
+											 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
+											 pu=${art.prix}, tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}, 
+											 data-vente-stock=${art.article.produit.sous_category_produit.category_produit.venteBaseStock},
+											 data-category-id=${art.article.produit.sous_category_produit.category_produit.id}" 
 												 th:text="${art.article.libelle}" th:if="${art.article.id}==${bl_det.article.id}" selected>
 										</option>
 												 
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
-												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
-												 pu=${art.prix}, tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
+											 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
+											 pu=${art.prix}, tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}, 
+											 data-vente-stock=${art.article.produit.sous_category_produit.category_produit.venteBaseStock},
+											 data-category-id=${art.article.produit.sous_category_produit.category_produit.id}" 
 												 th:text="${art.article.libelle}" th:unless="${art.article.id}==${bl_det.article.id} or ${bl_det.article.code}=='99999'" >
 										</option>
 										
@@ -489,11 +552,13 @@
 								<td> 
 									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8"
 										 data-live-search="true" name="art" th:attr="id_tr='tr'+${j}" >
-										<option value="0" id_um="0" pu="0" tva="0" >Selection</option>
+										<option value="0" id_um="0" pu="0" tva="0" data-vente-stock="false">Selection</option>
 												 
 										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
-												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
-												 pu=${art.prix}, tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
+											 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, 
+											 pu=${art.prix}, tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}, 
+											 data-vente-stock=${art.article.produit.sous_category_produit.category_produit.venteBaseStock},
+											 data-category-id=${art.article.produit.sous_category_produit.category_produit.id}" 
 												 th:text="${art.article.libelle}" >
 										</option>
 										

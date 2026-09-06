@@ -175,7 +175,9 @@
 		
 		</style>
 		
-</head>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
 <body>
 	
 	<div class="container-fluid h-100">
@@ -345,7 +347,7 @@
 								<td th:text="${art.libelle}" class="cc"></td>
 								
 								<td th:each="prix:${list_prix[i.index]}"  class="cc">
-									<span th:if="${prix.prix}!=(-1)" th:text="${prix.prix}"></span>
+									<span th:if="${prix.prix}!=(-1)" th:text="${#numbers.formatDecimal(prix.prix, 1, 'WHITESPACE', 2, 'COMMA')}"></span>
 									<span th:unless="${prix.prix}!=(-1)" th:text="'/'"></span> 
 								</td>
 								

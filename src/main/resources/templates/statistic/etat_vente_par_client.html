@@ -163,7 +163,9 @@
 			
 		</style>
 		
-</head>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
 <body>
 	
 	<div class="container-fluid h-100"> <!-- h-100 -->
@@ -240,7 +242,7 @@
 								<td th:text="${d[2]}"></td>
 								<td th:text="${d[3]}"></td>
 								<td th:text="${d[4]}"></td>
-								<td th:text="${#numbers.formatDecimal(d[5], 2, 'WHITESPACE', 3,'POINT')}"></td>
+								<td th:text="${#numbers.formatDecimal(d[5], 1, 'WHITESPACE', 2,'COMMA')}"></td>
 							</tr>
 						</tbody>
 						

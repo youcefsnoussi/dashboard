@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"  name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Commercial</title>
+		
+		<link rel="stylesheet" th:href="@{/resources/Plugins/bootstrap-4.3.1/css/bootstrap.min.css}">
+		<link rel="stylesheet" th:href="@{/resources/Plugins/bootstrap-select-1.13.7/dist/css/bootstrap-select.min.css}">
+		
+		<link rel="stylesheet" th:href="@{/resources/Plugins/datatable/css/dataTables.bootstrap4.min.css}" />  
+		
+		<link th:href="@{/resources/Plugins/Font-Awsom-Pro-5.8.2/css/all.css}" rel="stylesheet"> 
+		
+		<link rel="stylesheet" th:href="@{/resources/Plugins/kartik-v-bootstrap-fileinput/css/fileinput.min.css}"/>
+		
+		<script  th:src="@{/resources/additionalJS/jquery-3.2.1.min.js}"></script>
+		<script  th:src="@{/resources/Plugins/bootstrap-4.3.1/js/bootstrap.bundle.min.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/datatable/js/jquery.dataTables.min.js}"></script>
+		<script type="text/javascript" th:src="@{/resources/Plugins/datatable/js/dataTables.bootstrap4.min.js}"></script>
+		<script type="text/javascript" th:src="@{/resources/Plugins/datatable/js_additional/sum().js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/additionalJS/drahem.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/bootstrap-select-1.13.7/dist/js/bootstrap-select.min.js}"></script>
+		<script type="text/javascript" th:src="@{/resources/Plugins/bootstrap-select-1.13.7/dist/js/i18n/defaults-fr_FR.min.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/kartik-v-bootstrap-fileinput/js/fileinput.min.js}"></script>
+		
+		<script type="text/javascript" th:src="@{/resources/Plugins/kartik-v-bootstrap-fileinput/js/plugins/piexif.js}"></script>
+		
+		<script type="text/javascript" >
+		
+		$(document).ready(function() {
+			
+			$("#card_number").focus();
+			
+			var datatable_config = {
+					"language": {
+				            "url": "resources/Plugins/datatable/lang/French.json"
+				    },
+					"ordering": true,
+			    	"bPaginate": false,
+					"scrollY":"600px",
+					"scrollX": "auto",
+			        "deferRender": true,
+			        initComplete: function () {
+			            this.api().columns([2,3,4]).every( function () {
+			                var column = this;
+			                var select = $('<select class="selectpicker show-tick" data-width="fit" data-style="btn btn-outline-secondary" '+ 
+			                				'data-live-search="true" data-container="body"><option value="">Tout</option></select>')
+			                    .appendTo( $(column.footer()).empty() )
+			                    .on( 'change', function () {
+			                        var val = $.fn.dataTable.util.escapeRegex(
+			                            $(this).val()
+			                        );
+			 
+			                        column
+			                            .search( val ? '^'+val+'$' : '', true, false )
+			                            .draw();
+			                    } );
+			 
+			                column.data().unique().sort().each( function ( d, j ) {
+			                    select.append( '<option value="'+d+'">'+d+'</option>' )
+			                } );
+			                $('.selectpicker').selectpicker('refresh');
+			            } );
+			        },
+					 drawCallback: function () {
+						
+					      var api = this.api();
+					      
+					      $( api.column( 5, {page:'current'} ).footer() ).html(
+					        api.column( 5, {page:'current'} ).data().sum().formatMoney(2, ',', ' ')
+					      );
+					      
+					 },
+		    };
+		 		
+		 	var table = $('#table').DataTable(datatable_config);
+			
+			$("#afficher").click(function(){
+				
+				var card_number = $("#card_number").val();
+				
+				if(card_number==""){
+					
+					$("#title").text("Erreur !!!");
+					$("#icone").attr("class","far fa-exclamation-triangle");
+					$("#text").html("<span> Veuillez scanner une carte !!! <span>");
+					$("#error").modal('show');
+					
+				}
+				else{
+					
+					//console.log("start = "+start+" / end = "+end);
+					window.location.replace("validation_ble_detail?card_number="+card_number);
+					
+				}
+				
+			});
+			
+			$(".validate").click(function(){
+				
+				var id_ble_d = $(this).attr("id_ble_d");
+				
+				var card_number = $("#card_number").val();
+				
+				$.ajaxSetup({async: false});
+				$.ajax({
+					url : 'validate_ble_d',
+					data : {
+						id_ble_d : id_ble_d
+					},
+					success : function(responseJson) {
+						
+						window.location.replace("validation_ble_detail?card_number="+card_number);
+						
+					}
+				});
+				
+			});
+			
+			
+		});
+		
+		</script>
+		
+		<link rel="stylesheet" th:href="@{/resources/additionalCSS/app-theme.css?v=20260902c}">
+		<script th:src="@{/resources/additionalJS/app-theme.js?v=20260902c}"></script>
+</head>
+<body>
+	<br>
+	<div class="container-fluid h-100"> <!-- container h-100 -->
+		
+		<div class="card ">
+		
+			
+			<h3 class="card-header  text-center"> <i class="fal fa-cart-arrow-down fa-lg"></i>  Sortie Magasin </h3>
+			<br>
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+					<div class="row">
+						 
+						<div class="col-md-3" >
+						
+							<div class="input-group">
+								
+								<span class="input-group-text declaration"><i class="fal fa-id-card fa-lg" style="font-size:1.5vw;"></i> </span>
+								
+								<input id="card_number" type="text" name="card_number" th:value="${cardNumber}" class="form-control" 
+								style="" placeholder="">
+								
+								<button id="afficher" name="afficher" class="btn btn-dark" type="button">Afficher</button>
+									
+							</div>
+							
+						</div>
+						
+					</div>
+					
+					<hr>
+					
+					<table id="table" class="table table-bordered table-hover" style="width:100%"> 
+					
+						<thead class="thead-dark">
+						
+							<tr>
+							
+								<th>N° Bon</th>
+								<th>Employée</th>
+								<th>Date</th>
+								<th>Code</th>
+								<th>Article</th>
+								<th>Quantite</th>
+								<th>Valider</th>
+								
+							</tr>
+						
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="ble_d:${ble_d}" >
+							
+								<td th:text="${ble_d.bon_livraison_employee.numero}"></td>
+								<td th:text="${ble_d.bon_livraison_employee.nom_employee}+' '+
+										${ble_d.bon_livraison_employee.prenom_employee}+' / '+
+										${ble_d.bon_livraison_employee.matricule_employee}"></td>
+								<td th:text="${ble_d.bon_livraison_employee.date}"></td>
+								<td th:text="${ble_d.article.code}"></td>
+								<td th:text="${ble_d.article.libelle}"></td>
+								<td th:text="${#numbers.formatDecimal(ble_d.quantite, 3, 'WHITESPACE', 2,'POINT')}+
+												' ('+${ble_d.unite_mesure.nom_unite_mesure}+')'" class="rr"></td>
+								<td style="text-align: center;"> <button type="button" class="btn btn-success validate" 
+																 	th:attr="id_ble_d=${ble_d.id}"> 
+																						<i class="far fa-check"></i> 
+																						Valider
+																 </button>  
+								</td>
+								
+							</tr>
+							
+						</tbody>
+						
+						<tfoot class="thead-dark">
+						
+							<tr>
+							
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								<th class="rr"></th>
+								
+							</tr>
+						
+						</tfoot>
+						
+					</table>
+				
+				</div>
+			
+			</div>
+			
+		</div>
+		
+	</div> 
+	
+	<div id="proforma_detail_modal" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-100 w-75" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	      		
+      		<div class="col-md-6">
+      			
+      			<div class="input-group">
+      				<div class="input-group-prepend">
+      					<i id="icone_fact" class="far fa-file-invoice" style="font-size:30px;margin-right:10px;" ></i>
+      				</div>	
+      					<h5 id="title_fact" class="modal-title" > </h5>
+		        </div>	
+      		</div>
+	      	
+	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      	
+	      </div>
+	      
+	         <div class="modal-body  embed-responsive embed-responsive-16by9" style="overflow-y:hidden;" id="print_content">
+	         
+	         	<!-- <iframe id="frame" width="100%" height="100%" onload="ifrhgh()" frameborder="0" src="/new_payment"></iframe> -->
+	         
+	         </div>
+	      
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ---------------------------------------------------------- ------ ----------------------------------------------------------------------------------- -->
+	
+	<div id="error" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <i id="icone" class="" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="text"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+	<div id="confirmation" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered"  role="document">
+	  	
+	    <div class="modal-content">
+	      
+	      <div class="modal-header">
+	        <i id="icone" class="far fa-exclamation-triangle" style="font-size:30px;color:red;margin-right:10px;"></i> <h5 class="modal-title" id="title">Attention</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      
+	      <div class="modal-body">
+	        <p id="text_confirmation"></p>
+	      </div>
+	      
+	      <div class="modal-footer justify-content-center">
+	      	<button id="confirm" type="button" class="btn btn-primary">OUI</button>
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">NON</button>
+	      </div>
+	      
+	    </div>
+	    
+	  </div>
+	</div>
+	
+	<!-- ------------------------------------------------------------------------------------------------------------------------------------------------- -->
+	
+</body>
+</html>

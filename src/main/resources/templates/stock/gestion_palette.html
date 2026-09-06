@@ -1,0 +1,304 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta
+      charset="utf-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Gestion Palettes</title>
+
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css"
+    />
+    <link
+      rel="stylesheet"
+      href="resources\Plugins\datatable\css\dataTables.bootstrap4.min.css"
+    />
+    <link
+      href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css"
+      rel="stylesheet"
+    />
+
+    <script src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+    <script src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js\jquery.dataTables.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js\dataTables.bootstrap4.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="resources\Plugins\datatable\js_additional\sum().js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="resources\PagesJS\stock\gestion_palette.js"
+    ></script>
+
+    <style>
+      .badge-sortie {
+        background-color: #e74c3c;
+        color: #fff;
+      }
+      .badge-retour {
+        background-color: #27ae60;
+        color: #fff;
+      }
+      .balance-positive {
+        color: #e74c3c;
+        font-weight: bold;
+      }
+      .balance-zero {
+        color: #27ae60;
+        font-weight: bold;
+      }
+      .history-table th {
+        font-size: 0.85rem;
+      }
+      .history-table td {
+        font-size: 0.85rem;
+      }
+      .running-balance {
+        font-weight: bold;
+      }
+    </style>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
+  <body>
+    <div class="container-fluid h-100">
+      <div class="card">
+        <h3 class="card-header text-center">
+          <i class="far fa-pallet-alt"></i> Gestion Palettes
+        </h3>
+        <br />
+
+        <div class="card-body">
+          <div class="container-fluid">
+            <!-- Loading indicator -->
+            <div id="loading" class="text-center" style="display: none">
+              <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Chargement...</span>
+              </div>
+              <p>Chargement des données...</p>
+            </div>
+
+            <!-- Main Table -->
+            <table
+              id="table_palette"
+              class="table table-bordered table-hover"
+              style="width: 100%"
+            >
+              <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Nom Client</th>
+                  <th>RC (Registre du Commerce)</th>
+                  <th>Palettes Sorties</th>
+                  <th>Palettes Retournées</th>
+                  <th>Solde Palette</th>
+                  <th>Retour</th>
+                  <th>Historique</th>
+                </tr>
+              </thead>
+              <tbody id="palette_body"></tbody>
+              <tfoot class="thead-dark">
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th id="foot_out"></th>
+                  <th id="foot_returned"></th>
+                  <th id="foot_balance"></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODAL: Retour Palette ===================== -->
+    <div
+      id="modal_retour"
+      class="modal fade"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="modalRetourLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="modalRetourLabel">
+              <i class="far fa-undo"></i> Retour Palette
+            </h5>
+            <button
+              type="button"
+              class="close text-white"
+              data-dismiss="modal"
+              aria-label="Fermer"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="frm_retour">
+              <input type="hidden" id="retour_rc" />
+              <input type="hidden" id="retour_name" />
+
+              <div class="form-group">
+                <label><strong>Client :</strong></label>
+                <p
+                  id="retour_client_display"
+                  class="form-control-plaintext font-weight-bold"
+                ></p>
+              </div>
+              <div class="form-group">
+                <label><strong>RC :</strong></label>
+                <p
+                  id="retour_rc_display"
+                  class="form-control-plaintext font-weight-bold"
+                ></p>
+              </div>
+              <div class="form-group">
+                <label for="retour_quantity"
+                  ><strong>Quantité à retourner :</strong></label
+                >
+                <input
+                  type="number"
+                  class="form-control form-control-lg"
+                  id="retour_quantity"
+                  min="1"
+                  step="1"
+                  placeholder="Nombre de palettes"
+                  required
+                />
+                <small class="form-text text-muted"
+                  >La quantité doit être supérieure à 0.</small
+                >
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              id="btn_submit_retour"
+            >
+              <i class="far fa-check"></i> Valider le Retour
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODAL: Historique Palette ===================== -->
+    <div
+      id="modal_historique"
+      class="modal fade"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="modalHistoriqueLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-info text-white">
+            <h5 class="modal-title" id="modalHistoriqueLabel">
+              <i class="far fa-history"></i> Historique Palette
+            </h5>
+            <button
+              type="button"
+              class="close text-white"
+              data-dismiss="modal"
+              aria-label="Fermer"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h6 id="hist_client_display" class="mb-3 font-weight-bold"></h6>
+
+            <!-- Loading indicator for history -->
+            <div id="hist_loading" class="text-center" style="display: none">
+              <div
+                class="spinner-border spinner-border-sm text-info"
+                role="status"
+              >
+                <span class="sr-only">Chargement...</span>
+              </div>
+              <span class="ml-2">Chargement de l'historique...</span>
+            </div>
+
+            <div class="table-responsive">
+              <table
+                class="table table-sm table-bordered history-table"
+                id="table_historique"
+              >
+                <thead class="thead-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Quantité</th>
+                    <th>Référence</th>
+                    <th>Solde Cumulé</th>
+                  </tr>
+                </thead>
+                <tbody id="historique_body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODAL: Success ===================== -->
+    <div id="modal_success" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <i
+              class="far fa-check-circle text-success"
+              style="font-size: 50px"
+            ></i>
+            <h5 class="mt-3">Retour enregistré avec succès !</h5>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-success" data-dismiss="modal">
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

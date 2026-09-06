@@ -1,3 +1,11 @@
+var categorySaleLimits = {};
+var rowCategoryIndex = {};
+var categorySalesLoadState = {};
+var commandeBlockingState = {
+	stock: {},
+	limit: {},
+	limitZero: {}
+};
 
 $(document).ready(function() {
 			
@@ -161,13 +169,30 @@ $(document).ready(function() {
 	$(".art").on("change", function(){
 		
 		let tr = $(this).attr("id_tr");
-		
+	
 		let parrent = $("#"+tr);
+		var rowId = parrent.attr("id");
+		setBlockingAlert('stock', rowId, false);
+		setBlockingAlert('limit', rowId, false);
+		setBlockingAlert('limitZero', rowId, false);
+		if(rowId){
+			registerRowCategory(rowId, null);
+		}
 		
 		
 		//-------------------- get unite chargement by art -----------------
-		
-		let id_art = $('option:selected', this).val();
+	
+		var selectedOption = $('option:selected', this);
+		let id_art = selectedOption.val();
+		parrent.data("selected-article", id_art);
+		var venteBaseStock = selectedOption.attr('data-vente-stock') === 'true';
+		var categoryId = selectedOption.attr('data-category-id');
+		registerRowCategory(rowId, categoryId);
+		var canEnforce = shouldEnforceLimit(venteBaseStock);
+		console.log("[commande] conditions -> cat:", window.rcCategoryId || 'N/A', "| venteBaseStock:", venteBaseStock, "| enforce:", canEnforce);
+		parrent.data("vente-base-stock", venteBaseStock ? 'true' : 'false');
+		fetchStockJournalier(id_art, rowId);
+		fetchCategorySoldQuantity(categoryId, venteBaseStock, rowId);
 		
 		parrent.find('#id_magasin').empty();
 		
@@ -250,6 +275,10 @@ $(document).ready(function() {
 		else{
 			
 //			$(this).attr("name","");
+			registerRowCategory(rowId, null);
+			parrent.removeData("selected-article");
+			parrent.removeData("vente-base-stock");
+			clearAlertsForRow(rowId);
 			
 			parrent.find(".prix_unitaire").val(0);
 			
@@ -332,6 +361,12 @@ $(document).ready(function() {
 	
 	$("#rc").on("change", function(){
 		
+		const selectedOption = $("#rc option:selected");
+		const categoryId = selectedOption.attr("category_id");
+		const categoryName = selectedOption.attr("category_nom");
+		window.rcCategoryId = categoryId;
+		console.log("[commande] Client category =>", categoryId || "N/A", categoryName || "N/A");
+		
 		$(".remise_zero").val(0);
 		
 		$('.art').find('option:not(:first)').remove();
@@ -350,7 +385,7 @@ $(document).ready(function() {
 		
 		$("#designation_rc").val($("#rc option:selected").attr("nom")+' '+$("#rc option:selected").attr("prenom"));
 		$("#adresse_rc").val($("#rc option:selected").attr("adresse"));
-		$("#solde_rc").val(parseFloat($("#rc option:selected").attr("sold")).formatMoney(2, '.', ' '));
+	
 		$("#max_solde_rc").val(parseFloat($("#rc option:selected").attr("plafond")).formatMoney(2, '.', ' '));
 		$("#tv").val($("#rc option:selected").attr("tva"));
 		$("#mode_reg").val( $("#rc option:selected").attr("mode_pay") );
@@ -414,6 +449,25 @@ $(document).ready(function() {
 //		 $("#select_veh").val("");
 		 
 		
+		console.log("call ajax id_rc_clt>>",id_rc_clt)
+		$("#solde_rc").val(0);
+
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_get_solde_rc',
+			type: 'GET',
+			dataType: 'json',
+			data : {
+				id	: id_rc_clt
+	        },
+	        success : function(responseJson) {
+	        	console.log("responseJson>> ",responseJson);
+	        	$("#solde_rc").val(parseFloat(responseJson).formatMoney(2, '.', ' '));
+	        	
+			}
+		});
+		
+		
 		$.ajaxSetup({async: false});
 		$.ajax({
 			url: 'ajax_get_art_by_rc_cat',
@@ -442,11 +496,18 @@ $(document).ready(function() {
 						let sub = (value.article.subvension==true) ? "Subventionné" : "NON Subventionné";
 						
 						/*if(value.article.code=="B0001" || value.article.code=="B0002") {console.log("pu",value.prix);}*/
-						
+
+						var category = value.article && value.article.produit
+							? value.article.produit.sous_category_produit.category_produit : null;
+						var venteBaseStockFlag = category ? category.venteBaseStock : false;
+						var pourcentageCat = category ? category.pourcentageVente : 0;
+						console.log("art option -> ", value.article.code+' | '+venteBaseStockFlag+' | '+pourcentageCat);
+					
 						options.push('<option value="'+value.article.id+'" code="'+value.article.code+'" '+
-								   'data-subtext=" ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
-								   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
-								   '">'+value.article.code+' | '+value.article.libelle+'</option>');
+						   'data-subtext=" ('+sub+')" um="'+value.article.unite_mesure_vente.nom_unite_mesure+'" '+
+						   'pu="'+value.prix+'" tva="'+value.tva.taux_tva+'" id_um="'+value.article.unite_mesure_vente.id+'" '+
+						   'data-vente-stock="'+venteBaseStockFlag+'" data-category-id="'+(category ? category.id : '')+'" data-category-pourcentage="'+pourcentageCat+'">'+
+						   value.article.code+' | '+value.article.libelle+'</option>');
 						
 					});
 					
@@ -469,7 +530,8 @@ $(document).ready(function() {
 	//----------------------------------------------------------------------
 	
 	$(".qte").keyup(function(){
-		
+		console.log("qte changed");
+		enforceCategoryLimit($(this));
 		CalculeHTArticle( $(this) );
 		CalculeTvaTtcArticle( $(this).parent().parent().find("#tva_art") );
 		calculeTotal ();
@@ -509,25 +571,17 @@ $(document).ready(function() {
 	//____________________________________________> CALCULE REMISE <_____________________________________//
 	
 	//-------------------------------- Zero Blur -------------------------------------
-	
+
 	$(".zero").focus(function(){
-		
 		if($(this).val()==0){
-			
 			$(this).val("");
-			
 		}
-		
 	});
-	
+
 	$(".zero").blur(function(){
-		
 		if($(this).val()==""){
-			
 			$(this).val(0);
-			
 		}
-		
 	});
 	
 	$("#fermer").click(function(){
@@ -549,9 +603,15 @@ $(document).ready(function() {
 	console.log("art == "+$(".art").val());
 	*/
 	$("#sub").click(function(){
+		if(hasBlockingAlerts()){
+			showCommandeValidationBlockedAlert();
+			return;
+		}
 		var matricule =  $("#select_veh option:selected").val() ;
 		var hasTransport = $("#hasTransport").val() ;
 		console.log("hasTransport : "+hasTransport);
+		
+		console.log("matricule vhicule >> ",matricule);
 		if(hasTransport=='true' && (matricule== undefined || matricule==null || matricule=="")){
 			$("#transport_confirmation").modal('show');
 		}else{
@@ -567,7 +627,492 @@ $(document).ready(function() {
 	
 });
 
+
 //----------------------------------- Functions
+
+function setBlockingAlert(alertType, rowId, value){
+	if(!rowId || !commandeBlockingState[alertType]){
+		return;
+	}
+	commandeBlockingState[alertType][rowId] = !!value;
+}
+
+function clearAlertsForRow(rowId){
+	if(!rowId){
+		return;
+	}
+	delete commandeBlockingState.stock[rowId];
+	delete commandeBlockingState.limit[rowId];
+	delete commandeBlockingState.limitZero[rowId];
+}
+
+function hasBlockingAlerts(){
+	return Object.keys(commandeBlockingState.stock).some(function(key){ return commandeBlockingState.stock[key]; }) ||
+		Object.keys(commandeBlockingState.limit).some(function(key){ return commandeBlockingState.limit[key]; }) ||
+		Object.keys(commandeBlockingState.limitZero).some(function(key){ return commandeBlockingState.limitZero[key]; });
+}
+
+function fetchStockJournalier(idArticle, rowId){
+	if(!idArticle || idArticle === "0"){
+		if(rowId){
+			registerRowCategory(rowId, null);
+			clearAlertsForRow(rowId);
+		}
+		return;
+	}
+	if(!shouldEnforceLimit(isRowUnderVenteStock(rowId))){
+		if(rowId){
+			setBlockingAlert('stock', rowId, false);
+			setBlockingAlert('limit', rowId, false);
+			setBlockingAlert('limitZero', rowId, false);
+		}
+		return;
+	}
+
+	$.getJSON('ajax_get_stock_journalier', { id_article: idArticle })
+		.done(function(response) {
+			var qty = (response && response.quantite_stock !== undefined) ? parseFloat(response.quantite_stock) : 0;
+			var date = (response && response.date) ? response.date : 'N/A';
+			var pourc = (response && response.pourcentage_vente !== undefined) ? parseFloat(response.pourcentage_vente) : 0;
+			var allowed = (isFinite(qty) && isFinite(pourc)) ? qty * (pourc / 100) : 0;
+			allowed = (!isFinite(allowed) || allowed < 0) ? 0 : allowed;
+			var categoryId = (response && response.category_id !== undefined && response.category_id !== null)
+				? response.category_id.toString()
+				: getRowCategoryId(rowId);
+			if(rowId){
+				registerRowCategory(rowId, categoryId);
+			}
+			if(categoryId){
+				upsertCategorySaleLimit(categoryId, { allowed: allowed });
+				refreshCategoryRows(categoryId);
+				fetchCategorySoldQuantity(categoryId, isRowUnderVenteStock(rowId), rowId);
+			}
+			var needsStockAlert = rowId && isRowUnderVenteStock(rowId) && qty <= 0;
+			if(rowId){ setBlockingAlert('stock', rowId, needsStockAlert); }
+			if(needsStockAlert){
+				showStockJournalierAlert(rowId);
+			}
+			console.log("[commande] Stock journalier => article:", idArticle, "| categorie:", categoryId || 'N/A', "| quantite:", qty, "| % vente:", pourc, "| date:", date);
+			console.log("[commande] Seuil de vente autorisé => categorie:", categoryId || 'N/A', "| limite brute:", allowed);
+		})
+		.fail(function(){
+			console.warn("[commande] Impossible de récupérer le stock journalier pour l'article", idArticle);
+		});
+}
+
+function fetchCategorySoldQuantity(categoryId, venteBaseStockFlag, rowId){
+	if(!categoryId){
+		return;
+	}
+	var normalizedCategoryId = categoryId.toString();
+	if(!shouldEnforceLimit(venteBaseStockFlag)){
+		if(rowId){
+			setBlockingAlert('limit', rowId, false);
+			setBlockingAlert('limitZero', rowId, false);
+		}
+		return;
+	}
+
+	var today = new Date();
+	var dateString = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+	var cacheKey = normalizedCategoryId + '|' + dateString;
+	if(categorySalesLoadState[cacheKey] === 'loaded'){
+		refreshCategoryRows(normalizedCategoryId);
+		return;
+	}
+	if(categorySalesLoadState[cacheKey] === 'pending'){
+		return;
+	}
+	categorySalesLoadState[cacheKey] = 'pending';
+
+	$.getJSON('ajax_get_article_sold_quantity', { id_category: normalizedCategoryId, date: dateString })
+		.done(function(response){
+			var qty = (response && response.quantite_totale !== undefined) ? parseFloat(response.quantite_totale) : 0;
+			var sold = (isFinite(qty) && qty > 0) ? qty : 0;
+			var baselineQty = getCategoryBaselineQuantity(normalizedCategoryId);
+			var adjustedSold = sold - baselineQty;
+			adjustedSold = (!isFinite(adjustedSold) || adjustedSold < 0) ? 0 : adjustedSold;
+			upsertCategorySaleLimit(normalizedCategoryId, { sold: adjustedSold });
+			categorySalesLoadState[cacheKey] = 'loaded';
+			refreshCategoryRows(normalizedCategoryId);
+			console.log("[commande] Quantité vendue => categorie:", normalizedCategoryId, "| date:", (response && response.date) || dateString, "| quantite:", sold, "| baseline:", baselineQty, "| ajustee:", adjustedSold);
+		})
+		.fail(function(){
+			delete categorySalesLoadState[cacheKey];
+			console.warn("[commande] Impossible de récupérer la quantité vendue pour la catégorie", normalizedCategoryId);
+		});
+}
+function getEditBaselineForRow(rowId){
+	if(!rowId){
+		return null;
+	}
+	var row = $("#"+rowId);
+	if(!row.length || !row.data("is-edit-baseline")){
+		return null;
+	}
+	var initialArticle = row.data("initial-article");
+	var initialQuantity = row.data("initial-quantity");
+	if(initialArticle === undefined || initialQuantity === undefined){
+		return null;
+	}
+	var parsedQuantity = parseFloat(initialQuantity);
+	if(!isFinite(parsedQuantity) || parsedQuantity <= 0){
+		return null;
+	}
+	return {
+		article: initialArticle.toString(),
+		quantity: parsedQuantity
+	};
+}
+
+function shouldEnforceLimit(venteBaseStockFlag){
+	var cat = window.rcCategoryId;
+	var allowedCategory = (cat === '1' || cat === '5');
+	var allowed = allowedCategory && venteBaseStockFlag;
+	console.log("[commande] contrôle limite => cat:", cat || 'N/A', "| allowedCat:", allowedCategory, "| venteBaseStock:", venteBaseStockFlag, "| enforce:", allowed);
+	return allowed;
+}
+
+function isRowUnderVenteStock(rowId){
+	if(!rowId){
+		return false;
+	}
+	var flag = $("#"+rowId).data("vente-base-stock");
+	return flag === 'true';
+}
+
+function upsertCategorySaleLimit(categoryId, updates){
+	if(!categoryId){
+		return;
+	}
+	var normalized = categoryId.toString();
+	var entry = categorySaleLimits[normalized] || {};
+	if(updates){
+		if(updates.allowed !== undefined){
+			var allowedValue = parseFloat(updates.allowed);
+			entry.allowed = (isFinite(allowedValue) && allowedValue >= 0) ? allowedValue : 0;
+		}
+		if(updates.sold !== undefined){
+			var soldValue = parseFloat(updates.sold);
+			entry.sold = (isFinite(soldValue) && soldValue >= 0) ? soldValue : 0;
+		}
+	}
+	var allowed = (entry.allowed !== undefined && isFinite(entry.allowed)) ? entry.allowed : 0;
+	var sold = (entry.sold !== undefined && isFinite(entry.sold)) ? entry.sold : 0;
+	entry.limit = Math.max(allowed - sold, 0);
+	categorySaleLimits[normalized] = entry;
+	console.log("[commande] Limite recalculée => catégorie:", normalized, "| autorisé:", allowed, "| vendu:", sold, "| reste:", entry.limit);
+}
+
+function updateLimitZeroState(rowId){
+	if(!rowId){
+		return;
+	}
+	var categoryId = getRowCategoryId(rowId);
+	if(!categoryId){
+		setBlockingAlert('limitZero', rowId, false);
+		return;
+	}
+	var entry = categorySaleLimits[categoryId];
+	if(!entry){
+		setBlockingAlert('limitZero', rowId, false);
+		return;
+	}
+	var limitValue = (entry.limit !== undefined) ? parseFloat(entry.limit) : NaN;
+	var allowedCapacity = (entry.allowed !== undefined) ? parseFloat(entry.allowed) : NaN;
+	var zeroCapacity = isRowUnderVenteStock(rowId) && ((isFinite(limitValue) && limitValue <= 0) || (!isFinite(allowedCapacity) || allowedCapacity <= 0));
+	setBlockingAlert('limitZero', rowId, zeroCapacity);
+}
+
+function enforceCategoryLimit(input){
+	var row = $(input).closest('tr');
+	var rowId = row.attr('id');
+	if(!shouldEnforceLimit(isRowUnderVenteStock(rowId))){
+		setBlockingAlert('limit', rowId, false);
+		setBlockingAlert('stock', rowId, false);
+		setBlockingAlert('limitZero', rowId, false);
+		return;
+	}
+
+	var categoryId = getRowCategoryId(rowId);
+	if(!categoryId){
+		setBlockingAlert('limit', rowId, false);
+		setBlockingAlert('limitZero', rowId, false);
+		return;
+	}
+	var entry = categorySaleLimits[categoryId];
+	if(!entry){
+		setBlockingAlert('limit', rowId, false);
+		setBlockingAlert('limitZero', rowId, false);
+		return;
+	}
+	var allowedStock = (entry.allowed !== undefined) ? parseFloat(entry.allowed) : NaN;
+	var zeroStock = isRowUnderVenteStock(rowId) && (!isFinite(allowedStock) || allowedStock <= 0);
+	setBlockingAlert('stock', rowId, zeroStock);
+	if(zeroStock){
+		showStockJournalierAlert(rowId);
+		return;
+	}
+	var limitValue = (entry.limit !== undefined) ? parseFloat(entry.limit) : NaN;
+	if(!isFinite(limitValue)){
+		setBlockingAlert('limit', rowId, true);
+		setBlockingAlert('limitZero', rowId, false);
+		return;
+	}
+	if(limitValue <= 0){
+		setBlockingAlert('limitZero', rowId, true);
+		setBlockingAlert('limit', rowId, false);
+		showLimitConsumedAlert(rowId);
+		$(input).val(0);
+		return;
+	}
+	setBlockingAlert('limitZero', rowId, false);
+	var requested = computeCategoryRequestedQuantity(categoryId);
+	if(requested > limitValue){
+		setBlockingAlert('limit', rowId, true);
+		showLimitAlert(limitValue);
+	} else {
+		setBlockingAlert('limit', rowId, false);
+	}
+}
+
+function registerRowCategory(rowId, categoryId){
+	if(!rowId){
+		return;
+	}
+	var row = $("#"+rowId);
+	if(categoryId === undefined || categoryId === null || categoryId === ''){
+		delete rowCategoryIndex[rowId];
+		if(row.length){
+			row.removeData("category-id");
+		}
+		return;
+	}
+	var normalized = categoryId.toString();
+	rowCategoryIndex[rowId] = normalized;
+	if(row.length){
+		row.data("category-id", normalized);
+	}
+}
+
+function getRowCategoryId(rowId){
+	if(!rowId){
+		return null;
+	}
+	var row = $("#"+rowId);
+	if(row.length){
+		var stored = row.data("category-id");
+		if(stored !== undefined && stored !== null && stored !== ''){
+			return stored.toString();
+		}
+	}
+	var fallback = rowCategoryIndex[rowId];
+	return (fallback !== undefined && fallback !== null) ? fallback.toString() : null;
+}
+
+function refreshCategoryRows(categoryId){
+	if(!categoryId){
+		return;
+	}
+	var normalized = categoryId.toString();
+	$(".art").each(function(){
+		var rowId = $(this).attr("id_tr");
+		if(!rowId){
+			return;
+		}
+		if(getRowCategoryId(rowId) === normalized){
+			updateLimitZeroState(rowId);
+			var qteInput = $("#"+rowId).find('#qte');
+			if(qteInput.length){
+				enforceCategoryLimit(qteInput.get(0));
+			}
+		}
+	});
+}
+
+function computeCategoryRequestedQuantity(categoryId){
+	if(!categoryId){
+		return 0;
+	}
+	var normalized = categoryId.toString();
+	var total = 0;
+	$(".art").each(function(){
+		var rowId = $(this).attr("id_tr");
+		if(!rowId){
+			return;
+		}
+		if(getRowCategoryId(rowId) !== normalized){
+			return;
+		}
+		var row = $("#"+rowId);
+		var value = row.find('#qte').val();
+		var numeric = parseFloat(String(value).replace(/\s+/g, ''));
+		if(isFinite(numeric) && numeric > 0){
+			total += numeric;
+		}
+	});
+	return total;
+}
+
+function getCategoryBaselineQuantity(categoryId){
+	if(!categoryId){
+		return 0;
+	}
+	var normalized = categoryId.toString();
+	var total = 0;
+	$(".art").each(function(){
+		var rowId = $(this).attr("id_tr");
+		if(!rowId){
+			return;
+		}
+		var row = $("#"+rowId);
+		if(!row.length || !row.data("is-edit-baseline")){
+			return;
+		}
+		var baselineCategory = row.data("initial-category");
+		if(!baselineCategory){
+			return;
+		}
+		if(baselineCategory.toString() !== normalized){
+			return;
+		}
+		var qty = row.data("initial-quantity");
+		var numeric = parseFloat(qty);
+		if(isFinite(numeric) && numeric > 0){
+			total += numeric;
+		}
+	});
+	return total;
+}
+
+function showLimitAlert(limit){
+	var existing = $("#limitAlertModal");
+	if(!existing.length){
+		$('body').append(
+			'<div class="modal fade" id="limitAlertModal" tabindex="-1" role="dialog" aria-hidden="true">'+
+			'  <div class="modal-dialog modal-dialog-centered" role="document">'+
+			'    <div class="modal-content">'+
+			'      <div class="modal-header bg-warning text-dark">'+
+			'        <h5 class="modal-title"><i class="far fa-exclamation-triangle mr-2"></i>Limite atteinte</h5>'+ 
+			'        <button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+			'          <span aria-hidden="true">&times;</span>'+ 
+			'        </button>'+ 
+			'      </div>'+ 
+			'      <div class="modal-body">'+
+			'        <p id="limitAlertText" class="mb-0"></p>'+ 
+			'      </div>'+ 
+			'      <div class="modal-footer">'+
+			'        <button type="button" class="btn btn-warning" data-dismiss="modal">Compris</button>'+ 
+			'      </div>'+ 
+			'    </div>'+ 
+			'  </div>'+ 
+			'</div>'
+		);
+	}
+	$("#limitAlertText").text("La quantité maximale autorisée pour cette catégorie aujourd'hui est de " + limit + ".");
+	$("#limitAlertModal").modal('show');
+}
+
+function showStockJournalierAlert(rowId){
+	setBlockingAlert('stock', rowId, true);
+	var modal = $("#stockJournalierAlertModal");
+	if(!modal.length){
+		$('body').append(
+			'<div class="modal fade" id="stockJournalierAlertModal" tabindex="-1" role="dialog" aria-hidden="true">'+
+			'  <div class="modal-dialog modal-dialog-centered" role="document">'+
+			'    <div class="modal-content">'+
+			'      <div class="modal-header bg-danger text-white">'+
+			'        <h5 class="modal-title"><i class="far fa-clipboard-list mr-2"></i>Stock journalier requis</h5>'+ 
+			'        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">'+
+			'          <span aria-hidden="true">&times;</span>'+ 
+			'        </button>'+ 
+			'      </div>'+ 
+			'      <div class="modal-body">'+
+			'        <p id="stockJournalierAlertText" class="mb-0"></p>'+ 
+			'      </div>'+ 
+			'      <div class="modal-footer">'+
+			'        <button type="button" class="btn btn-danger" data-dismiss="modal">Compris</button>'+ 
+			'      </div>'+ 
+			'    </div>'+ 
+			'  </div>'+ 
+			'</div>'
+		);
+		modal = $("#stockJournalierAlertModal");
+	}
+	var alertMessage = "Veuillez renseigner le stock journalier de la catégorie sélectionnée avant d'effectuer cette vente.";
+	modal.find('#stockJournalierAlertText').text(alertMessage);
+	modal.modal('show');
+}
+
+function showLimitConsumedAlert(rowId){
+	setBlockingAlert('limitZero', rowId, true);
+	var modal = $("#limitConsumedAlertModal");
+	if(!modal.length){
+		$('body').append(
+			'<div class="modal fade" id="limitConsumedAlertModal" tabindex="-1" role="dialog" aria-hidden="true">'+
+			'  <div class="modal-dialog modal-dialog-centered" role="document">'+
+			'    <div class="modal-content">'+
+			'      <div class="modal-header bg-warning text-dark">'+
+			'        <h5 class="modal-title"><i class="far fa-hourglass-end mr-2"></i>Quota journalier atteint</h5>'+ 
+			'        <button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+			'          <span aria-hidden="true">&times;</span>'+ 
+			'        </button>'+ 
+			'      </div>'+ 
+			'      <div class="modal-body">'+
+			'        <p id="limitConsumedAlertText" class="mb-0"></p>'+ 
+			'      </div>'+ 
+			'      <div class="modal-footer">'+
+			'        <button type="button" class="btn btn-warning" data-dismiss="modal">Compris</button>'+ 
+			'      </div>'+ 
+			'    </div>'+ 
+			'  </div>'+ 
+			'</div>'
+		);
+		modal = $("#limitConsumedAlertModal");
+	}
+	var alertMessage = "La limite quotidienne de la catégorie sélectionnée est atteinte.";
+	modal.find('#limitConsumedAlertText').text(alertMessage);
+	modal.modal('show');
+}
+
+function showCommandeValidationBlockedAlert(){
+	var modal = $("#commandeBlockedAlertModal");
+	if(!modal.length){
+		$('body').append(
+			'<div class="modal fade" id="commandeBlockedAlertModal" tabindex="-1" role="dialog" aria-hidden="true">'+
+			'  <div class="modal-dialog modal-dialog-centered" role="document">'+
+			'    <div class="modal-content">'+
+			'      <div class="modal-header bg-danger text-white">'+
+			'        <h5 class="modal-title"><i class="far fa-times-circle mr-2"></i>Impossible de valider</h5>'+ 
+			'        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">'+
+			'          <span aria-hidden="true">&times;</span>'+ 
+			'        </button>'+ 
+			'      </div>'+ 
+			'      <div class="modal-body">'+
+			'        <p class="mb-0">Vous devez d\'abord corriger les alertes de stock journalier ou de limite de vente avant de valider la commande.</p>'+ 
+			'      </div>'+ 
+			'      <div class="modal-footer">'+
+			'        <button type="button" class="btn btn-danger" data-dismiss="modal">Compris</button>'+ 
+			'      </div>'+ 
+			'    </div>'+ 
+			'  </div>'+ 
+			'</div>'
+		);
+		modal = $("#commandeBlockedAlertModal");
+	}
+	modal.modal('show');
+}
+
+function resolveArticleLabel(rowId){
+	if(!rowId){
+		return '';
+	}
+	var option = $("#"+rowId).find('#art option:selected');
+	if(!option.length){
+		return '';
+	}
+	return option.text().trim();
+}
 
 function CalculeReductionArticle(input, type){
 	
@@ -977,64 +1522,26 @@ function resetTransport(){
 	
 }
 function submit(){
-
+	if(hasBlockingAlerts()){
+		showCommandeValidationBlockedAlert();
+		return;
+	}
 	
-	//console.log("select val -> "+$("#select_mat").val())
-//	$(".id_magasin").attr("name","id_magasin");
+	spin_it('on');
+	console.log("select val -> "+$("#select_mat").val())
+	
 	var test = 0;
+	
 	var msg = "";
-	
-	var art_selected = [];
-	var i = 0;
-	var j = 0;
-	$(".art").each(function() {
-//		let tr = $(this).attr("id_tr");
-//		let parrent = $("#"+tr);
-//		parrent.find('#id_magasin').attr("name","id_magasin");
-		if($(this).val() == "" || $(this).val() == "0"){}
-		else{
-			j=i;
-			console.log("article : "+$(this).val());
-			
-			art_selected.push($(this).val());
-			
-		}
-		i++;
-	});
-	$(".qte").each(function() {
-		if( $(this).val()!=="" && parseFloat($(this).val()) <0 ){
-			test ++;
-			msg = msg+"<b>- Veuillez Vérifier les quantités des articles. </b><br>";
-			 $(this).css("border-color","red");
-		}
-		
-		
-	});
-	console.log("j : "+ j);
-	console.log("art_selected.length : "+ art_selected.length);
-	if(art_selected.length==1 && j==39 ){
-		test++;
-		msg = msg+"<b>- Veuillez faire une commande. </b><br>";
-	}
-	console.log(art_selected)
-	
-	
-	if(if_duplicate_value(art_selected)==true){
-		
-		test++;
-		msg = msg+"<b>- Article Dupliqué. </b><br>";
-		$("#code_client").css("border-color","red");
-		
-	}
 	
 	if($("#code_client").val()==""){
 		
 		test++;
-		msg = msg+"<b>- Code client incorrect. </b><br>";
+		msg = msg+"- Code client incorrect. <br>";
 		$("#code_client").css("border-color","red");
 		
 	}
-	/*
+	
 	if($("#mode_reg").val()==null){
 		
 		test++;
@@ -1043,19 +1550,11 @@ function submit(){
 		$(".bs-placeholder").find('[data-id=mode_reg]').css("border-color","red");
 		
 	}
-	*/
-	if($("#select_mat").val()=="" && $("#input_mat").val()=="" && $("#select_veh").val()==""){
-		
-		test++;
-		msg = msg+"<b>- Matricule Vide. </b><br>";
-		$("#matricule").css("border-color","red");
-		
-	}
 	
-	if($("#chauffeur_inp").attr("display")=="true" && $("#chauffeur_inp").val()=="" ){
+	if($("#select_mat").val()=="" && $("#input_mat").val()=="" && $("#select_veh").val()=="" ){
 		
 		test++;
-		msg = msg+"<b>- Chauffeur Vide. </b><br>";
+		msg = msg+"- Matricule Vide. <br>";
 		$("#matricule").css("border-color","red");
 		
 	}
@@ -1063,30 +1562,48 @@ function submit(){
 	if($("#rc").val()==""){
 		
 		test++;
-		msg = msg+"<b>- Selectionner un Registre de commerce. </b><br>";
+		msg = msg+"- Selectionner un Registre de commerce. <br>";
 		//$("#rc").css("border-color","red");
 		$(".bs-placeholder").find('[data-id=rc]').css("border-color","red");
 		
 	}
 	
-	//if($("#total_ttc").val()=="" || $("#total_ttc").val()=="0"){
-	if( $("#total_ttc").val()=="" || parseFloat($("#total_ttc").val()) ===0 || parseFloat($("#total_ttc").val()) <0 || isNaN(parseFloat($("#total_ttc").val()))){
-	
+	if($("#total_ttc").val()=="" || parseFloat($("#total_ttc").val())==0){
+		
 		test++;
-		msg = msg+"<b>- Veuillez faire une commande. </b><br>";
+		msg = msg+"- Veuillez faire une commande. <br>";
 		$("#total_ttc").css("border-color","red");
 		
 	}
 	
-	//console.log("test ----->"+test)
+	//check duplicated articles 
+		var selectedValues = []; 
+		var hasDuplicate = false; 
 	
-	if(test===0){
+		$(".art option:selected").each(function() {
+		    var value = $(this).val(); 
+		    
+		    if (value == "0") return;  		    
+		    if (selectedValues.includes(value)) { 
+		        hasDuplicate = true;  
+		    } else {
+		        selectedValues.push(value); 
+		    }
+		});
+      if (hasDuplicate) {
+    	  test++;
+    	  msg = msg+"- Y'a des articles dupliqués, svp vérifier. <br>";
+      }
+      
+      
+	
+	console.log("test->"+test+" "+msg)
+	
+	if(test==0){
 		
 		var client_plafond = 0;
 		
 		var rc_plafond = 0;
-		
-		var palette_plafond = 0;
 		
 		var msg1 = "";
 		
@@ -1099,8 +1616,7 @@ function submit(){
 			dataType: 'json',
 			data : {
 				id_rc_clt : $("#rc").val(),
-				montant_ttc : $("#total_ttc").val().replaceAll(' ',''),
-				nbr_palette : calculeNbrPalette()
+				montant_ttc : $("#total_ttc").val(),
 	        },
 	        success : function(responseJson) {
 				
@@ -1125,33 +1641,20 @@ function submit(){
 							msg1 = msg1+"- Plafond RC dépasser <br>";
 							
 						}
-						/*
-						console.log("plafond_palette->"+responseJson.plafond_palette)
 						
-						if(responseJson.plafond_palette!=0){
-							
-							palette_plafond++;
-							
-							msg1 = msg1+"- Plafond Palette dépasser <br>";
-							
-						}
-						*/
+					
 				}
 				
 			}
 		});
 		
-		//console.log("-------------------------")
+		console.log("-------------------------")
 		
-		//console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
+		console.log("p_clt->"+client_plafond+" // p_rc ->"+rc_plafond)
 		
-		if(client_plafond==0 && rc_plafond==0 /*&& palette_plafond==0*/){
+		if(client_plafond==0 && rc_plafond==0){
 			
 			console.log("-----------------> SUBMIT")
-			
-			spin_it('on');
-			
-			$("#sub").prop("disabled","true");
 			
 			$("#frm").submit();
 			
@@ -1163,6 +1666,7 @@ function submit(){
 			$("#text").html(msg1);
 			$("#error").modal('show');
 			
+			spin_it('off');
 		}
 		
 	}
@@ -1173,9 +1677,8 @@ function submit(){
 		$("#text").html(msg);
 		$("#error").modal('show');
 		
+		spin_it('off');
+		
 	}
-	
 
 }
-
-		

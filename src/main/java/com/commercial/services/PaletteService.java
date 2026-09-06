@@ -1,6 +1,15 @@
 package com.commercial.services;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,8 +20,10 @@ import com.commercial.entities.schema.article.prixUnitaire_article_categoryClien
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.magasin_articleRepository;
 import com.commercial.entities.schema.article.repository.prixUnitaire_article_categoryClient_Repository;
+import com.commercial.entities.schema.client.gestion_palette;
 import com.commercial.entities.schema.client.repository.HistoriquePaletteRepository;
 import com.commercial.entities.schema.client.repository.clientRepository;
+import com.commercial.entities.schema.client.repository.gestion_paletteRepository;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_detail;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.repository.bon_livraisonRepository;
@@ -45,6 +56,130 @@ public class PaletteService {
 	
 	@Autowired
 	magasin_articleRepository magArtRepo;
+	
+	@Autowired
+	gestion_paletteRepository gpRepo;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
+	
+	/**
+	 * Get the list of clients with their palette balance for 2026.
+	 * Palette out = SUM(facture_detail.quantite) for "Palette" article where facture.date >= '2026-01-01'
+	 * Palette returned = SUM(gestion_palette.quantity) by client_rc
+	 * Balance = out - returned
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> getClientsPaletteData() {
+		
+		String sql = "SELECT rc.numero_rc, rc.nom || ' ' || rc.prenom as rc_name, "
+				+ "COALESCE(SUM(fd.quantite), 0) as total_out "
+				+ "FROM proforma_cmd_bl_fact.facture_detail fd "
+				+ "JOIN proforma_cmd_bl_fact.facture f ON fd.facture = f.id "
+				+ "JOIN article.article a ON fd.article = a.id "
+				+ "JOIN client.registre_commerce rc ON f.registre_commerce = rc.id "
+				+ "WHERE cast(f.date as date) >= '2026-01-01' AND a.libelle = 'Palette' "
+				+ "GROUP BY rc.numero_rc, rc.nom, rc.prenom "
+				+ "ORDER BY rc.nom, rc.prenom";
+		
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object[]> results = query.getResultList();
+		
+		List<Map<String, Object>> data = new ArrayList<>();
+		
+		for (Object[] row : results) {
+			Map<String, Object> map = new HashMap<>();
+			String numeroRc = (String) row[0];
+			String rcName = (String) row[1];
+			double totalOut = ((Number) row[2]).doubleValue();
+			double totalReturned = gpRepo.getTotalReturnedByRc(numeroRc);
+			double balance = totalOut - totalReturned;
+			
+			map.put("numero_rc", numeroRc);
+			map.put("rc_name", rcName);
+			map.put("total_out", totalOut);
+			map.put("total_returned", totalReturned);
+			map.put("balance", balance);
+			
+			data.add(map);
+		}
+		
+		return data;
+	}
+	
+	/**
+	 * Get palette history for a specific RC: outgoing (from facture_details) and incoming (from gestion_palette)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> getPaletteHistory(String numeroRc) {
+		
+		// Outgoing palettes from factures
+		String sqlOut = "SELECT f.date as op_date, fd.quantite as quantity, f.numero as ref "
+				+ "FROM proforma_cmd_bl_fact.facture_detail fd "
+				+ "JOIN proforma_cmd_bl_fact.facture f ON fd.facture = f.id "
+				+ "JOIN article.article a ON fd.article = a.id "
+				+ "JOIN client.registre_commerce rc ON f.registre_commerce = rc.id "
+				+ "WHERE cast(f.date as date) >= '2026-01-01' AND a.libelle = 'Palette' AND rc.numero_rc = :numeroRc "
+				+ "ORDER BY f.date DESC";
+		
+		Query queryOut = entityManager.createNativeQuery(sqlOut);
+		queryOut.setParameter("numeroRc", numeroRc);
+		List<Object[]> outResults = queryOut.getResultList();
+		
+		// Incoming palettes (returns)
+		List<gestion_palette> returns = gpRepo.getHistoryByRc(numeroRc);
+		
+		List<Map<String, Object>> history = new ArrayList<>();
+		
+		// Add outgoing entries
+		for (Object[] row : outResults) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("date", (String) row[0]);
+			map.put("quantity", ((Number) row[1]).doubleValue());
+			map.put("type", "Sortie");
+			map.put("reference", (String) row[2]);
+			history.add(map);
+		}
+		
+		// Add incoming entries (returns)
+		for (gestion_palette gp : returns) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("date", gp.getCreated_at());
+			map.put("quantity", gp.getQuantity());
+			map.put("type", "Retour");
+			map.put("reference", "Retour Palette");
+			history.add(map);
+		}
+		
+		// Sort combined list by date descending
+		history.sort((a, b) -> {
+			String dateA = (String) a.get("date");
+			String dateB = (String) b.get("date");
+			if (dateA == null) dateA = "";
+			if (dateB == null) dateB = "";
+			return dateB.compareTo(dateA);
+		});
+		
+		return history;
+	}
+	
+	/**
+	 * Record a palette return
+	 */
+	public gestion_palette recordReturn(String clientRc, String clientName, double quantity, Long userSessionId) {
+		
+		article paletteArt = artRepo.findByLibelle("Palette");
+		Long articleId = (paletteArt != null) ? paletteArt.getId() : 0L;
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		String now = sdf.format(new Date());
+		
+		gestion_palette gp = new gestion_palette(clientRc, clientName, articleId, quantity, userSessionId, now);
+		gpRepo.save(gp);
+		gpRepo.flush();
+		
+		return gp;
+	}
 	
 	public void addingPaletteToBL(bon_livraison bl) {
 		

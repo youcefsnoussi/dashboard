@@ -18,19 +18,34 @@ public interface bon_livraison_employeeRepository extends JpaRepository<bon_livr
 			
   			" WHERE CAST(date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +
   			
-			" AND cancel = 'false'  " ) /*OR (factured = 'false' AND cancel = 'false')*/
+			" AND cancel = 'false'  " +
+
+			" AND type_rc = 'Agro'  "
+		) /*OR (factured = 'false' AND cancel = 'false')*/
 
 	public List<bon_livraison_employee> date_between_ble(@Param("start") String start, @Param("end") String end);
 	
+	//---------------------------------------------------------------
+
+	@Query(" FROM bon_livraison_employee ble " +
+       " WHERE CAST(date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date) " +
+       " AND cancel = 'false' " +
+       " AND type_rc = 'Logistique' ")
+public List<bon_livraison_employee> date_between_ble_logistique(
+        @Param("start") String start,
+        @Param("end") String end);
+
+
 	//---------------------------------------------------------------
 	
 	@Query( " FROM bon_livraison_employee ble " +
 			
   			" WHERE CAST(date AS date) BETWEEN CAST(:start AS date) AND CAST(:end AS date)" +
   			
-			" AND cancel = 'false' AND factured = 'false' " )
+			" AND cancel = 'false' AND factured = 'false' " +
+			" AND type_rc = :type_rc " )
 
-	public List<bon_livraison_employee> get_ble_factured(@Param("start") String start, @Param("end") String end);	
+	public List<bon_livraison_employee> get_ble_factured(@Param("start") String start, @Param("end") String end, @Param("type_rc") String type_rc);	
 	
 	//-----------------------------------------------------------------------------------
 	

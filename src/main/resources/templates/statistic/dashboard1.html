@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
+	<link rel="stylesheet" href="resources\Plugins\datatable\css\dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="resources\Plugins\jAlert-master\dist\jAlert.css">
+	<link rel="stylesheet" href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css">
+	<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css"> 
+	
+	<script type="text/javascript" src="resources\additionalJS\jquery-3.2.1.min.js"></script>
+	
+	<script type="text/javascript" src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+	
+	<script type="text/javascript" src="resources\Plugins\datatable\js\jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="resources\Plugins\datatable\js\dataTables.bootstrap.min.js"></script>
+	
+	<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
+	
+	<script type="text/javascript" src="resources\additionalJS\jquery-spin.js"></script>
+	<script type="text/javascript" src="resources\additionalJS\spin.js"></script>  
+	<script type="text/javascript" src="resources\additionalJS\drahem.js"></script>
+	
+	
+	
+	      
+	<script type="text/javascript" src="resources\additionalJS\CheckConnectionServer.js"></script>
+	
+	
+	
+	<script src="resources\apexchart\assets\js\jquery-3.6.0.min.js"></script>
+
+<script src="resources\apexchart\assets\js\bootstrap.min.js"></script>
+
+
+
+<script src="resources\apexchart\assets\plugins\apexchart\apexcharts.min.js"></script>
+<script src="resources\apexchart\assets\plugins\apexchart\chart-data.js"></script>
+
+<script src="resources\apexchart\assets\js\script.js"></script>
+	<script type="text/javascript" src="resources\Plugins\bootstrap-datepicker\js\bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="resources\Plugins\bootstrap-datepicker\locales\bootstrap-datepicker.fr.min.js"></script>
+	
+	<link rel="stylesheet" href="resources\Plugins\bootstrap-datepicker\css\bootstrap-datepicker.css"> 
+	
+	
+	
+	<script type="text/javascript">
+	
+	var mois=['','Jan', 'Fev', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout' , 'Sept', 'Oct', 'Nov', 'Dec'];
+		var vente_ca=[];
+	var vente_qte=[];
+		
+	var mois_vente=[];
+	
+	
+	var ca_produit=[];
+	var produit_ca=[];
+	
+	var qte_produit=[];
+	var produit_qte=[];
+	
+	
+	var ca_rc=[];
+	var qte_rc=[];
+	var rc_ca=[];
+	var rc_qte=[];
+
+	var ca_total=0;
+	var qte_total=0;
+	function goAhead()
+	{
+		$(".traiter").on("click",function(){
+			
+			 vente_ca=[];
+			 vente_qte=[];
+				
+			 mois_vente=[];
+			
+			
+			 ca_produit=[];
+			 produit_ca=[];
+			
+			 qte_produit=[];
+			 produit_qte=[];
+			
+			
+			 ca_rc=[];
+			 qte_rc=[];
+			 rc_ca=[];
+			 rc_qte=[];
+			
+			 ca_total=0;
+			 qte_total=0;
+			 call_chart()
+	})
+		
+		$("#datedeb").val(getyear()+'-01')
+		$("#date_deb").val(getyear()+'-01-01')
+		$("#datefin").val(getyear()+'-12')
+		$("#date_fin").val(getyear()+'-12-31')
+		
+		$(".form_date").datepicker({
+		    autoclose: true,
+		    minViewMode: 1,
+		    language:  'fr',
+		    format: 'yyyy-mm'
+		}).on('changeDate ', function(selected){
+	        startDate = new Date(selected.date.valueOf());
+	        startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
+	        
+	        if($(this).attr("data-link-field")=="datedeb")
+	        	{
+	        	$("#date_deb").val($("#datedeb").val()+"-01")
+	        	}else
+	        		{
+	        		$("#date_fin").val($("#datefin").val()+"-"+lastday(startDate.getFullYear(), startDate.getMonth()))
+	        		}
+	        
+	        
+	        console.log($(this).attr("data-link-field")+"Last day = " + lastday(startDate.getFullYear(), startDate.getMonth()));
+	        
+	    
+	        
+	       
+	    })
+	    
+	 
+		
+		 //  $('.form_date').datepicker('update', new Date());
+		   
+		//alert("aa")
+		
+		  call_chart();
+	}
+	
+	
+	function call_chart()
+	{
+ get_chiffre_affaire()
+		 
+		 gent_ca_qte();
+		 
+		 get_chiffre_affaire_produit();
+		 gent_ca_produit()
+		 
+		 
+		  get_qte_produit()
+		 gent_qte_produit()
+		 
+		 get_ca_rc()
+		 get_qte_rc()
+			 
+		 gent_ca_rc()
+		  gent_qte_rc()
+	  
+		  total_rc_qte()
+	}
+	
+	  function getyear() {
+          const maintenant = new Date();
+          const annee = maintenant.getFullYear();
+       //   const mois = (maintenant.getMonth() + 1).toString().padStart(2, '0');
+          return `${annee}`;
+      }
+	  
+
+	  function total_rc_qte()
+		{
+		  $("#tot_ca").text(parseFloat(ca_total).formatMoney(2, ',', ' ')+' DZD')
+		  $("#tot_qte").text(parseFloat(qte_total).formatMoney(2, ',', ' ')+' (Q)')
+				}
+	
+	function get_chiffre_affaire()
+	{
+		
+		
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_stat_qte_ca_month',
+		
+			dataType: 'json',
+			data : {
+				start	: $("#date_deb").val(),
+				end 	:$("#date_fin").val()
+	        },
+	        success : 
+	        	function(responseJson){
+	        	responseJson.forEach(function(utilisateur){
+	        		mois_vente.push(utilisateur[0]+"-"+mois[ utilisateur[1]])
+					vente_ca.push(utilisateur[3])
+					
+					vente_qte.push(utilisateur[2])
+	        			       
+	        		
+	        		ca_total=parseFloat(ca_total)+parseFloat(utilisateur[3])
+					qte_total=parseFloat(qte_total)+parseFloat(utilisateur[2])
+					
+                });
+	        
+            },
+	      
+		});
+	}
+	
+	
+	
+	function get_chiffre_affaire_produit()
+	{
+		var nbr_vente_ca_vente=0;
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_stat_ca_produit',
+			dataType: 'json',
+			data : {
+				start	: $("#date_deb").val(),
+				end 	:$("#date_fin").val()
+	        },
+	        success : 
+	        	function(responseJson){
+	        	responseJson.forEach(function(utilisateur){	
+	        		if(parseFloat(utilisateur[1])>0)
+	        			{
+	        			ca_produit.push(utilisateur[1])
+						produit_ca.push(utilisateur[0])		    
+	        			}
+	        		   
+                });
+            },      
+		});
+	}
+	
+	
+	function get_qte_produit()
+	{
+		var nbr_vente_ca_vente=0;
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_stat_qte_produit',
+			dataType: 'json',
+			data : {
+				start	: $("#date_deb").val(),
+				end 	:$("#date_fin").val()
+	        },
+	        success : 
+	        	function(responseJson){
+	        	responseJson.forEach(function(utilisateur){		
+	        		if(parseFloat(utilisateur[1])>0)
+        			{
+	        			qte_produit.push(utilisateur[1])
+						produit_qte.push(utilisateur[0])
+        			}
+	        				       
+                });
+            },      
+		});
+	}
+	
+	
+	
+	function get_ca_rc()
+	{
+		var nbr_vente_ca_vente=0;
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_stat_get_ca_rc',
+			dataType: 'json',
+			data : {
+				start	: $("#date_deb").val(),
+				end 	:$("#date_fin").val()
+	        },
+	        success : 
+	        	function(responseJson){
+	        	responseJson.forEach(function(utilisateur){		
+	        		ca_rc.push(utilisateur[2])
+					
+					rc_ca.push(utilisateur[0])		       
+                });
+            },      
+		});
+	}
+	
+	function get_qte_rc()
+	{
+		var nbr_vente_ca_vente=0;
+		$.ajaxSetup({async: false});
+		$.ajax({
+			url: 'ajax_stat_get_qte_rc',
+			dataType: 'json',
+			data : {
+				start	: $("#date_deb").val(),
+				end 	:$("#date_fin").val()
+	        },
+	        success : 
+	        	function(responseJson){
+	        	responseJson.forEach(function(utilisateur){		
+	        	
+					qte_rc.push(utilisateur[1])		
+					rc_qte.push(utilisateur[0])		       
+                });
+            },      
+		});
+	}
+	
+	var lastday = function(y, m){
+	    // Create a new Date object representing the last day of the specified month
+	    // By passing m + 1 as the month parameter and 0 as the day parameter, it represents the last day of the specified month
+	    return new Date(y, m + 1, 0).getDate();
+	}
+	</script>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
+<body onload="goAhead()">
+	<div class="card-header  text-center" style='text-align: center;font-size: 10px;height: 50px'>
+	 <div class="col-md-12" style="display: flex;">
+	  <div class="col-md-2">
+	  </div>
+			  		 <div class="col-md-3">
+			  		<div class="input-group" style="margin-top :-8px"><span class="input-group-addon"><h3>Tableau de bord </h3></span>
+			  		</div>
+			  			 </div> 		
+			  			  <div class="col-md-2" style="margin-top :-8px">
+				<div class="input-group"  >				
+								 <div class="input-group date form_date " data-date="" data-date-format="d MM yyyy" data-link-field="datedeb" data-link-format="yyyy-mm-dd" >
+                    
+					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>			
+					<input class="form-control" placeholder="Date début" id="datedeb" type="text" value="" readonly >										
+									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+		</div>
+			</div></div>
+			
+			  			  <div class="col-md-2" style="margin-top :-8px">
+				<div class="input-group"  >				
+								 <div class="input-group date form_date " data-date="" data-date-format="d MM yyyy" data-link-field="datefin" data-link-format="yyyy-mm-dd" >
+                    
+					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>			
+					<input class="form-control" placeholder="Date début" id="datefin" type="text" value="" readonly >										
+									<span class="input-group-text declaration"><i class="far fa-calendar-alt"></i> </span>
+		</div>
+			</div></div>
+			
+				  <div class="col-md-2" style="margin-top :-8px">
+			      
+					
+					<button type="button"  class="btn btn-success traiter">Afficher</button>
+	
+				</div>	</div>	
+</div>
+
+<input type="hidden" id='date_deb'>
+		
+<input type="hidden" id='date_fin'>
+		
+			
+
+			
+		
+		
+			
+			<div class="card-body">
+			
+				<div class="container-fluid">
+					
+		
+
+<div class="main-wrapper" style="font-size: 4px">
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-xl-6">
+<div class="card flex-fill">
+<div class="card-body">
+<div id="total_rc_qte">
+<div class="card board1 fill4 ">
+<div class="card-body">
+<div class="card_widget_header">
+<h2>
+Chiffre d'affaire Total:
+<div id="tot_ca" style="display: inline;color: #ff2626"></div>
+</div></h2>
+<br>
+<h2>
+Quantité vendu Total:
+<div id="tot_qte" style="display: inline;color: #ff2626"></div>
+</h2>
+</div>
+</div>
+
+
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+<div class="col-xl-6">
+<div class="card flex-fill">
+<div class="card-body">
+<div id="vente_ca_qte"></div>
+</div>
+</div>
+</div>
+
+
+
+
+<div class="col-xl-6">
+<div class="card flex-fill">
+<div class="card-body">
+<div id="ca_produit"></div>
+</div>
+</div>
+</div>
+
+
+<div class="col-xl-6">
+<div class="card flex-fill">
+<div class="card-body">
+<div id="qte_produit"></div>
+</div>
+</div>
+</div>
+
+
+
+<div class="col-xl-6">
+<div class="card flex-fill">
+<div class="card-body">
+<div id="ca_client"></div>
+</div>
+</div>
+</div>
+
+<div class="col-xl-6">
+<div class="card flex-fill">
+<div class="card-body">
+<div id="qte_client"></div>
+</div>
+</div>
+</div>
+
+
+
+</div>
+
+
+
+</div></div></div>
+
+</body>
+</html>

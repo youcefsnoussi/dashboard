@@ -23,6 +23,20 @@ public interface client_registreCommerceRepository extends JpaRepository<client_
 	
 	//---------------------------------------------
 	
+	/* Same rows as findAll(), but with both @ManyToOne sides fetched in ONE
+	   query. Those relations default to EAGER, so a plain findAll() over ~930
+	   rows fired ~1900 round trips to the remote DB and made the "Nouveau
+	   Paiement" screen take seconds to open. Additive - findAll() is untouched. */
+	@Query( " SELECT crc FROM client_registreCommerce crc "
+			
+			+ " JOIN FETCH crc.registre_commerce "
+			+ " JOIN FETCH crc.client "
+			+ " ORDER BY crc.id ASC ")
+	
+	public List<client_registreCommerce>  find_all_with_client_and_rc();
+	
+	//---------------------------------------------
+	
 	@Query( " SELECT DISTINCT registre_commerce "
 			
 		  +	" FROM client_registreCommerce crc "

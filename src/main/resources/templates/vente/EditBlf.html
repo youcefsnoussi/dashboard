@@ -33,6 +33,10 @@
 	$(document).ready(function() {
 		
 			console.log($("#plafond").val());	
+			var rcCategoryId = $("#rc_category_id").val();
+			if(rcCategoryId){
+				window.rcCategoryId = rcCategoryId.toString();
+			}
 			
 			if($("#plafond").val()=="true"){
 				
@@ -44,6 +48,12 @@
 			}
 			
 			$("#subsub").click(function () {
+				if(typeof hasBlockingAlerts === 'function' && hasBlockingAlerts()){
+					if(typeof showCommandeValidationBlockedAlert === 'function'){
+						showCommandeValidationBlockedAlert();
+					}
+					return;
+				}
 				
 				var art_selected = [];
 				
@@ -98,6 +108,8 @@
 				
 			});
 			
+			initializeExistingArticles();
+			
 		
 	});
 	
@@ -120,10 +132,57 @@
 		return false;
 		
 	}
+
+	function initializeExistingArticles(){
+		$(".art").each(function(){
+			var select = $(this);
+			var rowId = select.attr("id_tr");
+			var articleId = select.val();
+			if(!rowId || !articleId || articleId == "0"){
+				return;
+			}
+			var rowElement = $("#"+rowId);
+			if(rowElement.length){
+				var initialQtyInput = rowElement.find(".qte_init");
+				var parsedQty = initialQtyInput.length ? parseFloat(initialQtyInput.val()) : 0;
+				var initialQty = (isFinite(parsedQty) && parsedQty > 0) ? parsedQty : 0;
+				rowElement.data("initial-quantity", initialQty);
+				rowElement.data("initial-article", articleId);
+				var initialCategory = $('option:selected', select).attr('data-category-id');
+				rowElement.data("initial-category", initialCategory);
+				rowElement.data("is-edit-baseline", true);
+			}
+			if(typeof clearAlertsForRow === 'function'){
+				clearAlertsForRow(rowId);
+			}
+			var venteBaseStock = $('option:selected', select).attr('data-vente-stock') === 'true';
+			var categoryId = $('option:selected', select).attr('data-category-id');
+			$("#"+rowId).data("vente-base-stock", venteBaseStock ? 'true' : 'false');
+			$("#"+rowId).data("selected-article", articleId);
+			if(typeof registerRowCategory === 'function'){
+				registerRowCategory(rowId, categoryId);
+			}
+			if(typeof fetchStockJournalier === 'function'){
+				fetchStockJournalier(articleId, rowId);
+			}
+			if(typeof fetchCategorySoldQuantity === 'function'){
+				fetchCategorySoldQuantity(categoryId, venteBaseStock, rowId);
+			}
+		});
+		setTimeout(function(){
+			$(".qte").each(function(){
+				if(typeof enforceCategoryLimit === 'function'){
+					enforceCategoryLimit(this);
+				}
+			});
+		}, 350);
+	}
 	
 	</script>
 	      
 	      
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
 	</head>
 
 	<body >
@@ -141,10 +200,13 @@
 			<div class="card-body">
 			
 			<form id="frm" th:action="@{/edit_blf_post}" method="post" style="height: 100%" autocomplete="off">
-			
+			<input type="hidden" id="remise_fact"  th:value="true">
+													
+
 					<div class="card" >
 						
-						<input type="hidden" id="id_blf" name="id_blf" th:value="${blf.id}">
+					<input type="hidden" id="id_blf" name="id_blf" th:value="${blf.id}">
+					<input type="hidden" id="rc_category_id" th:value="${blf.registre_commerce.category.id}">
 						
 						<h5 class="card-header "> <i class="far fa-user-alt"></i> Client </h5>
 						<br>
@@ -270,10 +332,12 @@
 										<span class="input-group-text declaration" style="text-align: left;">
 										 Remise (%) </span>
 									<input type="number" step="any" class="form-control zero remise_zero" name="pourc_reduction" 
-										style="text-align: right;" id="pourc_redux" value="0" readonly>
-									
+										style="text-align: right;" id="pourc_redux" th:value="${#numbers.formatDecimal(blf.pourcentage_remise, 1, 'WHITESPACE', 2,'POINT')}" >
+								
+								
+								
 									<input type="text" class="form-control zero remise_zero" name="montant_reduction" 
-										style="text-align: right;" id="mnt_redux" value="0" readonly>
+										style="text-align: right;" id="mnt_redux"  th:value="${#numbers.formatDecimal(blf.montant_remise, 1, 'WHITESPACE', 2,'POINT')}" >
 									
 									<span class="input-group-text declaration" 
 													style="min-width: 106px; text-align: left;"> Remise (Val) </span>
@@ -359,16 +423,19 @@
 									<select id="art" class="form-control selectpicker art" data-style="btn btn-outline-secondary" data-size="8" 
 										data-live-search="true" name="art" th:attr="id_tr='tr'+${i.index}">
 										
-										<option value="0"  id_um="0" pu="0" tva="0">Selection</option>
-										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
-												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},
-												 tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
-												 th:text="${art.article.libelle}" th:if="${art.article.id}==${blf_det.article.id}" selected></option>
-												 
-										<option th:each="art:${articles}" th:value="${art.article.id}" th:attr="code=${art.article.code}, 
-												 data-subtext=${art.article.code}, um=${art.article.unite_mesure_vente.nom_unite_mesure}, pu=${art.prix},
-												 tva=${art.tva.taux_tva}, id_um=${art.article.unite_mesure_vente.id}" 
-												 th:text="${art.article.libelle}" th:unless="${art.article.id}==${blf_det.article.id}" ></option>
+										<option value="0"  id_um="0" pu="0" tva="0" data-vente-stock="false">Selection</option>
+										<option th:each="art : ${articles}"
+											th:value="${art.article.id}"
+											th:attr="code=${art.article.code},
+												data-subtext=${art.article.code},
+												um=${art.article.unite_mesure_vente.nom_unite_mesure},
+												pu=${art.prix},
+												tva=${art.tva.taux_tva},
+												id_um=${art.article.unite_mesure_vente.id},
+												data-vente-stock=${art.article.produit.sous_category_produit.category_produit.venteBaseStock},
+												data-category-id=${art.article.produit.sous_category_produit.category_produit.id}"
+											th:text="${art.article.libelle}"
+											th:selected="${art.article.id}==${blf_det.article.id}"></option>
 									 </select> 
 								</td>
 								
@@ -399,10 +466,10 @@
 								
 								<td>
 									<div class="input-group">
-										<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" readonly
-											step="any" style="text-align: left;" placeholder="Val" th:value="${#numbers.formatDecimal(blf_det.montant_remise, 3, 'WHITESPACE', 2,'POINT')}">
-										<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" readonly
-											type="number" step="any" style="text-align: right;" placeholder="%" th:value="${#numbers.formatDecimal(blf_det.pourcentage_remise, 3, 'WHITESPACE', 2,'POINT')}">  
+										<input class="form-control redux_art_val zero remise_zero" id="redux_art_val" name="montant_redux_art_val" type="number" 
+											step="any" style="text-align: left;" placeholder="Val" th:value="${blf_det.montant_remise}">
+										<input class="form-control redux_art_pourc zero remise_zero" id="redux_art_pourc" name="montant_redux_art_pourc" 
+											type="number" step="any" style="text-align: right;" placeholder="%" th:value="${#numbers.formatDecimal(blf_det.pourcentage_remise, 1, 'WHITESPACE', 2,'POINT')}">  
 									</div>
 								</td>
 								

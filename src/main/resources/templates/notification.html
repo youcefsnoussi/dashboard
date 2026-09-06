@@ -78,7 +78,9 @@
 		</script>
 		
 		
-</head>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
 <body>
 	
 	<div class="container h-100">
@@ -118,10 +120,10 @@
 							
 								
 								<td th:text="${rc_client.client.nom}+' '+${rc_client.client.prenom}"></td>
-								<td th:text="${#numbers.formatDecimal(rc_client.client.sold_encours, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(rc_client.client.sold_encours, 3, 'WHITESPACE', 2,'COMMA')}"></td>
 								<td th:text="${rc_client.registre_commerce.code}"></td>
 								<td th:text="${rc_client.registre_commerce.nom}+' '+${rc_client.registre_commerce.prenom}"></td>
-								<td th:text="${#numbers.formatDecimal(rc_client.montant_actuel, 3, 'WHITESPACE', 0,'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(rc_client.montant_actuel, 3, 'WHITESPACE', 2,'COMMA')}"></td>
 								<td th:text="${rc_client.date_debut}"></td>
 								<td th:text="${rc_client.date_fin}"></td>
 								

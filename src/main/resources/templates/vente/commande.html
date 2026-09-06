@@ -28,7 +28,55 @@
 	      
 	<script type="text/javascript" src="resources\additionalJS\CheckConnectionServer.js"></script>
 	      
-	</head>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	
+	<style>
+	/* ---- Commande article grid ------------------------------------------
+	   12 columns each holding a full-width .form-control: without minimum
+	   widths the amount fields get squeezed until the figures are cut off.
+	   Widths below are per COLUMN, and the wrapper scrolls sideways rather
+	   than letting anything be crushed. */
+	#table{ table-layout:auto; }
+	#table th, #table td{
+		padding:6px 5px;          /* the inherited padding cost real width */
+		vertical-align:middle;
+	}
+	#table thead th{ white-space:nowrap; }
+
+	/* nothing may collapse below what its content needs */
+	#table th:nth-child(1),  #table td:nth-child(1)  { min-width:118px; }  /* Art consigne  */
+	#table th:nth-child(2),  #table td:nth-child(2)  { min-width:210px; }  /* Libellé       */
+	#table th:nth-child(3),  #table td:nth-child(3)  { min-width:74px;  }  /* Um            */
+	#table th:nth-child(4),  #table td:nth-child(4)  { min-width:92px;  }  /* Qte           */
+	#table th:nth-child(5),  #table td:nth-child(5)  { min-width:120px; }  /* Unité/magasin */
+	#table th:nth-child(6),  #table td:nth-child(6)  { min-width:112px; }  /* PU            */
+	#table th:nth-child(7),  #table td:nth-child(7)  { min-width:130px; }  /* Montant HT    */
+	#table th:nth-child(8),  #table td:nth-child(8)  { min-width:150px; }  /* Remise val/%  */
+	#table th:nth-child(9),  #table td:nth-child(9)  { min-width:130px; }  /* Montant NET   */
+	#table th:nth-child(10), #table td:nth-child(10) { min-width:82px;  }  /* TVA %         */
+	#table th:nth-child(11), #table td:nth-child(11) { min-width:126px; }  /* Montant TVA   */
+	#table th:nth-child(12), #table td:nth-child(12) { min-width:130px; }  /* Montant TTC   */
+
+	/* amounts: right-aligned, evenly spaced digits, never clipped */
+	#table td input.form-control{
+		padding:6px 8px;
+		font-size:13px;
+		font-variant-numeric:tabular-nums;
+		text-overflow:clip;
+	}
+	/* the Remise cell holds two inputs side by side */
+	#table td .input-group > .form-control{ min-width:0; }
+
+	/* when the window really is too narrow, scroll instead of squashing */
+	.commande-scroll{
+		width:100%;
+		overflow-x:auto;
+		-webkit-overflow-scrolling:touch;
+	}
+	.commande-scroll > #table{ min-width:1480px; }
+	</style>
+</head>
 
 	<body >
 	<br>
@@ -102,8 +150,9 @@
 													prenom=${rc_clt.registre_commerce.prenom}, sold=${rc_clt.registre_commerce.sold_encours}, 
 													plafond=${rc_clt.registre_commerce.plafond}, tva=${rc_clt.registre_commerce.tva},
 													adresse=${rc_clt.registre_commerce.adresse}, mode_pay=${rc_clt.registre_commerce.mode_paiement.id},
-													is_blf=${rc_clt.registre_commerce.multiple_bon_livraison},
-													 wilaya=${rc_clt.registre_commerce.wilaya.code},comune=${rc_clt.registre_commerce.comune}"
+													is_blf=${rc_clt.registre_commerce.multiple_bon_livraison}, category_id=${rc_clt.registre_commerce.category?.id},
+													category_nom=${rc_clt.registre_commerce.category?.nom_category}, wilaya=${rc_clt.registre_commerce.wilaya.code},
+													comune=${rc_clt.registre_commerce.comune}"
 													>
 											</option>
 											
@@ -419,12 +468,13 @@
 					 <input th:if="${transport}!=null" type="hidden" id="transportlibelle"  th:value="${transport.libelle}">
 					 <input th:if="${transport}!=null" type="hidden" id="transporttva"  th:value="19.0">
 					  <input type="hidden" id="hasTransport"  th:value="${hasTransport}">
+					<div class="commande-scroll">
 					<table class="table" id="table" width="100%">
 						<thead class="thead-dark">
 							<tr>
 								<th align="center"  width="5%">Art consigne</th>
 								<th  align="center" >Libellé</th>
-								<th  align="center"  width="3%">Um</th>
+								<th  align="center"  width="5%">Um</th>
 								<th  align="center" >Qte</th>
 								<th  align="center" >Unité</th>
 								<th  align="center" >PU</th>
@@ -506,6 +556,7 @@
 						</tbody>
 	
 					</table>
+					</div>
 	
 				</form>
 	

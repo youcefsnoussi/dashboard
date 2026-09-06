@@ -1010,4 +1010,82 @@ public class vente_statistiqueController {
 	}
 	
 	//----------------------------------------------------------------------------
+	
+	
+	//----------------------------FODHIL-----------------------------------------------
+	
+	
+	@RequestMapping(value="/vente_wilaya_semoule_farine")
+	public String vente_wilaya_semoule_farine(HttpServletRequest request,
+						 @RequestParam(value="start", defaultValue="0") String start,
+						 @RequestParam(value="end", defaultValue="0") String end,
+						 @RequestParam(value="start1", defaultValue="0") String start1,
+						 @RequestParam(value="end1", defaultValue="0") String end1,
+						
+						 @RequestParam(value="id_category", defaultValue="0") Long id_category,
+						 @SessionAttribute("user") users user,
+						 Model model){
+		
+		
+		
+		System.out.println("start1:"+start1);
+		
+		convert_string_to_date_util conv = new convert_string_to_date_util();
+		
+		get_time_date gtd = new get_time_date();
+		
+		List <Object[]> list = new ArrayList<Object[]>();
+		
+		String ret_start = (start.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : start;
+		
+		String ret_end = (end.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : end;
+		
+		String ret_start1 = (start1.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : start1;
+		
+		String ret_end1 = (end.equals("0")) ? conv.convertion_MyDate_to_InputDate(gtd.get_date()) : end1;
+		System.out.println("111111111111111");
+		
+		String ret="";
+		if(!start.equals("0") && !end.equals("0") && !start1.equals("0") && !end.equals("0")) {
+			
+			System.out.println("2222222222");
+			 list=fact_dRepo.get_quantite_client_category_wilaya_semoule_farine1(ret_start, ret_end,ret_start1, ret_end1);
+			 ret="statistic/vente_wilaya_semoule_farine1";
+				
+			}else
+			{System.out.println("33333333333333333333");
+			
+				if(!ret_start.equals("0") && !ret_end.equals("0"))
+				{System.out.println("444444444444444444");
+				
+					 list=fact_dRepo.get_quantite_client_category_wilaya_semoule_farine(ret_start, ret_end);
+					 ret="statistic/vente_wilaya_semoule_farine";
+						
+				}
+			}
+		
+		
+		
+		
+		
+		
+		model.addAttribute("categories", cat_prodRepo.findAll(Sort.by(Sort.Direction.ASC,"id")));
+		
+		model.addAttribute("selected_category", id_category);
+		
+		model.addAttribute("start", ret_start);
+		
+		model.addAttribute("end", ret_end);
+
+		model.addAttribute("start1", ret_start1);
+		
+		model.addAttribute("end1", ret_end1);
+		
+		model.addAttribute("list", list);
+		
+		return ret ;		
+	}
+	
+	//------------------------------------------------------------------------------
+	
 }

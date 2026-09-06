@@ -1,5 +1,7 @@
 package com.commercial.webController.vente;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -171,6 +174,8 @@ public class commandeController {
 		String ret = "vente/commande";
 		
 		get_time_date gtd = new get_time_date();
+
+		System.out.println(gtd.get_date());
 		
 		//model.addAttribute("clients", clientRepo.client_active_only());
 		
@@ -178,15 +183,17 @@ public class commandeController {
 		
 		List <client_registreCommerce> clt_rc_ret = new ArrayList<client_registreCommerce>();
 		
-		
+		System.out.println("clt_rc size "+clt_rc.size());
 		
 		for(int i=0; i<clt_rc.size();i++) {
 			
 			client_registreCommerce cl_rc = clt_rc.get(i);
 			
-			List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_rc(cl_rc.getRegistre_commerce());
+		/*	List <bon_livraison> list_bl = bon_lRepo.get_bl_encours_by_rc(cl_rc.getRegistre_commerce());
 			
 			double montant = 0;
+			
+			//System.out.println("i> "+i+" >> list_bl.size() ");
 			
 			for(int j=0;j<list_bl.size();j++) {
 				
@@ -198,11 +205,15 @@ public class commandeController {
 			
 			sold_encours = sold_encours + montant;
 			
-			cl_rc.getRegistre_commerce().setSold_encours(sold_encours);
+			if(montant != 0) System.out.println("cl_rc >> "+cl_rc.getRegistre_commerce().getCode()+" montant > "+montant);
 			
+			//cl_rc.getRegistre_commerce().setSold_encours(sold_encours);*/
+		
 			clt_rc_ret.add(cl_rc);
 			
 		}
+
+		System.out.println("clt_rc_ret size "+clt_rc_ret.size());
 		
 		model.addAttribute("rcs_clt", clt_rc_ret);
 		
@@ -242,8 +253,36 @@ public class commandeController {
 			
 		}
 		*/
+		
+		System.out.println("Return to commande.html");
 		return ret;
 		
+	}
+	
+	@RequestMapping(value="/ajax_get_solde_rc")
+	public ResponseEntity<BigDecimal> ajax_get_solde_rc(
+			 @RequestParam("id") String id) {
+		
+		System.out.println("Enter ajax_get_solde_rc");
+		
+		client_registreCommerce rc_clt = clt_rcRepo.getOne(Long.parseLong(id));
+		registre_commerce rc = rc_clt.getRegistre_commerce();	
+		
+		//Double montant = bon_lRepo.getTotalMontantTtcByRc(rc_clt.getRegistre_commerce());
+		//Double montantBlf = bon_lRepo.getTotalMontantTtcBlfByRc(rc_clt.getRegistre_commerce());
+		
+		Double montantTest = bon_lRepo.getTotalMontantTtcByRcTEST(rc_clt.getRegistre_commerce()); 
+		
+		//System.out.println("montant "+montant);		
+		double sold_encours = rc.getSold_encours();		
+		double total = sold_encours + (montantTest!=null?montantTest:0);// + (montantBlf!=null?montantBlf:0);
+		
+		BigDecimal roundedTotal = new BigDecimal(total).setScale(2, RoundingMode.HALF_UP);
+
+		
+		System.out.println("return montnant "+roundedTotal);
+		
+		return ResponseEntity.ok(roundedTotal);
 	}
 	
 	//__________________________________________POST____________________________________________________________________
@@ -286,6 +325,10 @@ public class commandeController {
 			@SessionAttribute("user") users user){
 		
 		System.out.println("COMMAAAAAAAAAANDE");
+		
+		System.out.println("matricule_camion >> "+matricule_camion);
+		System.out.println("id_unite_mesure >> "+id_unite_mesure);
+		
 		
 		boolean remise_fact = false;
 		if(user.getRole().getNom_role().equals("Admin") ||  user.getRole().getIds_banned().contains("remise_fact")) {
@@ -334,9 +377,9 @@ public class commandeController {
 			//-------------------- tracking operation -----------------------------------
 			System.out.println("articles lengh = " + article.length);
 			for(int i=0;i<article.length;i++) {
-				System.out.println("i = " + i);
+				//System.out.println("i = " + i);
 				if(quantite[i]!=0) {
-					System.out.println("qtt not null i = " + i);
+				//	System.out.println("qtt not null i = " + i);
 					
 					commande_detail cmd_d = new commande_detail(cmd, artRepo.getOne(article[i]), quantite[i], prix_u_ht[i], montant_ht_art[i], 
 							montant_tva_art[i], tva_art[i], umRepo.getOne(id_unite_mesure[i]), montant_redux_art_pourc[i], 
@@ -370,7 +413,7 @@ public class commandeController {
 			//-------------------- tracking operation -----------------------------------
 			
 			trk.add_track("bon_livraison", "Génération de bon livraison a partir de la commande", bl.getId(), user);
-			
+			System.out.println("Génération de bon livraison a partir de la commande");
 			//-------------------- tracking operation -----------------------------------
 			
 			//boolean if_son = false; //----------------> testi ila son bach ninsiri f tabla ta3 nkhala
@@ -411,7 +454,8 @@ public class commandeController {
 					 }
 					
 					bon_livraison_detail bl_d = new bon_livraison_detail(bl, artRepo.getOne(article[i]), quantite[i],
-							prix_u, taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
+					//prix_u, taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
+							prix_u_ht[i], taux_tva, montant_redux_art_val[i], artRepo.getOne(article[i]).getUnite_mesure_vente(),
 							magasinRepo.getOne(id_magasin[i]));
 					
 					if(art.getCode().equals("99999")) {
@@ -486,7 +530,7 @@ public class commandeController {
 			//}
 			
 			//---------------------------------------------------------------------------------------
-			
+			System.out.println("go to commande");
 			return "redirect:/commande?id_bl="+bl.getId()+"&num_bl="+bl.getNumero()+"&type=bl";
 		
 	}

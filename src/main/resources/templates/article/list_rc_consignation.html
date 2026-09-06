@@ -138,7 +138,9 @@
 		</script>
 		
 		
-</head>
+		<link rel="stylesheet" href="resources\additionalCSS\app-theme.css?v=20260902c">
+		<script src="resources\additionalJS\app-theme.js?v=20260902c"></script>
+	</head>
 <body>
 	
 	<div class="container-fluid h-100">
@@ -191,8 +193,8 @@
 								<td th:text="${rc_cons.registre_commerce.nom}+' '+${rc_cons.registre_commerce.prenom}"></td>
 								<td th:text="${rc_cons.article_consignation.code}"></td>
 								<td th:text="${rc_cons.article_consignation.libelle}"></td>
-								<td th:text="${rc_cons.sold_physique}"></td>
-								<td th:text="${rc_cons.sold_valorise}"></td>
+								<td th:text="${#numbers.formatDecimal(rc_cons.sold_physique, 1, 'WHITESPACE', 2, 'COMMA')}"></td>
+								<td th:text="${#numbers.formatDecimal(rc_cons.sold_valorise, 1, 'WHITESPACE', 2, 'COMMA')}"></td>
 								<td style="text-align: center;">
 									<div class="input-group">
 										<input type="number" step="any" class="form-control prix" th:value="${rc_cons.prix_u_ht}" 

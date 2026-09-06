@@ -1,7 +1,10 @@
 package com.commercial.webController.vente;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +19,10 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.commercial.entities.schema.article.article;
+import com.commercial.entities.schema.article.parent_article_mapping;
 import com.commercial.entities.schema.article.prixUnitaire_article_categoryClient;
 import com.commercial.entities.schema.article.repository.MagasinRepository;
+import com.commercial.entities.schema.article.repository.parent_article_mappingRepository;
 import com.commercial.entities.schema.article.repository.articleRepository;
 import com.commercial.entities.schema.article.repository.article_consignation_relationRepository;
 import com.commercial.entities.schema.article.repository.category_produitRepository;
@@ -194,6 +199,9 @@ public class list_bl_encoursController {
 	
 	@Autowired
 	article_consignation_relationRepository art_cons_relRepo;
+	
+	@Autowired
+	parent_article_mappingRepository parentMappingRepo;
 	
 	public list_bl_encoursController() {
 		// TODO Auto-generated constructor stub
@@ -857,29 +865,78 @@ public class list_bl_encoursController {
 				
 				List<bon_livraison_detail> bld_list = bon_l_dRepo.get_bl_all_details(bl);
 				
-				for(int i=0;i<bld_list.size();i++) {
+				// ===================== PARENT ARTICLE CONSOLIDATION =====================
+				// Group BL details by parent article. Children sharing a parent will be merged
+				// into a single facture_detail line under the parent article.
+				
+				Map<Long, List<bon_livraison_detail>> parentGroupMap = new LinkedHashMap<>();
+				Map<Long, article> parentArticleMap = new HashMap<>();
+				
+				for(int i=0; i<bld_list.size(); i++) {
 					
 					bon_livraison_detail bld = bld_list.get(i);
 					
-					if(!bld.getArticle().isConsignation()) {
-						
+					if(bld.getArticle().isConsignation()) {
+						consService.consignationFACT(fact, bld.getArticle(), rc, bld.getQuantite());
+						continue;
+					}
+					
+					parent_article_mapping mapping = parentMappingRepo.findByChildArticle(bld.getArticle());
+					
+					long groupKey;
+					if(mapping != null) {
+						groupKey = mapping.getParent_article().getId();
+						parentArticleMap.put(groupKey, mapping.getParent_article());
+					} else {
+						groupKey = -bld.getArticle().getId();
+						parentArticleMap.put(groupKey, bld.getArticle());
+					}
+					
+					if(!parentGroupMap.containsKey(groupKey)) {
+						parentGroupMap.put(groupKey, new ArrayList<>());
+					}
+					parentGroupMap.get(groupKey).add(bld);
+				}
+				
+				// Create facture_detail records from grouped data
+				for(Map.Entry<Long, List<bon_livraison_detail>> entry : parentGroupMap.entrySet()) {
+					
+					long key = entry.getKey();
+					List<bon_livraison_detail> group = entry.getValue();
+					article factArticle = parentArticleMap.get(key);
+					
+					if(key < 0 && group.size() == 1) {
+						// No parent, single article — direct mapping (original behavior)
+						bon_livraison_detail bld = group.get(0);
 						facture_detail fct_d = new facture_detail(fact, bld.getArticle(), bld.getQuantite(), bld.getPrix_u_ht(), 
 								bld.getMontant_ht(), bld.getTva(), bld.getMontant_tva(), bld.getMontant_ttc(), 
 								bld.getPourcentage_remise(), bld.getMontant_remise(), bld.getMontant_ht_net(), bld.getUnite_mesure());
+						fact_detRepo.save(fct_d); fact_detRepo.flush();
+					} else {
+						// Consolidated: children share a parent — sum all numeric fields
+						double totalQte = 0, totalMontantHt = 0, totalMontantTva = 0, totalMontantTtc = 0;
+						double totalMontantRemise = 0, totalMontantHtNet = 0;
 						
-						fact_detRepo.save(fct_d);fact_detRepo.flush();
-					
-					
+						for(bon_livraison_detail bld : group) {
+							totalQte += bld.getQuantite();
+							totalMontantHt += bld.getMontant_ht();
+							totalMontantTva += bld.getMontant_tva();
+							totalMontantTtc += bld.getMontant_ttc();
+							totalMontantRemise += bld.getMontant_remise();
+							totalMontantHtNet += bld.getMontant_ht_net();
+						}
+						
+						double avgPrixUHt = totalQte > 0 ? totalMontantHt / totalQte : 0;
+						double tvaRate = group.get(0).getTva();
+						double remiseRate = totalMontantHt > 0 ? (totalMontantRemise * 100) / totalMontantHt : 0;
+						
+						facture_detail fct_d = new facture_detail(fact, factArticle, totalQte, avgPrixUHt,
+								totalMontantHt, tvaRate, totalMontantTva, totalMontantTtc,
+								remiseRate, totalMontantRemise, totalMontantHtNet, group.get(0).getUnite_mesure());
+						fact_detRepo.save(fct_d); fact_detRepo.flush();
 					}
-					else{ //----------------- Consignation -------------<
-						
-						consService.consignationFACT(fact, bld.getArticle(), rc, bld.getQuantite());
-						
-					}
-					
-					//-----------------              -------------<
-					
 				}
+				// ===================== END PARENT CONSOLIDATION =====================
 				
 				//------------------------------------------------ insert into mouvement table
 				

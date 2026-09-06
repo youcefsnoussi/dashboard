@@ -52,5 +52,5 @@ public interface articleRepository extends JpaRepository<article, Long>{
 	public List<article>  select_articles_ordered();
 
 	public article findByCode(String string);
-	
+
 }

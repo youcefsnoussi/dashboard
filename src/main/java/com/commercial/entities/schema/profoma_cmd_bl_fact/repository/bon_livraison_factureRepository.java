@@ -8,10 +8,19 @@ import org.springframework.data.repository.query.Param;
 
 import com.commercial.entities.schema.client.registre_commerce;
 import com.commercial.entities.schema.profoma_cmd_bl_fact.bon_livraison_facture;
+import com.commercial.entities.schema.profoma_cmd_bl_fact.facture;
 
 public interface bon_livraison_factureRepository extends JpaRepository<bon_livraison_facture, Long>{
 	
 	public bon_livraison_facture findFirst1ByOrderByNumeroDesc();
+	
+	//------------------------------------------------------------
+	
+	@Query( " FROM bon_livraison_facture blf "
+			
+		  + " WHERE blf.facture = :fact ")
+		 
+	public List<bon_livraison_facture> get_blf_by_facture(@Param("fact") facture fact);
 	
 	//------------------------------------------------------------
 	

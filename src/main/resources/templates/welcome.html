@@ -1,148 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Application Commercial</title>
-<link rel="icon" href="resources\images\commerce.png">
-<link rel="stylesheet" href="resources\Plugins\materialize\css\materialize.min.css" />
+<link rel="icon" href="resources/images/commerce.png">
 
-<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\bootstrap.min.css">
-<link rel="stylesheet" href="resources\Plugins\bootstrap-4.3.1\css\floating-labels.css">
-<link rel="stylesheet" href="resources\Plugins\bootstrap-select-1.13.7\dist\css\bootstrap-select.min.css">
+<style>
+	html, body{margin:0;padding:0;height:100%;overflow:hidden;}
+	body{background:#ffffff;}
+	:root[data-theme="dark"] body{background:#0b0f16;}
+	:root[data-theme="dark"] #frame{background:#0b0f16;}
+	header{display:contents;}
 
-<!-- <link rel="stylesheet" href="resources\additionalCSS\BootstrapButtonMaterielizeIcon.css" />  -->
+	/* Why this is built the way it is:
+	   an <iframe> repaints in coarse steps while its box is being resized, which
+	   looks blocky. So during the slide NOTHING is resized - the shell is given a
+	   fixed width and moved with transform (compositor only, no layout). The one
+	   width change happens after the motion finishes, in a single step, hidden by
+	   the fact that the frame is already in its final position. */
+	#shell{
+		position:absolute; top:0; left:0;
+		height:100vh; height:100dvh;
+		width:calc(100vw - var(--sb-w, 280px));
+		transform:translate3d(var(--sb-w, 280px),0,0);
+	}
+	body.sb-hidden #shell{
+		width:100vw;
+		transform:translate3d(0,0,0);
+	}
 
-<link href="resources\Plugins\Font-Awsom-Pro-5.8.2\css\all.css" rel="stylesheet"> 
+	/* While the menu slides, the shell is frozen at its current size and only
+	   moved (transform = compositor, no layout, no iframe repaint). The width
+	   is re-applied in one step at the end, when the frame is already still. */
+	body.sb-anim #shell{
+		transition:transform .42s cubic-bezier(.32,.72,0,1);
+		width:var(--shell-w);
+		will-change:transform;
+	}
+	#frame{
+		width:100%;height:100%;
+		border:0;display:block;background:#fff;
+	}
+	/* the frame ignores the pointer mid-slide so hover effects inside the page
+	   do not fire while it is moving */
+	body.sb-anim #frame{pointer-events:none;}
 
-<script  src="resources\additionalJS\jquery-3.2.1.min.js"></script>
-<script  src="resources\Plugins\bootstrap-4.3.1\js\bootstrap.bundle.min.js"></script>
+	/* ---- loading veil: covers the frame until the page inside has loaded ---- */
+	#loader{
+		position:absolute;inset:0;z-index:5;
+		background:#f4f6fa;
+		display:flex;flex-direction:column;align-items:center;justify-content:center;
+		gap:18px;
+		transition:opacity .28s ease, visibility .28s ease;
+	}
+	#loader.done{opacity:0;visibility:hidden;}
+	:root[data-theme="dark"] #loader{background:#0b0f16;}
+	:root[data-theme="dark"] #loader .txt{color:#8b96a8;}
+	:root[data-theme="dark"] #loader .bar{background:#232d3c;}
+	#loader .mark{
+		width:54px;height:54px;border-radius:16px;
+		background:linear-gradient(135deg,#2a78d6,#1baf7a);
+		display:flex;align-items:center;justify-content:center;
+		box-shadow:0 8px 26px rgba(42,120,214,.32);
+		animation:pulse 1.5s ease-in-out infinite;
+	}
+	@keyframes pulse{
+		0%,100%{transform:scale(1);   box-shadow:0 8px 26px rgba(42,120,214,.32);}
+		50%    {transform:scale(1.06);box-shadow:0 12px 34px rgba(42,120,214,.45);}
+	}
+	#loader .bar{
+		width:180px;height:4px;border-radius:4px;
+		background:#e2e8f1;overflow:hidden;position:relative;
+	}
+	#loader .bar::after{
+		content:"";position:absolute;top:0;left:0;height:100%;width:40%;
+		border-radius:4px;background:linear-gradient(90deg,#2a78d6,#1baf7a);
+		animation:slide 1.15s cubic-bezier(.65,0,.35,1) infinite;
+	}
+	@keyframes slide{
+		0%  {left:-40%;}
+		100%{left:100%;}
+	}
+	#loader .txt{
+		font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+		font-size:13px;color:#7b8598;font-weight:550;letter-spacing:.01em;
+	}
+	@media (prefers-reduced-motion: reduce){
+		#loader .mark{animation:none;}
+		#loader .bar::after{animation-duration:2.4s;}
+	}
 
-<script  src="resources\Plugins\materialize\js\materialize.min.js"></script>
-
-<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\bootstrap-select.min.js"></script>
-<script type="text/javascript" src="resources\Plugins\bootstrap-select-1.13.7\dist\js\i18n\defaults-fr_FR.min.js"></script>
-		
-
-<script type="text/javascript">
-		
-			$(document).ready(function(){
-				
-				var h = window.innerHeight;
-				var w = window.innerWidth;
-				$("#frame").css("height",(parseInt(h)-5)+"px");
-				$("#frame").css("width",(parseInt(w)-5)+"px");
-				
-				$(window).on('resize', function(){
-				      
-					var h = window.innerHeight;
-					var w = window.innerWidth;
-					$("#frame").css("height",(parseInt(h)-5)+"px");
-					$("#frame").css("width",(parseInt(w)-5)+"px");
-					
-				});
-				
-				$('.toast').toast({type:'info'});
-				/*
-				setInterval(function(){	
-					
-					//$("#notif_div").empty();
-					
-					//console.log("request_notif");
-					
-					$.ajax({
-						
-						url: 'get_notification',
-						dataType: 'json',
-						data : {
-							
-				        },
-				        success : function(resp) {
-							
-							if (resp != "null") {
-								
-								$.each(resp, function(key, value) {
-									
-									//console.log("->"+value.numero)
-									
-									var htm = '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" '+
-													'data-delay="10000" data-animation="true" style="cursor: pointer;">'+
-											      '<div class="toast-header" > '+
-											        '<i class="far fa-bell click"></i> &nbsp '+
-											        '<strong class="mr-auto click"> <b>Facture Prête </b></strong> '+
-											        '<small class="text-muted click">'+value.time+'</small> '+
-											        '<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"> '+
-											          ' <span aria-hidden="true">&times;</span> '+
-											        '</button> '+
-											      '</div> '+
-											      '<div class="toast-body click"> '+
-											        '<label style="font-size:medium;font-weight: 600;"> Code RC : '+value.registre_commerce.code+'</label>'+
-											        '<label style="font-size:medium;font-weight: 600;"> RC: '+value.registre_commerce.nom+' '+value.registre_commerce.prenom+'</label>'+
-											        '<label style="font-size:medium;font-weight: 600;"> Client: '+value.client.nom+' '+value.client.prenom+'</label> '+
-											      '</div> '+
-											    '</div>';
-									
-									$("#notif_div").append(htm);		    
-											    
-										  
-								});
-								
-							}
-							
-							$('.toast').on('hidden.bs.toast', function () {
-								 $(this).remove();
-							});
-							
-							$('.toast').toast('show');
-							
-							$(".click").click(function(){
-								
-								$("#frame").attr("src","list_fact?date_debut=0&date_fin=0");
-								
-							});
-							
-						}
-					});
-					
-					//console.log("END request notif")
-					
-					//console.log("------------");
-					
-				},1200000);
-				*/ 
-				
-			  });
-
-			/*
-			var htm = " <div class='tt'> "+
-					  "	<i class='far fa-file-invoice'></i> <span>Facture N° "+value.numero+" est Prête </span>"+
-					  " <hr>"+
-					  " <span>"+value.registre_commerce.nom+" "+value.registre_commerce.prenom+"</span>"+
-					  " <span> N° "+value.registre_commerce.numero+"</span>";
-			
-			M.toast({html: htm});	
-			*/	
-			
-		</script>
+	@media (max-width:992px){
+		#shell{width:100vw;transform:translate3d(0,0,0);}
+	}
+	@media (prefers-reduced-motion: reduce){
+		body.sb-anim #shell{transition:none;}
+	}
+</style>
 
 </head>
-<body >
+<body>
 
 	<header th:insert="navbar.html"> </header>
-	
-	<iframe id="frame" style="position: absolute;" frameborder="0"  name="frame" allowfullscreen  th:src="@{/acceuil}"> </iframe>
-	
-	<!-- -------------------++++++++++++++++++---------------------------------- -->
-	
-	<div aria-live="polite" aria-atomic="true" style=" min-height: 200px;">
-	  <!-- Position it -->
-	  <div id="notif_div" style="position: absolute; top: -35px; right: 5px;width:270px">
-	    <!-- Then put toasts within -->
-	    
-		
-	  </div>
+
+	<div id="shell">
+
+		<div id="loader" role="status" aria-live="polite">
+			<span class="mark" aria-hidden="true">
+				<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff"
+					 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M4 19V11M9.5 19V6M15 19v-5M20.5 19V8"/>
+				</svg>
+			</span>
+			<span class="bar" aria-hidden="true"></span>
+			<span class="txt">Chargement du tableau de bord…</span>
+		</div>
+
+		<iframe id="frame" name="frame" allowfullscreen th:src="@{/acceuil}"> </iframe>
 	</div>
-	
-	<!-- -------------------++++++++++++++++++---------------------------------- -->
-	
+
+	<script>
+	(function(){
+		"use strict";
+		var loader = document.getElementById("loader");
+		var frame  = document.getElementById("frame");
+		if(!loader || !frame) return;
+
+		var hidden = false;
+		function hide(){
+			if(hidden) return;
+			hidden = true;
+			loader.classList.add("done");
+		}
+
+		/* the veil lifts when the page inside the frame has finished loading */
+		frame.addEventListener("load", hide);
+
+		/* safety net: never leave the veil stuck if a page fails to fire load */
+		setTimeout(hide, 12000);
+
+		/* show it again on every navigation started from the menu, so moving
+		   between pages gets the same feedback as the first load */
+		document.addEventListener("click", function(ev){
+			var a = ev.target && ev.target.closest ? ev.target.closest('a[target="frame"]') : null;
+			if(!a) return;
+			hidden = false;
+			loader.querySelector(".txt").textContent = "Chargement…";
+			loader.classList.remove("done");
+			setTimeout(hide, 12000);
+		}, true);
+	})();
+	</script>
+
 </body>
 </html>

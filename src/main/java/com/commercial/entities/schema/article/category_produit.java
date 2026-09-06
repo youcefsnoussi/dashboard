@@ -2,6 +2,7 @@ package com.commercial.entities.schema.article;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +22,12 @@ public class category_produit implements Serializable{
 	private Long id;
 	
 	private String nom_category;
+
+	@Column(name = "vente_base_stock", columnDefinition = "boolean default false")
+	private boolean venteBaseStock = false;
+
+	@Column(name = "pourcentage_vente", columnDefinition = "double precision default 0")
+	private double pourcentageVente = 0;
 	
 	
 	public category_produit() {
@@ -37,6 +44,13 @@ public class category_produit implements Serializable{
 		super();
 		this.id = id;
 		this.nom_category = nom_category;
+	}
+
+	public category_produit(String nom_category, boolean venteBaseStock, double pourcentageVente) {
+		super();
+		this.nom_category = nom_category;
+		this.venteBaseStock = venteBaseStock;
+		this.pourcentageVente = pourcentageVente;
 	}
 	
 
@@ -57,6 +71,22 @@ public class category_produit implements Serializable{
 
 	public void setNom_category(String nom_category) {
 		this.nom_category = nom_category;
+	}
+
+	public boolean isVenteBaseStock() {
+		return venteBaseStock;
+	}
+
+	public void setVenteBaseStock(boolean venteBaseStock) {
+		this.venteBaseStock = venteBaseStock;
+	}
+
+	public double getPourcentageVente() {
+		return pourcentageVente;
+	}
+
+	public void setPourcentageVente(double pourcentageVente) {
+		this.pourcentageVente = pourcentageVente;
 	}
 
 	
