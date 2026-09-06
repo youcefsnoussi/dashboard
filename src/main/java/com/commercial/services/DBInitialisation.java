@@ -118,7 +118,9 @@ public class DBInitialisation {
 			.anyMatch(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("Vente Employee Logistique"));
 		boolean logistiqueListExists = existingSubMenus.stream()
 			.anyMatch(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("List BL Employee Logistique"));
-		
+		boolean previsionIaExists = existingSubMenus.stream()
+			.anyMatch(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("Prevision IA"));
+
 		if( existingSubMenus.size() == 0 ) {
 			
 			subMenuRepo.save( new sub_menu("Information de l'entreprise", "info_ent", 1, menuRepo.getOne((long) 4),"", "align-justify") );
@@ -181,10 +183,11 @@ public class DBInitialisation {
 			subMenuRepo.save( new sub_menu("Vente Employee RH", "bl_encours_employee_grh", 8, menuRepo.getOne((long) 3),"", "file-invoice") );
 			subMenuRepo.save( new sub_menu("Vente Employee Logistique", "bl_encours_employee_logistique", 9, menuRepo.getOne((long) 3),"", "file-invoice") );
 			subMenuRepo.save( new sub_menu("List BL Employee Logistique", "bl_encours_employee_logistique", 10, menuRepo.getOne((long) 3),"", "clipboard-list-check") );
-			
-			
+			subMenuRepo.save( new sub_menu("Prevision IA", "prevision_ia", 18, menuRepo.getOne((long) 6),"", "chart-line") );
+
+
 			subMenuRepo.flush();
-			
+
 		}
 		else {
 			boolean newItemAdded = false;
@@ -194,6 +197,10 @@ public class DBInitialisation {
 			}
 			if (!logistiqueListExists) {
 				subMenuRepo.save( new sub_menu("List BL Employee Logistique", "bl_encours_employee_logistique", 10, menuRepo.getOne((long) 3),"", "clipboard-list-check") );
+				newItemAdded = true;
+			}
+			if (!previsionIaExists) {
+				subMenuRepo.save( new sub_menu("Prevision IA", "prevision_ia", 18, menuRepo.getOne((long) 6),"", "chart-line") );
 				newItemAdded = true;
 			}
 			if (newItemAdded) { subMenuRepo.flush(); }
@@ -656,9 +663,41 @@ public class DBInitialisation {
 			catCRepo.save( new category_client("Catering", "CA", "") );
 
 			catCRepo.flush();
-			
+
 		}
-		
+
 	}
-	
+
+	/* Grants every existing role access to the "Prevision IA" submenu, added by
+	   initSubMenu() above. roles_menu has no size()==0 guard usable here (the table
+	   already has years of rows), so this checks per-role existence directly instead -
+	   same incremental-add shape as the two Logistique items in initSubMenu(). */
+	public void initRolesMenuPrevisionIa () {
+
+		sub_menu previsionIa = subMenuRepo.findAll().stream()
+			.filter(sm -> sm.getNom_submenu() != null && sm.getNom_submenu().equalsIgnoreCase("Prevision IA"))
+			.findFirst().orElse(null);
+
+		if (previsionIa == null) {
+			return;
+		}
+
+		List<roles_menu> existing = rolesMenuRepo.findAll();
+
+		for (roles role : rolesRepo.findAll()) {
+
+			boolean alreadyGranted = existing.stream().anyMatch(rm ->
+				rm.getRole() != null && rm.getRole().getId().equals(role.getId()) &&
+				rm.getSubmenu() != null && rm.getSubmenu().getId().equals(previsionIa.getId()));
+
+			if (!alreadyGranted) {
+				rolesMenuRepo.save(new roles_menu(role, previsionIa));
+			}
+
+		}
+
+		rolesMenuRepo.flush();
+
+	}
+
 }

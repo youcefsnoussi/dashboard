@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Prévision IA — Application Commercial</title>
+
+	<script src="resources/echarts/echarts.min.js"></script>
+
+	<style>
+		:root{
+			--page:#f4f6fa;
+			--surface:#ffffff;
+			--surface-2:#f1f4f9;
+			--ink-1:#131a26;
+			--ink-2:#4d5769;
+			--ink-3:#8792a6;
+			--grid:#e9edf4;
+			--axis:#d5dce7;
+			--border:#e6ebf3;
+			--primary:#2a78d6;
+			--primary-soft:#eaf2fd;
+			--good:#0a8a43;
+			--good-soft:#e6f6ed;
+			--warn:#a3690a;
+			--warn-soft:#faf0dd;
+			--bad:#d03b3b;
+			--bad-soft:#fdecec;
+			--shadow:0 1px 2px rgba(19,26,38,.04), 0 6px 20px rgba(19,26,38,.06);
+			--radius:16px;
+		}
+		:root[data-theme="dark"]{
+			--page:#0b0f16;
+			--surface:#141a24;
+			--surface-2:#1c2431;
+			--ink-1:#f2f5fa;
+			--ink-2:#aab6c8;
+			--ink-3:#7d8899;
+			--grid:#222c3a;
+			--axis:#2e3a4b;
+			--border:#232d3c;
+			--primary:#4a94ee;
+			--primary-soft:rgba(74,148,238,.16);
+			--good:#28b463;
+			--good-soft:rgba(40,180,99,.14);
+			--warn:#e0a53f;
+			--warn-soft:rgba(224,165,63,.14);
+			--bad:#e66767;
+			--bad-soft:rgba(230,103,103,.14);
+			--shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 22px rgba(0,0,0,.4);
+			color-scheme:dark;
+		}
+		*{box-sizing:border-box;}
+		html,body{margin:0;padding:0;}
+		body{
+			background:var(--page);
+			color:var(--ink-1);
+			font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+			font-size:15px;
+		}
+		.wrap{max-width:1180px;margin:0 auto;padding:22px 24px 60px;}
+		h1{font-size:20px;font-weight:700;margin:0;display:flex;align-items:center;gap:9px;}
+		h1 .logo{color:var(--primary);display:flex;}
+		.sub{font-size:13px;color:var(--ink-3);margin:5px 0 0;max-width:74ch;line-height:1.5;}
+
+		.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0 22px;}
+		.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 15px;box-shadow:var(--shadow);}
+		.kpi .cat{font-size:12px;font-weight:700;color:var(--ink-2);}
+		.kpi .v{font-size:21px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;}
+		.kpi .l{font-size:11px;color:var(--ink-3);margin-top:2px;}
+		.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:6px;}
+		.badge.good{background:var(--good-soft);color:var(--good);}
+		.badge.warn{background:var(--warn-soft);color:var(--warn);}
+		.badge.bad{background:var(--bad-soft);color:var(--bad);}
+
+		.charts{display:flex;flex-direction:column;gap:14px;}
+		.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;}
+		.card-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+		.card-head h2{font-size:14.5px;margin:0;}
+		.legend{display:flex;gap:16px;font-size:12px;color:var(--ink-2);}
+		.legend span{display:flex;align-items:center;gap:6px;}
+		.dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+		.dot.actual{background:var(--ink-3);}
+		.dot.predicted{background:var(--primary);}
+		.chart{height:220px;}
+		.note{font-size:11.5px;color:var(--ink-3);margin-top:4px;}
+
+		.methodology{margin-top:26px;font-size:12.5px;color:var(--ink-2);line-height:1.6;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+		.methodology b{color:var(--ink-1);}
+	</style>
+</head>
+<body>
+
+	<div class="wrap">
+
+		<h1>
+			<span class="logo">
+				<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3v18h18M7 15l4-5 3 3 5-7"/></svg>
+			</span>
+			Prévision IA — Demande par catégorie
+		</h1>
+		<p class="sub">
+			Prévision (bleu) posée directement sur les ventes réellement facturées (gris), sur une période de test que le
+			modèle n'a jamais vue à l'entraînement — pas une simulation. Un modèle est entraîné par catégorie sur
+			l'historique complet de facturation, avec un découpage temporel strict : les 8 dernières semaines ne servent
+			qu'au test, jamais à l'apprentissage.
+		</p>
+
+		<div class="kpis">
+			<div class="kpi" th:each="m : ${metrics}">
+				<div class="cat" th:text="${m.category}">Catégorie</div>
+				<div class="v" th:text="${#numbers.formatDecimal(m.mae, 1, 0)}">0</div>
+				<div class="l">erreur moyenne (unités/jour)</div>
+				<span class="badge good"  th:if="${m.mape != null and m.mape lt 20}"  th:text="${'Fiable · ' + #numbers.formatDecimal(m.mape,1,1) + '% MAPE'}">Fiable</span>
+				<span class="badge warn"  th:if="${m.mape != null and m.mape ge 20 and m.mape lt 60}" th:text="${'Modérée · ' + #numbers.formatDecimal(m.mape,1,1) + '% MAPE'}">Modérée</span>
+				<span class="badge bad"   th:if="${m.mape == null or m.mape ge 60}" th:text="'MAPE non interprétable'">—</span>
+			</div>
+		</div>
+
+		<div class="charts">
+			<div class="card" th:each="m : ${metrics}">
+				<div class="card-head">
+					<h2 th:text="${m.category}">Catégorie</h2>
+					<div class="legend">
+						<span><i class="dot actual"></i> Réel (facturé)</span>
+						<span><i class="dot predicted"></i> Prévu (modèle)</span>
+					</div>
+				</div>
+				<div class="chart" th:id="${'chart-' + m.category}"></div>
+				<p class="note" th:if="${m.mape != null and m.mape ge 60}">
+					MAPE non pertinent ici : la plupart des jours de test sont à zéro facturé, avec quelques pics
+					ponctuels — l'erreur en pourcentage explose mécaniquement même quand l'écart absolu reste correct.
+					Ce produit se vend par à-coups, pas au jour le jour : une prévision hebdomadaire/mensuelle
+					conviendrait mieux ici qu'une prévision journalière.
+				</p>
+			</div>
+		</div>
+
+		<div class="methodology">
+			<b>Méthode :</b> Random Forest, mêmes caractéristiques que le prototype de prévision de la demande
+			(jour de semaine, mois, week-end, moyennes mobiles 7/28 jours, décalages 7/14/28 jours) — entraîné ici sur
+			<b><span th:text="${#lists.size(metrics)}">0</span> catégories</b> de <span th:text="${'proforma_cmd_bl_fact.facture_detail'}">facture_detail</span>
+			de cette base, pas sur des données publiques. Validation temporelle stricte : aucune ligne de test n'a
+			participé à l'entraînement. Chiffres calculés une fois, hors ligne — cette page ne relance jamais
+			l'entraînement à l'affichage.
+		</div>
+
+	</div>
+
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	var chartData = /*[[${chart_data}]]*/ {};
+	/*]]>*/
+
+	Object.keys(chartData).forEach(function(cat){
+		var d = chartData[cat];
+		var el = document.getElementById('chart-' + cat);
+		if(!el) return;
+		var chart = echarts.init(el, null, {renderer:'canvas'});
+		chart.setOption({
+			grid:{left:46,right:16,top:14,bottom:28},
+			tooltip:{trigger:'axis'},
+			xAxis:{type:'category', data:d.dates, axisLine:{lineStyle:{color:'var(--axis)'}},
+				axisLabel:{color:'#8792a6', fontSize:10.5,
+					formatter:function(v){ var p=v.split('-'); return p[2]+'/'+p[1]; }}},
+			yAxis:{type:'value', splitLine:{lineStyle:{color:'#e9edf4'}}, axisLabel:{color:'#8792a6', fontSize:10.5}},
+			series:[
+				{name:'Réel', type:'line', data:d.actual, showSymbol:false, lineStyle:{width:2, color:'#8792a6'}, color:'#8792a6'},
+				{name:'Prévu', type:'line', data:d.predicted, showSymbol:false, lineStyle:{width:2, color:'#2a78d6'}, color:'#2a78d6'}
+			]
+		});
+		window.addEventListener('resize', function(){ chart.resize(); });
+	});
+	</script>
+
+</body>
+</html>
