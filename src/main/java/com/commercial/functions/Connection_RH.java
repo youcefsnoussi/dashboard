@@ -44,8 +44,15 @@ public class Connection_RH {
 	
 		  //  String url = "jdbc:postgresql://localhost:5443/grhDB2";
 			
-			String username = "postgres";
-			String password = "***REMOVED***";
+			java.util.Properties localCreds = new java.util.Properties();
+			try (java.io.InputStream in = Connection_RH.class.getClassLoader().getResourceAsStream("application-local.properties")) {
+				if (in != null) {
+					localCreds.load(in);
+				}
+			} catch (java.io.IOException ignored) {
+			}
+			String username = localCreds.getProperty("spring.datasource.username", "postgres");
+			String password = localCreds.getProperty("spring.datasource.password");
 			appcon = DriverManager.getConnection(url, username, password);
 			//System.out.println("DATABASE CONNECT !! (y)");
 			

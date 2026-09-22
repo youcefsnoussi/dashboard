@@ -27,8 +27,15 @@ public static Connection getconnection() {
 
 			String url = "jdbc:postgresql://10.15.15.151:5432/commercial"; 
 			
-			String username = "postgres";
-			String password = "***REMOVED***";
+			java.util.Properties localCreds = new java.util.Properties();
+			try (java.io.InputStream in = ConnectionAinDefla.class.getClassLoader().getResourceAsStream("application-local.properties")) {
+				if (in != null) {
+					localCreds.load(in);
+				}
+			} catch (java.io.IOException ignored) {
+			}
+			String username = localCreds.getProperty("spring.datasource.username", "postgres");
+			String password = localCreds.getProperty("spring.datasource.password");
 			appcon = DriverManager.getConnection(url, username, password);
 			//System.out.println("DATABASE CONNECT !! (y)");
 			

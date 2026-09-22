@@ -40,8 +40,15 @@ public static Connection getconnection() {
 		String url = "jdbc:postgresql://192.168.100.84:5432/grhDB"; 
 		//	String url = "jdbc:postgresql://192.168.1.231:5432/Agro_Sim"; 
 			
-			String username = "postgres";
-			String password = "***REMOVED***";
+			java.util.Properties localCreds = new java.util.Properties();
+			try (java.io.InputStream in = ConnectionGRHLogistique.class.getClassLoader().getResourceAsStream("application-local.properties")) {
+				if (in != null) {
+					localCreds.load(in);
+				}
+			} catch (java.io.IOException ignored) {
+			}
+			String username = localCreds.getProperty("spring.datasource.username", "postgres");
+			String password = localCreds.getProperty("spring.datasource.password");
 			appcon = DriverManager.getConnection(url, username, password);
 			//System.out.println("DATABASE CONNECT !! (y)");
 			
